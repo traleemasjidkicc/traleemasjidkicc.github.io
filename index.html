@@ -234,6 +234,25 @@
 
   </footer>
   <!-- FOOTER END -->
+
+  <script>
+    var data = null;
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+      if (this.readyState === 4) {
+        console.log(this.responseText);
+      }
+    });
+
+    xhr.open("GET", "https://www.islamicfinder.org/prayer-times/monthlyPrayer?month=7&year=2019&type=Gregorian");
+    xhr.setRequestHeader("Accept", "*/*");
+    xhr.setRequestHeader("Cache-Control", "no-cache");
+    xhr.setRequestHeader("cache-control", "no-cache");
+    xhr.send(data);
+  </script>
 </body>
 
 </html>
