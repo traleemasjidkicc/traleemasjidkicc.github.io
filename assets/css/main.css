@@ -17,3 +17,12 @@
     text-decoration: none;
     color: #555;
 }
+
+.nav-narrow {
+    height: 30px !important;
+}
+
+.nav-wide {
+    background-color: rgb(46, 48, 75);
+}
+  
