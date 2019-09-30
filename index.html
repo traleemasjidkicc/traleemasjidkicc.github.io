@@ -9,7 +9,7 @@
   <meta name="keywords" content="masjid, mosque, religion, islam, allah, god, faith, kicc">
   <meta name="author" content="Nazmul Alam">
   <meta name="google-site-verification" content="gWYDAt0Oeo_Lpl4fvoNiP1xGihq4Ygsy5BAjGYHg4gU" />
-  <title>Tralee Masjid: Kerry Islamic Cultural Centre</title>
+  <title>Tralee Mosque: Kerry Islamic Cultural Centre</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -265,17 +265,21 @@
   <!-- FOOTER END -->
   <script>
     var xmlhttp = new XMLHttpRequest();
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN","JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var d = new Date();
     xmlhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         var myObj = JSON.parse(this.responseText);
-        document.getElementById("fajr").innerHTML = "Fajr " + myObj.dailyPrayers[(new Date().getDate()) -1].fajarTime.toLowerCase();
-        document.getElementById("dhuhr").innerHTML = "Dhuhr " + myObj.dailyPrayers[(new Date().getDate()) - 1].dhuharTime.toLowerCase();
-        document.getElementById("asr").innerHTML = "Asr " + myObj.dailyPrayers[(new Date().getDate()) - 1].asrTime.toLowerCase();
-        document.getElementById("maghrib").innerHTML = "Maghrib " + myObj.dailyPrayers[(new Date().getDate()) - 1].maghribTime.toLowerCase();
-        document.getElementById("isha").innerHTML = "Isha " + myObj.dailyPrayers[(new Date().getDate()) - 1].ishaTime.toLowerCase();
+        document.getElementById("fajr").innerHTML = "Fajr " + myObj.dailyPrayers[(d.getDate()) -1].fajarTime.toLowerCase();
+        document.getElementById("dhuhr").innerHTML = "Dhuhr " + myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime.toLowerCase();
+        document.getElementById("asr").innerHTML = "Asr " + myObj.dailyPrayers[(d.getDate()) - 1].asrTime.toLowerCase();
+        document.getElementById("maghrib").innerHTML = "Maghrib " + myObj.dailyPrayers[(d.getDate()) - 1].maghribTime.toLowerCase();
+        document.getElementById("isha").innerHTML = "Isha " + myObj.dailyPrayers[(d.getDate()) - 1].ishaTime.toLowerCase();
       }
     };
-    xmlhttp.open("GET", "assets/2019SEP.json", true);
+    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
+    console.log(asset);
+    xmlhttp.open("GET", asset, true);
     xmlhttp.send();
   </script>
 </body>
