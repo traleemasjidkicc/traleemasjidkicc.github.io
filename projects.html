@@ -17,7 +17,10 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/grid-gallery.css">
+
 
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
     integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
@@ -39,9 +42,8 @@
     <div class="container">
       <!-- Nab brand -->
       <a class="navbar-brand" href="/">
-        <img
-          src="assets/images/ic_launcher_round.png"
-          width="35%" height="35%" class="d-inline-block align-center" alt="Kerry Islamic Cultural Centre">
+        <img src="assets/images/ic_launcher_round.png" width="35%" height="35%" class="d-inline-block align-center"
+          alt="Kerry Islamic Cultural Centre">
         KICC
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -58,14 +60,14 @@
           <li class="nav-item">
             <a class="nav-link" href="about.html">About Us</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="activities.html">Activities</a>
+          </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Activities<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="#">Projects<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="projects.html">Projects</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" id="salah-times" href="assets/pdf/NOV2019.pdf" target="_blank">Salaah Times</a>
+            <a class="nav-link" id="salah-times" href="assets/pdf/NOV2019.pdf" target="_blank">Salaah Times</a>
           </li>
         </ul>
       </div>
@@ -74,72 +76,117 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- ACTIVITIES START -->
-  <div class="how-section1">
-    <!-- Tafseer start -->
-    <div class="row">
-      <div class="col-md-6 how-img">
-        <img src="assets/images/Tafseer.jpg" class="rounded img-fluid" alt="Tafseer" />
-      </div>
-      <div class="col-md-6" id="tafseer">
-        <h4>Tafseer of the Glorious Qur'an</h4>
-        <h4 class="subheading">Time: Every Friday after Isha Salah</h4>
-        <p class="text-muted">Come and Join in our weekly tafseer to learn and understand the meaning and the message of the Qur'an from authentic sources.</p>
-        <p class="text-muted"><strong>Segregated facilities for ladies and families.</strong></p>
-      </div>
-    </div>
-    <!-- End -->
+  <!-- PROJECTS START -->
 
-    <!-- Women's weekly class start -->
-    <div class="row">
-      <div class="col-md-6" id="women-class">
-        <h4>Women's Weekly Class</h4>
-        <h4 class="subheading">Time: Every Wednesday at 10:30am</h4>
-        <p class="text-muted">An ideal opportunity for sisters to come and learn about the various deeni aspects and takes steps in coming closer to Allah Ta'ala.</p>
-        <p class="text-muted">Qur'an - Tajweed, Tafseer and Much More..</p>
+  <div class="bg-light">
+    <div class="container py-5">
+      <div class="row h-100 align-items-center py-5">
+        <div class="col-lg-6">
+          <h1 class="display-4" id="new-masjid">New Masjid Construction</h1>
+          <p class="lead text-muted mb-0">Asalaamu Alaikum wa Rahmatullah wa Barakatuhu.</p>
+          <p class="lead text-muted mb-0">
+            All praise is due to Allah (SWT) who is the most kind and most merciful. The Kerry Islamic Cultural Centre
+            (Tralee Mosque) member community are planning to start the construction of a 2-storey mosque structure. The
+            Management Committee would like to thank the community and the donors for their continued support.
+          </p>
+          <p class="lead text-muted mb-0">
+            "He who built a mosque for Allah, the Exalted, Allah would build for him a house in Paradise." - Al Hadith
+            [Sahih Muslim Book 4 No. 1084 & 1085]
+          </p>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block"><img src="assets/images/tralee-masjid-bp-new.jpeg" alt="Tralee Masjid"
+            class="img-fluid"></div>
       </div>
-      <div class="col-md-6 how-img">
-        <img src="assets/images/Womens_Class.jpg" class="rounded img-fluid"
-          alt="Women's Weekly Class" />
-      </div>
-    </div>
-    <!-- End -->
 
-    <!-- Qur'an class for adults -->
-    <div class="row">
-      <div class="col-md-6 how-img">
-        <img src="assets/images/Quran_Class.jpg" class="rounded img-fluid"
-          alt="Qur'an class" />
-      </div>
-      <div class="col-md-6" id="adult-classes">
-        <h4>Qur'an class for Adults</h4>
-        <h4 class="subheading">Time: Every Tuesday after Isha Salaah</h4>
-        <p class="text-muted">
-            The Noble Qur'an is the literal words of Allah that He revealed as an infallible source of legislation for mankind to live an organised life by. It contains regulations and recommendations about all aspects of life and references to the Hereafter. Being so important, the Qur'an must be read, written, and recited correctly and clearly, so as not to create any sort of ambiguity or misunderstanding whatsoever. Allah Almighty addressed His Messenger Muhammad  sallallaahu  `alayhi  wa  sallam ( may  Allah exalt his mention ) (may Allah exalt his mention) in the Qur'an, Saying (what means): <strong>"…And recite the Qur'an with measured recitation."</strong> [Qur'an 73:4]
-        </p>
-        <p class="text-muted">
-            Moreover, reciting the Qur'an with Tajweed is actually obligatory on every Muslim as it’s Fard Ayn. Also, in Sunnah, it was proved in the authenticated hadith that Prophet Muhammad (peace and blessing be upon him) used to read the Qur'an word-by-word and letter-by-letter, applying elongation whenever required. Accordingly, this special branch from Qur'anic sciences compiles lots of rewards to Muslims.
-        </p>
-      </div>
-    </div>
-    <!-- End -->
+      <h2 class="block-4">Standing Order Details</h2>
+      <table class="table table-hover">
+        <tbody>
+          <tr>
+            <th scope="row">Account Name</th>
+            <td>Kerry Islamic Cultural Centre</td>
+          </tr>
+          <tr>
+            <th scope="row">Bank Name</th>
+            <td>AIB Tralee</td>
+          </tr>
+          <tr>
+            <th scope="row">Account Number</th>
+            <td>82278138</td>
+          </tr>
+          <tr>
+            <th scope="row">Sort Code</th>
+            <td colspan="2">93-62-19</td>
+          </tr>
+          <tr>
+            <th scope="row">IBAN</th>
+            <td colspan="2">IE43AIBK93621982278138</td>
+          </tr>
+          <tr>
+            <th scope="row">BIC (Swift Code)</th>
+            <td colspan="2">AIBKIE2D</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <!-- Daily programmes start -->
-    <div class="row">
-      <div class="col-md-6" id="daily">
-        <h4>Daily Programmes</h4>
-        <p class="text-muted">
-            Kerry Islamic Cultural Centre offers many activities, some daily others weekly, monthly and annual.
-        </p>
-      </div>
-      <div class="col-md-6 how-img">
-        <img src="assets/images/Daily_Activities.jpg" class="rounded img-fluid"
-          alt="Daily Programmes" />
-      </div>
+      <section class="gallery-block grid-gallery">
+        <div class="container">
+          <div class="heading">
+            <h2>Project Design Gallery</h2>
+          </div>
+          <div class="row">
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d1.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d1.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d2.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d2.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d3.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d3.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d5.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d5.png">
+              </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d6.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d6.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqcomm3d7.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqcomm3d7.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqsitlayt1.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqsitlayt1.png">
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-4 item">
+              <a class="lightbox" href="assets/images/bp/mosqsitlayt2.png">
+                <img class="img-fluid image scale-on-hover" src="assets/images/bp/mosqsitlayt2.png">
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+      <script>
+        baguetteBox.run('.grid-gallery', {
+          animation: 'slideIn'
+        });
+      </script>
     </div>
-    <!-- End -->
   </div>
-  <!-- ACTIVITIES END -->
+  <!-- PROJECTS END -->
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4">
@@ -161,21 +208,21 @@
 
         <!-- Grid column -->
         <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-            <h6 class="text-uppercase mb-4 font-weight-bold">Activities</h6>
-            <p>
-              <a href="activities.html#tafseer">Tafseer</a>
-            </p>
-            <p>
-              <a href="activities.html#women-class">Women's Class</a>
-            </p>
-            <p>
-              <a href="activities.html#adult-classes">Men's Class</a>
-            </p>
-            <p>
-              <a href="activities.html#daily">Daily Programmes</a>
-            </p>
-          </div>
-          <!-- Grid column -->
+          <h6 class="text-uppercase mb-4 font-weight-bold">Activities</h6>
+          <p>
+            <a href="activities.html#tafseer">Tafseer</a>
+          </p>
+          <p>
+            <a href="activities.html#women-class">Women's Class</a>
+          </p>
+          <p>
+            <a href="activities.html#adult-classes">Men's Class</a>
+          </p>
+          <p>
+            <a href="activities.html#daily">Daily Programmes</a>
+          </p>
+        </div>
+        <!-- Grid column -->
 
         <hr class="w-100 clearfix d-md-none">
 
@@ -274,13 +321,13 @@
   </footer>
   <!-- FOOTER END -->
 
-  <script>	
-      var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];	
-      var d = new Date();		
-      var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";	
-      console.log(asset);	
-      document.getElementById('salah-times').href = asset;
-    </script>
+  <script>
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var d = new Date();
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
+    console.log(asset);
+    document.getElementById('salah-times').href = asset;
+  </script>
 </body>
 
 </html>

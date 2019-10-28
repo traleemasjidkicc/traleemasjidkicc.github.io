@@ -37,7 +37,7 @@
 <body>
   <!-- START OF NAV -->
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark nav-wide fixed-top">
+  <nav class="navbar navbar-expand-md navbar-dark nav-wide fixed-top">
     <div class="container">
       <!-- Nab brand -->
       <a class="navbar-brand" href="/">
@@ -63,7 +63,7 @@
             <a class="nav-link" href="activities.html">Activities</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Projects</a>
+            <a class="nav-link" href="projects.html">Projects</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="salah-times" href="assets/pdf/NOV2019.pdf" target="_blank">Salaah Times</a>
@@ -90,7 +90,8 @@
           <div class="carousel-caption d-none d-md-block">
             <h2 class="display-4">Urgent Appeal</h2>
             <p class="lead">Donate to the KICC Construction Project</p>
-            <button type="button" class="btn btn-success btn-lg">Donate</button>
+            <a class="btn btn-success" href="projects.html#new-masjid" role="button">Donate Now</a>
+
           </div>
         </div>
         <!-- Slide Two - Set the background image for this slide in the line below -->
@@ -167,7 +168,7 @@
         <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Useful links</h6>
           <p>
-            <a href="#!">Donate</a>
+            <a href="projects.html#new-masjid">Donate</a>
           </p>
           <p>
             <a href="about.html#our-team">Our Team</a>
@@ -257,11 +258,11 @@
   </footer>
   <!-- FOOTER END -->
 
-   <script>	
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];	
-    var d = new Date();		
-    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";	
-    console.log(asset);	
+  <script>
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var d = new Date();
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
+    console.log(asset);
     document.getElementById('salah-times').href = asset;
   </script>
 </body>
