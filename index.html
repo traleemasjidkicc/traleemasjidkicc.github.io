@@ -35,29 +35,6 @@
 </head>
 
 <body>
-  <!-- START OF STICKY NAV -->
-  <!-- <nav class="navbar navbar-expand-sm sticky-top navbar-dark bg-dark nav-narrow">
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav mx-auto salah-times">
-        <li class="nav-item">
-          <a class="nav-link disabled" id="fajr" href="/">Fajr</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" id="dhuhr" href="/">Dhuhr</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" id="asr" href="/">Asr</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" id="maghrib" href="/">Maghrib</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" id="isha" href="/">Isha</a>
-        </li>
-      </ul>
-    </div>
-  </nav> -->
-  <!-- END -->
 
   <!-- START OF NAV -->
   <!-- Navigation -->
@@ -275,31 +252,6 @@
 
   </footer>
   <!-- FOOTER END -->
-
-  <!-- <script>
-    var xmlhttp = new XMLHttpRequest();
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    var d = new Date();
-    xmlhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var myObj = JSON.parse(this.responseText);
-        document.getElementById("fajr").innerHTML = "Fajr " + myObj.dailyPrayers[(d.getDate()) - 1].fajarTime
-          .toLowerCase();
-        document.getElementById("dhuhr").innerHTML = "Dhuhr " + myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime
-          .toLowerCase();
-        document.getElementById("asr").innerHTML = "Asr " + myObj.dailyPrayers[(d.getDate()) - 1].asrTime
-          .toLowerCase();
-        document.getElementById("maghrib").innerHTML = "Maghrib " + myObj.dailyPrayers[(d.getDate()) - 1].maghribTime
-          .toLowerCase();
-        document.getElementById("isha").innerHTML = "Isha " + myObj.dailyPrayers[(d.getDate()) - 1].ishaTime
-          .toLowerCase();
-      }
-    };
-    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
-    console.log(asset);
-    xmlhttp.open("GET", asset, true);
-    xmlhttp.send();
-  </script> -->
 </body>
 
 </html>
