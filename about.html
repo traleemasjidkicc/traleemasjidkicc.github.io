@@ -64,6 +64,9 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Projects</a>
           </li>
+          <li class="nav-item">
+              <a class="nav-link" id="salah-times" href="assets/pdf/NOV2019.pdf" target="_blank">Salaah Times</a>
+          </li>
         </ul>
       </div>
       <!-- End -->
@@ -150,7 +153,7 @@
     <div class="container py-5">
       <div class="row mb-4">
         <div class="col-lg-5">
-          <h2 class="display-4 font-weight-light">Our team</h2>
+          <h2 class="display-4 font-weight-light" id="our-team">Our team</h2>
           <p class="font-italic text-muted">
             “Faithful believers are to each other as the bricks of a wall, supporting and reinforcing each other.”
             (Al-Bukhari)
@@ -376,13 +379,10 @@
             <a href="#!">Donate</a>
           </p>
           <p>
-            <a href="#!">Merchandise</a>
+            <a href="about.html#our-team">Our Team</a>
           </p>
           <p>
             <a href="//play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE">Android App</a>
-          </p>
-          <p>
-            <a href="#!">Help</a>
           </p>
         </div>
 
@@ -465,6 +465,14 @@
 
   </footer>
   <!-- FOOTER END -->
+
+  <script>	
+      var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];	
+      var d = new Date();		
+      var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";	
+      console.log(asset);	
+      document.getElementById('salah-times').href = asset;
+    </script>
 </body>
 
 </html>

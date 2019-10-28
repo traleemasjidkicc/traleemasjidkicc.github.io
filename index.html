@@ -35,16 +35,14 @@
 </head>
 
 <body>
-
   <!-- START OF NAV -->
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark nav-wide fixed-top">
     <div class="container">
-       <!-- Nab brand -->
-       <a class="navbar-brand" href="/">
-        <img
-          src="assets/images/ic_launcher_round.png"
-          width="35%" height="35%" class="d-inline-block align-center" alt="Kerry Islamic Cultural Centre">
+      <!-- Nab brand -->
+      <a class="navbar-brand" href="/">
+        <img src="assets/images/ic_launcher_round.png" width="35%" height="35%" class="d-inline-block align-center"
+          alt="Kerry Islamic Cultural Centre">
         KICC
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
@@ -67,6 +65,9 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Projects</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" id="salah-times" href="assets/pdf/NOV2019.pdf" target="_blank">Salaah Times</a>
+          </li>
         </ul>
       </div>
       <!-- End -->
@@ -86,9 +87,9 @@
         <!-- Slide One - Set the background image for this slide in the line below -->
         <div class="carousel-item active" style="background-image: url('assets/images/tralee-masjid-bp-new.jpeg')">
           <div class="carousel-caption d-none d-md-block">
-              <h2 class="display-4">Urgent Appeal</h2>
-              <p class="lead">Donate to the KICC Construction Project</p>
-              <button type="button" class="btn btn-success btn-lg">Donate</button>
+            <h2 class="display-4">Urgent Appeal</h2>
+            <p class="lead">Donate to the KICC Construction Project</p>
+            <button type="button" class="btn btn-success btn-lg">Donate</button>
           </div>
         </div>
         <!-- Slide Two - Set the background image for this slide in the line below -->
@@ -163,13 +164,10 @@
             <a href="#!">Donate</a>
           </p>
           <p>
-            <a href="#!">Merchandise</a>
+            <a href="about.html#our-team">Our Team</a>
           </p>
           <p>
             <a href="//play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE">Android App</a>
-          </p>
-          <p>
-            <a href="#!">Help</a>
           </p>
         </div>
 
@@ -252,6 +250,14 @@
 
   </footer>
   <!-- FOOTER END -->
+
+   <script>	
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];	
+    var d = new Date();		
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";	
+    console.log(asset);	
+    document.getElementById('salah-times').href = asset;
+  </script>
 </body>
 
 </html>
