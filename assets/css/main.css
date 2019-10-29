@@ -69,3 +69,27 @@ body {
 .how-img img {
     width: 40%;
 }
+
+/*************************  Welcome Section Start  ****************************/
+.cp-welcome {
+	background: #f9f0e7;
+	padding: 80px 0;
+	width: 100%;
+	float: left;
+}
+.cp-welcome .container {
+	background: #fff;
+}
+.cp-welcome img {
+	padding: 20px;
+}
+.cp-welcome h2 {
+	font-size: 36px;
+}
+.cp-welcome-content {
+	padding: 45px 45px 0;
+}
+body .cp-welcome-content p {
+	margin: 20px 0;
+}
+/*************************  Welcome Section End  ****************************/
