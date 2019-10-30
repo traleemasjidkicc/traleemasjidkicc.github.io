@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,700,900&display=swap');
 
 body {
@@ -160,12 +160,23 @@ body .cp-welcome-content p {
 	text-align: center;
 }
 
+.pillars-islam .text-box h2 {
+	font-family: 'Cinzel Decorative', cursive;
+	font-size: 25px;
+}
+
 .pillars-islam .sub {
 	text-align: center;
 	font-size: 14px;
 	font-style: italic;
 	font-weight: 400;
-	color: rgb(240, 230, 92);
+	color: #d2973b;
+}
+
+.pillars-islam .features-box i {
+	vertical-align: middle;
+	border-style: none;
+	color: #d2973b;
 }
 /*************************  Pillars Of Islam Section End  ****************************/
 
