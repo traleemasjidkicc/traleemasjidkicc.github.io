@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,700,900&display=swap');
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -92,4 +93,79 @@ body {
 body .cp-welcome-content p {
 	margin: 20px 0;
 }
+
+.cp-welcome .btn {
+    margin-bottom: 15px; 
+}
 /*************************  Welcome Section End  ****************************/
+
+/*************************  Pillars Of Islam Section Start  ****************************/
+.section-title {
+	text-align: center;
+	width: 100%;
+	float: left;
+	margin-bottom: 30px;
+}
+.section-title strong {
+	text-align: center;
+	font-size: 16px;
+	font-weight: 400;
+	color: #222;
+}
+.section-title h2, .cp-welcome h2 {
+	font-family: 'Cinzel Decorative', cursive;
+	font-size: 48px;
+	font-weight: 700;
+	margin: 5px 0 0 0;
+	line-height: 50px;
+	color: #222;
+}
+.pillars-islam .text-box h2 {
+	color: #fff;
+}
+.pillars-islam .section-title strong, .pillars-islam .section-title h2 {
+	color: #fff;
+}
+.pillars-islam {
+	background: url(../images/mos-bg5.png) no-repeat top center fixed;
+	background-size: cover;
+	padding: 80px 0;
+	width: 100%;
+	float: left;
+	position: relative;
+}
+.pillars-islam:after {
+	content: "";
+	background: rgba(73, 73, 73, 0.9);
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.pillars-islam .container {
+	position: relative;
+	z-index: 99;
+}
+.pillars-islam .features-box span {
+	background: url(../images/poi-bg.png) no-repeat;
+	width: 177px;
+	height: 177px;
+	display: block;
+	text-align: center;
+	line-height: 177px;
+	margin: 0 auto
+}
+.pillars-islam .text-box {
+	text-align: center;
+}
+
+.pillars-islam .sub {
+	text-align: center;
+	font-size: 14px;
+	font-style: italic;
+	font-weight: 400;
+	color: rgb(240, 230, 92);
+}
+/*************************  Pillars Of Islam Section End  ****************************/
+
