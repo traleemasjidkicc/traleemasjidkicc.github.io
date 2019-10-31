@@ -49,7 +49,7 @@ body {
 }
 
 .how-section1 h4 {
-    color: #ffa500;
+	font-family: 'Cinzel Decorative', cursive;
     font-weight: bold;
     font-size: 30px;
 }
@@ -68,7 +68,7 @@ body {
 }
 
 .how-img img {
-    width: 40%;
+    width: 100%;
 }
 
 /*************************  Welcome Section Start  ****************************/
