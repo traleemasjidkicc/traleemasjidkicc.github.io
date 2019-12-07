@@ -6,6 +6,12 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 
+.btn-success {
+	color: #fff;
+    background-color: #0D5E10;
+    border-color: #0D5E10;
+}
+
 .carousel-item {
 	height: 100vh;
 	min-height: 350px;
