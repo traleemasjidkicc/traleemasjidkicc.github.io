@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/home.css">
 
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
     integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
@@ -143,7 +144,58 @@
   </section>
   <!-- WELCOME END -->
 
-  <!--  -->
+  <!-- UPCOMING EVENTS START -->
+  <div class="blog-home2 py-5">
+    <div class="container">
+      <!-- Row  -->
+      <div class="row justify-content-center">
+        <!-- Column -->
+        <div class="col-md-8 text-center">
+          <img src="assets/images/bsml-txt-black.png" alt="Bismillah" style="transition-delay: 0ms; width: 210px; padding-top: 20px;">
+          <h2 class="my-3">Upcoming Events</h2>
+          <!-- <h6 class="subtitle font-weight-normal">You can relay on our amazing features list and also our customer services will be great experience for you without doubt</h6> -->
+        </div>
+        <!-- Column -->
+        <!-- Column -->
+      </div>
+      <div class="row mt-4">
+        <!-- Column -->
+        <div class="col-md-4 on-hover">
+          <div class="card border-0 mb-4">
+            <a href="activities.html#monthly-bayaan"><img class="card-img-top" src="assets/images/Monthly_Bayaan_DEC.jpeg" alt="wrappixel kit"></a>
+            <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">Dec<span class="d-block">15</span></div>
+            <h5 class="font-weight-medium mt-3"><a href="activities.html#monthly-bayaan" class="text-decoration-none link"></a>Good conduct and social behaviour</h5>
+            <!-- <p class="mt-3">"The best of people are those with the most excellent character." (Tabarani, Sahih)</p> -->
+            <a href="activities.html#monthly-bayaan" class="text-decoration-none linking text-themecolor mt-2">Learn More</a>
+          </div>
+        </div>
+        <!-- Column -->
+        <div class="col-md-4 on-hover">
+          <div class="card border-0 mb-4">
+            <a href="activities.html#women-class"><img class="card-img-top" src="assets/images/Womens_Class.jpg" alt="wrappixel kit"></a>
+            <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">Wed<span class="d-block" id="women-class"></span></div>
+            <h5 class="font-weight-medium mt-3"><a href="activities.html#women-class" class="text-decoration-none link">Women's weekly class</a></h5>
+            <!-- <p class="mt-3">An ideal opportunity for sisters to come and learn about the various deeni aspects and takes steps in coming closer to Allah Ta'ala.
+            </p> -->
+            <a href="activities.html#women-class" class="text-decoration-none linking text-themecolor mt-2">Learn More</a>
+          </div>
+        </div>
+        <!-- Column -->
+        <div class="col-md-4 on-hover">
+          <div class="card border-0 mb-4">
+            <a href="activities.html#tafseer"><img class="card-img-top" src="assets/images/Tafseer.jpg" alt="wrappixel kit"></a>
+            <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">Friday<span class="d-block" id="tafseer">23</span></div>
+            <h5 class="font-weight-medium mt-3"><a href="activities.html#tafseer" class="text-decoration-none link">Tafseer of the glorious Qur'an</a></h5>
+            <!-- <p class="mt-3">(This is) a Scripture that We have revealed unto thee, full of blessing, that they may ponder its revelations, and that men of understanding may reflect. (Quran 38:29)</p> -->
+            <a href="activities.html#tafseer" class="text-decoration-none linking text-themecolor mt-2">Learn More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- UPCOMING EVENTS END -->
+
+  <!-- PILLARS OF ISLAM START -->
   <div class="pillars-islam">
     <div class="container">
       <div class="row">
@@ -227,6 +279,7 @@
       </div>
     </div>
   </div>
+  <!-- PILLARS OF ISLAM END -->
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4">
@@ -367,6 +420,16 @@
     console.log(asset);
     document.getElementById('salah-times').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
+    
+    var wed = new Date();
+    var wednesday = 3 - d.getDay();  
+    wed.setDate(wed.getDate() + wednesday);
+    document.getElementById('women-class').innerHTML = wed.getDate();
+    
+    var fri = new Date();
+    var friday = 5 - d.getDay();
+    fri.setDate(fri.getDate() + friday)
+    document.getElementById('tafseer').innerHTML = fri.getDate();
   </script>
 </body>
 
