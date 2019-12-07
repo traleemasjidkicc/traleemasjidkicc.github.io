@@ -1,72 +1,142 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:400,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
 
 body {
-    font-family: 'Roboto', sans-serif;
+	font-family: 'Roboto', sans-serif;
 }
 
 .carousel-item {
-    height: 100vh;
-    min-height: 350px;
-    background: no-repeat center center scroll;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+	height: 100vh;
+	min-height: 350px;
+	background: no-repeat center center scroll;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
 .social-link {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    border-radius: 50%;
-    transition: all 0.3s;
-    font-size: 0.9rem;
+	width: 30px;
+	height: 30px;
+	border: 1px solid #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #666;
+	border-radius: 50%;
+	transition: all 0.3s;
+	font-size: 0.9rem;
 }
 
 .social-link:hover,
 .social-link:focus {
-    background: #ddd;
-    text-decoration: none;
-    color: #555;
+	background: #ddd;
+	text-decoration: none;
+	color: #555;
 }
+
 .nav-narrow {
-    height: 30px !important;
+	height: 30px !important;
 }
 
 .nav-wide {
-    background-color: rgb(46, 48, 75);
+	background-color: rgb(46, 48, 75);
 }
 
 .how-section1 {
-    margin-top: -10%;
-    padding: 5%;
+	margin-top: -10%;
+	padding: 5%;
 }
 
 .how-section1 h4 {
 	font-family: 'Cinzel Decorative', cursive;
-    font-weight: bold;
-    font-size: 30px;
+	font-weight: bold;
+	font-size: 30px;
 }
 
 .how-section1 .subheading {
-    color: #3931af;
-    font-size: 20px;
+	color: #3931af;
+	font-size: 20px;
 }
 
 .how-section1 .row {
-    margin-top: 10%;
+	margin-top: 10%;
 }
 
 .how-img {
-    text-align: center;
+	text-align: center;
 }
 
 .how-img img {
-    width: 100%;
+	width: 100%;
 }
 
+/*===========================================================================*/
+/*Parallax Section*/
+/*===========================================================================*/
+.parallax-section {
+	float: left;
+	width: 100%;
+	background: url(../images/parallax-bg.jpg) no-repeat left top/cover;
+	padding: 50px 0;
+}
+
+.parallax-section .right-box {
+	float: right;
+	width: 770px;
+}
+
+.parallax-section .right-box img {
+	float: right;
+	margin: 0 0 20px 0;
+}
+
+.parallax-section .right-box strong.title {
+	display: block;
+	font: 300 30px/30px 'Poppins', sans-serif;
+	color: #fff;
+	clear: both;
+	padding: 0 0 15px 0;
+}
+
+.parallax-section .right-box a {
+	display: block;
+	font: 400 14px/14px 'Poppins', sans-serif;
+	text-decoration: none;
+}
+
+/*===========================================================================*/
+/*768px And 992px CSS*/
+/*===========================================================================*/
+@media (min-width: 768px) and (max-width: 992px) {
+	.parallax-section .right-box {
+		width: 100%;
+	}
+}
+
+/*===========================================================================*/
+/*767px CSS*/
+/*===========================================================================*/
+@media (max-width: 767px) {
+	.parallax-section .right-box {
+		width: 100%;
+	}
+
+	.parallax-section .right-box img {
+		width: 100%;
+	}
+}
+
+/*===========================================================================*/
+/*480px CSS*/
+/*===========================================================================*/
+@media (min-width: 320px) and (max-width: 480px) {
+	.parallax-section .right-box {
+		width: 100%;
+	}
+
+	.parallax-section .right-box img {
+		width: 100%;
+	}
+}
