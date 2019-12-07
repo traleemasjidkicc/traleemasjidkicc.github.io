@@ -17,7 +17,10 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/grid-gallery.css">
+
 
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
     integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
@@ -57,18 +60,17 @@
           <li class="nav-item">
             <a class="nav-link" href="about.html">About Us</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Activities<span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link" href="activities.html">Activities</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="projects.html">Projects</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="contact.html">Contact</a>
+            <a class="nav-link" href="projects.html">Projects<span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link btn btn-primary" id="salah-times" role="button" href="assets/pdf/NOV2019.pdf"
-              target="_blank">Salah Times</a>
+              <a class="nav-link" href="#">Contact<span class="sr-only">(current)</span></a>
+            </li>
+          <li class="nav-item active">
+            <a class="nav-link btn btn-primary" id="salah-times" role="button" href="assets/pdf/NOV2019.pdf" target="_blank">Salah Times</a>
           </li>
         </ul>
       </div>
@@ -77,153 +79,47 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- ACTIVITIES START -->
-  <div class="container">
-    <div class="how-section1">
-      <!-- Tafseer start -->
-      <div class="row">
-        <div class="col-lg-4 how-img">
-          <img src="assets/images/Tafseer.jpg" class="rounded d-none d-sm-block" alt="Tafseer" />
+  <!-- CONTACT START -->
+  <div class="bg-info contact4 overflow-hiddedn position-relative">
+      <!-- Row  -->
+      <div class="row no-gutters">
+        <div class="container">
+          <div class="col-lg-6 contact-box mb-4 mb-md-0">
+            <div class="">
+              <h1 class="title font-weight-light text-white mt-2">Contact Us</h1>
+              <form class="mt-3" action="https://formspree.io/mgevppbl" method="POST">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="form-group mt-2">
+                      <input class="form-control text-white" type="text" placeholder="name" name="name">
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="form-group mt-2">
+                      <input class="form-control text-white" type="email" placeholder="email address" name="sender">
+                    </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <div class="form-group mt-2">
+                      <textarea class="form-control text-white" rows="3" placeholder="message" name="message"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-lg-12 d-flex align-items-center mt-2">
+                    <button type="submit" class="btn bg-white text-inverse px-3 py-2"><span> Submit</span></button>
+                    <span class="ml-auto text-white align-self-center"><i class="fas fa-phone-alt mr-2"></i>086 244 0556‬</span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <div class="col-lg-8" id="tafseer">
-          <h4>Tafseer of the Glorious Qur'an</h4>
-          <h4 class="subheading">Time: Every Friday after Isha Salah</h4>
-          <hr>
-          <p class="text-muted">
-            Muslims regard the most reliable Qur'anic commentary as being contained in the Qur'an itself. In other
-            words, the ways in which certain ayat clarify other ayat are regarded as being the most significant form of
-            commentary. A second form of Qur'anic commentary is how the Prophet interpreted the Qur'an. And his comments
-            on the Qur'an (as well as everything he ever said or did) are recorded in the hadith collections. After
-            these two forms of commentary, knowledgeable companions and later generations of pious and learned Muslims
-            expressed their view of the meaning of various ayat. It was on this foundation that the science of Qur'anic
-            commentary was built.
-          </p>
-          <p class="text-muted blockquote">"(This is) a Scripture that We have revealed unto thee, full of blessing,
-            that they may ponder its revelations, and that men of understanding may reflect." — Quran 38:29
-          </p>
-        </div>
-      </div>
-      <!-- End -->
-
-      <!-- Women's weekly class start -->
-      <div class="row">
-        <div class="col-md-6" id="women-class">
-          <h4>Women's Weekly Class</h4>
-          <h4 class="subheading">Time: Every Wednesday at 10:30am</h4>
-          <hr>
-          <p class="text-muted">An ideal opportunity for sisters to come and learn about the various deeni aspects and
-            takes steps in coming closer to Allah Ta'ala.</p>
-          <p class="text-muted">Qur'an - Tajweed, Tafseer and Much More..</p>
-        </div>
-        <div class="col-md-6 how-img">
-          <img src="assets/images/Womens_Class.jpg" class="rounded img-fluid" alt="Women's Weekly Class" />
+        <div class="col-lg-6 right-image p-r-0">
+          <iframe src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ6fEU4581RUgRRqPGOQuIjJk&key=AIzaSyAu0kzhDcdsRFp2J9kjQUFB8Og8Ih_m2go"
+            width="100%" height="538" frameborder="0" style="border:0" allowfullscreen data-aos="fade-left" data-aos-duration="3000"></iframe>
         </div>
       </div>
-      <!-- End -->
-
-      <!-- Qur'an class for adults -->
-      <div class="row">
-        <div class="col-md-6 how-img">
-          <img src="assets/images/Quran_Class.jpg" class="rounded d-none d-sm-block" alt="Qur'an class" />
-        </div>
-        <div class="col-md-6" id="adult-classes">
-          <h4>Qur'an class for Adults</h4>
-          <h4 class="subheading">Time: Every Tuesday after Isha Salah</h4>
-          <hr>
-          <p class="text-muted">
-            The Noble Qur'an is the literal words of Allah that He revealed as an infallible source of legislation for
-            mankind to live an organised life by. It contains regulations and recommendations about all aspects of life
-            and references to the Hereafter. Being so important, the Qur'an must be read, written, and recited correctly
-            and clearly, so as not to create any sort of ambiguity or misunderstanding whatsoever. Allah Almighty
-            addressed His Messenger Muhammad sallallaahu `alayhi wa sallam ( may Allah exalt his mention ) (may Allah
-            exalt his mention) in the Qur'an, Saying (what means): <strong>"…And recite the Qur'an with measured
-              recitation."</strong> [Qur'an 73:4]
-          </p>
-          <p class="text-muted">
-            Moreover, reciting the Qur'an with Tajweed is actually obligatory on every Muslim as it’s Fard Ayn. Also, in
-            Sunnah, it was proved in the authenticated hadith that Prophet Muhammad (peace and blessing be upon him)
-            used to read the Qur'an word-by-word and letter-by-letter, applying elongation whenever required.
-            Accordingly, this special branch from Qur'anic sciences compiles lots of rewards to Muslims.
-          </p>
-        </div>
-      </div>
-      <!-- End -->
-
-      <!-- Monthly Bayaan start -->
-      <div class="row">
-        <div class="col-md-6" id="monthly-bayaan">
-          <h4>Monthly Bayaan</h4>
-          <h4 class="subheading">Time: Sunday, 15th December 2019</h4>
-          <hr>
-          <p class="text-muted">
-            "The best people are those with the most excellent character."<br>
-            <br>
-            <strong>Women's segment (Tralee):</strong> After Zohr 1:30pm<br>
-            <strong>Men's segment (Killarney):</strong> After Isha 7:00pm
-          </p>
-        </div>
-        <div class="col-md-6 how-img">
-          <img src="assets/images/Monthly_Bayaan_DEC.jpeg" class="rounded img-fluid" alt="Monthly Bayaan" />
-        </div>
-      </div>
-      <!-- End -->
-
-      <!-- Daily programmes start -->
-      <div class="row">
-        <div class="col-md-6 how-img">
-          <img src="assets/images/Daily_Activities.jpg" class="rounded d-none d-sm-block" alt="Daily Programmes" />
-        </div>
-        <div class="col-md-6" id="daily">
-          <h4>Daily Programmes</h4>
-          <hr>
-          <p class="text-muted">
-            Kerry Islamic Cultural Centre offers many activities, some daily others weekly, monthly and annual.
-          </p>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th scope="col">Programme Name</th>
-                <th scope="col">Time</th>
-                <th scope="col">Occurrence</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">Hadith from Riyadus Saaliheen</th>
-                <td>After Fajr</td>
-                <td>Daily</td>
-              </tr>
-              <tr>
-                <th scope="row">Men's Qur'an Class</th>
-                <td>Tuesday's after Isha</td>
-                <td>Weekly</td>
-              </tr>
-              <tr>
-                <th scope="row">Women's Qur'an Class</th>
-                <td>Wednesday's at 10:30am</td>
-                <td>Weekly</td>
-              </tr>
-              <tr>
-                <th scope="row">Tafseer of the Qur'an</th>
-                <td>Friday's after Isha</td>
-                <td>Weekly</td>
-              </tr>
-              <tr>
-                <th scope="row">Children's Youth Programme</th>
-                <td colspan="2">Check Events or Masjid Notice Board</td>
-              </tr>
-              <tr>
-                <th scope="row">Adult's Monthly Programme</th>
-                <td colspan="2">Check Events or Masjid Notice Board</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- End -->
     </div>
-  </div>
-  <!-- ACTIVITIES END -->
+  <!-- CONTACT END -->
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4">
@@ -312,10 +208,9 @@
         <div class="col-md-7 col-lg-8">
 
           <!--Copyright-->
-          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
-            <i class="fas fa-heart" style="color:red"></i>
-            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a href="//nalam.me" rel="external"
-              target="_blank">
+          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with <i class="fas fa-heart"
+              style="color:red"></i>
+            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a href="//nalam.me" rel="external" target="_blank">
               <strong> Nazmul Alam</strong>
             </a>
           </p>
