@@ -92,17 +92,17 @@
               <div class="row">
                 <div class="col-lg-12">
                   <div class="form-group mt-2">
-                    <input class="form-control text-white" type="text" placeholder="name" name="name">
+                    <input class="form-control text-white" type="text" placeholder="name" name="name" minlength="3" required>
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="form-group mt-2">
-                    <input class="form-control text-white" type="email" placeholder="email address" name="sender">
+                    <input class="form-control text-white" type="email" placeholder="email address" name="sender" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
                   </div>
                 </div>
                 <div class="col-lg-12">
                   <div class="form-group mt-2">
-                    <textarea class="form-control text-white" rows="3" placeholder="message" name="message"></textarea>
+                    <textarea class="form-control text-white" rows="3" placeholder="message" name="message" minlength="20" required></textarea>
                   </div>
                 </div>
                 <div class="col-lg-12 d-flex align-items-center mt-2">
