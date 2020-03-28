@@ -1,8 +1,9 @@
 @import url(//fonts.googleapis.com/css?family=Montserrat:300,400,500);
+
 .blog-home2 {
-  font-family: "Montserrat", sans-serif;
-  color: #8d97ad;
-  font-weight: 300;
+	font-family: "Montserrat", sans-serif;
+	color: #8d97ad;
+	font-weight: 300;
 }
 
 .blog-home2 h1,
@@ -11,67 +12,68 @@
 .blog-home2 h4,
 .blog-home2 h5,
 .blog-home2 h6 {
-  color: #3e4555;
+	color: #3e4555;
 }
 
 .blog-home2 .font-weight-medium {
-  font-weight: 500;
+	font-weight: 500;
 }
 
 .blog-home2 .bg-light {
-  background-color: #f4f8fa !important;
+	background-color: #f4f8fa !important;
 }
 
 .blog-home2 .subtitle {
-  color: #8d97ad;
-  line-height: 24px;
+	color: #8d97ad;
+	line-height: 24px;
 }
 
 .blog-home2 .text-themecolor {
-  color: #316ce8;
+	color: #316ce8;
 }
 
 .blog-home2 h5 {
-  line-height: 22px;
-  font-size: 18px;
+	line-height: 22px;
+	font-size: 18px;
 }
 
 .blog-home2 a.link {
-  color: #3e4555;
+	color: #3e4555;
 }
 
 .blog-home2 a.link:hover {
-  color: #316ce8;
+	color: #316ce8;
 }
 
 .blog-home2 .on-hover {
-  -webkit-transition: 0.2s ease-in;
-  -o-transition: 0.2s ease-in;
-  transition: 0.2s ease-in;
+	-webkit-transition: 0.2s ease-in;
+	-o-transition: 0.2s ease-in;
+	transition: 0.2s ease-in;
 }
 
 .blog-home2 .on-hover:hover {
-  -webkit-transform: translateY(-10px);
-  -ms-transform: translateY(-10px);
-  transform: translateY(-10px);
+	-webkit-transform: translateY(-10px);
+	-ms-transform: translateY(-10px);
+	transform: translateY(-10px);
 }
 
 .blog-home2 .date-pos {
-  right: 10px;
-  top: 10px;
+	right: 10px;
+	top: 10px;
 }
 
 .blog-home2 .date-pos span {
-  font-size: 30px;
-  line-height: 30px;
+	font-size: 30px;
+	line-height: 30px;
 }
+
 .blog-home2 .bg-info-gradiant {
-    background: #0D5E10;
-    background: -webkit-linear-gradient(legacy-direction(to right), #0D5E10 0%, rgb(16, 177, 21) 100%);
-    background: -webkit-gradient(linear, left top, right top, from(#0D5E10), to(rgb(16, 177, 21)));
-    background: -webkit-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
-    background: -o-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
-    background: linear-gradient(to right, #0D5E10 0%, rgb(16, 177, 21) 100%);
+	background: #0D5E10;
+	background: -webkit-linear-gradient(legacy-direction(to right), #0D5E10 0%, rgb(16, 177, 21) 100%);
+	background: -webkit-gradient(linear, left top, right top, from(#0D5E10), to(rgb(16, 177, 21)));
+	background: -webkit-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
+	background: -o-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
+	background: linear-gradient(to right, #0D5E10 0%, rgb(16, 177, 21) 100%);
 }
 
 
@@ -82,25 +84,31 @@
 	width: 100%;
 	float: left;
 }
+
 .cp-welcome .container {
 	background: #fff;
 }
+
 .cp-welcome img {
 	padding: 20px;
 }
+
 .cp-welcome h2 {
 	font-size: 36px;
 }
+
 .cp-welcome-content {
 	padding: 45px 45px 0;
 }
+
 body .cp-welcome-content p {
 	margin: 20px 0;
 }
 
 .cp-welcome .btn {
-    margin-bottom: 15px; 
+	margin-bottom: 15px;
 }
+
 /*************************  Welcome Section End  ****************************/
 
 /*************************  Pillars Of Islam Section Start  ****************************/
@@ -110,13 +118,17 @@ body .cp-welcome-content p {
 	float: left;
 	margin-bottom: 30px;
 }
+
 .section-title strong {
 	text-align: center;
 	font-size: 16px;
 	font-weight: 400;
 	color: #222;
 }
-.section-title h2, .cp-welcome h2, .blog-home2 h2 {
+
+.section-title h2,
+.cp-welcome h2,
+.blog-home2 h2 {
 	font-family: 'Cinzel Decorative', cursive;
 	font-size: 48px;
 	font-weight: 700;
@@ -124,12 +136,16 @@ body .cp-welcome-content p {
 	line-height: 50px;
 	color: #222;
 }
+
 .pillars-islam .text-box h2 {
 	color: #fff;
 }
-.pillars-islam .section-title strong, .pillars-islam .section-title h2 {
+
+.pillars-islam .section-title strong,
+.pillars-islam .section-title h2 {
 	color: #fff;
 }
+
 .pillars-islam {
 	background: url(../images/mos-bg5.png) no-repeat top center fixed;
 	background-size: cover;
@@ -138,6 +154,7 @@ body .cp-welcome-content p {
 	float: left;
 	position: relative;
 }
+
 .pillars-islam:after {
 	content: "";
 	background: rgba(73, 73, 73, 0.9);
@@ -147,10 +164,12 @@ body .cp-welcome-content p {
 	left: 0;
 	top: 0;
 }
+
 .pillars-islam .container {
 	position: relative;
 	z-index: 99;
 }
+
 .pillars-islam .features-box span {
 	background: url(../images/poi-bg.png) no-repeat;
 	width: 177px;
@@ -160,6 +179,7 @@ body .cp-welcome-content p {
 	line-height: 177px;
 	margin: 0 auto
 }
+
 .pillars-islam .text-box {
 	text-align: center;
 }
@@ -182,4 +202,24 @@ body .cp-welcome-content p {
 	border-style: none;
 	color: #d2973b;
 }
+
 /*************************  Pillars Of Islam Section End  ****************************/
+.announcement-top-bar {
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+}
+
+.announcement-top-bar p {
+	margin: 0;
+}
+
+
+.announcement-top-bar.alert-dismissible .close {
+	top: 50%;
+	transform: translateY(-55%);
+}
