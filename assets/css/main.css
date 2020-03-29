@@ -234,3 +234,11 @@ body {
 	background-color: #ffee00; 
 	color: #211d22;
 }
+
+.navbar-toggler.collapsed .close-icon {
+	display: none;
+ }
+
+ .navbar-toggler:not(.collapsed) .navbar-toggler-icon {
+	display: inline;
+ }
