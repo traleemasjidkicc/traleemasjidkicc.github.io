@@ -229,3 +229,8 @@ body {
 		width: 100%;
 	}
 }
+
+.alert-warning {
+	background-color: #ffee00; 
+	color: #211d22;
+}
