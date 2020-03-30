@@ -8,12 +8,14 @@ body {
 
 .btn-success {
 	color: #fff;
-    background-color: #0D5E10;
-    border-color: #0D5E10;
+	background-color: #0D5E10;
+	border-color: #0D5E10;
 }
 
 #salah-times {
-	border-radius: 20px; padding-left: 20px; padding-right: 20px;
+	border-radius: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
 .carousel-item {
@@ -231,14 +233,14 @@ body {
 }
 
 .alert-warning {
-	background-color: #ffee00; 
+	background-color: #ffee00;
 	color: #211d22;
 }
 
 .navbar-toggler.collapsed .close-icon {
 	display: none;
- }
+}
 
- .navbar-toggler:not(.collapsed) .navbar-toggler-icon {
+.navbar-toggler:not(.collapsed) .navbar-toggler-icon {
 	display: inline;
- }
+}

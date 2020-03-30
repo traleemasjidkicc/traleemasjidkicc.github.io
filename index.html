@@ -163,18 +163,22 @@
                 <div class="row">
                   <div class="col-sm-4 border-right-lg border-right-md-0">
                     <div class="d-flex justify-content-center align-items-center">
-                      <h1 class="mb-0 mr-2 text-primary font-weight-normal"><span id="event-date"></span></h1>
+                      <h1 class="mb-0 mr-2 text-primary font-weight-normal"><span class="badge badge-dark"
+                          id="event-date">01</span></h1>
                       <div>
-                        <p class="font-weight-bold mb-0 text-dark"><span class="text-uppercase" id="event-month"></span>
+                        <p class="font-weight-bold mb-0 text-dark"><span class="text-uppercase" id="event-month">Jan</span>
                         </p>
-                        <p class="mb-0"><span id="event-year"></span></p>
+                        <p class="mb-0"><span id="event-year">2020</span></p>
                       </div>
                     </div>
                   </div>
                   <div class="col-sm-8 pl-3">
-                    <p class="text-dark font-weight-bold mb-0"><span id="event-name"></span></p>
-                    <p class="mb-0"><span id="starts-at"></span> <span class="font-weight-bold"> &mdash; </span><span
-                        id="ends-at"></span></p>
+                    <p class="text-dark font-weight-bold mb-0"><span id="event-name">Loading...</span></p>
+                    <p class="mb-0">
+                      <i class="far fa-calendar-alt"></i>&nbsp;<span id="event-day">Fri</span>,
+                      <i class="far fa-clock"></i>&nbsp;<span id="starts-at">00:00</span>
+                      <span class="font-weight-bold">&mdash;&nbsp;</span><span id="ends-at">00:00</span>
+                      <p>
                   </div>
                 </div>
               </div>
@@ -549,7 +553,7 @@
             starts_at_timestamp: 1577836800,
             ends_at_timestamp: 1609459200
           }
-          var eventsData = (typeof mixlrData.events[0] === 'undefined' || mixlrData.events[0] == null) ? 
+          var eventsData = (typeof mixlrData.events[0] === 'undefined' || mixlrData.events[0] == null) ?
             events : mixlrData.events[0];
           var startsAt = new Date(eventsData.starts_at_timestamp * 1000).toLocaleTimeString("en-GB", {
             hour: "numeric",
@@ -561,7 +565,7 @@
             minute: "numeric",
             hour12: true
           });
-          
+
           var startAtTimestamp = eventsData.starts_at_timestamp;
           var eventDate = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
             day: '2-digit'
@@ -572,10 +576,14 @@
           var eventYear = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
             year: 'numeric'
           });
-          
+          var eventDay = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
+            weekday: 'short'
+          });
+
           document.getElementById('event-name').innerHTML = eventsData.title;
           document.getElementById('starts-at').innerHTML = startsAt;
           document.getElementById('ends-at').innerHTML = endsAt;
+          document.getElementById('event-day').innerHTML = eventDay;
           document.getElementById('event-date').innerHTML = eventDate;
           document.getElementById('event-month').innerHTML = eventMonth;
           document.getElementById('event-year').innerHTML = eventYear;
