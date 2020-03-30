@@ -211,7 +211,7 @@ body .cp-welcome-content p {
 	position: -o-sticky;
 	position: sticky;
 	top: 0;
-	z-index: 1000;
+	z-index: 999;
 }
 
 .announcement-top-bar p {

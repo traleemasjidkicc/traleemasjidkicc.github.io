@@ -31,6 +31,8 @@
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
   </script>
+  <script src="//cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="//threejs.org/examples/js/libs/stats.min.js"></script>
 </head>
 
 <body>
@@ -60,12 +62,13 @@
             <a class="nav-link" href="about.html">About Us</a>
           </li>
           <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Programmes
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="madrasa.html">Children's Madrasa</a>
-              <a class="dropdown-item active" href="activities.html">Masjid Activities</a>
+              <a class="dropdown-item active" href="madrasa.html">Children's Madrasa</a>
+              <a class="dropdown-item" href="activities.html">Masjid Activities</a>
             </div>
           </li>
           <li class="nav-item">
@@ -85,122 +88,85 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- DAILY PROGRAMMES START -->
+  <!-- MADRASA PROGRAMMES START -->
   <section class="container py-4" id="masjid-schedule">
     <div class="row">
       <div class="col-md-12" id="daily">
-        <h1>Programmes Schedule</h1>
+        <h1>Madrasa Schedule</h1>
         <hr>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             <span class="sr-only">Close</span>
           </button>
-          <p>As part of our commitment to reduce the spread of the Covid-19 virus, we have suspended all our
-            programmes until further notice.</p>
-          <p>In the meantime, we have organised a LIVE audio service online for both adults and children. You can <a
-              href="http://mixlr.com/tralee-masjid/" class="alert-link" target="_blank">check it out here</a>.</p>
+          <p>The health, safety and welfare of our students, families and community are at the forefront of the decisions we make as an institute. In light of the current health emergency and rapid spread of COVID-19, we have taken the decision to <span class="font-weight-bold">suspend the children's classes until further notice</span>.</p>
+          <p>During this period, we expect students to study online with us using the <span class="font-weight-bold">Zoom</span> online platform we have set up.</p>
+          <p>Please contact the Imam or Apa for further information. Lessons will start from Monday, 30th March onwards.</p>
         </div>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Programme Name</th>
-              <th scope="col">Time</th>
-              <th scope="col">Occurrence</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Hadith from Riyadus Saaliheen</th>
-              <td>After Fajr</td>
-              <td>Daily</td>
-            </tr>
-            <tr>
-              <th scope="row">Men's Qur'an Class</th>
-              <td>Tuesday's after Isha</td>
-              <td>Weekly</td>
-            </tr>
-            <tr>
-              <th scope="row">Women's Qur'an Class</th>
-              <td>Wednesday's at 10:30am</td>
-              <td>Weekly</td>
-            </tr>
-            <tr>
-              <th scope="row">Tafseer of the Qur'an</th>
-              <td>Friday's after Isha</td>
-              <td>Weekly</td>
-            </tr>
-            <tr>
-              <th scope="row">Children's Youth Programme</th>
-              <td>Check Events or Masjid Notice Board</td>
-              <td>Monthly</td>
-            </tr>
-            <tr>
-              <th scope="row">Adult's Monthly Programme</th>
-              <td>Check Events or Masjid Notice Board</td>
-              <td>Monthly</td>
-            </tr>
-          </tbody>
-        </table>
+
       </div>
     </div>
     <!-- End -->
   </section>
-  <!-- DAILY PROGRAMMES END -->
+  <!-- MADRASA PROGRAMMES END -->
 
-  <section class="container">
-    <h2 class="py-3">Weekly Programmes</h2>
-    <div class="card-deck">
-      <div class="card" id="women-class">
-        <img src="assets/images/Womens_Class.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Women's Weekly Class</h5>
-          <p class="card-text">An ideal opportunity for sisters to come and learn about the various deeni aspects and
-            takes steps in coming closer to Allah (سبحانہ وتعالی).</p>
-          <p class="card-text"><small class="badge badge-pill badge-success">Every Wednesday at 10:30 am</small></p>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="schedule-warp">
+          <div class="day-one">Saturday</div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-girls">12:00 PM</span>
+              <span class="schedule-start">Class 5 (Girls)</span>
+            </div>
+          </div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-boys">1:00 PM</span>
+              <span class="schedule-start">Class 6 (Boys)</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="card" id="adult-classes">
-        <img src="assets/images/Quran_Class.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Qur'an class for Adults</h5>
-          <p class="card-text">The Noble Qur'an is the literal words of Allah (سبحانہ وتعالی) that He revealed as an
-            infallible source of legislation for mankind to live an organised life by. It contains regulations and
-            recommendations about all aspects of life and references to the Hereafter. Being so important, the Qur'an
-            must be read, written, and recited correctly and clearly, so as not to create any sort of ambiguity or
-            misunderstanding whatsoever. Allah (سبحانہ وتعالی) addressed His Messenger ﷺ (may Allah (سبحانہ وتعالی)
-            exalt his mention) in the Qur'an, Saying (what means): <span class="font-weight-bold">"…And recite the Qur'an with measured recitation."</span>
-            [Qur'an 73:4]</p>
-           <p class="card-text">
-            Moreover, reciting the Qur'an with Tajweed is actually obligatory on every Muslim as it’s Fard Ayn. Also, in Sunnah, it was proved in the authenticated hadith that Prophet ﷺ used to read the Qur'an word-by-word and letter-by-letter, applying elongation whenever required. Accordingly, this special branch from Qur'anic sciences compiles lots of rewards to Muslims.
-           </p> 
-          <p class="card-text"><small class="badge badge-pill badge-success">Every Tuesday after Isha Salah</small></p>
+    
+      <div class="col-md-4">
+        <div class="schedule-warp">
+          <div class="day-one">Tuesday</div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-girls">12:00 PM</span>
+              <span class="schedule-start">Class 5 (Girls)</span>
+            </div>
+          </div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-boys">1:00 PM</span>
+              <span class="schedule-start">Class 6 (Boys)</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="card" id="tafseer">
-        <img src="assets/images/Tafseer.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Tafseer of the Glorious Qur'an</h5>
-          <p class="card-text">Muslims regard the most reliable Qur'anic commentary as being contained in the Qur'an
-            itself. In other words, the ways in which certain ayat clarify other ayat are regarded as being the most
-            significant form of commentary. A second form of Qur'anic commentary is how the Prophet ﷺ interpreted the
-            Qur'an. And his comments on the Qur'an (as well as everything he ever said or did) are recorded in the
-            hadith collections. After these two forms of commentary, knowledgeable companions and later generations of
-            pious and learned Muslims expressed their view of the meaning of various ayat. It was on this foundation
-            that the science of Qur'anic commentary was built.</p>
-          <p class="card-text">
-            <blockquote class="blockquote">
-              <p class="mb-0">(This is) a Scripture that We have revealed unto thee, full of blessing, that they may
-                ponder its
-                revelations, and that men of understanding may reflect.</p>
-              <footer class="blockquote-footer"><cite title="Source Title">[Qur'an 38:29]</cite></footer>
-            </blockquote>
-          </p>
-          <p class="card-text"><small class="badge badge-pill badge-success">Every Friday after Isha Salah</small></p>
+
+      <div class="col-md-4">
+        <div class="schedule-warp">
+          <div class="day-one">Thursday</div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-girls">12:00 PM</span>
+              <span class="schedule-start">Class 5 (Girls)</span>
+            </div>
+          </div>
+          <div class="schedule-card">
+            <div class="insidebox">
+              <span class="schedule-tag schedule-tag-boys">1:00 PM</span>
+              <span class="schedule-start">Class 6 (Boys)</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4">
@@ -289,7 +255,8 @@
         <div class="col-md-7 col-lg-8">
 
           <!--Copyright-->
-          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
+          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made
+            with
             <i class="fas fa-heart" style="color:red"></i>
             & <i class="fas fa-mug-hot" style="color: brown"></i> by <a href="//nalam.me" rel="external"
               target="_blank">

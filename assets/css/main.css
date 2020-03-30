@@ -25,6 +25,12 @@ h6 {
 	border-color: #0D5E10;
 }
 
+.badge-success {
+	color: #fff;
+	background-color: #0D5E10;
+	border-color: #0D5E10;
+}
+
 #salah-times {
 	border-radius: 20px;
 	padding-left: 20px;
@@ -41,6 +47,7 @@ h6 {
 	-o-background-size: cover;
 	background-size: cover;
 }
+
 /* CAROUSEL END */
 
 .social-link {
@@ -256,4 +263,110 @@ h6 {
 
 .navbar-toggler:not(.collapsed) .navbar-toggler-icon {
 	display: inline;
+}
+
+
+
+.schedule-warp {
+	padding-right: 20px;
+	padding-left: 20px;
+	padding: 20px 30px;
+	border: solid 1px #ddd;
+	background-color: #f5f5f5;
+	-webkit-transition: all 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
+	transition: all 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
+}
+
+.schedule {
+	background-color: #fff;
+}
+
+.schedule-warp:hover {
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .07);
+	border: solid 1px rgba(100, 40, 145, .97);
+}
+
+.schedule {
+	padding: 100px 0px;
+	background-color: #ecedf0;
+	font-family: 'Titillium Web';
+}
+
+.schedule-tag {
+	padding: 3px 8px;
+	margin-right: 15px;
+	width: 90px;
+	font-family: 'Titillium Web';
+	text-align: center;
+}
+
+.schedule-tag-boys {
+	color: #fff;
+	background-color: #2779d6;
+}
+
+.schedule-tag-girls {
+	color: #fff;
+	background-color: #b261b2;
+}
+
+.schedule-header span {
+	display: inline-block;
+	margin-right: 25px;
+}
+
+.schedule-header {
+	margin-bottom: 80px;
+}
+
+.schedule-card {
+	position: relative;
+	margin-bottom: 0.7em;
+}
+
+.schedule-card:hover .insidebox {
+	transform: scale(1.033);
+	/* box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1); */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-card:hover:after {
+	background: #8a56d1;
+	width: 25px;
+}
+
+.schedule-card:after {
+	height: 2px;
+	width: 22px;
+	background: #ddd;
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: -22px;
+	transition: all 0.3s ease-in;
+}
+
+.insidebox {
+	box-shadow: 0 0px 5px rgba(0, 0, 0, .07);
+	background: #ffffff;
+	width: 100%;
+	height: auto;
+	display: flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -webkit-flex;
+	display: -o-flex;
+	-webkit-align-items: center;
+	align-items: center;
+	padding: 10px 20px;
+	color: #6164B2;
+	transition: all 0.2s ease-in;
+	/*    justify-content: center;*/
+}
+
+.day-one {
+	margin-bottom: 50px;
+	font-weight: bold;
+	font-size: 20px;
+	color: #6164B2;
 }
