@@ -46,8 +46,9 @@
           alt="Kerry Islamic Cultural Centre">
         KICC
       </a>
-      <button class="navbar-toggler collapsed border-0" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler collapsed border-0" type="button" data-toggle="collapse"
+        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+        aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         <div class="close-icon py-2"><i class="fas fa-times fa-lg"></i></div>
       </button>
@@ -127,35 +128,77 @@
   <!-- CAROUSEL END -->
 
   <div class="content">
+    <!-- COVID-19 ALERT START -->
     <div class="alert alert-warning alert-dismissible fade show announcement-top-bar" role="alert">
       <p class="h1 text-center">CORONAVIRUS (COVID-19)</p>
       <p class="text-center">It is with immense regret and sorrow that due to the Covid-19 pandemic and its public
-        health implications and the Irish Government announcing a lockdown, we will be <span class="font-weight-bold">suspending all our normal
-        services for 2 weeks</span>. Everyone is requested to be punctual with Salah at home and turn to Allah (سبحانہ
+        health implications and the Irish Government announcing a lockdown, we will be <span
+          class="font-weight-bold">suspending all our normal
+          services for 2 weeks</span>. Everyone is requested to be punctual with Salah at home and turn to Allah (سبحانہ
         وتعالی).
       </p>
       <p class="text-center d-none d-md-block">
-        As part of our commitment to reduce the disruption caused by Covid-19 virus, we have planned a <span class="font-weight-bold">LIVE audio
-        service online</span> for both adults and children.
+        As part of our commitment to reduce the disruption caused by Covid-19 virus, we have planned a <span
+          class="font-weight-bold">LIVE audio
+          service online</span> for both adults and children.
       </p>
 
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
+    <!-- COVID-19 ALERT END -->
 
+    <!-- LIVE STREAMING EVENTS START -->
     <section class="container">
       <div class="row">
-        <div class="col-md-4">
-          <a href="http://mixlr.com/tralee-masjid/events/hadeeth-of-the-prophet-saw" target="_blank">
-          <img class="img-fluid" src="assets/images/Next_Event.png" alt="Next Event"></a>
+        <div class="col-md-6 grid-margin-md stretch-card d-flex_">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-3">
+                <h4 class="card-title">Next Up&hellip;</h4>
+                <h6><a href="http://mixlr.com/tralee-masjid/events/" target="_blank" class="text-primary">more</a></h6>
+              </div>
+              <div class="border p-4 mb-4">
+                <div class="row">
+                  <div class="col-sm-4 border-right-lg border-right-md-0">
+                    <div class="d-flex justify-content-center align-items-center">
+                      <h1 class="mb-0 mr-2 text-primary font-weight-normal"><span id="event-date"></span></h1>
+                      <div>
+                        <p class="font-weight-bold mb-0 text-dark"><span id="event-month"></span></p>
+                        <p class="mb-0"><span id="event-year"></span></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-8 pl-3">
+                    <p class="text-dark font-weight-bold mb-0"><span id="event-name"></span></p>
+                    <p class="mb-0"><span id="starts-at"></span> <span class="font-weight-bold"> &mdash; </span><span
+                        id="ends-at"></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-md-8">
-          <iframe src="https://mixlr.com/tralee-masjid/embed?autoplay=true" width="100%" height="150px" scrolling="no"
-        frameborder="no" marginheight="0" marginwidth="2"></iframe>
+        <div class="col-md-6 grid-margin-md stretch-card d-flex_">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-0">
+                <h4 class="card-title"></h4>
+                <h6><a href="http://mixlr.com/tralee-masjid/showreel/" target="_blank" class="text-primary">previous talks</a></h6>
+              </div>
+              <div class="p-0 mb-0">
+                <div class="row">
+                  <iframe src="https://mixlr.com/tralee-masjid/embed?autoplay=true" width="100%" height="150px" scrolling="no"
+                      frameborder="no" marginheight="0" marginwidth="0"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+    <!-- LIVE STREAMING EVENTS END -->
 
     <!-- WELCOME START -->
     <section class="cp-welcome">
@@ -220,16 +263,16 @@
             </div>
           </div>
           <!-- Column -->
-           <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <a href="#"><img class="card-img-top" src="assets/images/Madrasa_Announcement.jpeg"
-                alt="Madrasa Announcement"></a>
-            <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
+          <div class="col-md-4 on-hover">
+            <div class="card border-0 mb-4">
+              <a href="#"><img class="card-img-top" src="assets/images/Madrasa_Announcement.jpeg"
+                  alt="Madrasa Announcement"></a>
+              <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Friday<span class="d-block" id="tafseer">23</span></div>
             <h5 class="font-weight-medium mt-3"><a href="activities.html#tafseer"
                 class="text-decoration-none link">Tafseer of the glorious Qur'an</a></h5> -->
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -480,15 +523,51 @@
     document.getElementById('salah-times').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
 
-    var wed = new Date();
-    var wednesday = 3 - d.getDay();
-    wed.setDate(wed.getDate() + wednesday);
-    document.getElementById('women-class').innerHTML = wed.getDate();
+    // var wed = new Date();
+    // var wednesday = 3 - d.getDay();
+    // wed.setDate(wed.getDate() + wednesday);
+    // document.getElementById('women-class').innerHTML = wed.getDate();
 
-    var fri = new Date();
-    var friday = 5 - d.getDay();
-    fri.setDate(fri.getDate() + friday)
-    document.getElementById('tafseer').innerHTML = fri.getDate();
+    // var fri = new Date();
+    // var friday = 5 - d.getDay();
+    // fri.setDate(fri.getDate() + friday)
+    // document.getElementById('tafseer').innerHTML = fri.getDate();
+  </script>
+  <script>
+    window.onload = function () {
+      var request = new XMLHttpRequest();
+      request.responseType = "json";
+      request.open('GET', 'https://api.mixlr.com/users/7752720?source=embed', true);
+
+      request.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var mixlrData = this.response;
+          document.getElementById('event-name').innerHTML = mixlrData.events[0].title;
+          var startsAt = new Date(mixlrData.events[0].starts_at_timestamp * 1000).toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+          });
+          document.getElementById('starts-at').innerHTML = startsAt;
+          var endsAt = new Date(mixlrData.events[0].ends_at_timestamp * 1000).toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true
+          });
+          document.getElementById('ends-at').innerHTML = endsAt;
+
+          var eventDate = new Date(mixlrData.events[0].starts_at_timestamp * 1000);
+          document.getElementById('event-date').innerHTML = eventDate.getDate();
+          document.getElementById('event-year').innerHTML = eventDate.getFullYear();
+
+          var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+          var month = monthNames[eventDate.getMonth()];
+          document.getElementById('event-month').innerHTML = month;
+        }
+      };
+
+      request.send(null);
+    }
   </script>
 </body>
 
