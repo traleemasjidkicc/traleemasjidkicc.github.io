@@ -123,7 +123,8 @@ h6 {
 
 .parallax-section .right-box strong.title {
 	display: block;
-	font: 300 30px/30px 'Cinzel Decorative', cursive;;
+	font: 300 30px/30px 'Cinzel Decorative', cursive;
+	;
 	color: #fff;
 	clear: both;
 	padding: 0 0 15px 0;
@@ -131,7 +132,8 @@ h6 {
 
 .parallax-section .right-box a {
 	display: block;
-	font: 400 14px/14px 'Cinzel Decorative', cursive;;
+	font: 400 14px/14px 'Cinzel Decorative', cursive;
+	;
 	text-decoration: none;
 }
 
@@ -361,9 +363,29 @@ h6 {
 	/*    justify-content: center;*/
 }
 
-.day-one {
-	margin-bottom: 50px;
-	font-weight: bold;
-	font-size: 20px;
-	color: #6164B2;
+.bg-cover {
+	color: #ffffff;
+}
+.bg-cover {
+	background: url(../images/mos-bg.png) no-repeat top center fixed;
+	background-size: cover;
+	padding: 20px 0;
+	width: 100%;
+	float: left;
+	position: relative;
+}
+
+.bg-cover:after {
+	content: "";
+	background: rgba(73, 73, 73, 0.9);
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.bg-cover .container {
+	position: relative;
+	z-index: 99;
 }
