@@ -362,6 +362,13 @@ h6 {
 	/*    justify-content: center;*/
 }
 
+.day-one {
+	margin-bottom: 50px;
+	font-weight: bold;
+	font-size: 20px;
+	color: #6164B2;
+}
+
 .bg-cover {
 	color: #ffffff;
 }
