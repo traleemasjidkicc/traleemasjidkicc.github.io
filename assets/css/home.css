@@ -185,11 +185,11 @@ body .cp-welcome-content p {
 }
 
 .salah-times .features-box {
-	background: url(../images/pillar-bg.png) no-repeat top;
+	background: url(../images/pillar-bg.webp) no-repeat top;
 	width: 150px;
-	height: 220px;
-	margin: 0 auto;
-	background-size: 130px 220px;
+	height: 233px;
+	margin: 10px auto;
+	background-size: 150px 250px;
 }
 
 .salah-times .features-box p,
