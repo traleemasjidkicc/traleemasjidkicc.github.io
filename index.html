@@ -240,6 +240,69 @@
     </section>
     <!-- WELCOME END -->
 
+    <div class="salah-times">
+      <div class="container">
+        <div class="row">
+          <div class="section-title">
+            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png" style="transition-delay: 0ms;">
+            <h2>Salah Times</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-sm-4 col-lg py-2">
+            <div class="features-box pt-5">
+              <div class="text-box">
+                <h2 class="pt-5">Fajr</h2>
+                <p class="badge badge-light" id="fajr">3:40am</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-lg py-2">
+            <div class="features-box pt-5">
+              <div class="text-box">
+                <h2 class="pt-5">Zohr</h2>
+                <p class="badge badge-light" id="dhuhr">3:40am</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-lg py-2">
+            <div class="features-box pt-5">
+              <div class="text-box">
+                <h2 class="pt-5">Asar</h2>
+                <p class="badge badge-light" id="asr">3:40am</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-lg py-2">
+            <div class="features-box pt-5">
+              <div class="text-box">
+                <h2 class="pt-5">Magrib</h2>
+                <p class="badge badge-light" id="maghrib">3:40am</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-4 col-lg py-2">
+            <div class="features-box pt-5">
+              <div class="text-box">
+                <h2 class="pt-5">Isha</h2>
+                <p class="badge badge-light" id="isha">3:40am</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 center-block text-center">
+            <p class="h4 p-2">Today's Sunrise is at <span id="sunrise"></span></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 center-block text-center">
+            <a href="#" class="btn btn-outline-light" id="salah-times-body" role="button">Download <span id="cur-month"></span> Timetable</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- UPCOMING EVENTS START -->
     <div class="blog-home2 py-5">
       <div class="container">
@@ -538,6 +601,7 @@
     var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
+    document.getElementById('salah-times-body').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
 
     // var wed = new Date();
@@ -603,6 +667,28 @@
 
       request.send(null);
     }
+  </script>
+  <script>
+    var xmlhttp = new XMLHttpRequest();
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN","JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var monthFullNames = ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"];
+    var d = new Date();
+    xmlhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var myObj = JSON.parse(this.responseText);
+        document.getElementById("fajr").innerHTML = myObj.dailyPrayers[(d.getDate()) -1].fajarTime.toLowerCase();
+        document.getElementById("sunrise").innerHTML = myObj.dailyPrayers[(d.getDate()) -1].sunriseTime.toLowerCase();
+        document.getElementById("dhuhr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime.toLowerCase();
+        document.getElementById("asr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asrTime.toLowerCase();
+        document.getElementById("maghrib").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime.toLowerCase();
+        document.getElementById("isha").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime.toLowerCase();
+        document.getElementById("cur-month").innerHTML = monthFullNames[d.getMonth()];
+      }
+    };
+    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
+    console.log(asset);
+    xmlhttp.open("GET", asset, true);
+    xmlhttp.send();
   </script>
 </body>
 

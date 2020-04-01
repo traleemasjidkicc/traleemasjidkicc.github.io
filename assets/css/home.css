@@ -137,13 +137,25 @@ body .cp-welcome-content p {
 	color: #222;
 }
 
-.pillars-islam .text-box h2 {
+.salah-times,
+.pillars-islam {
 	color: #fff;
 }
 
+.salah-times .section-title strong,
+.salah-times .section-title h2,
 .pillars-islam .section-title strong,
 .pillars-islam .section-title h2 {
 	color: #fff;
+}
+
+.salah-times {
+	background: url(../images/salat-times-bg-large.jpg) no-repeat top center fixed;
+	background-size: cover;
+	padding: 80px 0;
+	width: 100%;
+	float: left;
+	position: relative;
 }
 
 .pillars-islam {
@@ -155,9 +167,10 @@ body .cp-welcome-content p {
 	position: relative;
 }
 
+.salah-times:after,
 .pillars-islam:after {
 	content: "";
-	background: rgba(73, 73, 73, 0.9);
+	background: rgba(15, 15, 15, 0.8);
 	width: 100%;
 	height: 100%;
 	position: absolute;
@@ -165,9 +178,28 @@ body .cp-welcome-content p {
 	top: 0;
 }
 
+.salah-times .container,
 .pillars-islam .container {
 	position: relative;
 	z-index: 99;
+}
+
+.salah-times .features-box {
+	background: url(../images/pillar-bg.png) no-repeat top;
+	width: 150px;
+	height: 220px;
+	margin: 0 auto;
+	background-size: 130px 220px;
+}
+
+.salah-times .features-box p,
+.salah-times .features-box h2 {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.salah-times .features-box p {
+	font-size: 14px;
 }
 
 .pillars-islam .features-box span {
@@ -180,8 +212,15 @@ body .cp-welcome-content p {
 	margin: 0 auto
 }
 
+.salah-times .text-box,
 .pillars-islam .text-box {
 	text-align: center;
+}
+
+.salah-times .text-box h2 {
+	font-family: 'Cinzel Decorative', cursive;
+	font-size: 15px;
+	font-weight: bold;
 }
 
 .pillars-islam .text-box h2 {
