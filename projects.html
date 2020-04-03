@@ -46,8 +46,9 @@
           alt="Kerry Islamic Cultural Centre">
         KICC
       </a>
-      <button class="navbar-toggler collapsed border-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler collapsed border-0" type="button" data-toggle="collapse"
+        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         <div class="close-icon py-2"><i class="fas fa-times fa-lg"></i></div>
       </button>
@@ -62,7 +63,8 @@
             <a class="nav-link" href="about.html">About</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Services
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -144,12 +146,14 @@
           <h1 class="display-4 text-break" id="new-masjid">New Masjid Construction</h1>
           <p class="lead text-muted mb-0">Asalaamu Alaikum wa Rahmatullah wa Barakatuhu.</p>
           <p class="lead text-muted mb-0">
-            All praise is due to Allah (سبحانہ وتعالی) who is the most kind and most merciful. The Kerry Islamic Cultural Centre
+            All praise is due to Allah (سبحانہ وتعالی) who is the most kind and most merciful. The Kerry Islamic
+            Cultural Centre
             (Tralee Mosque) member community are planning to start the construction of a 2-storey mosque structure. The
             Management Committee would like to thank the community and the donors for their continued support.
           </p>
           <p class="lead text-muted mb-0">
-            "He who built a mosque for Allah (سبحانہ وتعالی), the Exalted, Allah (سبحانہ وتعالی) would build for him a house in Paradise." - Al Hadith
+            "He who built a mosque for Allah (سبحانہ وتعالی), the Exalted, Allah (سبحانہ وتعالی) would build for him a
+            house in Paradise." - Al Hadith
             [Sahih Muslim Book 4 No. 1084 & 1085]
           </p>
         </div>
@@ -260,7 +264,8 @@
         <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Kerry Islamic Cultural Centre</h6>
           <p>To cater for the religious, cultural and social needs of Muslims in the county of Kerry.</p>
-            <a href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img alt='Get it on Google Play' src='assets/images/google-play.png' width="60%"></a>
+          <a href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img
+              alt='Get it on Google Play' src='assets/images/google-play.png' width="60%"></a>
         </div>
         <!-- Grid column -->
 
@@ -297,6 +302,9 @@
           </p>
           <p>
             <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank">Weekly Sermons</a>
+          </p>
+          <p>
+            <a href="#" target="_blank" id="salah-times-footer"><span id="footer-cur-month"></span> Timetable</a>
           </p>
         </div>
 
@@ -353,7 +361,8 @@
           <div class="text-center text-md-right">
             <ul class="list-unstyled list-inline">
               <li class="list-inline-item">
-                <a class="btn-floating btn-sm rgba-white-slight mx-1" target="_blank" href="https://github.com/traleemasjidkicc">
+                <a class="btn-floating btn-sm rgba-white-slight mx-1" target="_blank"
+                  href="https://github.com/traleemasjidkicc">
                   <i class="fab fa-github"></i>
                 </a>
               </li>
@@ -388,6 +397,7 @@
     var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
+    document.getElementById('salah-times-footer').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
   </script>
   <script>
@@ -424,6 +434,7 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("nav-cur-month").innerHTML = monthFullNames[d.getMonth()];
+        document.getElementById("footer-cur-month").innerHTML = monthFullNames[d.getMonth()];
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";

@@ -60,7 +60,8 @@
             <a class="nav-link" href="about.html">About</a>
           </li>
           <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Services
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -222,11 +223,15 @@
             recommendations about all aspects of life and references to the Hereafter. Being so important, the Qur'an
             must be read, written, and recited correctly and clearly, so as not to create any sort of ambiguity or
             misunderstanding whatsoever. Allah (سبحانہ وتعالی) addressed His Messenger ﷺ (may Allah (سبحانہ وتعالی)
-            exalt his mention) in the Qur'an, Saying (what means): <span class="font-weight-bold">"…And recite the Qur'an with measured recitation."</span>
+            exalt his mention) in the Qur'an, Saying (what means): <span class="font-weight-bold">"…And recite the
+              Qur'an with measured recitation."</span>
             [Qur'an 73:4]</p>
-           <p class="card-text">
-            Moreover, reciting the Qur'an with Tajweed is actually obligatory on every Muslim as it’s Fard Ayn. Also, in Sunnah, it was proved in the authenticated hadith that Prophet ﷺ used to read the Qur'an word-by-word and letter-by-letter, applying elongation whenever required. Accordingly, this special branch from Qur'anic sciences compiles lots of rewards to Muslims.
-           </p> 
+          <p class="card-text">
+            Moreover, reciting the Qur'an with Tajweed is actually obligatory on every Muslim as it’s Fard Ayn. Also, in
+            Sunnah, it was proved in the authenticated hadith that Prophet ﷺ used to read the Qur'an word-by-word and
+            letter-by-letter, applying elongation whenever required. Accordingly, this special branch from Qur'anic
+            sciences compiles lots of rewards to Muslims.
+          </p>
           <p class="card-text"><small class="badge badge-pill badge-success">Every Tuesday after Isha Salah</small></p>
         </div>
       </div>
@@ -268,7 +273,8 @@
         <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Kerry Islamic Cultural Centre</h6>
           <p>To cater for the religious, cultural and social needs of Muslims in the county of Kerry.</p>
-            <a href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img alt='Get it on Google Play' src='assets/images/google-play.png' width="60%"></a>
+          <a href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img
+              alt='Get it on Google Play' src='assets/images/google-play.png' width="60%"></a>
         </div>
         <!-- Grid column -->
 
@@ -305,6 +311,9 @@
           </p>
           <p>
             <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank">Weekly Sermons</a>
+          </p>
+          <p>
+            <a href="#" target="_blank" id="salah-times-footer"><span id="footer-cur-month"></span> Timetable</a>
           </p>
         </div>
 
@@ -397,6 +406,7 @@
     var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
+    document.getElementById('salah-times-footer').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
   </script>
   <script>
@@ -433,6 +443,7 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("nav-cur-month").innerHTML = monthFullNames[d.getMonth()];
+        document.getElementById("footer-cur-month").innerHTML = monthFullNames[d.getMonth()];
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
