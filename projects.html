@@ -76,9 +76,57 @@
           <li class="nav-item">
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link btn btn-success" id="salah-times" role="button" href="assets/pdf/NOV2019.pdf"
-              target="_blank">Salah Times</a>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle btn btn-outline-primary" href="#" id="navbarDropdown" role="button"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Salah Times
+            </a>
+            <div class="dropdown-menu active" aria-labelledby="navbarDropdown">
+              <div class="col-sm-12 center-block text-center">
+                <p class="h6"><span id="nav-hijri"></span></p>
+              </div>
+              <table class="table table-sm table-striped table-bordered">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Begins</th>
+                    <th scope="col">Jama'ah</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Fajr</th>
+                    <td id="nav-fajr-begins">3.14 am</td>
+                    <td id="nav-fajr-jamaat">5.14 am</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Zohr</th>
+                    <td id="nav-zohr-begins">3.14 am</td>
+                    <td id="nav-zohr-jamaat">5.14 am</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Asar</th>
+                    <td id="nav-asar-begins">3.14 am</td>
+                    <td id="nav-asar-jamaat">5.14 am</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Magrib</th>
+                    <td id="nav-magrib-begins">3.14 am</td>
+                    <td id="nav-magrib-jamaat">5.14 am</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Isha</th>
+                    <td id="nav-isha-begins">3.14 am</td>
+                    <td id="nav-isha-jamaat">5.14 am</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="col-sm-12 center-block text-center">
+                <p class="h6">Today's Sunrise is at <span id="nav-sunrise"></span></p>
+                <a class="btn btn-outline-info" id="salah-times" role="button" href="assets/pdf/APR2020.pdf"
+                  target="_blank"><span id="nav-cur-month"></span> Timetable</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
@@ -341,6 +389,47 @@
     console.log(asset);
     document.getElementById('salah-times').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
+  </script>
+  <script>
+    var xmlhttp = new XMLHttpRequest();
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var monthFullNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+      "October", "November", "December"
+    ];
+    var d = new Date();
+    xmlhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var myObj = JSON.parse(this.responseText);
+        document.getElementById("nav-hijri").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriDate;
+        document.getElementById("nav-fajr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime
+          .toLowerCase();
+        document.getElementById("nav-fajr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarJamahTime
+          .toLowerCase();
+        document.getElementById("nav-sunrise").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].sunriseTime
+          .toLowerCase();
+        document.getElementById("nav-zohr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime
+          .toLowerCase();
+        document.getElementById("nav-zohr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].zohrJamahTime
+          .toLowerCase();
+        document.getElementById("nav-asar-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asrTime
+          .toLowerCase();
+        document.getElementById("nav-asar-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asarJamahTime
+          .toLowerCase();
+        document.getElementById("nav-magrib-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime
+          .toLowerCase();
+        document.getElementById("nav-magrib-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime
+          .toLowerCase();
+        document.getElementById("nav-isha-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime
+          .toLowerCase();
+        document.getElementById("nav-isha-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaJamahTime
+          .toLowerCase();
+        document.getElementById("nav-cur-month").innerHTML = monthFullNames[d.getMonth()];
+      }
+    };
+    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
+    console.log(asset);
+    xmlhttp.open("GET", asset, true);
+    xmlhttp.send();
   </script>
 </body>
 
