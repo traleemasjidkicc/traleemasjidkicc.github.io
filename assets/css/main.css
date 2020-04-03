@@ -30,7 +30,8 @@ h6 {
 
 .bg-secondary {
 	color: #fff;
-	background-color: #5e0d5b !important;
+	background-color: #0d5b5e !important;
+	background: linear-gradient(to right, #0d5b5e, #100d5e);
 }
 
 .bg-secondary a {
@@ -408,8 +409,8 @@ h6 {
 }
 
 section.pricing {
-	background: #007bff;
-	background: linear-gradient(to right, #0062E6, #33AEFF);
+	background: #5e0d5b;
+	background: linear-gradient(to right, #5e0d5b, #100d5e);
 }
 
 .pricing .card {
