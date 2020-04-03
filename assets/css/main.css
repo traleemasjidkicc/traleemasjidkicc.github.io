@@ -31,11 +31,10 @@ h6 {
 .bg-secondary {
 	color: #fff;
 	background-color: #5e0d5b !important;
-	;
 }
 
 .bg-secondary a {
-	color: rgb(255, 255, 255);
+	color: 	#d2973b;
 	font-weight: bold;
 }
 
@@ -434,6 +433,7 @@ section.pricing {
 .pricing .card-price {
 	font-size: 3rem;
 	margin: 0;
+	color: #0d5b5e;
 }
 
 .pricing .card-price .period {

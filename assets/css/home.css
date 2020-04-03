@@ -186,10 +186,10 @@ body .cp-welcome-content p {
 
 .salah-times .features-box {
 	background: url(../images/pillar-bg.png) no-repeat top;
-	width: 150px;
-	height: 233px;
+	width: 177px;
+	height: 232px;
 	margin: 10px auto;
-	background-size: 150px 250px;
+	background-size: 177px 250px;
 }
 
 .salah-times .features-box p,
@@ -199,7 +199,7 @@ body .cp-welcome-content p {
 }
 
 .salah-times .features-box p {
-	font-size: 14px;
+	font-size: 20px;
 }
 
 .pillars-islam .features-box span {
@@ -239,7 +239,7 @@ body .cp-welcome-content p {
 .pillars-islam .features-box i {
 	vertical-align: middle;
 	border-style: none;
-	color: #d2973b;
+	color: #0d5b5e;
 }
 
 /*************************  Pillars Of Islam Section End  ****************************/
