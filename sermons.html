@@ -31,8 +31,6 @@
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
   </script>
-  <script src="//cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script src="//threejs.org/examples/js/libs/stats.min.js"></script>
 </head>
 
 <body>
@@ -67,9 +65,9 @@
               Services
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item active" href="madrasa.html">Children's Madrasa</a>
+              <a class="dropdown-item" href="madrasa.html">Children's Madrasa</a>
               <a class="dropdown-item" href="activities.html">Masjid Programmes</a>
-              <a class="dropdown-item" href="sermons.html">Weekly Sermons</a>
+              <a class="dropdown-item active" href="sermons.html">Weekly Sermons</a>
             </div>
           </li>
           <li class="nav-item">
@@ -137,201 +135,99 @@
   </nav>
   <!-- END OF NAV -->
 
-  <div class="bg-cover">
-    <div class="container py-5">
-      <header class="text-center text-white py-5">
-        <h1 class="display-4 font-weight-bold mb-4 text-break">Children's Madrasa</h1>
-        <p class="lead mb-0">We are an Islamic Supplementary Evening School which offers Islamic Studies, Qur’an
-          Recitation and Qur’an Memorisation classes according to the true teachings of the Qur’an and prophetic ways of
-          the Final Messenger – Prophet Muhammad.</p>
-      </header>
-
-      <div class="text-white">
-        <p class="lead">The Madrasah’s aims are to fulfil the obligation of seeking knowledge in a caring and secure
-          Islamic environment, to endorse excellent manners and nurture future leaders of our community.</p>
-        <p class="lead">By providing a well-structured curriculum, and by endorsing excellent manners through our
-          Behaviour Policy and Rewarding System, we aim to encourage in all children the love of learning of the deen as
-          well as the respect and care for one another.</p>
-        <p class="lead">We highly recognise the great importance of the partnership between home and the Madrasah in
-          producing well-rounded confident Muslims; we firmly believe that collectively we can offer a unique education
-          to our children.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- MADRASA PROGRAMMES START -->
-  <section class="container" id="madrasa-schedule">
-    <div class="row">
-      <div class="col-md-12 py-4" id="daily">
-        <h1>Madrasa Schedule</h1>
-        <hr>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            <span class="sr-only">Close</span>
-          </button>
-          <p>The health, safety and welfare of our students, families and community are at the forefront of the
-            decisions we make as an institute. In light of the current health emergency and rapid spread of COVID-19, we
-            have taken the decision to <span class="font-weight-bold">suspend the children's classes until further
-              notice</span>.</p>
-          <p>During this period, we expect students to study online with us using the <span
-              class="font-weight-bold">Zoom</span> online platform we have set up.</p>
-          <p>Please contact the Imam or Apa for further information. Lessons will start from Monday, 30th March onwards.
-          </p>
+  <!-- DAILY PROGRAMMES START -->
+  <section class="container py-4">
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+              aria-controls="collapseOne">
+              Sha'baan & arrival of the blessed month of Ramadhan
+            </button>
+          </h5>
         </div>
 
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+            <audio controls src="https://d38btcu47hdrcr.cloudfront.net/audio/c9cc5235cb648e5477ebb762b2118845/base.mp3?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMzhidGN1NDdoZHJjci5jbG91ZGZyb250Lm5ldC9hdWRpby9jOWNjNTIzNWNiNjQ4ZTU0NzdlYmI3NjJiMjExODg0NS9iYXNlLm1wMyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU4NTk2MTQ4NX19fV19&Signature=hHTFnn4Jm4vbIL4FEkViq9jCcYc-8UNg~rbAnFhgZlndYQyMCHoslTKFz7wXdG6SxMz4uVX4tMzghHr~Yrzud3Shcl6RxxzW58TjUtG2zp8jh3iDQ7ZYoM61JXkRTn~kNfJz5mrMj61lDKZ-7THolEjPcoMcO3~LRWFfaofLPp4OeVMZwAC-VVO814jWV5IEy~b9Xa0MOn9RxeiiGJHysmFTR8ZlIMhVDLQuPpLy8RvuxXVr0GLgWOZkxSVT-UuGd9fHHuzRtuGn3BC-0uTtoo5OxwBGMzXwOiOheHhKzqdTpO9052MuQ6whElmqpHMBmTNcSmH3A5S~lr193xiMAg__&Key-Pair-Id=APKAJPSF4L32KWJO6HKQ">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo"
+              aria-expanded="false" aria-controls="collapseTwo">
+              Hadeeth - Sayings of our beloved Prophet (saw)
+            </button>
+          </h5>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+            <audio controls src="https://d38btcu47hdrcr.cloudfront.net/audio/5118aba2af6e7abce8f230ec26a2710c/base.mp3?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMzhidGN1NDdoZHJjci5jbG91ZGZyb250Lm5ldC9hdWRpby81MTE4YWJhMmFmNmU3YWJjZThmMjMwZWMyNmEyNzEwYy9iYXNlLm1wMyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU4NTk2MTU2Mn19fV19&Signature=OsMqJVp5sowfN9smNqc~Rmy2LyDb7k7GBxHWUqm4ld4J4Bw~Ybi2e7FeAv4l1yL6UAj9nBR07GCKuYTtMU1HyGgahRpc2vcEsGviLB7LogSR3p9VTe7CPb5bZqImevAbGIPYYUKZALbMQ7xUpzQ6KhzMbfWfGvjFEzF5USQd9TWXiAD3usj0CWH3Ux~qeL7PaQJdAcT6OnHauPUwzmbbTWEys7jNy0ORpVu2YBXjNx7zUsDRYPT9VfjiwVwbvXiNadg~e0~EhmHThzqhBpab6Dp9k-dTUPAlAwk85en73SFb2W2FoBumyl71oT5GZ~eedGZbIuGBXhJDQEiB8ws7Ww__&Key-Pair-Id=APKAJPSF4L32KWJO6HKQ">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+              aria-expanded="false" aria-controls="collapseThree">
+              Naseehah - General advices related to the current situation
+            </button>
+          </h5>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+          <div class="card-body">
+            <audio controls src="https://d38btcu47hdrcr.cloudfront.net/audio/24269a27e65c69b56e00a8526aec909b/base.mp3?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMzhidGN1NDdoZHJjci5jbG91ZGZyb250Lm5ldC9hdWRpby8yNDI2OWEyN2U2NWM2OWI1NmUwMGE4NTI2YWVjOTA5Yi9iYXNlLm1wMyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU4NTk2MTM4NH19fV19&Signature=dsCE8oud39uMnStriTkMIE~QpgWZLc1fwRT2DvrKm7BdWnM2RXzeiAvYQzrbZX338P-YPgndu7CPmevnCyqr~R4s0jpTcQR6eyOtLvMZD77yjbw7EzdE6XV4oGYQX4W4lH~cY68RmYMkrg~mxGHuGlh~YUieMbcFByFQJ9HmFztrp4shAHL3WErs2MZPy7xISgfH5T0fX6aSdvZKSH1yXnlGCGkD1iPqhAIr5OnIWT8lYAY99-r6BYcodreIWMWPJrfYOD5MRj1ucnaT5k5dZA3tQwtcyadrqmSh7cappmfs0RXt1n1ggY2RSnL09Bt67JQ1sbXLJNFnEPw2Z1y6kA__&Key-Pair-Id=APKAJPSF4L32KWJO6HKQ">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+            
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFour">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour"
+              aria-expanded="false" aria-controls="collapseFour">
+              Laylatul Bara'ah - 15th night of Sha'baan
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+          <div class="card-body">
+            <audio controls src="">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFive">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive"
+              aria-expanded="false" aria-controls="collapseFive">
+              Hadeeth - Chapter on Patience
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+          <div class="card-body">
+            <audio controls src="">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- End -->
   </section>
-  <!-- MADRASA PROGRAMMES END -->
-
-  <!-- GIRLS CLASSES START -->
-  <div class="container">
-    <div class="row pt-4">
-      <div class="col-md-4">
-        <h2>Girls' Classes</h2>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Monday/Wednesday/Friday -->
-      <div class="col-md-6 py-3">
-        <div class="schedule-warp">
-          <div class="day-one">Monday/Wednesday/Friday</div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">10:00 AM</span>
-              <span class="schedule-start">Foundation 1</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">11:00 AM</span>
-              <span class="schedule-start">Foundation 2</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">12:10 PM</span>
-              <span class="schedule-start">Class 1</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">1:20 PM</span>
-              <span class="schedule-start">Class 2 / Class 3 / Class 7</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tuesday/Thursday/Saturday -->
-      <div class="col-md-6 py-3">
-        <div class="schedule-warp">
-          <div class="day-one">Tuesday/Thursday/Saturday</div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">10:00 AM</span>
-              <span class="schedule-start">Class 4 (Group A)</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">11:00 AM</span>
-              <span class="schedule-start">Class 4 (Group B)</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">12:00 PM</span>
-              <span class="schedule-start">Class 5</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-girls">1:00 PM</span>
-              <span class="schedule-start">Class 6</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- GIRLS CLASSES END -->
-
-  <!-- BOYS CLASSES START -->
-  <div class="container">
-    <div class="row pt-4">
-      <div class="col-md-4">
-        <h2>Boys' Classes</h2>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Monday/Wednesday/Friday -->
-      <div class="col-md-6 py-3">
-        <div class="schedule-warp">
-          <div class="day-one">Monday/Wednesday/Friday</div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">2:30 PM</span>
-              <span class="schedule-start">Foundation 1</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">3:40 PM</span>
-              <span class="schedule-start">Foundation 2</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">4:40 PM</span>
-              <span class="schedule-start">Class 1</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">5:50 PM</span>
-              <span class="schedule-start">Class 2</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tuesday/Thursday/Saturday -->
-      <div class="col-md-6 py-3">
-        <div class="schedule-warp">
-          <div class="day-one">Tuesday/Thursday/Saturday</div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">2:30 PM</span>
-              <span class="schedule-start">Class 3</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">3:30 PM</span>
-              <span class="schedule-start">Class 4</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">4:30 PM</span>
-              <span class="schedule-start">Class 5 / Class 7</span>
-            </div>
-          </div>
-          <div class="schedule-card">
-            <div class="insidebox">
-              <span class="schedule-tag schedule-tag-boys">5:30 PM</span>
-              <span class="schedule-start">Class 6</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- BOYS CLASSES END -->
+  <!-- DAILY PROGRAMMES END -->
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4 bg-secondary">
@@ -425,8 +321,7 @@
         <div class="col-md-7 col-lg-8">
 
           <!--Copyright-->
-          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made
-            with
+          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
             <i class="fas fa-heart" style="color:red"></i>
             & <i class="fas fa-mug-hot" style="color: brown"></i> by <a href="//nalam.me" rel="external"
               target="_blank">
