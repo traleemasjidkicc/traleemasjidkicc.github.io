@@ -13,31 +13,43 @@ h5,
 h6 {
 	font-family: 'Cinzel Decorative', cursive;
 }
-
 /* GLOBALS END */
 
+/* BUTTONS START */
 .btn-success {
 	color: #fff;
 	background-color: #0D5E10;
 	border-color: #0D5E10;
 }
+/* BUTTONS END */
 
+/* BADGES START */
 .badge-success {
 	color: #fff;
 	background-color: #0D5E10;
 	border-color: #0D5E10;
 }
+/* BADGES END */
 
+/* BACKGROUNDS START */
 .bg-secondary {
 	color: #fff;
 	background-color: #0d5b5e !important;
 	background: linear-gradient(to right, #0d5b5e, #100d5e);
 }
 
+.bg-custom {
+	color: #fff;
+	background: #5e0d5b;
+	background: linear-gradient(to right, #100d5e, #5e0d5b);
+}
+
 .bg-secondary a {
 	color: 	#d2973b;
 	font-weight: bold;
 }
+
+/* BACKGROUNDS END */
 
 #salah-times {
 	border-radius: 20px;
