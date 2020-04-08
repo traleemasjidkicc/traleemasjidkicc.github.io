@@ -758,13 +758,18 @@
       request.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           var mixlrData = this.response;
+          var allEvents = mixlrData.events;
+          var sortedEvents = []
+          if (allEvents.length > 0) {
+            sortedEvents = allEvents.sort((a, b) => parseFloat(a.event_id) - parseFloat(b.event_id));
+          }
           var events = {
             title: "Yet to be scheduled",
             starts_at_timestamp: 1577836800,
             ends_at_timestamp: 1609459200
           }
-          var eventsData = (typeof mixlrData.events[0] === 'undefined' || mixlrData.events[0] == null) ?
-            events : mixlrData.events[0];
+          var eventsData = (typeof sortedEvents[0] === 'undefined' || sortedEvents[0] == null) ?
+            events : sortedEvents[0];
           var startsAt = new Date(eventsData.starts_at_timestamp * 1000).toLocaleTimeString("en-GB", {
             hour: "numeric",
             minute: "numeric",
@@ -787,7 +792,7 @@
             year: 'numeric'
           });
           var eventDay = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
-            weekday: 'short'
+            weekday: 'long'
           });
 
           document.getElementById('event-name').innerHTML = eventsData.title;
