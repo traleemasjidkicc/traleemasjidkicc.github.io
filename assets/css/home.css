@@ -243,22 +243,21 @@ body .cp-welcome-content p {
 }
 
 /*************************  Pillars Of Islam Section End  ****************************/
-.announcement-top-bar {
-	position: -webkit-sticky;
-	position: -moz-sticky;
-	position: -ms-sticky;
-	position: -o-sticky;
-	position: sticky;
-	top: 0;
+.sticky-footer {
+	position: fixed;
+	width: 100%;
+	bottom: -20px;
+	text-align: center;
+	color: #000;
+	transition: all 0.250s;
 	z-index: 999;
-}
+ }
 
-.announcement-top-bar p {
+.sticky-footer p {
 	margin: 0;
 }
 
-
-.announcement-top-bar.alert-dismissible .close {
+.sticky-footer.alert-dismissible .close {
 	top: 50%;
 	transform: translateY(-55%);
 }
