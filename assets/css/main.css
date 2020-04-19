@@ -487,5 +487,6 @@ section.pricing {
 
 .bg-cover-2 {
 	background: url(https://c0.wallpaperflare.com/preview/267/712/965/islamic-prayer-dusk-sun.jpg) no-repeat top center fixed;
-    background-size: cover !important;
+	background-size: cover !important;
+	min-height: 50vh;
 }
