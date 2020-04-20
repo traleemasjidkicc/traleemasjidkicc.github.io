@@ -11,6 +11,5 @@ gulp.task('default', function () {
         }
     });
 
-    gulp.watch("**/*.css").on("change", reload);
-    gulp.watch("*.html").on("change", reload);
+    gulp.watch(["*.html", "assets/css/*.css"]).on("change", reload);
 });
