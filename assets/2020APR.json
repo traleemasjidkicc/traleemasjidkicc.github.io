@@ -1290,7 +1290,12 @@
     "maghribTime": "08:54 PM",
     "ishaTime": "10:14 PM",
     "qiyamTime": "01:34 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "04:04 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:04 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1340,7 +1345,12 @@
     "maghribTime": "08:56 PM",
     "ishaTime": "10:16 PM",
     "qiyamTime": "01:32 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "04:05 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:06 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1390,7 +1400,12 @@
     "maghribTime": "08:57 PM",
     "ishaTime": "10:17 PM",
     "qiyamTime": "01:31 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "04:00 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:07 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1440,7 +1455,12 @@
     "maghribTime": "08:59 PM",
     "ishaTime": "10:19 PM",
     "qiyamTime": "01:29 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "03:55 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:09 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1490,7 +1510,12 @@
     "maghribTime": "09:01 PM",
     "ishaTime": "10:21 PM",
     "qiyamTime": "01:27 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "03:55 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:11 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1540,7 +1565,12 @@
     "maghribTime": "09:03 PM",
     "ishaTime": "10:23 PM",
     "qiyamTime": "01:25 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "03:50 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:13 PM",
+    "ishaJamahTime": "10:30 PM"
   }, {
     "responseCode": null,
     "responseDesc": null,
@@ -1590,7 +1620,12 @@
     "maghribTime": "09:04 PM",
     "ishaTime": "10:24 PM",
     "qiyamTime": "01:16 AM",
-    "isToday": 0
+    "isToday": 0,
+    "fajarJamahTime": "03:45 AM",
+    "zohrJamahTime": "02:00 PM",
+    "asarJamahTime": "07:45 PM",
+    "magribJamahTime": "09:14 PM",
+    "ishaJamahTime": "10:30 PM"
   }],
   "monthName": "April 2020",
   "month": "April",
