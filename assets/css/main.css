@@ -499,3 +499,17 @@ section.pricing {
     max-height: calc(100vh - 250px);
     overflow-y: auto;
 }
+
+/* Rounded tabs */
+
+@media (min-width: 576px) {
+	.rounded-nav {
+	  border-radius: 50rem !important;
+	}
+  }
+  
+  @media (min-width: 576px) {
+	.rounded-nav .nav-link {
+	  border-radius: 50rem !important;
+	}
+  }
