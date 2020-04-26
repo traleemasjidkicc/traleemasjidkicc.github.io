@@ -846,6 +846,13 @@
     // document.getElementById('tafseer').innerHTML = fri.getDate();
   </script>
   <script>
+    var isToday = function (someDate) {
+      var today = new Date()
+      return someDate.getDate() == today.getDate() &&
+        someDate.getMonth() == today.getMonth() &&
+        someDate.getFullYear() == today.getFullYear()
+    }
+
     window.onload = function () {
       var request = new XMLHttpRequest();
       request.responseType = "json";
@@ -857,7 +864,8 @@
           var allEvents = mixlrData.events;
           var sortedEvents = []
           if (allEvents.length > 0) {
-            sortedEvents = allEvents.sort((a, b) => parseInt(a.starts_at_timestamp) - parseInt(b.starts_at_timestamp));
+            sortedEvents = allEvents.sort((a, b) => parseInt(a.starts_at_timestamp) - parseInt(b
+              .starts_at_timestamp));
           }
           var events = {
             title: "Yet to be scheduled",
@@ -890,6 +898,10 @@
           var eventDay = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
             weekday: 'long'
           });
+
+          if (isToday(new Date(eventsData.starts_at_timestamp * 1000))) {
+            eventDay = "Today";
+          }
 
           document.getElementById('event-name').innerHTML = eventsData.title;
           document.getElementById('starts-at').innerHTML = startsAt;
@@ -954,8 +966,10 @@
 
         // document.getElementById("cur-month").innerHTML = monthFullNames[d.getMonth()];       
         document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
-        document.getElementById("nav-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
-        document.getElementById("footer-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+        document.getElementById("nav-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1]
+          .hijriMonthNameEnglish;
+        document.getElementById("footer-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1]
+          .hijriMonthNameEnglish;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
