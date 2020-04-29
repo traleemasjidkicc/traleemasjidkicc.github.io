@@ -25,13 +25,13 @@
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-  </script>
+    </script>
 
 </head>
 
@@ -183,6 +183,7 @@
   </header>
   <!-- CAROUSEL END -->
 
+  <!-- RAMADAN BANNER START -->
   <div class="bg-cover-2 text-white">
     <div class="container py-5 text-center">
       <h1 class="display-4 font-weight-bold">Ramadan Kareem</h1>
@@ -276,41 +277,39 @@
       </div>
     </div>
   </div>
+  <!-- RAMADAN BANNER END -->
 
   <!-- LIVE STREAMING EVENTS START -->
   <section class="container">
-    <div class="row py-3">
+    <div class="card-deck py-3">
       <!-- EVENTS START -->
-      <div class="col-md-6 p-2 grid-margin-md stretch-card d-flex_">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
-              <p class="h4 card-title">Next Up&hellip;</p>
-              <p class="h6"><a href="http://mixlr.com/tralee-masjid/events/" target="_blank"
-                  class="text-primary">more</a></p>
-            </div>
-            <div class="border p-3 mb-4">
-              <div class="row">
-                <div class="col-sm-4 border-right-lg border-right-md-0">
-                  <div class="d-flex justify-content-center align-items-center">
-                    <p class="h1 mb-0 mr-2 text-primary font-weight-normal"><span class="badge badge-success"
-                        id="event-date">01</span></p>
-                    <div>
-                      <p class="font-weight-bold mb-0 text-dark"><span class="text-uppercase"
-                          id="event-month">Jan</span>
-                      </p>
-                      <p class="mb-0"><span id="event-year">2020</span></p>
-                    </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-3">
+            <p class="h4 card-title">Next Up&hellip;</p>
+            <p class="h6"><a href="https://mixlr.com/tralee-masjid/events/" target="_blank"
+                class="text-primary">more</a></p>
+          </div>
+          <div class="border p-3 mb-4">
+            <div class="row">
+              <div class="col-sm-4 border-right-lg border-right-md-0">
+                <div class="d-flex justify-content-center align-items-center">
+                  <p class="h1 mb-0 mr-2 text-primary font-weight-normal"><span class="badge badge-success"
+                      id="event-date">01</span></p>
+                  <div>
+                    <p class="font-weight-bold mb-0 text-dark"><span class="text-uppercase" id="event-month">Jan</span>
+                    </p>
+                    <p class="mb-0"><span id="event-year">2020</span></p>
                   </div>
                 </div>
-                <div class="col-sm-8 pl-3">
-                  <p class="text-dark font-weight-bold mb-0"><span id="event-name">Loading...</span></p>
-                  <p class="mb-0">
-                    <i class="far fa-calendar-alt"></i>&nbsp;<span id="event-day">Fri</span>,
-                    <i class="far fa-clock"></i>&nbsp;<span id="starts-at">00:00</span>
-                    <span class="font-weight-bold">&mdash;&nbsp;</span><span id="ends-at">00:00</span>
-                    <p>
-                </div>
+              </div>
+              <div class="col-sm-8 pl-3">
+                <p class="text-dark font-weight-bold mb-0"><span id="event-name">Loading...</span></p>
+                <p class="mb-0">
+                  <i class="far fa-calendar-alt"></i>&nbsp;<span id="event-day">Fri</span>,
+                  <i class="far fa-clock"></i>&nbsp;<span id="starts-at">00:00</span>
+                  <span class="font-weight-bold">&mdash;&nbsp;</span><span id="ends-at">00:00</span>
+                  <p>
               </div>
             </div>
           </div>
@@ -319,20 +318,18 @@
       <!-- EVENTS END -->
 
       <!-- MIXLR PLAY START -->
-      <div class="col-md-6 p-2 grid-margin-md stretch-card d-flex_">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-0">
-              <h4 class="card-title"></h4>
-              <p class="h6"><a href="http://mixlr.com/tralee-masjid/showreel/" target="_blank"
-                  class="text-primary">previous
-                  talks</a></p>
-            </div>
-            <div class="p-0 mb-0">
-              <div class="row">
-                <iframe src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10" width="100%"
-                  height="150px" scrolling="no" frameborder="no" marginheight="0" marginwidth="0"></iframe>
-              </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-0">
+            <h4 class="card-title"></h4>
+            <p class="h6"><a href="http://mixlr.com/tralee-masjid/showreel/" target="_blank"
+                class="text-primary">previous
+                talks</a></p>
+          </div>
+          <div class="p-0 mb-0">
+            <div class="row">
+              <iframe src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10" width="100%"
+                height="150px" scrolling="no" frameborder="no" marginheight="0" marginwidth="0"></iframe>
             </div>
           </div>
         </div>
