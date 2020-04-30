@@ -24,13 +24,13 @@
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script src="//threejs.org/examples/js/libs/stats.min.js"></script>
 </head>
@@ -137,28 +137,33 @@
   </nav>
   <!-- END OF NAV -->
 
-  <div class="bg-cover">
-    <div class="container py-5">
-      <header class="text-center text-white py-5">
-        <h1 class="display-4 font-weight-bold mb-4 text-break">Children's Madrasa</h1>
-        <p class="lead mb-0">We are an Islamic Supplementary Evening School which offers Islamic Studies, Qur’an
-          Recitation and Qur’an Memorisation classes according to the true teachings of the Qur’an and prophetic ways of
-          the Final Messenger – Prophet Muhammad.</p>
-      </header>
+  <section class="clearfix">
+    <div class="bg-cover">
+      <div class="container py-5">
+        <header class="text-center text-white py-5">
+          <h1 class="display-4 font-weight-bold mb-4 text-break">Children's Madrasa</h1>
+          <p class="lead mb-0">We are an Islamic Supplementary Evening School which offers Islamic Studies, Qur’an
+            Recitation and Qur’an Memorisation classes according to the true teachings of the Qur’an and prophetic ways
+            of
+            the Final Messenger – Prophet Muhammad.</p>
+        </header>
 
-      <div class="text-white">
-        <p class="lead">The Madrasah’s aims are to fulfil the obligation of seeking knowledge in a caring and secure
-          Islamic environment, to endorse excellent manners and nurture future leaders of our community.</p>
-        <p class="lead">By providing a well-structured curriculum, and by endorsing excellent manners through our
-          Behaviour Policy and Rewarding System, we aim to encourage in all children the love of learning of the deen as
-          well as the respect and care for one another.</p>
-        <p class="lead">We highly recognise the great importance of the partnership between home and the Madrasah in
-          producing well-rounded confident Muslims; we firmly believe that collectively we can offer a unique education
-          to our children.
-        </p>
+        <div class="text-white">
+          <p class="lead">The Madrasah’s aims are to fulfil the obligation of seeking knowledge in a caring and secure
+            Islamic environment, to endorse excellent manners and nurture future leaders of our community.</p>
+          <p class="lead">By providing a well-structured curriculum, and by endorsing excellent manners through our
+            Behaviour Policy and Rewarding System, we aim to encourage in all children the love of learning of the deen
+            as
+            well as the respect and care for one another.</p>
+          <p class="lead">We highly recognise the great importance of the partnership between home and the Madrasah in
+            producing well-rounded confident Muslims; we firmly believe that collectively we can offer a unique
+            education
+            to our children.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- MADRASA PROGRAMMES START -->
   <section class="container" id="madrasa-schedule">
@@ -516,7 +521,7 @@
         document.getElementById("nav-isha-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime
           .toLowerCase();
         document.getElementById("nav-isha-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaJamahTime
-          .toLowerCase();        document.getElementById("nav-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+          .toLowerCase(); document.getElementById("nav-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
         document.getElementById("footer-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
       }
     };
