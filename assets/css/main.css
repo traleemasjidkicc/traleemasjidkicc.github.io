@@ -153,9 +153,8 @@ h6 {
 }
 
 .parallax-section .right-box a {
-	display: block;
+	display: inline-block;
 	font: 400 14px/14px 'Cinzel Decorative', cursive;
-	;
 	text-decoration: none;
 }
 
