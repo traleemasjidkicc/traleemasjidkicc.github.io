@@ -538,6 +538,27 @@ section.pricing {
 
 /* GALLERY END */
 
+.circle-button {
+	box-shadow: 2px 4px 0 2px rgba(0,0,0,0.1);
+	border: .5em solid #64daf7;
+	font-size: 1em;
+	line-height: 1.1em;
+	color: #ffffff;
+	background-color: #64daf7;
+	margin: auto;
+	border-radius: 50%;
+	height: 10em;
+	width: 10em;
+	position: relative;
+}
+.circle-button:hover {
+	color:#ffffff;
+    background-color: #12c6f3;
+	text-decoration: none;
+	border-color: #64daf7;
+	
+}
+
 
 /* ################################################ */
 /* RESPONSIVE START */

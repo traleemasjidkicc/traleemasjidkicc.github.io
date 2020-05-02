@@ -187,13 +187,17 @@
   <div class="bg-cover-2 text-white">
     <div class="container py-5 text-center">
       <h1 class="display-4 font-weight-bold">Ramadan Kareem</h1>
-      <div class="py-2">
+      <div class="pb-2">
         <a href="assets/pdf/RAMADAN2020.pdf" target="_blank" role="button" class="btn btn-light btn-lg">Download Ramadan
           Timetable</a>
       </div>
       <button type="button" class="btn btn-dark btn-lg" data-toggle="modal" data-target="#ramadanAnnouncement">
         Important Ramadan News
       </button>
+      <div class="row justify-content-md-center pt-5">
+        <button class="btn btn-default circle-button"><h6 class="font-weight-bold">Sehri Ends</h6> <span id="banner-sehri-ends">03:10 am</span></button>
+        <button class="btn btn-default circle-button"><h6 class="font-weight-bold">Iftaar</h6><span id="banner-iftaar-time">09:08 pm</span></button>
+      </div>
     </div>
   </div>
 
@@ -922,7 +926,7 @@
 
         document.getElementById("fajr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
         document.getElementById("nav-fajr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime
-          .toLowerCase();
+        document.getElementById("banner-sehri-ends").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime;
         document.getElementById("nav-fajr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarJamahTime
           .toLowerCase();
 
@@ -949,6 +953,7 @@
           .toLowerCase();
         document.getElementById("nav-magrib-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].magribJamahTime
           .toLowerCase();
+        document.getElementById("banner-iftaar-time").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime;
 
         document.getElementById("isha").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime.toLowerCase();
         document.getElementById("nav-isha-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime
