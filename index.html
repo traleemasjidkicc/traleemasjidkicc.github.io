@@ -33,6 +33,83 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
 
+  <script>
+
+    let i = 2;
+
+
+    $(document).ready(function () {
+      var radius = 200;
+      var fields = $('.itemDot');
+      var container = $('.dotCircle');
+      var width = container.width();
+      radius = width / 2.5;
+
+      var height = container.height();
+      var angle = 0, step = (2 * Math.PI) / fields.length;
+      fields.each(function () {
+        var x = Math.round(width / 2 + radius * Math.cos(angle) - $(this).width() / 2);
+        var y = Math.round(height / 2 + radius * Math.sin(angle) - $(this).height() / 2);
+        if (window.console) {
+          console.log($(this).text(), x, y);
+        }
+
+        $(this).css({
+          left: x + 'px',
+          top: y + 'px'
+        });
+        angle += step;
+      });
+
+
+      $('.itemDot').click(function () {
+
+        var dataTab = $(this).data("tab");
+        $('.itemDot').removeClass('active');
+        $(this).addClass('active');
+        $('.CirItem').removeClass('active');
+        $('.CirItem' + dataTab).addClass('active');
+        i = dataTab;
+
+        $('.dotCircle').css({
+          "transform": "rotate(" + (360 - (i - 1) * 36) + "deg)",
+          "transition": "2s"
+        });
+        $('.itemDot').css({
+          "transform": "rotate(" + ((i - 1) * 36) + "deg)",
+          "transition": "1s"
+        });
+
+
+      });
+
+      setInterval(function () {
+        var dataTab = $('.itemDot.active').data("tab");
+        if (dataTab > 6 || i > 6) {
+          dataTab = 1;
+          i = 1;
+        }
+        $('.itemDot').removeClass('active');
+        $('[data-tab="' + i + '"]').addClass('active');
+        $('.CirItem').removeClass('active');
+        $('.CirItem' + i).addClass('active');
+        i++;
+
+
+        $('.dotCircle').css({
+          "transform": "rotate(" + (360 - (i - 2) * 36) + "deg)",
+          "transition": "2s"
+        });
+        $('.itemDot').css({
+          "transform": "rotate(" + ((i - 2) * 36) + "deg)",
+          "transition": "1s"
+        });
+
+      }, 5000);
+
+    });
+  </script>
+
 </head>
 
 <body>
@@ -195,8 +272,12 @@
         Important Ramadan News
       </button>
       <div class="row justify-content-md-center pt-5">
-        <button class="btn btn-default circle-button"><h6 class="font-weight-bold">Sehri Ends</h6> <span id="banner-sehri-ends">03:10 am</span></button>
-        <button class="btn btn-default circle-button"><h6 class="font-weight-bold">Iftaar</h6><span id="banner-iftaar-time">09:08 pm</span></button>
+        <button class="btn btn-default circle-button">
+          <h6 class="font-weight-bold">Sehri Ends</h6> <span id="banner-sehri-ends">03:10 am</span>
+        </button>
+        <button class="btn btn-default circle-button">
+          <h6 class="font-weight-bold">Iftaar</h6><span id="banner-iftaar-time">09:08 pm</span>
+        </button>
       </div>
     </div>
   </div>
@@ -560,6 +641,97 @@
     </div>
   </section>
   <!-- OUR SERVICES END -->
+
+  <!-- PILLARS OF FAITH START -->
+  <section class="iq-features d-none d-sm-block py-5">
+    <div class="container">
+      <div class="row">
+        <div class="section-title">
+          <img src="assets/images/bsml-txt-black.png" alt="bsml-txt.png"
+            style="transition-delay: 0ms;  width: 210px; padding-top: 20px;">
+          <h2>Pillars of Faith</h2>
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-lg-3 col-md-12"></div>
+        <div class="col-lg-6 col-md-12">
+          <div class="holderCircle">
+            <div class="round"></div>
+            <div class="dotCircle">
+              <span class="itemDot active itemDot1" data-tab="1">
+                <i class="fas fa-hand-point-up"></i>
+                <span class="forActive"></span>
+              </span>
+              <span class="itemDot itemDot2" data-tab="2">
+                <i class="fas fa-dove"></i>
+                <span class="forActive"></span>
+              </span>
+              <span class="itemDot itemDot3" data-tab="3">
+                <i class="fas fa-book-open"></i>
+                <span class="forActive"></span>
+              </span>
+              <span class="itemDot itemDot4" data-tab="4">
+                <i class="fas fa-hands-helping"></i>
+                <span class="forActive"></span>
+              </span>
+              <span class="itemDot itemDot5" data-tab="5">
+                <i class="fas fa-balance-scale"></i>
+                <span class="forActive"></span>
+              </span>
+              <span class="itemDot itemDot6" data-tab="6">
+                <i class="fas fa-heart"></i>
+                <span class="forActive"></span>
+              </span>
+            </div>
+            <div class="contentCircle">
+              <div class="CirItem title-box active CirItem1">
+                <h2 class="title"><span>Oneness of God</span></h2>
+                <p>“There is no true God worthy of worship but God and Muhammad is the last and final Messenger of God.”
+                </p>
+                <i class="fas fa-hand-point-up"></i>
+              </div>
+              <div class="CirItem title-box CirItem2">
+                <h2 class="title"><span>Angels</span></h2>
+                <p>We believe that angels exist, believe in the names we are informed of and of their descriptions in
+                  authentic reports. They are created by God and have no share in divinity. Their purpose is to serve
+                  God and to carry out His commands in the universe.</p>
+                <i class="fas fa-dove"></i>
+              </div>
+              <div class="CirItem title-box CirItem3">
+                <h2 class="title"><span>Revealed Books</span></h2>
+                <p>We believe that God sent revelations and communicated with His chosen messengers. We believe in the
+                  names of the original scriptures and believe in the truth contained therein which is confirmed by the
+                  Quran.</p>
+                <i class="fas fa-book-open"></i>
+              </div>
+              <div class="CirItem title-box CirItem4">
+                <h2 class="title"><span>Prophets</span></h2>
+                <p>We believe that God sent human Messengers to remind people to worship God alone on His terms and to
+                  obey His commandments and messengers. They promised reward for those who comply and do good and warned
+                  of a punishment for those who do evil. </p>
+                <i class="fas fa-hands-helping"></i>
+              </div>
+              <div class="CirItem title-box CirItem5">
+                <h2 class="title"><span>Day of Judgement</span></h2>
+                <p>We believe that we will be brought back to life after death to be Judged by God. Paradise and Hell
+                  are the eternal destination of people based on how they lived their lives and the choices they made.
+                </p>
+                <i class="fas fa-balance-scale"></i>
+              </div>
+              <div class="CirItem title-box CirItem6">
+                <h2 class="title"><span>Divine Decree</span></h2>
+                <p>We believe that God knows everything that is to come and He recorded everything in a preserved tablet
+                  before the creation came into existence. </p>
+                <i class="fas fa-heart"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-12"></div>
+      </div>
+    </div>
+  </section>
+  <!-- PILLARS OF FAITH END -->
 
   <!-- PILLARS OF ISLAM START -->
   <section class="clearfix">
