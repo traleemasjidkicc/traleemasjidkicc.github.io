@@ -1,10 +1,10 @@
 {
   "name": "kicc-tralee-masjid",
-  "version": "0.0.2",
+  "version": "1.1.0",
   "description": "Kerry Islamic Cultural Centre website.",
   "main": "index.html",
   "repository": "git@github.com:traleemasjidkicc/traleemasjidkicc.github.io.git",
-  "author": "Nazmul Alam <nalam@fexco.com>",
+  "author": "Nazmul Alam <hello@nalam.me>",
   "license": "Apache License 2.0",
   "private": true,
   "devDependencies": {
