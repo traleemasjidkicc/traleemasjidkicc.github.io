@@ -21,7 +21,6 @@
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/home.css">
   <link rel="stylesheet"
     href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
     integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE="
@@ -40,74 +39,7 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
   </script>
-  <script>
-    let i = 2;
 
-    $(document).ready(function () {
-      var radius = 200;
-      var fields = $('.itemDot');
-      var container = $('.dotCircle');
-      var width = container.width();
-      radius = width / 2.5;
-      var height = container.height();
-      var angle = 0,
-        step = (2 * Math.PI) / fields.length;
-      fields.each(function () {
-        var x = Math.round(width / 2 + radius * Math.cos(angle) - $(
-          this).width() / 2);
-        var y = Math.round(height / 2 + radius * Math.sin(angle) - $(
-          this).height() / 2);
-        if (window.console) {
-          console.log($(this).text(), x, y);
-        }
-        $(this).css({
-          left: x + 'px',
-          top: y + 'px'
-        });
-        angle += step;
-      });
-
-      $('.itemDot').click(function () {
-        var dataTab = $(this).data("tab");
-        $('.itemDot').removeClass('active');
-        $(this).addClass('active');
-        $('.CirItem').removeClass('active');
-        $('.CirItem' + dataTab).addClass('active');
-        i = dataTab;
-        $('.dotCircle').css({
-          "transform": "rotate(" + (360 - (i - 1) * 36) + "deg)",
-          "transition": "2s"
-        });
-        $('.itemDot').css({
-          "transform": "rotate(" + ((i - 1) * 36) + "deg)",
-          "transition": "1s"
-        });
-
-      });
-      setInterval(function () {
-        var dataTab = $('.itemDot.active').data("tab");
-        if (dataTab > 6 || i > 6) {
-          dataTab = 1;
-          i = 1;
-        }
-        $('.itemDot').removeClass('active');
-        $('[data-tab="' + i + '"]').addClass('active');
-        $('.CirItem').removeClass('active');
-        $('.CirItem' + i).addClass('active');
-        i++;
-
-        $('.dotCircle').css({
-          "transform": "rotate(" + (360 - (i - 2) * 36) + "deg)",
-          "transition": "2s"
-        });
-        $('.itemDot').css({
-          "transform": "rotate(" + ((i - 2) * 36) + "deg)",
-          "transition": "1s"
-        });
-      }, 5000);
-    });
-
-  </script>
   <script type="text/javascript" defer
     src="https://donorbox.org/install-popup-button.js"></script>
   <script>
@@ -169,7 +101,7 @@
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-md-0 mr-lg-2 active"
+            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-sm-0 mr-md-2 mr-lg-2 active"
               role="button"
               href="https://donorbox.org/ramadan-2020-appeal">Donate</a>
           </li>
@@ -294,7 +226,7 @@
       <h1 class="display-4 font-weight-bold">Ramadan Kareem</h1>
       <div class="pb-2">
         <a href="assets/pdf/RAMADAN2020.pdf" target="_blank" role="button"
-          class="btn btn-light btn-lg">Download Ramadan
+          class="btn btn-dark btn-lg">Download Ramadan
           Timetable</a>
       </div>
       <div class="row justify-content-md-center pt-5">
@@ -1333,6 +1265,73 @@
     xmlhttp.send();
 
   </script>
+    <script>
+      let i = 2;
+      $(document).ready(function () {
+        var radius = 200;
+        var fields = $('.itemDot');
+        var container = $('.dotCircle');
+        var width = container.width();
+        radius = width / 2.5;
+        var height = container.height();
+        var angle = 0,
+          step = (2 * Math.PI) / fields.length;
+        fields.each(function () {
+          var x = Math.round(width / 2 + radius * Math.cos(angle) - $(
+            this).width() / 2);
+          var y = Math.round(height / 2 + radius * Math.sin(angle) - $(
+            this).height() / 2);
+          // if (window.console) {
+          //   console.log($(this).text(), x, y);
+          // }
+          $(this).css({
+            left: x + 'px',
+            top: y + 'px'
+          });
+          angle += step;
+        });
+  
+        $('.itemDot').click(function () {
+          var dataTab = $(this).data("tab");
+          $('.itemDot').removeClass('active');
+          $(this).addClass('active');
+          $('.CirItem').removeClass('active');
+          $('.CirItem' + dataTab).addClass('active');
+          i = dataTab;
+          $('.dotCircle').css({
+            "transform": "rotate(" + (360 - (i - 1) * 36) + "deg)",
+            "transition": "2s"
+          });
+          $('.itemDot').css({
+            "transform": "rotate(" + ((i - 1) * 36) + "deg)",
+            "transition": "1s"
+          });
+  
+        });
+        setInterval(function () {
+          var dataTab = $('.itemDot.active').data("tab");
+          if (dataTab > 6 || i > 6) {
+            dataTab = 1;
+            i = 1;
+          }
+          $('.itemDot').removeClass('active');
+          $('[data-tab="' + i + '"]').addClass('active');
+          $('.CirItem').removeClass('active');
+          $('.CirItem' + i).addClass('active');
+          i++;
+  
+          $('.dotCircle').css({
+            "transform": "rotate(" + (360 - (i - 2) * 36) + "deg)",
+            "transition": "2s"
+          });
+          $('.itemDot').css({
+            "transform": "rotate(" + ((i - 2) * 36) + "deg)",
+            "transition": "1s"
+          });
+        }, 10000);
+      });
+  
+    </script>
 </body>
 
 </html>
