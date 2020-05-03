@@ -52,6 +52,17 @@ h6 {
 	font-weight: bold;
 }
 
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #0D5E10;
+}
+
+.nav-pills .nav-link.active {
+    color: #fff;
+    background-color: #0D5E10;
+}
+
 /* BACKGROUNDS END */
 
 #salah-times {
