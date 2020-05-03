@@ -278,7 +278,7 @@
       </button>
       <div class="row justify-content-md-center pt-5">
         <button class="btn btn-default circle-button">
-          <h6 class="font-weight-bold">Sehri Ends</h6> <span id="banner-sehri-ends">03:10 am</span>
+          <h6 class="font-weight-bold">Imsak</h6> <span id="banner-imsak-time">03:10 am</span>
         </button>
         <button class="btn btn-default circle-button">
           <h6 class="font-weight-bold">Iftaar</h6><span id="banner-iftaar-time">09:08 pm</span>
@@ -1105,7 +1105,7 @@
 
         document.getElementById("fajr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
         document.getElementById("nav-fajr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
-        document.getElementById("banner-sehri-ends").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime;
+        document.getElementById("banner-imsak-time").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].imsakTime;
         document.getElementById("nav-fajr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarJamahTime
           .toLowerCase();
 
