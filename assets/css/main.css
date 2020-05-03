@@ -540,11 +540,11 @@ section.pricing {
 
 .circle-button {
 	box-shadow: 2px 4px 0 2px rgba(0, 0, 0, 0.1);
-	border: .5em solid #64daf7;
+	border: .5em solid #0d404d;
 	font-size: 1em;
 	line-height: 1.1em;
 	color: #ffffff;
-	background-color: #64daf7;
+	background-color: #0d404d;
 	margin: auto;
 	border-radius: 50%;
 	height: 10em;
@@ -554,9 +554,9 @@ section.pricing {
 
 .circle-button:hover {
 	color: #ffffff;
-	background-color: #12c6f3;
+	background-color: #145363;
 	text-decoration: none;
-	border-color: #64daf7;
+	border-color: #24758a;
 }
 
 .holderCircle {
