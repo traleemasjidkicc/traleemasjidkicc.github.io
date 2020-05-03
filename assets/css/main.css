@@ -1018,9 +1018,10 @@ body .cp-welcome-content p {
 		width: 100%;
 	}
 
-	.contact4 .contact-box {
-		padding: 80px 105px 80px 0px;
-	}
+	.contact4 .right-image {	
+		position: relative;	
+		bottom: -95px;	
+	}	
 }
 
 /* col-lg-* - 992px */
@@ -1035,9 +1036,8 @@ body .cp-welcome-content p {
 		opacity: 1;
 	}
 
-	.contact4 .right-image {
-		position: relative;
-		bottom: -95px;
+	.contact4 .contact-box {
+		padding: 80px 105px 80px 0px;
 	}
 }
 
