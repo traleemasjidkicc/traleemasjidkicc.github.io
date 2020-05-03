@@ -297,10 +297,6 @@
           class="btn btn-light btn-lg">Download Ramadan
           Timetable</a>
       </div>
-      <button type="button" class="btn btn-dark btn-lg" data-toggle="modal"
-        data-target="#ramadanAnnouncement">
-        Important Ramadan News
-      </button>
       <div class="row justify-content-md-center pt-5">
         <button class="btn btn-default circle-button">
           <h6 class="font-weight-bold">Imsak</h6> <span
@@ -313,174 +309,240 @@
       </div>
     </div>
   </div>
-  <div class="modal fade" id="ramadanAnnouncement" tabindex="-1" role="dialog"
-    aria-labelledby="ramadanAnnouncementLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="ramadanAnnouncementLabel">Ramadan News
-          </h5>
-          <button type="button" class="close" data-dismiss="modal"
-            aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p class="h5">Assalaamu Alaykum,</p>
-          <p class="lead">
-            With the profound changes that the current Pandemic has brought upon
-            with it, we would like to keep you
-            informed about the services and activities at our Masjid.
-          </p>
-          <p class="h5">Jumuah & daily Congregational Salaah</p>
-          <p class="lead">
-            Friday prayers and other congregational prayers remain suspended
-            until further notice due to the ban on
-            public gatherings by the government. We will revise this decision in
-            light of the Government’s announcement
-            after the lockdown. We are taking these measures in line with the
-            Government guidelines and advice so kindly
-            we would appreciate your full co-operation.
-          </p>
-          <p class="h5">Ramadhan 1441AH/ 2020</p>
-          <p class="lead">
-            Ramadhan this year is expected to start on Friday 24th April. First
-            Taraweeh Salaah could be performed on
-            Thursday 23rd April. A precise announcement shall be made closer to
-            this date. Please keep updated through
-            our
-            website.
-          </p>
-          <p class="h5">Taraweeh</p>
-          <p class="lead">
-            Everyone is requested to perform their Taraweeh Salaah at home
-            throughout Ramadhan. This is a great
-            opportunity to pray as a family where the mature male will lead the
-            others in Salaah and the women of the
-            house can join.
-          </p>
-          <p class="h5">Children’s Madrasah Classes</p>
-          <p class="lead">
-            The Madrasah shall continue online via the Zoom app. For further
-            information or queries please contact the
-            Imam or Apa.
-          </p>
-          <p class="h5">Womens weekly Class</p>
-          <p class="lead">
-            The weekly class for local women will continue via phone etc. Please
-            contact Apa for further information.
-          </p>
-          <p class="h5">Activities in Ramadhan</p>
-          <p class="lead">
-            To avoid disruption to our normal routine in the Masjid, we have set
-            up a Live Audio platform for all
-            programmes. The following programmes will be Live on <a
-              href="https://mixlr.com/tralee-masjid" target="_blank">Masjid
-              Mixlr</a> streaming channel.
-          </p>
-          <ol>
-            <li>Every Wednesday after Asar (approx 8pm) – Hadeeth Lesson</li>
-            <li>Every Friday after Asar (approx 8pm) – Fiqh Masaail Lesson</li>
-            <li>Every Sunday after Asar (approx 8pm) – Bayaan/Speech</li>
-          </ol>
-          <p class="h5">GP/Health Clinic Service</p>
-          <p class="lead">
-            Doctors from our community have volunteered to give their time to
-            the community. For medical consultation or
-            help related to Covid-19 or any other issues call Manor Medical
-            Centre on 0667122599.
-          </p>
-          <p class="h5">Donations for our Masjid projects and services</p>
-          <p class="lead">
-            Please continue to donate generously throughout Ramadhan as it is a
-            month of generosity and spending in the
-            path of Allah. To pay your annual Sadaqatul Fitr of €7 per person or
-            give your Zakaat or any other donations
-            then please contact Dr Altaf Memon on 0866038982 or the Imam on
-            0862440556.
-          </p>
-          <p class="lead">
-            Let us turn to Allah Ta’ala with Dua and Istighfaar in these testing
-            times. May Allah Ta’ala grant everyone
-            protection, ease & comfort. Aameen.
-          </p>
-          <p class="blockquote-footer">Tralee Masjid Management Committee</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary"
-            data-dismiss="modal">Close</button>
-          <a href="assets/pdf/Ramadan_News.pdf" target="_blank" role="button"
-            class="btn btn-info">Download</a>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- RAMADAN BANNER END -->
-  <!-- LIVE STREAMING EVENTS START -->
-  <section class="container">
-    <div class="card-deck py-3">
-      <!-- EVENTS START -->
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-3">
-            <p class="h4 card-title">Next Up&hellip;</p>
-            <p class="h6"><a href="https://mixlr.com/tralee-masjid/events/"
-                target="_blank" class="text-primary">more</a></p>
-          </div>
-          <div class="border p-3 mb-4">
-            <div class="row">
-              <div class="col-sm-4 border-right-lg border-right-md-0">
-                <div class="d-flex justify-content-center align-items-center">
-                  <p class="h1 mb-0 mr-2 text-primary font-weight-normal"><span
-                      class="badge badge-success" id="event-date">01</span></p>
-                  <div>
-                    <p class="font-weight-bold mb-0 text-dark"><span
-                        class="text-uppercase" id="event-month">Jan</span>
-                    </p>
-                    <p class="mb-0"><span id="event-year">2020</span></p>
+  <section class="container pt-4 bg-white rounded shadow my-4">
+    <ul
+      class="nav nav-tabs nav-pills flex-column flex-sm-row text-center with-arrow"
+      id="nav-tab" role="tablist">
+      <li class="nav-item flex-sm-fill">
+        <a id="nav-events" data-toggle="tab" href="#nav-events" role="tab"
+          aria-controls="events" aria-selected="true"
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Events</a>
+      </li>
+      <li class="nav-item flex-sm-fill">
+        <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
+          aria-controls="news" aria-selected="false"
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">News</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="nav-tabContent">
+      <!-- LIVE STREAMING EVENTS START -->
+      <div class="tab-pane fade px-1 py-5 show active" id="nav-bayaan"
+        role="tabpanel" aria-labelledby="nav-events">
+        <div class="card-deck py-3">
+          <!-- EVENTS START -->
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-3">
+                <p class="h4 card-title">Next Up&hellip;</p>
+                <p class="h6"><a href="https://mixlr.com/tralee-masjid/events/"
+                    target="_blank" class="text-primary">more</a></p>
+              </div>
+              <div class="border p-3 mb-4">
+                <div class="row">
+                  <div class="col-sm-4 border-right-lg border-right-md-0">
+                    <div
+                      class="d-flex justify-content-center align-items-center">
+                      <p class="h1 mb-0 mr-2 text-primary font-weight-normal">
+                        <span class="badge badge-success"
+                          id="event-date">01</span></p>
+                      <div>
+                        <p class="font-weight-bold mb-0 text-dark"><span
+                            class="text-uppercase" id="event-month">Jan</span>
+                        </p>
+                        <p class="mb-0"><span id="event-year">2020</span></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-8 pl-3">
+                    <p class="text-dark font-weight-bold mb-0"><span
+                        id="event-name">Loading...</span></p>
+                    <p class="mb-0">
+                      <i class="far fa-calendar-alt"></i>&nbsp;<span
+                        id="event-day">Fri</span>
+                      <i class="far fa-clock"></i>&nbsp;<span
+                        id="starts-at">00:00</span>
+                      <span class="font-weight-bold">&mdash;&nbsp;</span><span
+                        id="ends-at">00:00</span>
+                      <p>
                   </div>
                 </div>
               </div>
-              <div class="col-sm-8 pl-3">
-                <p class="text-dark font-weight-bold mb-0"><span
-                    id="event-name">Loading...</span></p>
-                <p class="mb-0">
-                  <i class="far fa-calendar-alt"></i>&nbsp;<span
-                    id="event-day">Fri</span>
-                  <i class="far fa-clock"></i>&nbsp;<span
-                    id="starts-at">00:00</span>
-                  <span class="font-weight-bold">&mdash;&nbsp;</span><span
-                    id="ends-at">00:00</span>
-                  <p>
+            </div>
+          </div>
+          <!-- EVENTS END -->
+          <!-- MIXLR PLAY START -->
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-0">
+                <h4 class="card-title"></h4>
+                <p class="h6"><a
+                    href="https://mixlr.com/tralee-masjid/showreel/"
+                    target="_blank" class="text-primary">previous
+                    talks</a></p>
+              </div>
+              <div class="p-md-2 mt-md-4 p-lg-0 mt-lg-0">
+                <div class="row">
+                  <iframe
+                    src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10"
+                    width="100%" height="150px" scrolling="no" frameborder="no"
+                    marginheight="0" marginwidth="0"></iframe>
+                </div>
               </div>
             </div>
           </div>
+          <!-- MIXLR PLAY END -->
         </div>
       </div>
-      <!-- EVENTS END -->
-      <!-- MIXLR PLAY START -->
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-0">
-            <h4 class="card-title"></h4>
-            <p class="h6"><a href="https://mixlr.com/tralee-masjid/showreel/"
-                target="_blank" class="text-primary">previous
-                talks</a></p>
-          </div>
-          <div class="p-md-2 mt-md-4 p-lg-0 mt-lg-0">
-            <div class="row">
-              <iframe
-                src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10"
-                width="100%" height="150px" scrolling="no" frameborder="no"
-                marginheight="0" marginwidth="0"></iframe>
+      <!-- LIVE STREAMING EVENTS END -->
+      <!-- NEWS TAB START -->
+      <div class="tab-pane fade px-1 py-5 show" id="nav-ahadith" role="tabpanel"
+        aria-labelledby="nav-news-tab">
+        <p class="h5">Assalaamu Alaykum,</p>
+        <p class="lead">
+          With the profound changes that the current Pandemic has brought upon
+          with it, we would like to keep you
+          informed about the services and activities at our Masjid.
+        </p>
+        <p class="h5">Jumuah & daily Congregational Salaah</p>
+        <p class="lead">
+          Friday prayers and other congregational prayers remain suspended
+          until further notice due to the ban on
+          public gatherings by the government. We will revise this
+          decision in
+          light of the Government’s announcement
+          after the lockdown. We are taking these measures in line with
+          the
+          Government guidelines and advice so kindly
+          we would appreciate your full co-operation.
+        </p>
+        <a href="#" role="button" data-toggle="modal"
+          data-target="#ramadanAnnouncement">
+          Read more...
+        </a>
+        <!-- HADEETH TAB END -->
+      </div>
+      <!-- NEWS TAB END -->
+      <div class="modal fade" id="ramadanAnnouncement" tabindex="-1"
+        role="dialog" aria-labelledby="ramadanAnnouncementLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered"
+          role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="ramadanAnnouncementLabel">Ramadan News
+              </h5>
+              <button type="button" class="close" data-dismiss="modal"
+                aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p class="h5">Assalaamu Alaykum,</p>
+              <p class="lead">
+                With the profound changes that the current Pandemic has brought
+                upon
+                with it, we would like to keep you
+                informed about the services and activities at our Masjid.
+              </p>
+              <p class="h5">Jumuah & daily Congregational Salaah</p>
+              <p class="lead">
+                Friday prayers and other congregational prayers remain suspended
+                until further notice due to the ban on
+                public gatherings by the government. We will revise this
+                decision in
+                light of the Government’s announcement
+                after the lockdown. We are taking these measures in line with
+                the
+                Government guidelines and advice so kindly
+                we would appreciate your full co-operation.
+              </p>
+              <p class="h5">Ramadhan 1441AH/ 2020</p>
+              <p class="lead">
+                Ramadhan this year is expected to start on Friday 24th April.
+                First
+                Taraweeh Salaah could be performed on
+                Thursday 23rd April. A precise announcement shall be made closer
+                to
+                this date. Please keep updated through
+                our
+                website.
+              </p>
+              <p class="h5">Taraweeh</p>
+              <p class="lead">
+                Everyone is requested to perform their Taraweeh Salaah at home
+                throughout Ramadhan. This is a great
+                opportunity to pray as a family where the mature male will lead
+                the
+                others in Salaah and the women of the
+                house can join.
+              </p>
+              <p class="h5">Children’s Madrasah Classes</p>
+              <p class="lead">
+                The Madrasah shall continue online via the Zoom app. For further
+                information or queries please contact the
+                Imam or Apa.
+              </p>
+              <p class="h5">Womens weekly Class</p>
+              <p class="lead">
+                The weekly class for local women will continue via phone etc.
+                Please
+                contact Apa for further information.
+              </p>
+              <p class="h5">Activities in Ramadhan</p>
+              <p class="lead">
+                To avoid disruption to our normal routine in the Masjid, we have
+                set
+                up a Live Audio platform for all
+                programmes. The following programmes will be Live on <a
+                  href="https://mixlr.com/tralee-masjid" target="_blank">Masjid
+                  Mixlr</a> streaming channel.
+              </p>
+              <ol>
+                <li>Every Wednesday after Asar (approx 8pm) – Hadeeth Lesson
+                </li>
+                <li>Every Friday after Asar (approx 8pm) – Fiqh Masaail Lesson
+                </li>
+                <li>Every Sunday after Asar (approx 8pm) – Bayaan/Speech</li>
+              </ol>
+              <p class="h5">GP/Health Clinic Service</p>
+              <p class="lead">
+                Doctors from our community have volunteered to give their time
+                to
+                the community. For medical consultation or
+                help related to Covid-19 or any other issues call Manor Medical
+                Centre on 0667122599.
+              </p>
+              <p class="h5">Donations for our Masjid projects and services</p>
+              <p class="lead">
+                Please continue to donate generously throughout Ramadhan as it
+                is a
+                month of generosity and spending in the
+                path of Allah. To pay your annual Sadaqatul Fitr of €7 per
+                person or
+                give your Zakaat or any other donations
+                then please contact Dr Altaf Memon on 0866038982 or the Imam on
+                0862440556.
+              </p>
+              <p class="lead">
+                Let us turn to Allah Ta’ala with Dua and Istighfaar in these
+                testing
+                times. May Allah Ta’ala grant everyone
+                protection, ease & comfort. Aameen.
+              </p>
+              <p class="blockquote-footer">Tralee Masjid Management Committee
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary"
+                data-dismiss="modal">Close</button>
+              <a href="assets/pdf/Ramadan_News.pdf" target="_blank"
+                role="button" class="btn btn-info">Download</a>
             </div>
           </div>
         </div>
       </div>
-      <!-- MIXLR PLAY END -->
-    </div>
   </section>
-  <!-- LIVE STREAMING EVENTS END -->
   <!-- WELCOME START -->
   <section class="cp-welcome">
     <div class="container rounded shadow">
