@@ -79,11 +79,11 @@ h6 {
 
 .with-arrow .nav-link.active::after {
 	content: '';
-	border-left: 12px solid transparent;
-	border-right: 12px solid transparent;
-	border-top: 12px solid #d94e2b;
+	border-left: 20px solid transparent;
+	border-right: 20px solid transparent;
+	border-top: 20px solid #d94e2b;
 	position: absolute;
-	bottom: -12px;
+	bottom: -20px;
 	left: 50%;
 	transform: translateX(-50%);
 	display: block;
