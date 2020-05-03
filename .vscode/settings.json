@@ -2,6 +2,7 @@
     "html.autoClosingTags": true,
     "html.format.endWithNewline": true,
     "html.format.enable": true,
-    "html.format.wrapLineLength": 120,
+    "html.format.wrapLineLength": 80,
     "html.validate.styles": true,
+    "editor.formatOnSave": true
 }

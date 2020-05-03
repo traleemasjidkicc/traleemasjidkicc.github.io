@@ -3,40 +3,45 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description"
     content="To cater for the religious, cultural and social needs of Muslims in the county of Kerry.">
-  <meta name="keywords" content="masjid, mosque, religion, islam, allah, god, faith, kicc">
+  <meta name="keywords"
+    content="masjid, mosque, religion, islam, allah, god, faith, kicc">
   <meta name="author" content="Nazmul Alam">
-  <meta name="google-site-verification" content="gWYDAt0Oeo_Lpl4fvoNiP1xGihq4Ygsy5BAjGYHg4gU" />
+  <meta name="google-site-verification"
+    content="gWYDAt0Oeo_Lpl4fvoNiP1xGihq4Ygsy5BAjGYHg4gU" />
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-
   <title>Tralee Mosque: Kerry Islamic Cultural Centre</title>
-
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet"
+    href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/home.css">
-
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
-    integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE=" crossorigin="anonymous" />
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
+    integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE="
+    crossorigin="anonymous" />
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-    </script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-    </script>
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous">
+  </script>
+  <script
+    src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous">
+  </script>
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-    </script>
-
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous">
+  </script>
   <script>
-
     let i = 2;
-
 
     $(document).ready(function () {
       var radius = 200;
@@ -44,16 +49,17 @@
       var container = $('.dotCircle');
       var width = container.width();
       radius = width / 2.5;
-
       var height = container.height();
-      var angle = 0, step = (2 * Math.PI) / fields.length;
+      var angle = 0,
+        step = (2 * Math.PI) / fields.length;
       fields.each(function () {
-        var x = Math.round(width / 2 + radius * Math.cos(angle) - $(this).width() / 2);
-        var y = Math.round(height / 2 + radius * Math.sin(angle) - $(this).height() / 2);
+        var x = Math.round(width / 2 + radius * Math.cos(angle) - $(
+          this).width() / 2);
+        var y = Math.round(height / 2 + radius * Math.sin(angle) - $(
+          this).height() / 2);
         if (window.console) {
           console.log($(this).text(), x, y);
         }
-
         $(this).css({
           left: x + 'px',
           top: y + 'px'
@@ -61,16 +67,13 @@
         angle += step;
       });
 
-
       $('.itemDot').click(function () {
-
         var dataTab = $(this).data("tab");
         $('.itemDot').removeClass('active');
         $(this).addClass('active');
         $('.CirItem').removeClass('active');
         $('.CirItem' + dataTab).addClass('active');
         i = dataTab;
-
         $('.dotCircle').css({
           "transform": "rotate(" + (360 - (i - 1) * 36) + "deg)",
           "transition": "2s"
@@ -80,9 +83,7 @@
           "transition": "1s"
         });
 
-
       });
-
       setInterval(function () {
         var dataTab = $('.itemDot.active').data("tab");
         if (dataTab > 6 || i > 6) {
@@ -95,7 +96,6 @@
         $('.CirItem' + i).addClass('active');
         i++;
 
-
         $('.dotCircle').css({
           "transform": "rotate(" + (360 - (i - 2) * 36) + "deg)",
           "transition": "2s"
@@ -104,14 +104,18 @@
           "transform": "rotate(" + ((i - 2) * 36) + "deg)",
           "transition": "1s"
         });
-
       }, 5000);
-
     });
-  </script>
 
-  <script type="text/javascript" defer src="https://donorbox.org/install-popup-button.js"></script>
-  <script>window.DonorBox = { widgetLinkClassName: 'custom-dbox-popup' }</script>
+  </script>
+  <script type="text/javascript" defer
+    src="https://donorbox.org/install-popup-button.js"></script>
+  <script>
+    window.DonorBox = {
+      widgetLinkClassName: 'custom-dbox-popup'
+    }
+
+  </script>
 </head>
 
 <body>
@@ -121,12 +125,14 @@
     <div class="container">
       <!-- Nab brand -->
       <a class="navbar-brand" href="/">
-        <img src="assets/images/ic_launcher_round.png" width="35%" height="35%" class="d-inline-block align-center"
+        <img src="assets/images/ic_launcher_round.png" width="35%" height="35%"
+          class="d-inline-block align-center"
           alt="Kerry Islamic Cultural Centre">
         KICC
       </a>
-      <button class="navbar-toggler collapsed border-0" type="button" data-toggle="collapse"
-        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+      <button class="navbar-toggler collapsed border-0" type="button"
+        data-toggle="collapse" data-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false"
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         <div class="close-icon py-2"><i class="fas fa-times fa-lg"></i></div>
@@ -136,19 +142,23 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/">Home <span
+                class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="about.html">About</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+              role="button" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
               Services
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="madrasa.html">Children's Madrasa</a>
-              <a class="dropdown-item" href="activities.html">Masjid Programmes</a>
+              <a class="dropdown-item" href="madrasa.html">Children's
+                Madrasa</a>
+              <a class="dropdown-item" href="activities.html">Masjid
+                Programmes</a>
               <a class="dropdown-item" href="sermons.html">Weekly Sermons</a>
             </div>
           </li>
@@ -159,11 +169,14 @@
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-md-0 mr-lg-2 active" role="button" href="https://donorbox.org/ramadan-2020-appeal">Donate</a>
+            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-md-0 mr-lg-2 active"
+              role="button"
+              href="https://donorbox.org/ramadan-2020-appeal">Donate</a>
           </li>
           <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle btn btn-danger btn-lg active" href="#" id="navbarDropdown" role="button"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle btn btn-danger btn-lg active"
+              href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Salah Times
             </a>
             <div class="dropdown-menu active" aria-labelledby="navbarDropdown">
@@ -207,9 +220,11 @@
                 </tbody>
               </table>
               <div class="col-sm-12 center-block text-center">
-                <p class="h6">Today's Sunrise is at <span id="nav-sunrise"></span></p>
-                <a class="badge badge-info" id="salah-times" role="button" href="assets/pdf/APR2020.pdf"
-                  target="_blank"><span id="nav-cur-month"></span> Timetable</a>
+                <p class="h6">Today's Sunrise is at <span
+                    id="nav-sunrise"></span></p>
+                <a class="badge badge-info" id="salah-times" role="button"
+                  href="assets/pdf/APR2020.pdf" target="_blank"><span
+                    id="nav-cur-month"></span> Timetable</a>
               </div>
             </div>
           </li>
@@ -219,124 +234,149 @@
     </div>
   </nav>
   <!-- END OF NAV -->
-
   <!-- CAROUSEL START -->
   <header>
-    <div id="carouselExampleIndicators" class="carousel slide d-none" data-ride="carousel">
+    <div id="carouselExampleIndicators" class="carousel slide d-none"
+      data-ride="carousel">
       <ol class="carousel-indicators">
-        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="0"
+          class="active"></li>
         <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
       </ol>
       <div class="carousel-inner" role="listbox">
         <!-- Slide One - Set the background image for this slide in the line below -->
-        <div class="carousel-item active" style="background-image: url('assets/images/tralee-masjid-bp-new.jpeg')">
+        <div class="carousel-item active"
+          style="background-image: url('assets/images/tralee-masjid-bp-new.jpeg')">
           <div class="carousel-caption d-none d-md-block">
             <h2 class="display-4">Urgent Appeal</h2>
             <p class="lead">Donate to the KICC Construction Project</p>
-            <a class="btn btn-success" href="projects.html#new-masjid" role="button">Donate Now</a>
+            <a class="btn btn-success" href="projects.html#new-masjid"
+              role="button">Donate Now</a>
           </div>
         </div>
         <!-- Slide Two - Set the background image for this slide in the line below -->
-        <div class="carousel-item" style="background-image: url('assets/images/tralee-masjid-top1-dusk.jpeg')">
+        <div class="carousel-item"
+          style="background-image: url('assets/images/tralee-masjid-top1-dusk.jpeg')">
           <div class="carousel-caption d-none d-md-block">
             <h2 class="display-4">O MANKIND</h2>
-            <p class="lead">Remember the favour of Allah (سبحانہ وتعالی) upon you.</p>
+            <p class="lead">Remember the favour of Allah (سبحانہ وتعالی) upon
+              you.</p>
           </div>
         </div>
         <!-- Slide Three - Set the background image for this slide in the line below -->
-        <div class="carousel-item" style="background-image: url('assets/images/tralee-masjid-top-dusk.jpeg')">
+        <div class="carousel-item"
+          style="background-image: url('assets/images/tralee-masjid-top-dusk.jpeg')">
           <div class="carousel-caption d-none d-md-block">
             <h2 class="display-4">Kerry Islamic Cultural Centre</h2>
-            <p class="lead">When things are too hard to handle, retreat and count the blessings of Allah (سبحانہ
+            <p class="lead">When things are too hard to handle, retreat and
+              count the blessings of Allah (سبحانہ
               وتعالی).</p>
           </div>
         </div>
       </div>
-      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <a class="carousel-control-prev" href="#carouselExampleIndicators"
+        role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
       </a>
-      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <a class="carousel-control-next" href="#carouselExampleIndicators"
+        role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
     </div>
   </header>
   <!-- CAROUSEL END -->
-
   <!-- RAMADAN BANNER START -->
   <div class="bg-cover-2 text-white">
     <div class="container py-5 text-center">
       <h1 class="display-4 font-weight-bold">Ramadan Kareem</h1>
       <div class="pb-2">
-        <a href="assets/pdf/RAMADAN2020.pdf" target="_blank" role="button" class="btn btn-light btn-lg">Download Ramadan
+        <a href="assets/pdf/RAMADAN2020.pdf" target="_blank" role="button"
+          class="btn btn-light btn-lg">Download Ramadan
           Timetable</a>
       </div>
-      <button type="button" class="btn btn-dark btn-lg" data-toggle="modal" data-target="#ramadanAnnouncement">
+      <button type="button" class="btn btn-dark btn-lg" data-toggle="modal"
+        data-target="#ramadanAnnouncement">
         Important Ramadan News
       </button>
       <div class="row justify-content-md-center pt-5">
         <button class="btn btn-default circle-button">
-          <h6 class="font-weight-bold">Imsak</h6> <span id="banner-imsak-time">03:10 am</span>
+          <h6 class="font-weight-bold">Imsak</h6> <span
+            id="banner-imsak-time">03:10 am</span>
         </button>
         <button class="btn btn-default circle-button">
-          <h6 class="font-weight-bold">Iftaar</h6><span id="banner-iftaar-time">09:08 pm</span>
+          <h6 class="font-weight-bold">Iftaar</h6><span
+            id="banner-iftaar-time">09:08 pm</span>
         </button>
       </div>
     </div>
   </div>
-
   <div class="modal fade" id="ramadanAnnouncement" tabindex="-1" role="dialog"
     aria-labelledby="ramadanAnnouncementLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="ramadanAnnouncementLabel">Ramadan News</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <h5 class="modal-title" id="ramadanAnnouncementLabel">Ramadan News
+          </h5>
+          <button type="button" class="close" data-dismiss="modal"
+            aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <p class="h5">Assalaamu Alaykum,</p>
           <p class="lead">
-            With the profound changes that the current Pandemic has brought upon with it, we would like to keep you
+            With the profound changes that the current Pandemic has brought upon
+            with it, we would like to keep you
             informed about the services and activities at our Masjid.
           </p>
           <p class="h5">Jumuah & daily Congregational Salaah</p>
           <p class="lead">
-            Friday prayers and other congregational prayers remain suspended until further notice due to the ban on
-            public gatherings by the government. We will revise this decision in light of the Government’s announcement
-            after the lockdown. We are taking these measures in line with the Government guidelines and advice so kindly
+            Friday prayers and other congregational prayers remain suspended
+            until further notice due to the ban on
+            public gatherings by the government. We will revise this decision in
+            light of the Government’s announcement
+            after the lockdown. We are taking these measures in line with the
+            Government guidelines and advice so kindly
             we would appreciate your full co-operation.
           </p>
           <p class="h5">Ramadhan 1441AH/ 2020</p>
           <p class="lead">
-            Ramadhan this year is expected to start on Friday 24th April. First Taraweeh Salaah could be performed on
-            Thursday 23rd April. A precise announcement shall be made closer to this date. Please keep updated through
+            Ramadhan this year is expected to start on Friday 24th April. First
+            Taraweeh Salaah could be performed on
+            Thursday 23rd April. A precise announcement shall be made closer to
+            this date. Please keep updated through
             our
             website.
           </p>
           <p class="h5">Taraweeh</p>
           <p class="lead">
-            Everyone is requested to perform their Taraweeh Salaah at home throughout Ramadhan. This is a great
-            opportunity to pray as a family where the mature male will lead the others in Salaah and the women of the
+            Everyone is requested to perform their Taraweeh Salaah at home
+            throughout Ramadhan. This is a great
+            opportunity to pray as a family where the mature male will lead the
+            others in Salaah and the women of the
             house can join.
           </p>
           <p class="h5">Children’s Madrasah Classes</p>
           <p class="lead">
-            The Madrasah shall continue online via the Zoom app. For further information or queries please contact the
+            The Madrasah shall continue online via the Zoom app. For further
+            information or queries please contact the
             Imam or Apa.
           </p>
           <p class="h5">Womens weekly Class</p>
           <p class="lead">
-            The weekly class for local women will continue via phone etc. Please contact Apa for further information.
+            The weekly class for local women will continue via phone etc. Please
+            contact Apa for further information.
           </p>
           <p class="h5">Activities in Ramadhan</p>
           <p class="lead">
-            To avoid disruption to our normal routine in the Masjid, we have set up a Live Audio platform for all
-            programmes. The following programmes will be Live on <a href="https://mixlr.com/tralee-masjid"
-              target="_blank">Masjid Mixlr</a> streaming channel.
+            To avoid disruption to our normal routine in the Masjid, we have set
+            up a Live Audio platform for all
+            programmes. The following programmes will be Live on <a
+              href="https://mixlr.com/tralee-masjid" target="_blank">Masjid
+              Mixlr</a> streaming channel.
           </p>
           <ol>
             <li>Every Wednesday after Asar (approx 8pm) – Hadeeth Lesson</li>
@@ -345,30 +385,37 @@
           </ol>
           <p class="h5">GP/Health Clinic Service</p>
           <p class="lead">
-            Doctors from our community have volunteered to give their time to the community. For medical consultation or
-            help related to Covid-19 or any other issues call Manor Medical Centre on 0667122599.
+            Doctors from our community have volunteered to give their time to
+            the community. For medical consultation or
+            help related to Covid-19 or any other issues call Manor Medical
+            Centre on 0667122599.
           </p>
           <p class="h5">Donations for our Masjid projects and services</p>
           <p class="lead">
-            Please continue to donate generously throughout Ramadhan as it is a month of generosity and spending in the
-            path of Allah. To pay your annual Sadaqatul Fitr of €7 per person or give your Zakaat or any other donations
-            then please contact Dr Altaf Memon on 0866038982 or the Imam on 0862440556.
+            Please continue to donate generously throughout Ramadhan as it is a
+            month of generosity and spending in the
+            path of Allah. To pay your annual Sadaqatul Fitr of €7 per person or
+            give your Zakaat or any other donations
+            then please contact Dr Altaf Memon on 0866038982 or the Imam on
+            0862440556.
           </p>
           <p class="lead">
-            Let us turn to Allah Ta’ala with Dua and Istighfaar in these testing times. May Allah Ta’ala grant everyone
+            Let us turn to Allah Ta’ala with Dua and Istighfaar in these testing
+            times. May Allah Ta’ala grant everyone
             protection, ease & comfort. Aameen.
           </p>
           <p class="blockquote-footer">Tralee Masjid Management Committee</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <a href="assets/pdf/Ramadan_News.pdf" target="_blank" role="button" class="btn btn-info">Download</a>
+          <button type="button" class="btn btn-secondary"
+            data-dismiss="modal">Close</button>
+          <a href="assets/pdf/Ramadan_News.pdf" target="_blank" role="button"
+            class="btn btn-info">Download</a>
         </div>
       </div>
     </div>
   </div>
   <!-- RAMADAN BANNER END -->
-
   <!-- LIVE STREAMING EVENTS START -->
   <section class="container">
     <div class="card-deck py-3">
@@ -377,28 +424,33 @@
         <div class="card-body">
           <div class="d-flex justify-content-between mb-3">
             <p class="h4 card-title">Next Up&hellip;</p>
-            <p class="h6"><a href="https://mixlr.com/tralee-masjid/events/" target="_blank"
-                class="text-primary">more</a></p>
+            <p class="h6"><a href="https://mixlr.com/tralee-masjid/events/"
+                target="_blank" class="text-primary">more</a></p>
           </div>
           <div class="border p-3 mb-4">
             <div class="row">
               <div class="col-sm-4 border-right-lg border-right-md-0">
                 <div class="d-flex justify-content-center align-items-center">
-                  <p class="h1 mb-0 mr-2 text-primary font-weight-normal"><span class="badge badge-success"
-                      id="event-date">01</span></p>
+                  <p class="h1 mb-0 mr-2 text-primary font-weight-normal"><span
+                      class="badge badge-success" id="event-date">01</span></p>
                   <div>
-                    <p class="font-weight-bold mb-0 text-dark"><span class="text-uppercase" id="event-month">Jan</span>
+                    <p class="font-weight-bold mb-0 text-dark"><span
+                        class="text-uppercase" id="event-month">Jan</span>
                     </p>
                     <p class="mb-0"><span id="event-year">2020</span></p>
                   </div>
                 </div>
               </div>
               <div class="col-sm-8 pl-3">
-                <p class="text-dark font-weight-bold mb-0"><span id="event-name">Loading...</span></p>
+                <p class="text-dark font-weight-bold mb-0"><span
+                    id="event-name">Loading...</span></p>
                 <p class="mb-0">
-                  <i class="far fa-calendar-alt"></i>&nbsp;<span id="event-day">Fri</span>
-                  <i class="far fa-clock"></i>&nbsp;<span id="starts-at">00:00</span>
-                  <span class="font-weight-bold">&mdash;&nbsp;</span><span id="ends-at">00:00</span>
+                  <i class="far fa-calendar-alt"></i>&nbsp;<span
+                    id="event-day">Fri</span>
+                  <i class="far fa-clock"></i>&nbsp;<span
+                    id="starts-at">00:00</span>
+                  <span class="font-weight-bold">&mdash;&nbsp;</span><span
+                    id="ends-at">00:00</span>
                   <p>
               </div>
             </div>
@@ -406,20 +458,21 @@
         </div>
       </div>
       <!-- EVENTS END -->
-
       <!-- MIXLR PLAY START -->
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between mb-0">
             <h4 class="card-title"></h4>
-            <p class="h6"><a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank"
-                class="text-primary">previous
+            <p class="h6"><a href="https://mixlr.com/tralee-masjid/showreel/"
+                target="_blank" class="text-primary">previous
                 talks</a></p>
           </div>
           <div class="p-md-2 mt-md-4 p-lg-0 mt-lg-0">
             <div class="row">
-              <iframe src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10" width="100%"
-                height="150px" scrolling="no" frameborder="no" marginheight="0" marginwidth="0"></iframe>
+              <iframe
+                src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10"
+                width="100%" height="150px" scrolling="no" frameborder="no"
+                marginheight="0" marginwidth="0"></iframe>
             </div>
           </div>
         </div>
@@ -428,21 +481,26 @@
     </div>
   </section>
   <!-- LIVE STREAMING EVENTS END -->
-
   <!-- WELCOME START -->
   <section class="cp-welcome">
     <div class="container rounded shadow">
       <div class="row">
         <div class="col-md-5 d-none d-md-block">
-          <img src="assets/images/welcome-pic.png" class="img-fluid mb-4 mb-lg-0" alt="Islam"> </div>
+          <img src="assets/images/welcome-pic.png"
+            class="img-fluid mb-4 mb-lg-0" alt="Islam"> </div>
         <div class="col-md-7">
           <div class="cp-welcome-content">
             <h2>About KICC</h2>
-            <p>Welcome to the official website of Kerry Islamic Cultural Centre, Tralee. </p>
-            <p>Our objective is to promote religion in accordance with the tenets and doctrines of the Islamic faith
-              while adhering to Islamic values and we are committed to the general welfare of all our members so that
-              they may contribute to the well being of the community at large.</p>
-            <p>We promote education and teachings of the Islamic faith for the benefit of the Muslim community in
+            <p>Welcome to the official website of Kerry Islamic Cultural Centre,
+              Tralee. </p>
+            <p>Our objective is to promote religion in accordance with the
+              tenets and doctrines of the Islamic faith
+              while adhering to Islamic values and we are committed to the
+              general welfare of all our members so that
+              they may contribute to the well being of the community at large.
+            </p>
+            <p>We promote education and teachings of the Islamic faith for the
+              benefit of the Muslim community in
               Tralee, Co Kerry.</p>
             <a href="about.html#intro" class="btn btn-success">Read More</a>
           </div>
@@ -451,14 +509,14 @@
     </div>
   </section>
   <!-- WELCOME END -->
-
   <!-- SALAH TIMES START -->
   <section class="clearfix">
     <div class="salah-times">
       <div class="container">
         <div class="row">
           <div class="section-title">
-            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png" style="transition-delay: 0ms;">
+            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png"
+              style="transition-delay: 0ms;">
             <h2>Salah Times</h2>
           </div>
         </div>
@@ -506,12 +564,14 @@
         </div>
         <div class="row">
           <div class="col-sm-12 center-block text-center">
-            <p class="h4 p-2">Today's Sunrise is at <span id="sunrise"></span></p>
+            <p class="h4 p-2">Today's Sunrise is at <span id="sunrise"></span>
+            </p>
           </div>
         </div>
         <div class="row">
           <div class="col-sm-12 center-block text-center">
-            <a href="#" target="_blank" class="btn btn-outline-light" id="salah-times-body" role="button">Download <span
+            <a href="#" target="_blank" class="btn btn-outline-light"
+              id="salah-times-body" role="button">Download <span
                 id="cur-month"></span> Timetable</a>
           </div>
         </div>
@@ -519,7 +579,6 @@
     </div>
   </section>
   <!-- SALAH TIMES END -->
-
   <!-- UPCOMING EVENTS START -->
   <div class="blog-home2 py-5">
     <div class="container">
@@ -541,7 +600,9 @@
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
             <a href="#">
-              <img class="card-img-top" src="assets/images/Daily_Activities.jpeg" alt="Daily Activities">
+              <img class="card-img-top"
+                src="assets/images/Daily_Activities.jpeg"
+                alt="Daily Activities">
             </a>
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Daily<span class="d-block"></span></div>
@@ -552,7 +613,9 @@
         <!-- Column -->
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
-            <a href="#"><img class="card-img-top" src="assets/images/Masjid_Announcement.png" alt="Announcement"></a>
+            <a href="#"><img class="card-img-top"
+                src="assets/images/Masjid_Announcement.png"
+                alt="Announcement"></a>
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Wed<span class="d-block" id="women-class"></span></div> -->
             <!-- <h5 class="font-weight-medium mt-3"><a href="#"
@@ -562,7 +625,8 @@
         <!-- Column -->
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
-            <a href="#"><img class="card-img-top" src="assets/images/Madrasa_Announcement.jpeg"
+            <a href="#"><img class="card-img-top"
+                src="assets/images/Madrasa_Announcement.jpeg"
                 alt="Madrasa Announcement"></a>
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Friday<span class="d-block" id="tafseer">23</span></div>
@@ -574,7 +638,6 @@
     </div>
   </div>
   <!-- UPCOMING EVENTS END -->
-
   <!-- OUR SERVICES START -->
   <section class="pricing py-5">
     <div class="container pb-5">
@@ -592,17 +655,27 @@
         <div class="col-lg-4">
           <div class="card mb-5 mb-lg-0">
             <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">Religious</h5>
-              <h6 class="card-price text-center"><i class="fas fa-star-and-crescent fa-2x"></i></span></h6>
+              <h5 class="card-title text-muted text-uppercase text-center">
+                Religious</h5>
+              <h6 class="card-price text-center"><i
+                  class="fas fa-star-and-crescent fa-2x"></i></span></h6>
               <hr>
               <ul class="fa-ul">
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Five Daily Prayers</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Friday's Jumu'ah Prayer</strong>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Five
+                  Daily Prayers</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span><strong>Friday's Jumu'ah
+                    Prayer</strong>
                 </li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Congregational Taraweeh Prayer</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid Prayers
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Congregational Taraweeh
+                  Prayer</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid
+                  Prayers
                 </li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Marriage and Funeral Services</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Marriage and Funeral
+                  Services</li>
               </ul>
             </div>
           </div>
@@ -611,15 +684,23 @@
         <div class="col-lg-4">
           <div class="card mb-5 mb-lg-0">
             <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">Educational</h5>
-              <h6 class="card-price text-center"><i class="fas fa-book fa-2x"></i></span></h6>
+              <h5 class="card-title text-muted text-uppercase text-center">
+                Educational</h5>
+              <h6 class="card-price text-center"><i
+                  class="fas fa-book fa-2x"></i></span></h6>
               <hr>
               <ul class="fa-ul">
-                <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Children's Madrasa</strong></li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Women's Qur'an Class</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Men's Qur'an Class</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Tafseer of the Qur'an</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Islamic Lectures</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span><strong>Children's
+                    Madrasa</strong></li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Women's Qur'an Class</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Men's
+                  Qur'an Class</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Tafseer of the Qur'an</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Islamic Lectures</li>
               </ul>
             </div>
           </div>
@@ -628,15 +709,23 @@
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">Social</h5>
-              <h6 class="card-price text-center"><i class="fas fa-users fa-2x"></i></h6>
+              <h5 class="card-title text-muted text-uppercase text-center">
+                Social</h5>
+              <h6 class="card-price text-center"><i
+                  class="fas fa-users fa-2x"></i></h6>
               <hr>
               <ul class="fa-ul">
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid Celebration Gatherings</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Daily Iftar during Ramadan</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>1-to-1 Counselling</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Children's Day Out</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span><strong>Know thy Neighbours
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid
+                  Celebration Gatherings</li>
+                <li><span class="fa-li"><i class="fas fa-check"></i></span>Daily
+                  Iftar during Ramadan</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>1-to-1 Counselling</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span>Children's Day Out</li>
+                <li><span class="fa-li"><i
+                      class="fas fa-check"></i></span><strong>Know thy
+                    Neighbours
                     Programme</strong></li>
               </ul>
             </div>
@@ -646,7 +735,6 @@
     </div>
   </section>
   <!-- OUR SERVICES END -->
-
   <!-- PILLARS OF FAITH START -->
   <section class="iq-features d-none d-sm-block py-5">
     <div class="container">
@@ -691,43 +779,54 @@
             <div class="contentCircle">
               <div class="CirItem title-box active CirItem1">
                 <h2 class="title"><span>Oneness of God</span></h2>
-                <p>We believe that God exists and that He is the Master and Lord of the universe and the only One
-                  deserving of worship, devotion and ultimate obedience. “There is no true God worthy of worship but God
+                <p>We believe that God exists and that He is the Master and Lord
+                  of the universe and the only One
+                  deserving of worship, devotion and ultimate obedience. “There
+                  is no true God worthy of worship but God
                   and Muhammad is the last and final Messenger of God.”
                 </p>
                 <i class="fas fa-hand-point-up"></i>
               </div>
               <div class="CirItem title-box CirItem2">
                 <h2 class="title"><span>Angels</span></h2>
-                <p>We believe that angels exist, believe in the names we are informed of and of their descriptions in
-                  authentic reports. They are created by God and have no share in divinity. Their purpose is to serve
+                <p>We believe that angels exist, believe in the names we are
+                  informed of and of their descriptions in
+                  authentic reports. They are created by God and have no share
+                  in divinity. Their purpose is to serve
                   God and to carry out His commands in the universe.</p>
                 <i class="fas fa-dove"></i>
               </div>
               <div class="CirItem title-box CirItem3">
                 <h2 class="title"><span>Revealed Books</span></h2>
-                <p>We believe that God sent revelations and communicated with His chosen messengers. We believe in the
-                  names of the original scriptures and believe in the truth contained therein which is confirmed by the
+                <p>We believe that God sent revelations and communicated with
+                  His chosen messengers. We believe in the
+                  names of the original scriptures and believe in the truth
+                  contained therein which is confirmed by the
                   Quran.</p>
                 <i class="fas fa-book-open"></i>
               </div>
               <div class="CirItem title-box CirItem4">
                 <h2 class="title"><span>Prophets</span></h2>
-                <p>We believe that God sent human Messengers to remind people to worship God alone on His terms and to
-                  obey His commandments and messengers. They promised reward for those who comply and do good and warned
+                <p>We believe that God sent human Messengers to remind people to
+                  worship God alone on His terms and to
+                  obey His commandments and messengers. They promised reward for
+                  those who comply and do good and warned
                   of a punishment for those who do evil. </p>
                 <i class="fas fa-hands-helping"></i>
               </div>
               <div class="CirItem title-box CirItem5">
                 <h2 class="title"><span>Day of Judgement</span></h2>
-                <p>We believe that we will be brought back to life after death to be Judged by God. Paradise and Hell
-                  are the eternal destination of people based on how they lived their lives and the choices they made.
+                <p>We believe that we will be brought back to life after death
+                  to be Judged by God. Paradise and Hell
+                  are the eternal destination of people based on how they lived
+                  their lives and the choices they made.
                 </p>
                 <i class="fas fa-balance-scale"></i>
               </div>
               <div class="CirItem title-box CirItem6">
                 <h2 class="title"><span>Divine Decree</span></h2>
-                <p>We believe that God knows everything that is to come and He recorded everything in a preserved tablet
+                <p>We believe that God knows everything that is to come and He
+                  recorded everything in a preserved tablet
                   before the creation came into existence. </p>
                 <i class="fas fa-heart"></i>
               </div>
@@ -739,7 +838,6 @@
     </div>
   </section>
   <!-- PILLARS OF FAITH END -->
-
   <!-- PILLARS OF ISLAM START -->
   <section class="clearfix">
     <div class="pillars-islam">
@@ -747,7 +845,8 @@
         <div class="row">
           <div class="section-title">
             <!-- <strong>Bismillah</strong> -->
-            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png" style="transition-delay: 0ms;">
+            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png"
+              style="transition-delay: 0ms;">
             <h2>Pillars Of Islam</h2>
           </div>
         </div>
@@ -827,12 +926,12 @@
     </div>
   </section>
   <!-- PILLARS OF ISLAM END -->
-
   <!-- BANNER START -->
   <section class="clearfix">
     <div class="parallax-section">
       <div class="container">
-        <div class="right-box"> <img src="assets/images/parallax-text.png" alt="Islam"> <strong class="title">Then which
+        <div class="right-box"> <img src="assets/images/parallax-text.png"
+            alt="Islam"> <strong class="title">Then which
             of
             the favours of your Lord will ye deny?</strong>
           <a target="_blank"
@@ -843,42 +942,42 @@
     </div>
   </section>
   <!-- BANNER END -->
-
   <!-- COVID-19 ALERT START -->
-  <div class="alert alert-warning alert-dismissible fade show sticky-footer" role="alert">
-    <p class="h1 text-center">CORONAVIRUS <span class="d-none d-sm-inline">(COVID-19)</span></p>
-    <p class="text-center">Due to the Covid-19 health implications and the Irish Government directive we have <span
-        class="font-weight-bold">suspended all our normal services until further notice</span>.
-      <span class="d-none d-sm-block">Everyone is requested to be punctual with Salah at home and turn to Allah
+  <div class="alert alert-warning alert-dismissible fade show sticky-footer"
+    role="alert">
+    <p class="h1 text-center">CORONAVIRUS <span
+        class="d-none d-sm-inline">(COVID-19)</span></p>
+    <p class="text-center">Due to the Covid-19 health implications and the Irish
+      Government directive we have <span class="font-weight-bold">suspended all
+        our normal services until further notice</span>.
+      <span class="d-none d-sm-block">Everyone is requested to be punctual with
+        Salah at home and turn to Allah
         (سبحانہ وتعالی).</span>
     </p>
-
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <!-- COVID-19 ALERT END -->
-
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4 bg-secondary">
-
     <!-- Footer Links -->
     <div class="container text-center text-md-left">
-
       <!-- Footer links -->
       <div class="row text-center text-md-left mt-3 pb-3">
-
         <!-- Grid column -->
         <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Kerry Islamic Cultural Centre</h6>
-          <p>To cater for the religious, cultural and social needs of Muslims in the county of Kerry.</p>
-          <a href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img
-              alt='Get it on Google Play' src='assets/images/google-play.png' width="60%"></a>
+          <h6 class="text-uppercase mb-4 font-weight-bold">Kerry Islamic
+            Cultural Centre</h6>
+          <p>To cater for the religious, cultural and social needs of Muslims in
+            the county of Kerry.</p>
+          <a
+            href='http://play.google.com/store/apps/details?id=me.nalam.masjid&hl=en_IE'><img
+              alt='Get it on Google Play' src='assets/images/google-play.png'
+              width="60%"></a>
         </div>
         <!-- Grid column -->
-
         <hr class="w-100 clearfix d-md-none">
-
         <!-- Grid column -->
         <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Services</h6>
@@ -896,81 +995,76 @@
           </p>
         </div>
         <!-- Grid column -->
-
         <hr class="w-100 clearfix d-md-none">
-
         <!-- Grid column -->
         <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Useful links</h6>
           <p>
-            <a class="custom-dbox-popup" href="https://donorbox.org/ramadan-2020-appeal">Donate Now</a>
+            <a class="custom-dbox-popup"
+              href="https://donorbox.org/ramadan-2020-appeal">Donate Now</a>
           </p>
           <p>
             <a href="about.html#our-team">Our Team</a>
           </p>
           <p>
-            <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank">Previous Talks</a>
+            <a href="https://mixlr.com/tralee-masjid/showreel/"
+              target="_blank">Previous Talks</a>
           </p>
           <p>
-            <a href="#" target="_blank" id="salah-times-footer"><span id="footer-cur-month"></span> Timetable</a>
+            <a href="#" target="_blank" id="salah-times-footer"><span
+                id="footer-cur-month"></span> Timetable</a>
           </p>
         </div>
-
         <!-- Grid column -->
         <hr class="w-100 clearfix d-md-none">
-
         <!-- Grid column -->
         <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
           <p>
-            <i class="fas fa-mosque fa-lg mr-2"></i> <a href="//goo.gl/maps/HjZtjfAB2JbTvxhi7">Tralee, Kerry,
+            <i class="fas fa-mosque fa-lg mr-2"></i> <a
+              href="//goo.gl/maps/HjZtjfAB2JbTvxhi7">Tralee, Kerry,
               V92
               CC79</a></p>
-
           <p>
-            <i class="fas fa-at fa-lg mr-3"></i> <a href="mailto:mustafapatel@hotmail.com">mustafapatel@hotmail.com</a>
+            <i class="fas fa-at fa-lg mr-3"></i> <a
+              href="mailto:mustafapatel@hotmail.com">mustafapatel@hotmail.com</a>
           </p>
           <p>
-            <i class="fas fa-phone-alt fa-lg mr-3"></i> <a href="tel:+353866038982">‭+353 (0)86-603-8982</a>
+            <i class="fas fa-phone-alt fa-lg mr-3"></i> <a
+              href="tel:+353866038982">‭+353 (0)86-603-8982</a>
           </p>
           <p>
             <i class="fab fa-whatsapp fa-lg mr-3"></i> <a
-              href="//wa.me/447756534767?text=As-salamu alaikum, Imam Mustafa.">+353 (0)86-244-0556‬</a></p>
+              href="//wa.me/447756534767?text=As-salamu alaikum, Imam Mustafa.">+353
+              (0)86-244-0556‬</a></p>
         </div>
         <!-- Grid column -->
-
       </div>
       <!-- Footer links -->
-
       <hr>
-
       <!-- Grid row -->
       <div class="row d-flex align-items-center">
-
         <!-- Grid column -->
         <div class="col-md-7 col-lg-8">
-
           <!--Copyright-->
-          <p class="text-center text-md-left">© <span id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
+          <p class="text-center text-md-left">© <span
+              id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
             <i class="fas fa-heart" style="color:red"></i>
-            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a href="//nalam.me" rel="external"
-              target="_blank">
+            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a
+              href="//nalam.me" rel="external" target="_blank">
               <strong> Nazmul Alam</strong>
             </a>
           </p>
-
         </div>
         <!-- Grid column -->
-
         <!-- Grid column -->
         <div class="col-md-5 col-lg-4 ml-lg-0">
-
           <!-- Social buttons -->
           <div class="text-center text-md-right">
             <ul class="list-unstyled list-inline">
               <li class="list-inline-item">
-                <a class="btn-floating btn-sm rgba-white-slight mx-1" target="_blank"
-                  href="https://github.com/traleemasjidkicc">
+                <a class="btn-floating btn-sm rgba-white-slight mx-1"
+                  target="_blank" href="https://github.com/traleemasjidkicc">
                   <i class="fab fa-github"></i>
                 </a>
               </li>
@@ -986,21 +1080,18 @@
               </li>
             </ul>
           </div>
-
         </div>
         <!-- Grid column -->
-
       </div>
       <!-- Grid row -->
-
     </div>
     <!-- Footer Links -->
-
   </footer>
   <!-- FOOTER END -->
-
   <script>
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
+      "SEP", "OCT", "NOV", "DEC"
+    ];
     var d = new Date();
     var asset = "assets/pdf/RAMADAN2020.pdf";
     // var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
@@ -1009,16 +1100,15 @@
     document.getElementById('salah-times-footer').href = asset;
     document.getElementById('salah-times-body').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
-
     // var wed = new Date();
     // var wednesday = 3 - d.getDay();
     // wed.setDate(wed.getDate() + wednesday);
     // document.getElementById('women-class').innerHTML = wed.getDate();
-
     // var fri = new Date();
     // var friday = 5 - d.getDay();
     // fri.setDate(fri.getDate() + friday)
     // document.getElementById('tafseer').innerHTML = fri.getDate();
+
   </script>
   <script>
     var isToday = function (someDate) {
@@ -1027,19 +1117,19 @@
         someDate.getMonth() == today.getMonth() &&
         someDate.getFullYear() == today.getFullYear()
     }
-
     window.onload = function () {
       var request = new XMLHttpRequest();
       request.responseType = "json";
-      request.open('GET', 'https://api.mixlr.com/users/7752720?source=embed', true);
-
+      request.open('GET', 'https://api.mixlr.com/users/7752720?source=embed',
+        true);
       request.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           var mixlrData = this.response;
           var allEvents = mixlrData.events;
           var sortedEvents = []
           if (allEvents.length > 0) {
-            sortedEvents = allEvents.sort((a, b) => parseInt(a.starts_at_timestamp) - parseInt(b
+            sortedEvents = allEvents.sort((a, b) => parseInt(a
+              .starts_at_timestamp) - parseInt(b
               .starts_at_timestamp));
           }
           var events = {
@@ -1047,38 +1137,43 @@
             starts_at_timestamp: 1577836800,
             ends_at_timestamp: 1609459200
           }
-          var eventsData = (typeof sortedEvents[0] === 'undefined' || sortedEvents[0] == null) ?
+          var eventsData = (typeof sortedEvents[0] === 'undefined' ||
+              sortedEvents[0] == null) ?
             events : sortedEvents[0];
-          var startsAt = new Date(eventsData.starts_at_timestamp * 1000).toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true
-          });
-          var endsAt = new Date(eventsData.ends_at_timestamp * 1000).toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true
-          });
-
+          var startsAt = new Date(eventsData.starts_at_timestamp * 1000)
+            .toLocaleTimeString("en-GB", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true
+            });
+          var endsAt = new Date(eventsData.ends_at_timestamp * 1000)
+            .toLocaleTimeString("en-GB", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true
+            });
           var startAtTimestamp = eventsData.starts_at_timestamp;
-          var eventDate = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
-            day: '2-digit'
-          });
-          var eventMonth = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
-            month: 'short'
-          });
-          var eventYear = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
-            year: 'numeric'
-          });
-          var eventDay = new Date(startAtTimestamp * 1000).toLocaleDateString("en-GB", {
-            weekday: 'long'
-          });
-
+          var eventDate = new Date(startAtTimestamp * 1000)
+            .toLocaleDateString("en-GB", {
+              day: '2-digit'
+            });
+          var eventMonth = new Date(startAtTimestamp * 1000)
+            .toLocaleDateString("en-GB", {
+              month: 'short'
+            });
+          var eventYear = new Date(startAtTimestamp * 1000)
+            .toLocaleDateString("en-GB", {
+              year: 'numeric'
+            });
+          var eventDay = new Date(startAtTimestamp * 1000)
+            .toLocaleDateString("en-GB", {
+              weekday: 'long'
+            });
           if (isToday(new Date(eventsData.starts_at_timestamp * 1000))) {
             eventDay = "Today";
           }
-
-          document.getElementById('event-name').innerHTML = eventsData.title;
+          document.getElementById('event-name').innerHTML = eventsData
+            .title;
           document.getElementById('starts-at').innerHTML = startsAt;
           document.getElementById('ends-at').innerHTML = endsAt;
           document.getElementById('event-day').innerHTML = eventDay;
@@ -1087,71 +1182,92 @@
           document.getElementById('event-year').innerHTML = eventYear;
         }
       };
-
       request.send(null);
     }
+
   </script>
   <script>
     var xmlhttp = new XMLHttpRequest();
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    var monthFullNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
+      "SEP", "OCT", "NOV", "DEC"
+    ];
+    var monthFullNames = ["January", "February", "March", "April", "May",
+      "June", "July", "August", "September",
       "October", "November", "December"
     ];
     var d = new Date();
     xmlhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         var myObj = JSON.parse(this.responseText);
-        document.getElementById("nav-hijri").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriDate;
-
-        document.getElementById("fajr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
-        document.getElementById("nav-fajr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
-        document.getElementById("banner-imsak-time").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].imsakTime;
-        document.getElementById("nav-fajr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].fajarJamahTime
+        document.getElementById("nav-hijri").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].hijriDate;
+        document.getElementById("fajr").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].fajarTime.toLowerCase();
+        document.getElementById("nav-fajr-begins").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
+        document.getElementById("banner-imsak-time").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].imsakTime;
+        document.getElementById("nav-fajr-jamaat").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].fajarJamahTime
           .toLowerCase();
-
-        document.getElementById("sunrise").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].sunriseTime
+        document.getElementById("sunrise").innerHTML = myObj.dailyPrayers[(d
+            .getDate()) - 1].sunriseTime
           .toLowerCase();
-        document.getElementById("nav-sunrise").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].sunriseTime
+        document.getElementById("nav-sunrise").innerHTML = myObj.dailyPrayers[
+            (d.getDate()) - 1].sunriseTime
           .toLowerCase();
-
-        document.getElementById("dhuhr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime.toLowerCase();
-        document.getElementById("nav-zohr-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].dhuharTime
+        document.getElementById("dhuhr").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].dhuharTime.toLowerCase();
+        document.getElementById("nav-zohr-begins").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].dhuharTime
           .toLowerCase();
-        document.getElementById("nav-zohr-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].zohrJamahTime
+        document.getElementById("nav-zohr-jamaat").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].zohrJamahTime
           .toLowerCase();
-
-        document.getElementById("asr").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asrTime.toLowerCase();
-        document.getElementById("nav-asar-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asrTime
+        document.getElementById("asr").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].asrTime.toLowerCase();
+        document.getElementById("nav-asar-begins").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].asrTime
           .toLowerCase();
-        document.getElementById("nav-asar-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].asarJamahTime
+        document.getElementById("nav-asar-jamaat").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].asarJamahTime
           .toLowerCase();
-
-        document.getElementById("maghrib").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime
+        document.getElementById("maghrib").innerHTML = myObj.dailyPrayers[(d
+            .getDate()) - 1].maghribTime
           .toLowerCase();
-        document.getElementById("nav-magrib-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime
+        document.getElementById("nav-magrib-begins").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].maghribTime
           .toLowerCase();
-        document.getElementById("nav-magrib-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].magribJamahTime
+        document.getElementById("nav-magrib-jamaat").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].magribJamahTime
           .toLowerCase();
-        document.getElementById("banner-iftaar-time").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].maghribTime;
-
-        document.getElementById("isha").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime.toLowerCase();
-        document.getElementById("nav-isha-begins").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaTime
+        document.getElementById("banner-iftaar-time").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].maghribTime;
+        document.getElementById("isha").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].ishaTime.toLowerCase();
+        document.getElementById("nav-isha-begins").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].ishaTime
           .toLowerCase();
-        document.getElementById("nav-isha-jamaat").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].ishaJamahTime
+        document.getElementById("nav-isha-jamaat").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
-
         // document.getElementById("cur-month").innerHTML = monthFullNames[d.getMonth()];       
-        document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
-        document.getElementById("nav-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1]
+        document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d
+          .getDate()) - 1].hijriMonthNameEnglish;
+        document.getElementById("nav-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
           .hijriMonthNameEnglish;
-        document.getElementById("footer-cur-month").innerHTML = myObj.dailyPrayers[(d.getDate()) - 1]
+        document.getElementById("footer-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
           .hijriMonthNameEnglish;
       }
     };
-    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] + ".json";
+    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
+      ".json";
     console.log(asset);
     xmlhttp.open("GET", asset, true);
     xmlhttp.send();
+
   </script>
 </body>
 
