@@ -32,7 +32,12 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
   </script>
   <script type="text/javascript" defer src="https://donorbox.org/install-popup-button.js"></script>
-  <script>window.DonorBox = { widgetLinkClassName: 'custom-dbox-popup' }</script>
+  <script>
+    window.DonorBox = {
+      widgetLinkClassName: 'custom-dbox-popup'
+    }
+
+  </script>
 </head>
 
 <body>
@@ -79,7 +84,8 @@
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-md-0 mr-lg-2 active" role="button" href="https://donorbox.org/ramadan-2020-appeal">Donate</a>
+            <a class="nav-link custom-dbox-popup btn btn-success btn-lg mr-md-0 mr-lg-2 active" role="button"
+              href="https://donorbox.org/ramadan-2020-appeal">Donate</a>
           </li>
           <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle btn btn-danger btn-lg active" href="#" id="navbarDropdown" role="button"
@@ -150,7 +156,7 @@
     </div>
   </div>
 
-  
+
   <!-- WEEKLY SERMONS START -->
   <section class="container pt-4 bg-white rounded shadow mb-5">
     <ul class="nav nav-tabs nav-pills flex-column flex-sm-row text-center bg-light border-0 rounded-nav" id="nav-tab"
@@ -172,7 +178,7 @@
       <!-- BAYAAN TAB START -->
       <div class="tab-pane fade px-1 py-5 show active" id="nav-bayaan" role="tabpanel" aria-labelledby="nav-bayaan-tab">
         <iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay"
-          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040209657&color=%231f5a24&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040209657&color=%231f5a24&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true"></iframe>
         <div
           style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
           <a href="https://soundcloud.com/tralee-masjid" title="Kerry Islamic Cultural Centre" target="_blank"
@@ -185,7 +191,7 @@
       <!-- HADEETH TAB START -->
       <div class="tab-pane fade px-1 py-5 show" id="nav-ahadith" role="tabpanel" aria-labelledby="nav-hadith-tab">
         <iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay"
-          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040246908&color=%231f5a24&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040246908&color=%231f5a24&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true"></iframe>
         <div
           style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
           <a href="https://soundcloud.com/tralee-masjid" title="Kerry Islamic Cultural Centre" target="_blank"
@@ -199,7 +205,7 @@
       <!-- NASEEHAH TAB START -->
       <div class="tab-pane fade px-1 py-5 show" id="nav-naseehah" role="tabpanel" aria-labelledby="nav-naseehah-tab">
         <iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay"
-          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040265667&color=%231f5a24&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/1040265667&color=%231f5a24&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=true"></iframe>
         <div
           style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
           <a href="https://soundcloud.com/tralee-masjid" title="Kerry Islamic Cultural Centre" target="_blank"
@@ -361,6 +367,7 @@
     document.getElementById('salah-times').href = asset;
     document.getElementById('salah-times-footer').href = asset;
     document.getElementById('footer-year').innerHTML = d.getFullYear();
+
   </script>
   <script>
     var xmlhttp = new XMLHttpRequest();
@@ -405,6 +412,7 @@
     console.log(asset);
     xmlhttp.open("GET", asset, true);
     xmlhttp.send();
+
   </script>
 </body>
 
