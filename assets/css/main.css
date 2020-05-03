@@ -989,8 +989,8 @@ body .cp-welcome-content p {
 		border-right: 20px solid transparent;
 		border-top: 20px solid #d94e2b;
 		position: absolute;
-		left: 11px;
-		top: -30%;
+		left: 20px;
+		top: -50%;
 		transform: rotate(-90deg);
 		display: block;
 	}
