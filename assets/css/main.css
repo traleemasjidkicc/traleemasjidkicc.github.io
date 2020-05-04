@@ -721,6 +721,7 @@ section.pricing {
 	color: #8d97ad;
 	font-weight: 300;
 }
+
 .blog-home2 h1,
 .blog-home2 h2,
 .blog-home2 h3,
@@ -729,47 +730,59 @@ section.pricing {
 .blog-home2 h6 {
 	color: #3e4555;
 }
+
 .blog-home2 .font-weight-medium {
 	font-weight: 500;
 }
+
 .blog-home2 .bg-light {
 	background-color: #f4f8fa !important;
 }
+
 .blog-home2 .subtitle {
 	color: #8d97ad;
 	line-height: 24px;
 }
+
 .blog-home2 .text-themecolor {
 	color: #316ce8;
 }
+
 .blog-home2 h5 {
 	line-height: 22px;
 	font-size: 18px;
 }
+
 .blog-home2 a.link {
 	color: #3e4555;
 }
+
 .blog-home2 a.link:hover {
 	color: #316ce8;
 }
+
 .blog-home2 .on-hover {
 	-webkit-transition: 0.2s ease-in;
 	-o-transition: 0.2s ease-in;
 	transition: 0.2s ease-in;
 }
+
 .blog-home2 .on-hover:hover {
 	-webkit-transform: translateY(-10px);
 	-ms-transform: translateY(-10px);
 	transform: translateY(-10px);
 }
+
 .blog-home2 .date-pos {
 	right: 10px;
 	top: 10px;
 }
+
 .blog-home2 .date-pos span {
 	font-size: 30px;
 	line-height: 30px;
 }
+
 .blog-home2 .bg-info-gradiant {
 	background: #0D5E10;
 	background: -webkit-linear-gradient(legacy-direction(to right), #0D5E10 0%, rgb(16, 177, 21) 100%);
@@ -786,24 +799,31 @@ section.pricing {
 	width: 100%;
 	float: left;
 }
+
 .cp-welcome .container {
 	background: #fff;
 }
+
 .cp-welcome img {
 	padding: 20px;
 }
+
 .cp-welcome h2 {
 	font-size: 36px;
 }
+
 .cp-welcome-content {
 	padding: 45px 45px 0;
 }
+
 body .cp-welcome-content p {
 	margin: 20px 0;
 }
+
 .cp-welcome .btn {
 	margin-bottom: 15px;
 }
+
 /*************************  Welcome Section End  ****************************/
 /*************************  Pillars Of Islam Section Start  ****************************/
 .section-title {
@@ -812,12 +832,14 @@ body .cp-welcome-content p {
 	float: left;
 	margin-bottom: 30px;
 }
+
 .section-title strong {
 	text-align: center;
 	font-size: 16px;
 	font-weight: 400;
 	color: #222;
 }
+
 .section-title h2,
 .cp-welcome h2,
 .blog-home2 h2 {
@@ -828,16 +850,19 @@ body .cp-welcome-content p {
 	line-height: 50px;
 	color: #222;
 }
+
 .salah-times,
 .pillars-islam {
 	color: #fff;
 }
+
 .salah-times .section-title strong,
 .salah-times .section-title h2,
 .pillars-islam .section-title strong,
 .pillars-islam .section-title h2 {
 	color: #fff;
 }
+
 .salah-times {
 	background: url(../images/salat-times-bg-large.jpg) no-repeat top center fixed;
 	background-size: cover;
@@ -846,6 +871,7 @@ body .cp-welcome-content p {
 	float: left;
 	position: relative;
 }
+
 .pillars-islam {
 	background: url(../images/mos-bg5.png) no-repeat top center fixed;
 	background-size: cover;
@@ -854,6 +880,7 @@ body .cp-welcome-content p {
 	float: left;
 	position: relative;
 }
+
 .salah-times:after,
 .pillars-islam:after {
 	content: "";
@@ -864,11 +891,13 @@ body .cp-welcome-content p {
 	left: 0;
 	top: 0;
 }
+
 .salah-times .container,
 .pillars-islam .container {
 	position: relative;
 	z-index: 99;
 }
+
 .salah-times .features-box {
 	background: url(../images/pillar-bg.png) no-repeat top;
 	width: 177px;
@@ -876,14 +905,17 @@ body .cp-welcome-content p {
 	margin: 10px auto;
 	background-size: 177px 250px;
 }
+
 .salah-times .features-box p,
 .salah-times .features-box h2 {
 	text-align: center;
 	vertical-align: middle;
 }
+
 .salah-times .features-box p {
 	font-size: 20px;
 }
+
 .pillars-islam .features-box span {
 	background: url(../images/poi-bg.png) no-repeat;
 	width: 177px;
@@ -893,19 +925,23 @@ body .cp-welcome-content p {
 	line-height: 177px;
 	margin: 0 auto
 }
+
 .salah-times .text-box,
 .pillars-islam .text-box {
 	text-align: center;
 }
+
 .salah-times .text-box h2 {
 	font-family: 'Cinzel Decorative', cursive;
 	font-size: 15px;
 	font-weight: bold;
 }
+
 .pillars-islam .text-box h2 {
 	font-family: 'Cinzel Decorative', cursive;
 	font-size: 25px;
 }
+
 .pillars-islam .sub {
 	text-align: center;
 	font-size: 14px;
@@ -913,11 +949,13 @@ body .cp-welcome-content p {
 	font-weight: 400;
 	color: #d2973b;
 }
+
 .pillars-islam .features-box i {
 	vertical-align: middle;
 	border-style: none;
 	color: #0d5b5e;
 }
+
 /*************************  Pillars Of Islam Section End  ****************************/
 .sticky-footer {
 	position: fixed;
@@ -927,10 +965,12 @@ body .cp-welcome-content p {
 	color: #000;
 	transition: all 0.250s;
 	z-index: 999;
- }
+}
+
 .sticky-footer p {
 	margin: 0;
 }
+
 .sticky-footer.alert-dismissible .close {
 	top: 50%;
 	transform: translateY(-55%);
@@ -1006,10 +1046,6 @@ body .cp-welcome-content p {
 		width: 100%;
 	}
 
-	.contact4 .contact-box {
-		padding-left: 15px;
-		padding-right: 15px;
-	}
 }
 
 /* col-lg-* - 992px */
@@ -1018,10 +1054,6 @@ body .cp-welcome-content p {
 		width: 100%;
 	}
 
-	.contact4 .right-image {	
-		position: relative;	
-		bottom: -95px;	
-	}	
 }
 
 /* col-lg-* - 992px */
@@ -1036,9 +1068,6 @@ body .cp-welcome-content p {
 		opacity: 1;
 	}
 
-	.contact4 .contact-box {
-		padding: 80px 105px 80px 0px;
-	}
 }
 
 /* col-xl-* - 1200px */
@@ -1046,3 +1075,25 @@ body .cp-welcome-content p {
 
 /* RESPONSIVE END */
 
+
+/* MISC RESPONSIVENESS */
+
+@media (min-width: 1024px) {
+	.contact4 .contact-box {
+		padding: 80px 105px 80px 0px;
+	}
+}
+
+@media (max-width: 767px) {
+	.contact4 .contact-box {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+}
+
+@media (max-width: 1023px) {
+	.contact4 .right-image {
+		position: relative;
+		bottom: -95px;
+	}
+}
