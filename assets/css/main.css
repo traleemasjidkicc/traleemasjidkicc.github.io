@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:300,400,500,700,900|Raleway:300,400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:300,400,500,600,700,900|Ubuntu:300,400,500,600,700,900&display=swap');
 
 /* GLOBALS START */
 body {
-	font-family: 'Raleway', sans-serif;
+	font-family: 'Ubuntu', sans-serif;
 }
 
 h1,
@@ -56,6 +56,10 @@ h6 {
 	color: #fff;
 	text-decoration: none;
 	background-color: #0D5E10;
+}
+
+.navbar {
+	font-weight: 600;
 }
 
 .nav-pills .nav-link.active {
@@ -217,7 +221,6 @@ h6 {
 }
 
 .contact4 {
-	font-family: "Raleway", sans-serif;
 	color: #8d97ad;
 	font-weight: 300;
 }
@@ -309,14 +312,12 @@ h6 {
 .schedule {
 	padding: 100px 0px;
 	background-color: #ecedf0;
-	font-family: 'Titillium Web';
 }
 
 .schedule-tag {
 	padding: 3px 8px;
 	margin-right: 15px;
 	width: 90px;
-	font-family: 'Titillium Web';
 	text-align: center;
 }
 
