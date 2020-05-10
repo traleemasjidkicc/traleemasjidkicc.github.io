@@ -40,6 +40,8 @@ h6 {
 
 .bg-custom {
 	color: #fff;
+	width: 100%;
+	min-height: 40vh;
 	background: #5e0d5b;
 	background: linear-gradient(to right, #100d5e, #5e0d5b);
 }
@@ -994,14 +996,6 @@ body .cp-welcome-content p {
 		box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.15) !important;
 	}
 
-	.rounded-nav {
-		border-radius: 50rem !important;
-	}
-
-	.rounded-nav .nav-link {
-		border-radius: 50rem !important;
-	}
-
 	.holderCircle {
 		width: 300px;
 		height: 300px;
@@ -1077,7 +1071,15 @@ body .cp-welcome-content p {
 
 
 /* MISC RESPONSIVENESS */
-
+@media (min-width: 576px) {
+	.rounded-nav {
+	  border-radius: 50rem !important;
+	}
+	.rounded-nav .nav-link {
+		border-radius: 50rem !important;
+	  }
+  }
+  
 @media (min-width: 1024px) {
 	.contact4 .contact-box {
 		padding: 80px 105px 80px 0px;
