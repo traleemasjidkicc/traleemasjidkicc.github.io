@@ -29,16 +29,16 @@
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous">
-  </script>
+    </script>
   <script
     src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous">
-  </script>
+    </script>
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
-  </script>
+    </script>
 
   <script type="text/javascript" defer
     src="https://donorbox.org/install-popup-button.js"></script>
@@ -226,22 +226,23 @@
     <div class="container py-5 text-center">
       <h1 class="display-4 font-weight-bold">Eid Mubarak</h1>
       <h2 class="display-5 font-weight-medium">Sunday, May 24th</h2>
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post"
+        target="_top">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" value="GBN4S594YCXAL" />
-        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-        <img alt="" border="0" src="https://www.paypal.com/en_IE/i/scr/pixel.gif" width="1" height="1" />
+        <input type="image"
+          src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"
+          border="0" name="submit"
+          title="PayPal - The safer, easier way to pay online!"
+          alt="Donate with PayPal button" />
+        <img alt="" border="0"
+          src="https://www.paypal.com/en_IE/i/scr/pixel.gif" width="1"
+          height="1" />
+      </form>
         </form>        
-      <div class="row justify-content-sm-center pt-5">
-        <button class="btn btn-default circle-button">
-          <h6 class="font-weight-bold">Imsak</h6> <span
-            id="banner-imsak-time">03:10 am</span>
-        </button>
-        <button class="btn btn-default circle-button">
-          <h6 class="font-weight-bold">Iftaar</h6><span
-            id="banner-iftaar-time">09:08 pm</span>
-        </button>
-      </div>
+      </form>
+        </form>        
+      </form>
     </div>
   </div>
   <!-- RAMADAN BANNER END -->
@@ -303,7 +304,7 @@
                           id="starts-at">00:00</span>
                         <span class="font-weight-bold">&mdash;&nbsp;</span><span
                           id="ends-at">00:00</span>
-                        <p>
+                      <p>
                     </div>
                   </div>
                 </div>
@@ -343,12 +344,19 @@
         aria-labelledby="nav-news-tab">
         <div class="row">
           <div class="col-md-12 pl-4 pb-4">
-            <h4 class="font-weight-bold">Eid Mubarak - Sunday, 24th May 2020</h4>
+            <h4 class="font-weight-bold">Eid Mubarak - Sunday, 24th May 2020
+            </h4>
             <p>
-              Unfortunately due to the current pandemic, there will be no gathering of the Eid Salaah. Everyone is requested to perform general 2 or 4 Rakaat Nafl Salaah at home during the usual Eid Salaah time and celebrate the blessed day of Eid keeping in mind the guidelines laid out by the government regarding social distancing etc.
+              Unfortunately due to the current pandemic, there will be no
+              gathering of the Eid Salaah. Everyone is requested to perform
+              general 2 or 4 Rakaat Nafl Salaah at home during the usual Eid
+              Salaah time and celebrate the blessed day of Eid keeping in mind
+              the guidelines laid out by the government regarding social
+              distancing etc.
             </p>
             <p>
-              Sadaqatul Fitr – €7 per person. Kindly contact the Imam on 0862440556 or Dr Altaf Memon on 0866038982 for payment.
+              Sadaqatul Fitr – €7 per person. Kindly contact the Imam on
+              0862440556 or Dr Altaf Memon on 0866038982 for payment.
             </p>
             <p>
               Eid Mubarak to you and your family.
@@ -358,7 +366,7 @@
             </p>
           </div>
         </div>
-        
+
         <!-- <a href="#" role="button" data-toggle="modal"
           data-target="#ramadanAnnouncement">
           Read more...
@@ -611,8 +619,7 @@
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
             <a href="#">
-              <img class="card-img-top"
-                src="assets/images/Eidalfitr2020.jpeg"
+              <img class="card-img-top" src="assets/images/Eidalfitr2020.jpeg"
                 alt="Eid al Fitr 2020">
             </a>
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
@@ -1104,8 +1111,7 @@
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
-    var asset = "assets/pdf/RAMADAN2020.pdf";
-    // var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
     document.getElementById('salah-times-footer').href = asset;
@@ -1216,16 +1222,14 @@
           .getDate()) - 1].fajarTime.toLowerCase();
         document.getElementById("nav-fajr-begins").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].fajarTime.toLowerCase();
-        document.getElementById("banner-imsak-time").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].imsakTime;
         document.getElementById("nav-fajr-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].fajarJamahTime
           .toLowerCase();
         document.getElementById("sunrise").innerHTML = myObj.dailyPrayers[(d
-            .getDate()) - 1].sunriseTime
+          .getDate()) - 1].sunriseTime
           .toLowerCase();
         document.getElementById("nav-sunrise").innerHTML = myObj.dailyPrayers[
-            (d.getDate()) - 1].sunriseTime
+          (d.getDate()) - 1].sunriseTime
           .toLowerCase();
         document.getElementById("dhuhr").innerHTML = myObj.dailyPrayers[(d
           .getDate()) - 1].dhuharTime.toLowerCase();
@@ -1244,7 +1248,7 @@
           .dailyPrayers[(d.getDate()) - 1].asarJamahTime
           .toLowerCase();
         document.getElementById("maghrib").innerHTML = myObj.dailyPrayers[(d
-            .getDate()) - 1].maghribTime
+          .getDate()) - 1].maghribTime
           .toLowerCase();
         document.getElementById("nav-magrib-begins").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].maghribTime
@@ -1252,8 +1256,6 @@
         document.getElementById("nav-magrib-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].magribJamahTime
           .toLowerCase();
-        document.getElementById("banner-iftaar-time").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].maghribTime;
         document.getElementById("isha").innerHTML = myObj.dailyPrayers[(d
           .getDate()) - 1].ishaTime.toLowerCase();
         document.getElementById("nav-isha-begins").innerHTML = myObj
@@ -1262,15 +1264,14 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
-        // document.getElementById("cur-month").innerHTML = monthFullNames[d.getMonth()];       
         document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d
-          .getDate()) - 1].hijriMonthNameEnglish;
+          .getDate()) - 1].gregorianMonthName;
         document.getElementById("nav-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hijriMonthNameEnglish;
+          .gregorianMonthName;
         document.getElementById("footer-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hijriMonthNameEnglish;
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +

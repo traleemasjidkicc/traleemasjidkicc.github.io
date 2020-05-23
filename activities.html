@@ -300,14 +300,14 @@
             various ayat. It was on this foundation
             that the science of Qur'anic commentary was built.</p>
           <p class="card-text">
-            <blockquote class="blockquote">
-              <p class="mb-0">(This is) a Scripture that We have revealed unto
-                thee, full of blessing, that they may
-                ponder its
-                revelations, and that men of understanding may reflect.</p>
-              <footer class="blockquote-footer"><cite
-                  title="Source Title">[Qur'an 38:29]</cite></footer>
-            </blockquote>
+          <blockquote class="blockquote">
+            <p class="mb-0">(This is) a Scripture that We have revealed unto
+              thee, full of blessing, that they may
+              ponder its
+              revelations, and that men of understanding may reflect.</p>
+            <footer class="blockquote-footer"><cite title="Source Title">[Qur'an
+                38:29]</cite></footer>
+          </blockquote>
           </p>
           <p class="card-text"><small
               class="badge badge-pill badge-success">Every Friday after Isha
@@ -450,7 +450,7 @@
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
-    var asset = "assets/pdf/RAMADAN2020.pdf";
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     // var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
@@ -507,9 +507,11 @@
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("nav-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
         document.getElementById("footer-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +

@@ -427,7 +427,7 @@
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
-    var asset = "assets/pdf/RAMADAN2020.pdf";
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     // var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
@@ -484,9 +484,11 @@
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("nav-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
         document.getElementById("footer-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].hijriMonthNameEnglish;
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
