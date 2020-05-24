@@ -49,7 +49,13 @@
             "maghribTime": "09:52 PM",
             "ishaTime": "11:12 PM",
             "qiyamTime": "01:20 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -100,7 +106,13 @@
             "maghribTime": "09:53 PM",
             "ishaTime": "11:13 PM",
             "qiyamTime": "01:19 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -151,7 +163,13 @@
             "maghribTime": "09:54 PM",
             "ishaTime": "11:14 PM",
             "qiyamTime": "01:20 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -202,7 +220,13 @@
             "maghribTime": "09:55 PM",
             "ishaTime": "11:15 PM",
             "qiyamTime": "01:19 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -253,7 +277,13 @@
             "maghribTime": "09:56 PM",
             "ishaTime": "11:16 PM",
             "qiyamTime": "01:20 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -304,7 +334,13 @@
             "maghribTime": "09:57 PM",
             "ishaTime": "11:17 PM",
             "qiyamTime": "01:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -355,7 +391,13 @@
             "maghribTime": "09:58 PM",
             "ishaTime": "11:18 PM",
             "qiyamTime": "01:20 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -406,7 +448,13 @@
             "maghribTime": "09:58 PM",
             "ishaTime": "11:18 PM",
             "qiyamTime": "01:20 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -457,7 +505,13 @@
             "maghribTime": "09:59 PM",
             "ishaTime": "11:19 PM",
             "qiyamTime": "01:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -508,7 +562,13 @@
             "maghribTime": "10:00 PM",
             "ishaTime": "11:20 PM",
             "qiyamTime": "01:22 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -559,7 +619,13 @@
             "maghribTime": "10:01 PM",
             "ishaTime": "11:21 PM",
             "qiyamTime": "01:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -610,7 +676,13 @@
             "maghribTime": "10:01 PM",
             "ishaTime": "11:21 PM",
             "qiyamTime": "01:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -661,7 +733,13 @@
             "maghribTime": "10:02 PM",
             "ishaTime": "11:22 PM",
             "qiyamTime": "01:22 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -712,7 +790,13 @@
             "maghribTime": "10:02 PM",
             "ishaTime": "11:22 PM",
             "qiyamTime": "01:22 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -763,7 +847,13 @@
             "maghribTime": "10:03 PM",
             "ishaTime": "11:23 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -814,7 +904,13 @@
             "maghribTime": "10:03 PM",
             "ishaTime": "11:23 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -865,7 +961,13 @@
             "maghribTime": "10:04 PM",
             "ishaTime": "11:24 PM",
             "qiyamTime": "01:22 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -916,7 +1018,13 @@
             "maghribTime": "10:04 PM",
             "ishaTime": "11:24 PM",
             "qiyamTime": "01:22 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -967,7 +1075,13 @@
             "maghribTime": "10:04 PM",
             "ishaTime": "11:24 PM",
             "qiyamTime": "01:24 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1018,7 +1132,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1069,7 +1189,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1120,7 +1246,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1171,7 +1303,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1222,7 +1360,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:25 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1273,7 +1417,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:25 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1324,7 +1474,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:25 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1375,7 +1531,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:25 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1426,7 +1588,13 @@
             "maghribTime": "10:05 PM",
             "ishaTime": "11:25 PM",
             "qiyamTime": "01:25 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1477,7 +1645,13 @@
             "maghribTime": "10:04 PM",
             "ishaTime": "11:24 PM",
             "qiyamTime": "01:24 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         },
         {
             "responseCode": null,
@@ -1528,7 +1702,13 @@
             "maghribTime": "10:04 PM",
             "ishaTime": "11:24 PM",
             "qiyamTime": "01:26 AM",
-            "isToday": 0
+            "isToday": 0,
+            "imsakTime": "N/A",
+            "fajarJamahTime": "N/A",
+            "zohrJamahTime": "N/A",
+            "asarJamahTime": "N/A",
+            "magribJamahTime": "N/A",
+            "ishaJamahTime": "N/A"
         }
     ],
     "monthName": "June 2020",
