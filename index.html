@@ -239,7 +239,7 @@
             <div class="card h-100">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-0">
-                  <p class="h5 card-title" id="live-now">
+                  <p class="card-title"><i class="h4 fas fa-broadcast-tower"></i>&nbsp;&nbsp;<span class="h6" id="live-now"></span>
                   </p>
                   <p class="h6"><a
                       href="https://mixlr.com/tralee-masjid/showreel/"
@@ -976,10 +976,10 @@
         if (this.readyState == 4 && this.status == 200) {
           var mixlrData = this.response;
           if (!mixlrData.is_live) {
-            var code = '<i class="fas fa-broadcast-tower"></i> <span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #808080">Off Air</span>';
+            var code = '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #808080">Off Air</span>';
             document.getElementById('live-now').innerHTML = code;
           } else {
-            var code = '<i class="fas fa-broadcast-tower"></i> <span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #B80000">LIVE NOW</span>';
+            var code = '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #B80000">LIVE NOW</span>';
             document.getElementById('live-now').innerHTML = code;
           }
           var allEvents = mixlrData.events;
