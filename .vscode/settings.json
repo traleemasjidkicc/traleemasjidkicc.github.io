@@ -4,5 +4,20 @@
     "html.format.enable": true,
     "html.format.wrapLineLength": 80,
     "html.validate.styles": true,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "Fajr",
+        "Jama'ah",
+        "Jamah",
+        "Magrib",
+        "Salah",
+        "Zohr",
+        "deen",
+        "dhuhar",
+        "fajar",
+        "isha",
+        "jamaat",
+        "kicc",
+        "wudhu"
+    ]
 }
