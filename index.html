@@ -163,7 +163,7 @@
   <!-- RAMADAN BANNER START -->
   <section class="bg-cover-2 text-white">
     <div class="container text-center">
-      <h1 class="display-5 font-weight-bold"><mark>Ramadan Mubarak</mark></h1>
+      <h1 class="display-5 font-weight-bold"><mark>Eid Mubarak</mark></h1>
     </div>
   </section>
   <!-- RAMADAN BANNER END -->
@@ -176,8 +176,8 @@
       <li class="nav-item flex-sm-fill">
         <a id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab"
           aria-controls="events" aria-selected="false"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Ramadan
-          Programmes</a>
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Weekly
+          Talks</a>
       </li>
       <li class="nav-item flex-sm-fill">
         <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
@@ -273,33 +273,35 @@
           <div class="col-md-12 pl-4 pb-4">
             <!-- <h5 class="font-weight-bold">Jumu'ah, Taraweeh and Masjid Opening</h5> -->
             <p class="lead">
-              Alhamdulillah it gives us great pleasure to update our community that the Masjid will be open for public worship from <span
-                class="font-weight-bold">Monday, 10th May onwards</span>, in line with the goverment's announcement.
+              Alhamdulillah it gives us great pleasure to update our community
+              that the Masjid will be open for public worship from <span
+                class="font-weight-bold">Monday, 10th May onwards</span>, in
+              line with the goverment's announcement.
             </p>
 
             <p class="display-5">
-              <span class="font-weight-bold">Face mask and prayer mats are mandatory.</span>
-              <ul class="list-group">
-                <li class="list-group-item active">Prayer Schedule</li>
-                <li class="list-group-item">Bayaan/Speech: 1.25pm</li>
-                <li class="list-group-item">Adhan and Khutbah: 1.45pm</li>
-                <li class="list-group-item">Isha and Taraweeh: 11.00pm</li>
-              </ul>
-            </p>
+              <span class="font-weight-bold">Face mask and prayer mats are
+                mandatory.</span>
+            <ul class="list-group">
+              <li class="list-group-item active">Prayer Schedule</li>
+              <li class="list-group-item">Jumu'ah Bayaan/Speech: 1.25pm</li>
+              <li class="list-group-item">Jumu'ah Adhan and Khutbah: 1.45pm</li>
+              </p>
 
-            <p class="display-5">
-              (Qur'an completion in Taraweeh and Dua on Monday, 10th May. No facilities for women due to limited space.)
-            </p>
-
-            <p class="display-5">
-              Allah kept inviting us 5 times a day but we ignored Him and the Masjids were forced to shut; now the doors of Rahmah are open so let us come and populate the house of Allah.
+              <p class="display-5">
+                Allah kept inviting us 5 times a day but we ignored Him and the
+                Masjids were forced to shut; now the doors of Rahmah are open so
+                let us come and populate the house of Allah.
 
               <blockquote class="blockquote text-center">
-                <p class="mb-0">The most beloved of places to Allah are the Masaajid.</p>
-                <footer class="blockquote-footer">Abu Huraira <cite title="Source Title">Sahih Muslim, 671</cite></footer>
+                <p class="mb-0">The most beloved of places to Allah are the
+                  Masaajid.</p>
+                <footer class="blockquote-footer">Abu Huraira <cite
+                    title="Source Title">Sahih Muslim, 671</cite></footer>
               </blockquote>
-            </p>
-            <p class="blockquote-footer">Tralee Masjid Management Committee</p>
+              </p>
+              <p class="blockquote-footer">Tralee Masjid Management Committee
+              </p>
           </div>
         </div>
 
@@ -462,7 +464,7 @@
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
             <img class="card-img-top"
-              src="assets/images/posters/Ramadan_Activities.jpeg"
+              src="assets/images/posters/Eid_al_fitr.jpeg"
               alt="Masjid Programmes">
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Daily<span class="d-block"></span></div>
@@ -809,7 +811,8 @@
   <div class="alert alert-warning alert-dismissible fade show sticky-footer"
     role="alert">
     <p class="h1 text-center">Covid-19 Notice</p>
-    <p class="text-center">Masjid will be open for 5 daily private prayers.
+    <p class="text-center">Masjid is now open for 5 daily prayers, and Jumu'ah
+      prayer.
     </p>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
@@ -947,7 +950,7 @@
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
-    var asset = "assets/pdf/Ramadan2021.pdf";
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     try {
       document.getElementById('salah-times').href = asset;
       document.getElementById('salah-times-footer').href = asset;
@@ -1103,13 +1106,13 @@
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d
-          .getDate()) - 1].hiriMonthName;
+          .getDate()) - 1].gregorianMonthName;
         document.getElementById("nav-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hiriMonthName;
+          .gregorianMonthName;
         document.getElementById("footer-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hiriMonthName;
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +

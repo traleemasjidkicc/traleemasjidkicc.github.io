@@ -414,7 +414,7 @@
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
-    var asset = "assets/pdf/Ramadan2021.pdf";
+    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
     console.log(asset);
     document.getElementById('salah-times').href = asset;
     document.getElementById('salah-times-footer').href = asset;
@@ -471,10 +471,10 @@
           .toLowerCase();
         document.getElementById("nav-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hiriMonthName;
+          .gregorianMonthName;
         document.getElementById("footer-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
-          .hiriMonthName;
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
