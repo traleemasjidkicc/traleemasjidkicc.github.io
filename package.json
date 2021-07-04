@@ -8,7 +8,7 @@
   "license": "Apache License 2.0",
   "private": true,
   "devDependencies": {
-    "browser-sync": "2.26.13",
+    "browser-sync": "2.27.4",
     "gulp": "4.0.2"
   },
   "scripts": {
