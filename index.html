@@ -148,7 +148,7 @@
                 <p class="text-muted">Sunrise: <span id="nav-sunrise"></span>
                 </p>
                 <a class="btn btn-danger" id="salah-times" role="button"
-                  href="assets/pdf/APR2020.pdf" target="_blank"><span
+                  href="assets/pdf/JAN2020.pdf" target="_blank"><span
                     id="nav-cur-month"></span> Timetable</a>
               </div>
             </div>
@@ -163,8 +163,7 @@
   <!-- RAMADAN BANNER START -->
   <section class="bg-cover-2 text-white">
     <div class="container text-center">
-      <h1 class="display-5 font-weight-bold"><mark>Kerry Islamic Cultural
-          Centre</mark></h1>
+      <h1 class="display-5 font-weight-bold"><mark>Ramadan Mubarak</mark></h1>
     </div>
   </section>
   <!-- RAMADAN BANNER END -->
@@ -493,7 +492,8 @@
         <!-- Column -->
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
-            <img class="card-img-top" src="assets/images/posters/jumma-ramadan.jpeg"
+            <img class="card-img-top"
+              src="assets/images/posters/jumma-ramadan.jpeg"
               alt="Jummah Schedule">
             <!-- <div class="date-pos bg-info-gradiant p-2 d-inline-block text-center rounded text-white position-absolute">
               Wed<span class="d-block" id="women-class"></span></div>
@@ -965,7 +965,7 @@
 
   <!-- SET TIMETABLE -->
   <script>
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
+    var monthNames = ["JAN", "FEB", "MAR", "Ramadan", "MAY", "JUN", "JUL", "AUG",
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
@@ -1124,14 +1124,15 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
-        document.getElementById("cur-month").innerHTML = myObj.dailyPrayers[(d
-          .getDate()) - 1].gregorianMonthName;
-        document.getElementById("nav-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
-        document.getElementById("footer-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
+        document.getElementById("cur-month").innerHTML = "Ramadan";
+        // document.getElementById("nav-cur-month").innerHTML = myObj
+        //   .dailyPrayers[(d.getDate()) - 1]
+        //   .gregorianMonthName;
+        // document.getElementById("footer-cur-month").innerHTML = myObj
+        //   .dailyPrayers[(d.getDate()) - 1]
+        //   .gregorianMonthName;
+          document.getElementById("nav-cur-month").innerHTML = "Ramadan";
+        document.getElementById("footer-cur-month").innerHTML = "Ramadan";
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
