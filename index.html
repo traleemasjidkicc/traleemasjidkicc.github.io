@@ -176,20 +176,20 @@
       <li class="nav-item flex-sm-fill">
         <a id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab"
           aria-controls="events" aria-selected="false"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Weekly
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Weekly
           Talks</a>
       </li>
       <li class="nav-item flex-sm-fill">
         <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
           aria-controls="news" aria-selected="true"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Masjid
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Masjid
           Updates</a>
       </li>
     </ul>
     <div class="tab-content" id="nav-tabContent">
       <!-- LIVE STREAMING EVENTS START -->
-      <div class="tab-pane fade px-1 pt-4 show active" id="nav-events"
-        role="tabpanel" aria-labelledby="nav-events">
+      <div class="tab-pane fade px-1 pt-4 show" id="nav-events" role="tabpanel"
+        aria-labelledby="nav-events">
         <div class="row">
           <!-- EVENTS START -->
           <div class="col-md-12 col-lg-6 mb-3">
@@ -267,53 +267,66 @@
       </div>
       <!-- LIVE STREAMING EVENTS END -->
       <!-- NEWS TAB START -->
-      <div class="tab-pane fade px-1 pt-4 show" id="nav-news" role="tabpanel"
-        aria-labelledby="nav-news-tab">
+      <div class="tab-pane fade px-1 pt-4 show active" id="nav-news"
+        role="tabpanel" aria-labelledby="nav-news-tab">
         <div class="row">
           <div class="col-md-12 pl-4 pb-4">
-
-            <p class="lead text-monospace">
-              Alhamdulillah it gives us great pleasure to update our community
-              that the Masjid will be open for public worship from <span
-                class="font-weight-bold">Monday, 4th October onwards</span>, in
-              line with the goverment's announcement.
+            <p class="h3">
+              Eid Mubarak
             </p>
 
-            <p class="lead text-monospace">
-              Allah kept inviting us 5 times a day but we ignored Him and the
-              Masjids were forced to shut; now the doors of Rahmah are open so
-              let us come and populate the house of Allah.</p>
+            <p class="text-left">
+              Eid ul-Fitr has been confirmed for Monday 2nd May 2022.
+            </p>
+            <p class="text-left">
+              Welcome and invite all: come and pray Eid prayer with us at the
+              Tralee Sports Complex, speech at 7.30am, prayer at 8am sharp.
+            </p>
 
-            <div class="shadow-none p-3 mb-5 bg-light rounded">
+            <!-- <div class="shadow-none p-3 mb-5 bg-light rounded">
               <blockquote class="blockquote text-center">
                 <p class="mb-0">The most beloved of places to Allah are the
                   Masaajid.</p>
                 <footer class="blockquote-footer">Abu Huraira <cite
                     title="Source Title">Sahih Muslim, 671</cite></footer>
               </blockquote>
+            </div> -->
+
+            <div class="row pb-4">
+              <div class="col-md-2"></div>
+              <div class="col-md-8">
+                <iframe
+                  src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ7b43EXI1RUgRpGAVTxSodPY&key=AIzaSyBTGVSQzjKhiQY1dAJqHou5vLx2dVQscqU"
+                  width="100%" height="200" frameborder="0" style="border:0"
+                  allowfullscreen data-aos="fade-left"
+                  data-aos-duration="3000"></iframe>
+              </div>
+              <div class="col-md-2"></div>
             </div>
 
             <div class="row pb-4">
               <div class="col-md-2"></div>
               <div class="col-md-8">
                 <ul class="list-group">
-                  <li class="list-group-item list-group-item-danger h4">Jumu'ah
-                    Schedule</li>
+                  <li class="list-group-item list-group-item-danger h4">Eid
+                    ul-Fitr Prayer</li>
                   <li
                     class="list-group-item d-flex justify-content-between align-items-center h5">
-                    Jumu'ah Bayaan/Speech <span
-                      class="badge badge-primary badge-pill badge-danger">1:15
-                      pm</span>
+                    Speech <span
+                      class="badge badge-primary badge-pill badge-danger">7:30
+                      am</span>
                   </li>
                   <li
                     class="list-group-item d-flex justify-content-between align-items-center h5">
-                    Jumu'ah Adhan and Khutbah <span
-                      class="badge badge-primary badge-pill badge-danger">1:45
-                      pm</span>
+                    Prayer <span
+                      class="badge badge-primary badge-pill badge-danger">8:00
+                      am</span>
                   </li>
                 </ul>
               </div>
-              <div class="col-md-2"></div>
+              <div class="col-md-8">
+
+              </div>
             </div>
 
             <p class="blockquote-footer">
@@ -495,7 +508,8 @@
         <!-- Column -->
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
-            <img class="card-img-top" src="assets/images/posters/jumma-ramadan.jpeg"
+            <img class="card-img-top"
+              src="assets/images/posters/jumma-ramadan.jpeg"
               alt="Masjid Donation">
           </div>
         </div>
@@ -998,8 +1012,8 @@
           }
           var events = {
             title: "Nothing Scheduled Yet",
-            starts_at_timestamp: 1609459200,
-            ends_at_timestamp: 1609545599
+            starts_at_timestamp: 1640995201,
+            ends_at_timestamp: 1641081599
           }
           var eventsData = (typeof sortedEvents[0] === 'undefined' ||
             sortedEvents[0] == null) ?
@@ -1111,7 +1125,9 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
-        document.getElementById("cur-month").innerHTML = "Ramadan";
+        document.getElementById("cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
         document.getElementById("nav-cur-month").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1]
           .gregorianMonthName;
