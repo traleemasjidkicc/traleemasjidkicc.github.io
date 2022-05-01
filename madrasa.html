@@ -492,12 +492,12 @@
         document.getElementById("nav-isha-jamaat").innerHTML = myObj
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
-        // document.getElementById("nav-cur-month").innerHTML = myObj
-        //   .dailyPrayers[(d.getDate()) - 1]
-        //   .gregorianMonthName;
-        // document.getElementById("footer-cur-month").innerHTML = myObj
-        //   .dailyPrayers[(d.getDate()) - 1]
-        //   .gregorianMonthName;
+        document.getElementById("nav-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
+        document.getElementById("footer-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
         document.getElementById("nav-cur-month").innerHTML = "Ramadan";
         document.getElementById("footer-cur-month").innerHTML = "Ramadan";
       }

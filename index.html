@@ -163,7 +163,7 @@
   <!-- RAMADAN BANNER START -->
   <section class="bg-cover-2 text-white">
     <div class="container text-center">
-      <h1 class="display-5 font-weight-bold"><mark>Ramadan Mubarak</mark></h1>
+      <h1 class="display-5 font-weight-bold"><mark>Eid Mubarak</mark></h1>
     </div>
   </section>
   <!-- RAMADAN BANNER END -->
@@ -481,16 +481,8 @@
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
             <img class="card-img-top"
-              src="assets/images/posters/ramadan-prog.jpg"
+              src="assets/images/posters/eid-al-fitr2022.jpeg"
               alt="Masjid Programmes">
-          </div>
-        </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/youth-prog.jpg"
-              alt="Jummah Schedule">
           </div>
         </div>
         <!-- Column -->
@@ -504,20 +496,6 @@
         <div class="col-md-4 on-hover">
           <div class="card border-0 mb-4">
             <img class="card-img-top" src="assets/images/posters/jumma-ramadan.jpeg"
-              alt="Masjid Donation">
-          </div>
-        </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top" src="assets/images/posters/esp-women-prog.jpeg"
-              alt="Masjid Donation">
-          </div>
-        </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top" src="assets/images/posters/womens-prog.jpg"
               alt="Masjid Donation">
           </div>
         </div>
@@ -974,7 +952,7 @@
 
   <!-- SET TIMETABLE -->
   <script>
-    var monthNames = ["JAN", "FEB", "MAR", "Ramadan", "MAY", "JUN", "JUL", "AUG",
+    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
       "SEP", "OCT", "NOV", "DEC"
     ];
     var d = new Date();
@@ -1134,14 +1112,12 @@
           .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
           .toLowerCase();
         document.getElementById("cur-month").innerHTML = "Ramadan";
-        // document.getElementById("nav-cur-month").innerHTML = myObj
-        //   .dailyPrayers[(d.getDate()) - 1]
-        //   .gregorianMonthName;
-        // document.getElementById("footer-cur-month").innerHTML = myObj
-        //   .dailyPrayers[(d.getDate()) - 1]
-        //   .gregorianMonthName;
-          document.getElementById("nav-cur-month").innerHTML = "Ramadan";
-        document.getElementById("footer-cur-month").innerHTML = "Ramadan";
+        document.getElementById("nav-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
+        document.getElementById("footer-cur-month").innerHTML = myObj
+          .dailyPrayers[(d.getDate()) - 1]
+          .gregorianMonthName;
       }
     };
     var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
