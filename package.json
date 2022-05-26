@@ -19,6 +19,7 @@
     "start": "npx gulp",
     "verify": "yarn install --check-files",
     "preci": "rm -fr node_modules",
-    "ci": "yarn install --frozen-lockfile"
+    "ci": "yarn install --frozen-lockfile",
+    "postinstall": "yarn start"
   }
 }
