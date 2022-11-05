@@ -22,9 +22,9 @@
     crossorigin="anonymous">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet"
-    href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css"
-    integrity="sha256-PF6MatZtiJ8/c9O9HQ8uSUXr++R9KBYu4gbNG5511WE="
-    crossorigin="anonymous" />
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -39,13 +39,36 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
     </script>
-
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"
+    integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     $(document).ready(function () {
-      $("#myModal").modal('show');
-      setTimeout(function () {
+      if (Cookies.get('hide-modal-registered')) {
+        Cookies.set('hide-modal-tmw', true, { expires: 1 });
+      }
+      if (!Cookies.get('hide-modal-tmw')) {
+        $("#myModal").modal('show');
+        setTimeout(function () {
+          $('#myModal').modal('hide');
+        }, 30000);
+      }
+
+      $("#sub-btn-tomorrow").click(function () {
+        Cookies.set('hide-modal-tmw', true, { expires: 1 });
+      });
+
+      $("#sub-btn-registered").click(function () {
+        Cookies.set('hide-modal-registered', true, { expires: 365 });
+      });
+
+      $('#sub-btn-tomorrow').on('click', function () {
         $('#myModal').modal('hide');
-      }, 10000);
+      });
+      $('#sub-btn-registered').on('click', function () {
+        $('#myModal').modal('hide');
+      });
     });
   </script>
 </head>
@@ -185,14 +208,23 @@
             data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
+          <div class="d-flex justify-content-center mb-2">
+            <img src="/assets/images/newsletter.png">
+          </div>
           <p>We are building out a Muslim Database within the Kerry region.</p>
           <p>The database will help us provide timely updates of salah
             timetable, madrasa news, masjid announcements etc. to the community.
           </p>
-          <p>Please click the button to fill in your details.</p>
-          <button type="submit" class="btn btn-success btn-block"
+          <button type="submit" class="btn btn-warning btn-lg btn-block"
             onclick="window.open('https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u','_blank')">Register
             Now</button>
+          </br>
+          <div class="d-flex justify-content-center">
+            <p id="sub-btn-registered" type="submit"
+              class="btn btn-outline-dark btn-sm mr-2">Already registered</p>
+            <p id="sub-btn-tomorrow" type="submit"
+              class="btn btn-outline-dark btn-sm">Remind me tomorrow</p>
+          </div>
         </div>
       </div>
     </div>
