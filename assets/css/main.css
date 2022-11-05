@@ -979,6 +979,7 @@ body .cp-welcome-content p {
 	transform: translateY(-55%);
 }
 
+
 /* ################################################ */
 /* RESPONSIVE START */
 
@@ -1074,13 +1075,14 @@ body .cp-welcome-content p {
 /* MISC RESPONSIVENESS */
 @media (min-width: 576px) {
 	.rounded-nav {
-	  border-radius: 50rem !important;
+		border-radius: 50rem !important;
 	}
+
 	.rounded-nav .nav-link {
 		border-radius: 50rem !important;
-	  }
-  }
-  
+	}
+}
+
 @media (min-width: 1024px) {
 	.contact4 .contact-box {
 		padding: 80px 105px 80px 0px;
