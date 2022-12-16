@@ -73,6 +73,14 @@
       $('#nav-news-tab').on('click', function () {
         $('#myModal').modal('show');
       });
+
+      $("#cookie-accept").click(function () {
+        Cookies.set('kicc-cookie-accept', true, { expires: 365 });
+      });
+
+      if (Cookies.get('kicc-cookie-accept')) {
+        $("#cookie-bar").hide();
+      }
     });
   </script>
   <!-- Google tag (gtag.js) -->
@@ -207,7 +215,7 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- RAMADAN BANNER START -->
+  <!-- BANNER START -->
   <section class="bg-cover-2 text-white d-none d-md-block">
     <div class="container text-center">
       <!-- <h1 class="display-5 font-weight-bold"><mark>Kerry Islamic Cultural
@@ -215,6 +223,11 @@
       <div class="col-md-4 gfm-embed"
         data-url="https://www.gofundme.com/f/kerry-islamic-cultural-centre-requires-donation/widget/large/">
       </div>
+    </div>
+  </section>
+  <section>
+    <div class="gfm-embed col-md-5 d-block d-lg-none"
+      data-url="https://www.gofundme.com/f/kerry-islamic-cultural-centre-requires-donation/widget/large/">
     </div>
   </section>
   <div id="myModal" class="modal fade center" tabindex="-1">
@@ -247,7 +260,7 @@
       </div>
     </div>
   </div>
-  <!-- RAMADAN BANNER END -->
+  <!-- BANNER END -->
 
   <!-- NEWS AND EVENTS START -->
   <section class="container pt-4 mb-4 bg-white rounded shadow">
@@ -462,9 +475,6 @@
           <img src="assets/images/welcome-pic.png"
             class="img-fluid mb-4 mb-lg-0" alt="Islam">
         </div>
-        <div class="gfm-embed col-md-5 d-block d-lg-none"
-          data-url="https://www.gofundme.com/f/kerry-islamic-cultural-centre-requires-donation/widget/medium/">
-        </div>
         <div class="col-md-7">
           <div class="cp-welcome-content">
             <h2>About KICC</h2>
@@ -558,7 +568,7 @@
   </section>
   <!-- SALAH TIMES END -->
 
-  <!-- UPCOMING EVENTS START -->
+  <!-- MASJID NOTICES START -->
   <div class="blog-home2 py-5">
     <div class="container">
       <!-- Row  -->
@@ -626,7 +636,7 @@
       </div>
     </div>
   </div>
-  <!-- UPCOMING EVENTS END -->
+  <!-- MASJID NOTICES END -->
 
   <!-- MASJID SERVICES START -->
   <section class="pricing py-5">
@@ -936,19 +946,17 @@
   </section>
   <!-- QUR'AN QUOTE END -->
 
-  <!-- COVID-19 ALERT START -->
-  <div
-    class="alert alert-warning alert-dismissible fade show sticky-footer d-none"
+  <!-- COOKIE POLICY START -->
+  <div id="cookie-bar" class="alert alert-info alert-dismissible fade show sticky-footer"
     role="alert">
-    <p class="h1 text-center">Covid-19 Notice</p>
-    <p class="text-center">Masjid is now open for 5 daily prayers, and Jumu'ah
-      prayer.
+    <p class="text-center">The website uses cookies to ensure you get the best
+      experience on our website.
     </p>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <button id="cookie-accept" type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <!-- COVID-19 ALERT END -->
+  <!-- COOKIE POLICY END -->
 
   <!-- FOOTER START -->
   <footer class="page-footer font-small mdb-color pt-4 bg-secondary">
