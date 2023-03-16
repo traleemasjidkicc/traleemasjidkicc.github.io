@@ -344,8 +344,11 @@
       Cookies.set("kicc-accept-cookie", true, { expires: 10 });
     });
 
-    if (Cookies.get("kicc-accept-cookie")) {
+    if (Cookies.get("kicc-accept-cookie") === true) {
       $("#cookie-bar").hide();
+    } else {
+      // $("#cookie-bar").show();
+      $("#cookie-bar").toggleClass('show');
     }
   };
 
