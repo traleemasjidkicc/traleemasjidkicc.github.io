@@ -45,11 +45,10 @@
 
   const setSalahTimeUrl = () => {
     try {
-      const asset = getAssetName(`pdf`);
-      console.log(`Salah time loaded for = ${asset}`);
+      // const asset = getAssetName(`pdf`);
+      const asset = `asset/pdf/Ramadan2023.pdf`;
       document.getElementById("salah-times").href = asset;
       document.getElementById("salah-times-footer").href = asset;
-
       if (window.location.href.endsWith(`/`)) {
         document.getElementById("salah-times-body").href = asset;
       }
@@ -168,15 +167,18 @@
             myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
           document.getElementById("isha").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
-          document.getElementById("cur-month").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+          // document.getElementById("cur-month").innerHTML =
+          //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+          document.getElementById("cur-month").innerHTML = "Ramadan";
         }
         document.getElementById("nav-hijri").innerHTML =
           myObj.dailyPrayers[d.getDate() - 1].hijriDate;
-        document.getElementById("nav-cur-month").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-        document.getElementById("footer-cur-month").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        // document.getElementById("nav-cur-month").innerHTML =
+        //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        // document.getElementById("footer-cur-month").innerHTML =
+        //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        document.getElementById("nav-cur-month").innerHTML = "Ramadan";
+        document.getElementById("footer-cur-month").innerHTML = "Ramadan";
 
         document.getElementById("nav-fajr-begins").innerHTML =
           myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
@@ -344,11 +346,11 @@
       Cookies.set("kicc-accept-cookie", true, { expires: 10 });
     });
 
-    if (Cookies.get("kicc-accept-cookie") === true) {
-      $("#cookie-bar").hide();
-    } else {
+    if (Cookies.get("kicc-accept-cookie") === undefined || Cookies.get("kicc-accept-cookie") === 'false') {
+      $("#cookie-bar").toggleClass("show");
       // $("#cookie-bar").show();
-      $("#cookie-bar").toggleClass('show');
+    } else {
+      $("#cookie-bar").hide();
     }
   };
 

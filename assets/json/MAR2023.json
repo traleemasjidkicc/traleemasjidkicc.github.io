@@ -1304,7 +1304,12 @@
             "ishaTime": "08:19 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "4:45 AM",
+            "zohrJamahTime": "1:10 PM",
+            "asarJamahTime": "6:00 PM",
+            "magribJamahTime": "7:09 PM",
+            "ishaJamahTime": "8:45 PM"
         },
         {
             "responseCode": null,
@@ -1356,7 +1361,12 @@
             "ishaTime": "08:21 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "01:23 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "4:45 AM",
+            "zohrJamahTime": "1:10 PM",
+            "asarJamahTime": "6:00 PM",
+            "magribJamahTime": "7:11 PM",
+            "ishaJamahTime": "8:45 PM"
         },
         {
             "responseCode": null,
@@ -1408,7 +1418,12 @@
             "ishaTime": "08:23 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "01:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "4:45 AM",
+            "zohrJamahTime": "1:10 PM",
+            "asarJamahTime": "6:00 PM",
+            "magribJamahTime": "7:13 PM",
+            "ishaJamahTime": "8:45 PM"
         },
         {
             "responseCode": null,
@@ -1460,7 +1475,12 @@
             "ishaTime": "09:25 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:21 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:40 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:00 PM",
+            "magribJamahTime": "8:15 PM",
+            "ishaJamahTime": "9:45 PM"
         },
         {
             "responseCode": null,
@@ -1512,7 +1532,12 @@
             "ishaTime": "09:26 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:18 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:40 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:00 PM",
+            "magribJamahTime": "8:16 PM",
+            "ishaJamahTime": "9:45 PM"
         },
         {
             "responseCode": null,
@@ -1564,7 +1589,12 @@
             "ishaTime": "09:28 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:18 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:40 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:00 PM",
+            "magribJamahTime": "8:18 PM",
+            "ishaJamahTime": "9:45 PM"
         },
         {
             "responseCode": null,
@@ -1616,7 +1646,12 @@
             "ishaTime": "09:30 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:16 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:30 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:00 PM",
+            "magribJamahTime": "8:20 PM",
+            "ishaJamahTime": "9:45 PM"
         },
         {
             "responseCode": null,
@@ -1668,7 +1703,12 @@
             "ishaTime": "09:31 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:15 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:30 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:00 PM",
+            "magribJamahTime": "8:21 PM",
+            "ishaJamahTime": "9:45 PM"
         },
         {
             "responseCode": null,
@@ -1720,7 +1760,12 @@
             "ishaTime": "09:33 PM",
             "staticPrayerTimeDate": null,
             "qiyamTime": "02:13 AM",
-            "isToday": 0
+            "isToday": 0,
+            "fajarJamahTime": "5:25 AM",
+            "zohrJamahTime": "2:00 PM",
+            "asarJamahTime": "7:15 PM",
+            "magribJamahTime": "8:23 PM",
+            "ishaJamahTime": "10:00 PM"
         }
     ],
     "monthName": "March 2023",
