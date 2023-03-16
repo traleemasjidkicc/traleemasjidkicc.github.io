@@ -51,6 +51,7 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
+  <script defer type="text/javascript" src="assets/js/script.js"></script>
 </head>
 
 <body>
@@ -443,87 +444,6 @@
     <!-- Footer Links -->
   </footer>
   <!-- FOOTER END -->
-  <script>
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
-      "SEP", "OCT", "NOV", "DEC"
-    ];
-    var d = new Date();
-    var asset = "assets/pdf/" + monthNames[d.getMonth()] + d.getFullYear() + ".pdf";
-    console.log(asset);
-    document.getElementById('salah-times').href = asset;
-    document.getElementById('salah-times-footer').href = asset;
-    document.getElementById('footer-year').innerHTML = d.getFullYear();
-
-  </script>
-  <script>
-    var xmlhttp = new XMLHttpRequest();
-    var monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
-      "SEP", "OCT", "NOV", "DEC"
-    ];
-    var monthFullNames = ["January", "February", "March", "April", "May",
-      "June", "July", "August", "September",
-      "October", "November", "December"
-    ];
-    var d = new Date();
-    xmlhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var myObj = JSON.parse(this.responseText);
-        document.getElementById("nav-hijri").innerHTML = myObj.dailyPrayers[(d
-          .getDate()) - 1].hijriDate;
-        document.getElementById("nav-fajr-begins").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].fajarTime
-          .toLowerCase();
-        document.getElementById("nav-fajr-jamaat").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].fajarJamahTime
-          .toLowerCase();
-        document.getElementById("nav-sunrise").innerHTML = myObj.dailyPrayers[
-          (d.getDate()) - 1].sunriseTime
-          .toLowerCase();
-        document.getElementById("nav-zohr-begins").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].dhuharTime
-          .toLowerCase();
-        document.getElementById("nav-zohr-jamaat").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].zohrJamahTime
-          .toLowerCase();
-        document.getElementById("nav-asar-begins").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].asrTime
-          .toLowerCase();
-        document.getElementById("nav-asar-jamaat").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].asarJamahTime
-          .toLowerCase();
-        document.getElementById("nav-magrib-begins").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].maghribTime
-          .toLowerCase();
-        document.getElementById("nav-magrib-jamaat").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].magribJamahTime
-          .toLowerCase();
-        document.getElementById("nav-isha-begins").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].ishaTime
-          .toLowerCase();
-        document.getElementById("nav-isha-jamaat").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1].ishaJamahTime
-          .toLowerCase();
-        document.getElementById("nav-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
-        document.getElementById("footer-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
-        document.getElementById("nav-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
-        document.getElementById("footer-cur-month").innerHTML = myObj
-          .dailyPrayers[(d.getDate()) - 1]
-          .gregorianMonthName;
-      }
-    };
-    var asset = "assets/" + d.getFullYear() + monthNames[d.getMonth()] +
-      ".json";
-    console.log(asset);
-    xmlhttp.open("GET", asset, true);
-    xmlhttp.send();
-
-  </script>
   <script>
     var url = 'https://wati-integration-service.clare.ai/ShopifyWidget/shopifyWidget.js?69866';
     var s = document.createElement('script');
