@@ -319,6 +319,8 @@
   };
 
   const showSignUpModal = () => {
+    setSignUpCookies();
+
     if (!Cookies.get("kicc-modal-tmw")) {
       $("#myModal").modal("show");
       setTimeout(function () {
@@ -370,7 +372,6 @@
     if (window.location.href.endsWith(`/`)) {
       setEvent();
       pillarsOfFaith();
-      setSignUpCookies();
       showSignUpModal();
     }
     showWhatsAppButton();
