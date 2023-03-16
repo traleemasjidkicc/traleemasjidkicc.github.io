@@ -156,50 +156,55 @@
       if (this.readyState == 4 && this.status == 200) {
         var myObj = JSON.parse(this.responseText);
         if (window.location.href.endsWith(`/`)) {
-          document.getElementById("nav-hijri").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].hijriDate;
           document.getElementById("fajr").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
-          document.getElementById("nav-fajr-begins").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
-          document.getElementById("nav-fajr-jamaat").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].fajarJamahTime.toLowerCase();
           document.getElementById("sunrise").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].sunriseTime.toLowerCase();
-          document.getElementById("nav-sunrise").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].sunriseTime.toLowerCase();
           document.getElementById("dhuhr").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].dhuharTime.toLowerCase();
-          document.getElementById("nav-zohr-begins").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].dhuharTime.toLowerCase();
-          document.getElementById("nav-zohr-jamaat").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].zohrJamahTime.toLowerCase();
           document.getElementById("asr").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].asrTime.toLowerCase();
-          document.getElementById("nav-asar-begins").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].asrTime.toLowerCase();
-          document.getElementById("nav-asar-jamaat").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].asarJamahTime.toLowerCase();
           document.getElementById("maghrib").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
-          document.getElementById("nav-magrib-begins").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
-          document.getElementById("nav-magrib-jamaat").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].magribJamahTime.toLowerCase();
           document.getElementById("isha").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
-          document.getElementById("nav-isha-begins").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
-          document.getElementById("nav-isha-jamaat").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].ishaJamahTime.toLowerCase();
           document.getElementById("cur-month").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-        } else {
-          document.getElementById("nav-cur-month").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-          document.getElementById("footer-cur-month").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
         }
+        document.getElementById("nav-hijri").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].hijriDate;
+        document.getElementById("nav-cur-month").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        document.getElementById("footer-cur-month").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+
+        document.getElementById("nav-fajr-begins").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
+        document.getElementById("nav-fajr-jamaat").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].fajarJamahTime.toLowerCase();
+
+        document.getElementById("nav-sunrise").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].sunriseTime.toLowerCase();
+
+        document.getElementById("nav-zohr-begins").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].dhuharTime.toLowerCase();
+        document.getElementById("nav-zohr-jamaat").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].zohrJamahTime.toLowerCase();
+
+        document.getElementById("nav-asar-begins").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].asrTime.toLowerCase();
+        document.getElementById("nav-asar-jamaat").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].asarJamahTime.toLowerCase();
+
+        document.getElementById("nav-magrib-begins").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
+        document.getElementById("nav-magrib-jamaat").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].magribJamahTime.toLowerCase();
+
+        document.getElementById("nav-isha-begins").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
+        document.getElementById("nav-isha-jamaat").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].ishaJamahTime.toLowerCase();
       }
     };
     var asset = getAssetName(`json`);
@@ -209,38 +214,39 @@
   };
 
   const showWhatsAppButton = () => {
-    var url = 'https://wati-integration-service.clare.ai/ShopifyWidget/shopifyWidget.js?69866';
-    var s = document.createElement('script');
-    s.type = 'text/javascript';
+    var url =
+      "https://wati-integration-service.clare.ai/ShopifyWidget/shopifyWidget.js?69866";
+    var s = document.createElement("script");
+    s.type = "text/javascript";
     s.async = true;
     s.src = url;
     var options = {
-      "enabled": true,
-      "chatButtonSetting": {
-        "backgroundColor": "#247a1f",
-        "ctaText": "",
-        "borderRadius": "25",
-        "marginLeft": "0",
-        "marginBottom": "100",
-        "marginRight": "20",
-        "position": "right"
+      enabled: true,
+      chatButtonSetting: {
+        backgroundColor: "#247a1f",
+        ctaText: "",
+        borderRadius: "25",
+        marginLeft: "0",
+        marginBottom: "100",
+        marginRight: "20",
+        position: "right",
       },
-      "brandSetting": {
-        "brandName": "Tralee Masjid",
-        "brandSubTitle": "Kerry Islamic Cultural Centre",
-        "brandImg": "https://traleemasjidkicc.ie/assets/images/logo.png",
-        "welcomeText": "As-salamu alaikum! How may I help you?",
-        "backgroundColor": "#0a5f54",
-        "ctaText": "Start Chat",
-        "borderRadius": "25",
-        "autoShow": false,
-        "phoneNumber": "353862440556"
-      }
+      brandSetting: {
+        brandName: "Tralee Masjid",
+        brandSubTitle: "Kerry Islamic Cultural Centre",
+        brandImg: "https://traleemasjidkicc.ie/assets/images/logo.png",
+        welcomeText: "As-salamu alaikum! How may I help you?",
+        backgroundColor: "#0a5f54",
+        ctaText: "Start Chat",
+        borderRadius: "25",
+        autoShow: false,
+        phoneNumber: "353862440556",
+      },
     };
     s.onload = function () {
       CreateWhatsappChatWidget(options);
     };
-    var x = document.getElementsByTagName('script')[0];
+    var x = document.getElementsByTagName("script")[0];
     x.parentNode.insertBefore(s, x);
   };
 
@@ -248,64 +254,65 @@
     let i = 2;
     $(document).ready(function () {
       var radius = 200;
-      var fields = $('.itemDot');
-      var container = $('.dotCircle');
+      var fields = $(".itemDot");
+      var container = $(".dotCircle");
       var width = container.width();
       radius = width / 2.5;
       var height = container.height();
       var angle = 0,
         step = (2 * Math.PI) / fields.length;
       fields.each(function () {
-        var x = Math.round(width / 2 + radius * Math.cos(angle) - $(
-          this).width() / 2);
-        var y = Math.round(height / 2 + radius * Math.sin(angle) - $(
-          this).height() / 2);
+        var x = Math.round(
+          width / 2 + radius * Math.cos(angle) - $(this).width() / 2
+        );
+        var y = Math.round(
+          height / 2 + radius * Math.sin(angle) - $(this).height() / 2
+        );
         // if (window.console) {
         //   console.log($(this).text(), x, y);
         // }
         $(this).css({
-          left: x + 'px',
-          top: y + 'px'
+          left: x + "px",
+          top: y + "px",
         });
         angle += step;
       });
 
-      $('.itemDot').click(function () {
+      $(".itemDot").click(function () {
         var dataTab = $(this).data("tab");
-        $('.itemDot').removeClass('active');
-        $(this).addClass('active');
-        $('.CirItem').removeClass('active');
-        $('.CirItem' + dataTab).addClass('active');
+        $(".itemDot").removeClass("active");
+        $(this).addClass("active");
+        $(".CirItem").removeClass("active");
+        $(".CirItem" + dataTab).addClass("active");
         i = dataTab;
-        $('.dotCircle').css({
-          "transform": "rotate(" + (360 - (i - 1) * 36) + "deg)",
-          "transition": "2s"
+        $(".dotCircle").css({
+          transform: "rotate(" + (360 - (i - 1) * 36) + "deg)",
+          transition: "2s",
         });
-        $('.itemDot').css({
-          "transform": "rotate(" + ((i - 1) * 36) + "deg)",
-          "transition": "1s"
+        $(".itemDot").css({
+          transform: "rotate(" + (i - 1) * 36 + "deg)",
+          transition: "1s",
         });
-
       });
       setInterval(function () {
-        var dataTab = $('.itemDot.active').data("tab");
+        var dataTab = $(".itemDot.active").data("tab");
         if (dataTab > 6 || i > 6) {
           dataTab = 1;
           i = 1;
         }
-        $('.itemDot').removeClass('active');
-        $('[data-tab="' + i + '"]').addClass('active');
-        $('.CirItem').removeClass('active');
-        $('.CirItem' + i).addClass('active');
+        $(".itemDot").removeClass("active");
+        $('[data-tab="' + i + '"]').addClass("active");
+        $(".CirItem").removeClass("active");
+        $(".CirItem" + i).addClass("active");
         i++;
 
-        $('.dotCircle').css({
-          "transform": "rotate(" + (360 - (i - 2) * 36) + "deg)",
-          "transition": "2s"
+        $(".dotCircle").css({
+          transform: "rotate(" + (360 - (i - 2) * 36) + "deg)",
+          transition: "2s",
         });
-        $('.itemDot').css({
-          "transform": "rotate(" + ((i - 2) * 36) + "deg)",
-          "transition": "1s"
+        $(".itemDot").css({
+          transform: "rotate(" + (i - 2) * 36 + "deg)",
+          transition: "1s",
         });
       }, 10000);
     });
@@ -315,11 +322,11 @@
     setFooterYear();
     setSalahTimeUrl();
     setSalahTimes();
-    showWhatsAppButton();
 
     if (window.location.href.endsWith(`/`)) {
       setEvent();
       pillarsOfFaith();
     }
+    showWhatsAppButton();
   };
 })();
