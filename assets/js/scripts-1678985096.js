@@ -46,7 +46,7 @@
   const setSalahTimeUrl = () => {
     try {
       // const asset = getAssetName(`pdf`);
-      const asset = `asset/pdf/Ramadan2023.pdf`;
+      const asset = `assets/pdf/Ramadan2023.pdf`;
       document.getElementById("salah-times").href = asset;
       document.getElementById("salah-times-footer").href = asset;
       if (window.location.href.endsWith(`/`)) {
