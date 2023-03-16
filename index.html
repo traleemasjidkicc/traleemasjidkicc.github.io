@@ -44,45 +44,7 @@
     integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script defer src="https://www.gofundme.com/static/js/embed.js"></script>
-  <script>
-    $(document).ready(function () {
-      if (Cookies.get('hide-modal-registered')) {
-        Cookies.set('hide-modal-tmw', true, { expires: 1 });
-      }
-      if (!Cookies.get('hide-modal-tmw')) {
-        $("#myModal").modal('show');
-        setTimeout(function () {
-          $('#myModal').modal('hide');
-        }, 30000);
-      }
 
-      $("#sub-btn-tomorrow").click(function () {
-        Cookies.set('hide-modal-tmw', true, { expires: 1 });
-      });
-
-      $("#sub-btn-registered").click(function () {
-        Cookies.set('hide-modal-registered', true, { expires: 365 });
-      });
-
-      $('#sub-btn-tomorrow').on('click', function () {
-        $('#myModal').modal('hide');
-      });
-      $('#sub-btn-registered').on('click', function () {
-        $('#myModal').modal('hide');
-      });
-      $('#nav-news-tab').on('click', function () {
-        $('#myModal').modal('show');
-      });
-
-      $("#cookie-accept").click(function () {
-        Cookies.set('kicc-cookie-accept', true, { expires: 365 });
-      });
-
-      if (Cookies.get('kicc-cookie-accept')) {
-        $("#cookie-bar").hide();
-      }
-    });
-  </script>
   <!-- Google tag (gtag.js) -->
   <script async
     src="https://www.googletagmanager.com/gtag/js?id=G-3H9CDDS71D"></script>

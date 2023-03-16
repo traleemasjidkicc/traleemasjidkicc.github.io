@@ -318,14 +318,60 @@
     });
   };
 
+  const showSignUpModal = () => {
+    if (!Cookies.get("kicc-modal-tmw")) {
+      $("#myModal").modal("show");
+      setTimeout(function () {
+        $("#myModal").modal("hide");
+      }, 30000);
+    }
+
+    $("#sub-btn-tomorrow").on("click", function () {
+      $("#myModal").modal("hide");
+    });
+    $("#sub-btn-registered").on("click", function () {
+      $("#myModal").modal("hide");
+    });
+    $("#nav-news-tab").on("click", function () {
+      $("#myModal").modal("show");
+    });
+  };
+
+  const showCookiePolicy = () => {
+    $("#cookie-accept").click(function () {
+      Cookies.set("kicc-accept-cookie", true, { expires: 10 });
+    });
+
+    if (Cookies.get("kicc-accept-cookie")) {
+      $("#cookie-bar").hide();
+    }
+  };
+
+  const setSignUpCookies = () => {
+    if (Cookies.get("kicc-modal-registered")) {
+      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
+    }
+
+    $("#sub-btn-tomorrow").click(function () {
+      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
+    });
+
+    $("#sub-btn-registered").click(function () {
+      Cookies.set("kicc-modal-registered", true, { expires: 10 });
+    });
+  };
+
   window.onload = () => {
     setFooterYear();
     setSalahTimeUrl();
     setSalahTimes();
+    showCookiePolicy();
 
     if (window.location.href.endsWith(`/`)) {
       setEvent();
       pillarsOfFaith();
+      setSignUpCookies();
+      showSignUpModal();
     }
     showWhatsAppButton();
   };

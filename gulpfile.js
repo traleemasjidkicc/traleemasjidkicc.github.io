@@ -8,5 +8,5 @@ gulp.task('default', function () {
             baseDir: "./"
         }
     });
-    gulp.watch(["*.html", "assets/css/*.css"]).on("change", reload);
+    gulp.watch(["*.html", "assets/css/*.css", "assets/js/*.js"]).on("change", reload);
 });
