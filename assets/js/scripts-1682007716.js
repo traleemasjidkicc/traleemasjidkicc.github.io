@@ -45,8 +45,8 @@
 
   const setSalahTimeUrl = () => {
     try {
-      // const asset = getAssetName(`pdf`);
-      const asset = `assets/pdf/Ramadan2023.pdf`;
+      const asset = getAssetName(`pdf`);
+      // const asset = `assets/pdf/Ramadan2023.pdf`;
       document.getElementById("salah-times").href = asset;
       document.getElementById("salah-times-footer").href = asset;
       if (window.location.href.endsWith(`/`)) {
@@ -167,18 +167,18 @@
             myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
           document.getElementById("isha").innerHTML =
             myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
-          // document.getElementById("cur-month").innerHTML =
-          //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-          document.getElementById("cur-month").innerHTML = "Ramadan";
+          document.getElementById("cur-month").innerHTML =
+            myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+          // document.getElementById("cur-month").innerHTML = "Ramadan";
         }
         document.getElementById("nav-hijri").innerHTML =
           myObj.dailyPrayers[d.getDate() - 1].hijriDate;
-        // document.getElementById("nav-cur-month").innerHTML =
-        //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-        // document.getElementById("footer-cur-month").innerHTML =
-        //   myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
-        document.getElementById("nav-cur-month").innerHTML = "Ramadan";
-        document.getElementById("footer-cur-month").innerHTML = "Ramadan";
+        document.getElementById("nav-cur-month").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        document.getElementById("footer-cur-month").innerHTML =
+          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+        // document.getElementById("nav-cur-month").innerHTML = "Ramadan";
+        // document.getElementById("footer-cur-month").innerHTML = "Ramadan";
 
         document.getElementById("nav-fajr-begins").innerHTML =
           myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();

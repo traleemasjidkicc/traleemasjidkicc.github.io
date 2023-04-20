@@ -6,3 +6,4 @@ node_modules/
 /.idea/vcs.xml
 /.idea/workspace.xml
 *.log
+.DS_Store
