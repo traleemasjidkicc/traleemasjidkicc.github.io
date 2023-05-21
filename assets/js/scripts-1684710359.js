@@ -383,7 +383,7 @@
           document.getElementById("hadith-body").innerHTML =
             randomHadith.hadith.body;
           document.getElementById("hadith-number").innerHTML =
-            randomHadith.hadithNumber;
+            `Riyad as-Salihin ${randomHadith.hadith.chapterNumber}:${randomHadith.hadithNumber}`;
           document.getElementById(
             "hadith-link"
           ).href = `https://sunnah.com/riyadussalihin:${randomHadith.hadithNumber}`;
@@ -398,8 +398,9 @@
     } catch {
       document.getElementById("hadith-body").innerHTML =
         "<p>Abu Hurairah (May Allah be pleased with him) reported: Messenger of Allah (ﷺ) said, \"The five (daily) Salat (prayers), and from one Jumu'ah prayer to the (next) Jumu'ah prayer, and from Ramadan to Ramadan are expiations for the (sins) committed in between (their intervals); provided the major sins are not committed\".<br/><br/><b>[Muslim]</b>.<br/><br/></p>";
-      document.getElementById("chapter-title").innerHTML =
-        "Numerous ways of doing Good";
+      document.getElementById("hadith-number").innerHTML =
+        "Riyad as-Salihin 189:1059";
+      document.getElementById("hadith-link").href = `https://sunnah.com/riyadussalihin:1059`;
     }
   };
 

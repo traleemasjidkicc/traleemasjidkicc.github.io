@@ -215,6 +215,7 @@ h6 {
 }
 
 .parallax-section .right-box a {
+	color: #ffad05;
 	display: inline-block;
 	font: 400 14px/14px 'Cinzel Decorative', cursive;
 	text-decoration: none;
@@ -1010,7 +1011,7 @@ blockquote.quote-card {
 
 .quote-card a:hover {
 	color: #FFF;
-	text-decoration: underline;
+	text-decoration: none;
 	font-weight: normal;
 }
 
