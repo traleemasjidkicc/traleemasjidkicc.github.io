@@ -371,6 +371,34 @@
     });
   };
 
+  const getHadithTitle = (key) => {
+    const hadithCollectionMap = new Map();
+    const collections = [
+      "bukhari",
+      "muslim",
+      "nasai",
+      "abudawud",
+      "tirmidhi",
+      "ibnmajah",
+      "riyadussalihin",
+    ];
+    const titles = [
+      "Sahih al-Bukhari",
+      "Sahih Muslim",
+      "Sunan an-Nasa'i",
+      "Sunan Abi Dawud",
+      "Jami` at-Tirmidhi",
+      "Sunan Ibn Majah",
+      "Riyad as-Salihin",
+    ];
+
+    for (let i = 0; i < collections.length; i++) {
+      hadithCollectionMap.set(collections[i], titles[i]);
+    }
+
+    return hadithCollectionMap.get(key);
+  };
+
   const getRandomHadith = () => {
     try {
       var xhr = new XMLHttpRequest();
@@ -382,11 +410,14 @@
 
           document.getElementById("hadith-body").innerHTML =
             randomHadith.hadith.body;
-          document.getElementById("hadith-number").innerHTML =
-            `Riyad as-Salihin ${randomHadith.hadith.chapterNumber}:${randomHadith.hadithNumber}`;
+          document.getElementById(
+            "hadith-number"
+          ).innerHTML = `${getHadithTitle(randomHadith.collection)} ${
+            randomHadith.hadith.chapterNumber
+          }:${randomHadith.hadithNumber}`;
           document.getElementById(
             "hadith-link"
-          ).href = `https://sunnah.com/riyadussalihin:${randomHadith.hadithNumber}`;
+          ).href = `https://sunnah.com/${randomHadith.collection}:${randomHadith.hadithNumber}`;
         }
       });
 
@@ -400,7 +431,9 @@
         "<p>Abu Hurairah (May Allah be pleased with him) reported: Messenger of Allah (ﷺ) said, \"The five (daily) Salat (prayers), and from one Jumu'ah prayer to the (next) Jumu'ah prayer, and from Ramadan to Ramadan are expiations for the (sins) committed in between (their intervals); provided the major sins are not committed\".<br/><br/><b>[Muslim]</b>.<br/><br/></p>";
       document.getElementById("hadith-number").innerHTML =
         "Riyad as-Salihin 189:1059";
-      document.getElementById("hadith-link").href = `https://sunnah.com/riyadussalihin:1059`;
+      document.getElementById(
+        "hadith-link"
+      ).href = `https://sunnah.com/riyadussalihin:1059`;
     }
   };
 
