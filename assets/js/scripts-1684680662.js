@@ -377,12 +377,16 @@
 
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE) {
-          const hadith = JSON.parse(this.responseText);
-          console.log(hadith);
+          const randomHadith = JSON.parse(this.responseText);
+          console.log(randomHadith);
 
-          document.getElementById("hadith-body").innerHTML = hadith.body;
-          document.getElementById("chapter-title").innerHTML =
-            hadith.chapterTitle;
+          document.getElementById("hadith-body").innerHTML =
+            randomHadith.hadith.body;
+          document.getElementById("hadith-number").innerHTML =
+            randomHadith.hadithNumber;
+          document.getElementById(
+            "hadith-link"
+          ).href = `https://sunnah.com/riyadussalihin:${randomHadith.hadithNumber}`;
         }
       });
 
