@@ -22,6 +22,12 @@
     ];
   };
 
+  const addDays = (date, days) => {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
   const isToday = (someDate) => {
     var today = getToday();
     return (
@@ -32,8 +38,9 @@
   };
 
   const getAssetName = (format) => {
-    const month = getMonthNames()[getToday().getMonth()];
-    const year = getToday().getFullYear();
+    const date = addDays(getToday(), 3);
+    const month = getMonthNames()[date.getMonth()];
+    const year = date.getFullYear();
     return `assets/${format}/${month}${year}.${format}`;
   };
 
