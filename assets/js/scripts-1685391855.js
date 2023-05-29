@@ -5,22 +5,6 @@
     return new Date();
   };
 
-  const getMonthNames = () => {
-    return [
-      "JAN",
-      "FEB",
-      "MAR",
-      "APR",
-      "MAY",
-      "JUN",
-      "JUL",
-      "AUG",
-      "SEP",
-      "OCT",
-      "NOV",
-      "DEC",
-    ];
-  };
 
   const addDays = (date, days) => {
     var result = new Date(date);
@@ -37,9 +21,8 @@
     );
   };
 
-  const getAssetName = (format) => {
-    const date = addDays(getToday(), 3);
-    const month = getMonthNames()[date.getMonth()];
+  const getAssetName = (date, format) => {
+    const month = date.toLocaleDateString("default", { month: "short" }).toUpperCase();
     const year = date.getFullYear();
     return `assets/${format}/${month}${year}.${format}`;
   };
@@ -52,7 +35,7 @@
 
   const setSalahTimeUrl = () => {
     try {
-      const asset = getAssetName(`pdf`);
+      const asset = getAssetName(addDays(getToday(), 3), `pdf`);
       // const asset = `assets/pdf/Ramadan2023.pdf`;
       document.getElementById("salah-times").href = asset;
       document.getElementById("salah-times-footer").href = asset;
@@ -157,66 +140,67 @@
 
   const setSalahTimes = () => {
     var xmlhttp = new XMLHttpRequest();
-    var d = new Date();
+    var today = getToday();
+    var addedDays = addDays(today, 3);
     xmlhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
         var myObj = JSON.parse(this.responseText);
         if (window.location.href.endsWith(`/`)) {
           document.getElementById("fajr").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].fajarTime.toLowerCase();
           document.getElementById("sunrise").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].sunriseTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].sunriseTime.toLowerCase();
           document.getElementById("dhuhr").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].dhuharTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].dhuharTime.toLowerCase();
           document.getElementById("asr").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].asrTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].asrTime.toLowerCase();
           document.getElementById("maghrib").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].maghribTime.toLowerCase();
           document.getElementById("isha").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
+            myObj.dailyPrayers[today.getDate() - 1].ishaTime.toLowerCase();
           document.getElementById("cur-month").innerHTML =
-            myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+            addedDays.toLocaleString("default", { month: "long" });
           // document.getElementById("cur-month").innerHTML = "Ramadan";
         }
         document.getElementById("nav-hijri").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].hijriDate;
+          myObj.dailyPrayers[today.getDate() - 1].hijriDate;
         document.getElementById("nav-cur-month").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+          addedDays.toLocaleString("default", { month: "long" });
         document.getElementById("footer-cur-month").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].gregorianMonthName;
+          addedDays.toLocaleString("default", { month: "long" });
         // document.getElementById("nav-cur-month").innerHTML = "Ramadan";
         // document.getElementById("footer-cur-month").innerHTML = "Ramadan";
 
         document.getElementById("nav-fajr-begins").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].fajarTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].fajarTime.toLowerCase();
         document.getElementById("nav-fajr-jamaat").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].fajarJamahTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].fajarJamahTime.toLowerCase();
 
         document.getElementById("nav-sunrise").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].sunriseTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].sunriseTime.toLowerCase();
 
         document.getElementById("nav-zohr-begins").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].dhuharTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].dhuharTime.toLowerCase();
         document.getElementById("nav-zohr-jamaat").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].zohrJamahTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].zohrJamahTime.toLowerCase();
 
         document.getElementById("nav-asar-begins").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].asrTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].asrTime.toLowerCase();
         document.getElementById("nav-asar-jamaat").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].asarJamahTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].asarJamahTime.toLowerCase();
 
         document.getElementById("nav-magrib-begins").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].maghribTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].maghribTime.toLowerCase();
         document.getElementById("nav-magrib-jamaat").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].magribJamahTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].magribJamahTime.toLowerCase();
 
         document.getElementById("nav-isha-begins").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].ishaTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].ishaTime.toLowerCase();
         document.getElementById("nav-isha-jamaat").innerHTML =
-          myObj.dailyPrayers[d.getDate() - 1].ishaJamahTime.toLowerCase();
+          myObj.dailyPrayers[today.getDate() - 1].ishaJamahTime.toLowerCase();
       }
     };
-    var asset = getAssetName(`json`);
+    var asset = getAssetName(getToday(), `json`);
     console.log(asset);
     xmlhttp.open("GET", asset, true);
     xmlhttp.send();
