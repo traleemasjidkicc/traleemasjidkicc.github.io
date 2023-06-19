@@ -427,22 +427,26 @@
     }
   };
 
+  const setLocationSpecific = () => {
+    var href = window.location.href;
+    switch (true) {
+      case href.endsWith("/"):
+        pillarsOfFaith();
+        showSignUpModal();
+      case href.endsWith("/"):
+      case href.endsWith("activities.html"):
+        setEvent();
+        break;
+    }
+  };
+
   window.onload = () => {
     setFooterYear();
     setSalahTimeUrl();
     setSalahTimes();
     showCookiePolicy();
-
-    if (window.location.href.endsWith(`/`)) {
-      pillarsOfFaith();
-      showSignUpModal();
-    } else if (
-      window.location.href.endsWith(`/`) ||
-      window.location.href.endsWith("activities.html")
-    ) {
-      setEvent();
-    }
     showWhatsAppButton();
     getRandomHadith();
+    setLocationSpecific();
   };
 })();
