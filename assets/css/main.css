@@ -152,6 +152,11 @@ h6 {
 	color: #555;
 }
 
+a.contact-link {
+	text-decoration: none;
+	color: #fff;
+}
+
 .nav-narrow {
 	height: 30px !important;
 }
