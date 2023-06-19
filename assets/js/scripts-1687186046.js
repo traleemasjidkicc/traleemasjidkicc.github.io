@@ -5,7 +5,6 @@
     return new Date();
   };
 
-
   const addDays = (date, days) => {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -22,7 +21,9 @@
   };
 
   const getAssetName = (date, format) => {
-    const month = date.toLocaleDateString("default", { month: "short" }).toUpperCase();
+    const month = date
+      .toLocaleDateString("default", { month: "short" })
+      .toUpperCase();
     const year = date.getFullYear();
     return `assets/${format}/${month}${year}.${format}`;
   };
@@ -433,9 +434,13 @@
     showCookiePolicy();
 
     if (window.location.href.endsWith(`/`)) {
-      setEvent();
       pillarsOfFaith();
       showSignUpModal();
+    } else if (
+      window.location.href.endsWith(`/`) ||
+      window.location.href.endsWith("activities.html")
+    ) {
+      setEvent();
     }
     showWhatsAppButton();
     getRandomHadith();
