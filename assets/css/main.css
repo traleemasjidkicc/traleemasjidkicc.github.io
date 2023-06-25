@@ -162,7 +162,25 @@ a.contact-link {
 }
 
 .nav-wide {
-	background-color: #4840E9;
+	background-color: #2a267b;
+}
+
+.announcement-top-bar {
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: sticky;
+	top: 0;
+}
+
+.announcement-top-bar p {
+	margin: 0;
+}
+
+.announcement-top-bar.alert-dismissible .close {
+	top: 50%;
+	transform: translateY(-55%);
 }
 
 .how-section1 {
@@ -481,7 +499,7 @@ section.pricing {
 
 
 .bg-cover-2 {
-	background: url(../images/mos-bg5.png) no-repeat center bottom;
+	background: url(../images/eid-al-adha.jpg) no-repeat center bottom;
 	background-size: cover !important;
 	min-height: 50vh;
 }
