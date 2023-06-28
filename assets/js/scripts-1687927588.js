@@ -427,12 +427,43 @@
     }
   };
 
+  const getAnnouncement = () => {
+    try {
+      var xhr = new XMLHttpRequest();
+
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE && this.status === 200) {
+          const announcement = JSON.parse(this.responseText);
+          console.log(announcement);
+
+          document.getElementById("announcement").innerHTML =
+            announcement.message;
+        } else {
+          document.getElementById(
+            "announcement"
+          ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
+        }
+      });
+
+      xhr.open(
+        "GET",
+        "https://europe-west1-tralee-masjid.cloudfunctions.net/getAnnouncement"
+      );
+      xhr.send();
+    } catch {
+      document.getElementById(
+        "announcement"
+      ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
+    }
+  };
+
   const setLocationSpecific = () => {
     var href = window.location.href;
     switch (true) {
       case href.endsWith("/"):
         pillarsOfFaith();
         showSignUpModal();
+        getAnnouncement();
       case href.endsWith("/"):
       case href.endsWith("activities.html"):
         setEvent();
