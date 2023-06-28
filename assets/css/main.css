@@ -171,7 +171,8 @@ a.contact-link {
 	position: -ms-sticky;
 	position: -o-sticky;
 	position: sticky;
-	top: 0;
+	top: 13%;
+	z-index: 1000;
 }
 
 .announcement-top-bar p {
@@ -1195,6 +1196,10 @@ blockquote.quote-card {
 		transform: rotate(-90deg);
 		display: block;
 	}
+
+	.announcement-top-bar {
+		top: 6%;
+	}
 }
 
 /* col-md-* - 768px */
@@ -1215,6 +1220,10 @@ blockquote.quote-card {
 		width: 100%;
 	}
 
+	.announcement-top-bar {
+		top: 4%;
+	}
+
 }
 
 /* col-lg-* - 992px */
@@ -1227,6 +1236,10 @@ blockquote.quote-card {
 
 	.pricing .card:hover .btn {
 		opacity: 1;
+	}
+
+	.announcement-top-bar {
+		top: 10%;
 	}
 
 }
