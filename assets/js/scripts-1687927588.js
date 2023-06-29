@@ -438,6 +438,11 @@
 
           document.getElementById("announcement").innerHTML =
             announcement.message;
+
+          if (announcement.active) {
+            document.getElementById("announcement-bar").classList.remove("d-none");
+          }
+         
         } else {
           document.getElementById(
             "announcement"
