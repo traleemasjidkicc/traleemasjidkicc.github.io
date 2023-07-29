@@ -440,9 +440,10 @@
             announcement.message;
 
           if (announcement.active) {
-            document.getElementById("announcement-bar").classList.remove("d-none");
+            document
+              .getElementById("announcement-bar")
+              .classList.remove("d-none");
           }
-         
         } else {
           document.getElementById(
             "announcement"
@@ -469,7 +470,8 @@
         pillarsOfFaith();
         showSignUpModal();
         getAnnouncement();
-      case href.endsWith("/"):
+        setEvent();
+        break;
       case href.endsWith("activities.html"):
         setEvent();
         break;
