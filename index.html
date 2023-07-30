@@ -223,7 +223,7 @@
 
   <!-- ANNOUNCEMENT START -->
   <div
-    class="alert alert-primary alert-dismissible fade show announcement-top-bar text-center d-none"
+    class="alert alert-success alert-dismissible fade show text-center d-none"
     role="alert" id="announcement-bar">
     <div class="container">
       <span id="announcement"></span>
@@ -339,7 +339,6 @@
         aria-labelledby="nav-news-tab">
         <div class="row">
           <div class="col-md-12 pl-4 pb-4">
-
             <div class="row pb-4">
               <div class="col-md-2"></div>
               <div class="col-md-8">
@@ -349,14 +348,12 @@
                   <li
                     class="list-group-item d-flex justify-content-between align-items-center h5">
                     Speech <span
-                      class="badge badge-primary badge-pill badge-danger">1:25
-                      pm</span>
+                      class="badge badge-primary badge-pill badge-danger" id="speech-time"></span>
                   </li>
                   <li
                     class="list-group-item d-flex justify-content-between align-items-center h5">
                     Athan & Khutbah <span
-                      class="badge badge-primary badge-pill badge-danger">1:45
-                      pm</span>
+                      class="badge badge-primary badge-pill badge-danger" id="adhan-time"></span>
                   </li>
                   <!-- <li
                     class="list-group-item d-flex justify-content-between align-items-center h5">
@@ -376,41 +373,8 @@
             </p>
           </div>
         </div>
-
-        <a class="d-none" href="#" role="button" data-toggle="modal"
-          data-target="#newsModal">
-          Read more...
-        </a>
-        <!-- HADEETH TAB END -->
       </div>
       <!-- NEWS TAB END -->
-      <!-- MODAL START -->
-      <div class="modal fade" id="newsModal" tabindex="-1" role="dialog"
-        aria-labelledby="newsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered"
-          role="document">
-          <div class="modal-content ">
-            <div class="modal-header">
-              <h5 class="modal-title" id="newsModalLabel">Ramadan News
-              </h5>
-              <button type="button" class="close" data-dismiss="modal"
-                aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary"
-                data-dismiss="modal">Close</button>
-              <a href="assets/pdf/Ramadan_News.pdf" target="_blank"
-                role="button" class="btn btn-info">Download</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- MODAL END -->
   </section>
   <!-- NEWS AND EVENTS END -->
 

@@ -438,6 +438,10 @@
 
           document.getElementById("announcement").innerHTML =
             announcement.message;
+          document.getElementById("speech-time").innerHTML =
+            announcement.jummaTime.speech;
+          document.getElementById("adhan-time").innerHTML =
+            announcement.jummaTime.adhan;
 
           if (announcement.active) {
             document
