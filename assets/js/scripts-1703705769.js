@@ -440,8 +440,10 @@
             announcement.message;
           document.getElementById("speech-time").innerHTML =
             announcement.jummaTime.speech;
-          document.getElementById("adhan-time").innerHTML =
-            announcement.jummaTime.adhan;
+          document.getElementById("khutbah-1").innerHTML =
+            announcement.jummaTime.firstKhutbah;
+            document.getElementById("khutbah-2").innerHTML =
+            announcement.jummaTime.secondKhutbah;
 
           if (announcement.active) {
             document
