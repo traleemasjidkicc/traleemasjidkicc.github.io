@@ -20,6 +20,13 @@
     );
   };
 
+  const isRamadan = () => {
+    // Note: Months are zero-based (0 = January, 1 = February, ..., 11 = December)
+    // Ramadan 2024 is on: March 11, 2024, 00:00:01 AM
+    var specificDate = new Date(2024, 2, 11, 0, 0, 1, 0);
+    return addDays(getToday(), 3) >= specificDate;
+  };
+
   const getAssetName = (date, format) => {
     const month = date
       .toLocaleDateString("default", { month: "short" })
@@ -36,8 +43,10 @@
 
   const setSalahTimeUrl = () => {
     try {
-      const asset = getAssetName(addDays(getToday(), 3), `pdf`);
-      // const asset = `assets/pdf/Ramadan2023.pdf`;
+      var asset = getAssetName(addDays(getToday(), 3), `pdf`);
+      if (isRamadan()) {
+        asset = `assets/pdf/Ramadan2024.pdf`;
+      }
       document.getElementById("salah-times").href = asset;
       document.getElementById("salah-times-footer").href = asset;
       if (window.location.href.endsWith(`/`)) {
@@ -159,18 +168,26 @@
             myObj.dailyPrayers[today.getDate() - 1].maghribTime.toLowerCase();
           document.getElementById("isha").innerHTML =
             myObj.dailyPrayers[today.getDate() - 1].ishaTime.toLowerCase();
-          document.getElementById("cur-month").innerHTML =
-            addedDays.toLocaleString("default", { month: "long" });
-          // document.getElementById("cur-month").innerHTML = "Ramadan";
+
+          if (isRamadan()) {
+            document.getElementById("cur-month").innerHTML = "Ramadan";
+          } else {
+            document.getElementById("cur-month").innerHTML =
+              addedDays.toLocaleString("default", { month: "long" });
+          }
         }
         document.getElementById("nav-hijri").innerHTML =
           myObj.dailyPrayers[today.getDate() - 1].hijriDate;
-        document.getElementById("nav-cur-month").innerHTML =
-          addedDays.toLocaleString("default", { month: "long" });
-        document.getElementById("footer-cur-month").innerHTML =
-          addedDays.toLocaleString("default", { month: "long" });
-        // document.getElementById("nav-cur-month").innerHTML = "Ramadan";
-        // document.getElementById("footer-cur-month").innerHTML = "Ramadan";
+
+        if (isRamadan()) {
+          document.getElementById("nav-cur-month").innerHTML = "Ramadan";
+          document.getElementById("footer-cur-month").innerHTML = "Ramadan";
+        } else {
+          document.getElementById("nav-cur-month").innerHTML =
+            addedDays.toLocaleString("default", { month: "long" });
+          document.getElementById("footer-cur-month").innerHTML =
+            addedDays.toLocaleString("default", { month: "long" });
+        }
 
         document.getElementById("nav-fajr-begins").innerHTML =
           myObj.dailyPrayers[today.getDate() - 1].fajarTime.toLowerCase();
@@ -442,7 +459,7 @@
             announcement.jummaTime.speech;
           document.getElementById("khutbah-1").innerHTML =
             announcement.jummaTime.firstKhutbah;
-            document.getElementById("khutbah-2").innerHTML =
+          document.getElementById("khutbah-2").innerHTML =
             announcement.jummaTime.secondKhutbah;
 
           if (announcement.active) {
