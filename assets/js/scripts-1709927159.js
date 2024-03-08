@@ -21,10 +21,12 @@
   };
 
   const isRamadan = () => {
-    // Note: Months are zero-based (0 = January, 1 = February, ..., 11 = December)
     // Ramadan 2024 is on: March 11, 2024, 00:00:01 AM
     var ramadanStartDate = new Date(2024, 2, 11, 0, 0, 1, 0);
-    return addDays(getToday(), 4) >= ramadanStartDate;
+    return (
+      addDays(getToday(), 4) >= ramadanStartDate &&
+      getToday() < addDays(ramadanStartDate, 27)
+    );
   };
 
   const getAssetName = (date, format) => {
