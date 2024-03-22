@@ -27,6 +27,9 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
+  <link rel="stylesheet" href="assets/css/main.css">
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -488,72 +491,38 @@
   <!-- SALAH TIMES END -->
 
   <!-- MASJID NOTICES START -->
-  <div class="blog-home2 py-5" id="notice-board">
+  <section class="blog-home2 grid-gallery py-5" id="notice-board">
     <div class="container">
-      <!-- Row  -->
       <div class="row justify-content-center">
-        <!-- Column -->
         <div class="col-md-8 text-center">
           <img src="assets/images/bsml-txt-black.png" alt="Bismillah"
             style="transition-delay: 0ms; width: 210px; padding-top: 20px;">
           <h2 class="my-3 text-break">Masjid Notices</h2>
         </div>
-        <!-- Column -->
-        <!-- Column -->
       </div>
-      <!-- Row -->
-      <div class="row mt-4">
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/ramadan2024.jpeg"
-              alt="Daily Programmes">
-
-          </div>
+      <div class="row">
+        <div class="col-md-6 col-lg-4 item">
+          <a class="lightbox" href="assets/images/posters/ramadan2024.jpeg">
+            <img class="img-fluid image scale-on-hover"
+              src="assets/images/posters/ramadan2024.jpeg">
+          </a>
         </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/masjid-update-1-mar24.jpeg" alt="Jummah">
-          </div>
+        <div class="col-md-6 col-lg-4 item">
+          <a class="lightbox"
+            href="assets/images/posters/lillah-appeal-2024.jpeg">
+            <img class="img-fluid image scale-on-hover"
+              src="assets/images/posters/lillah-appeal-2024.jpeg">
+          </a>
         </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top" src="assets/images/posters/lillah-appeal-2024.jpeg"
-              alt="Donation">
-          </div>
-        </div>
-      </div>
-      <div class="row mt-4">
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/madrasah-schedule-2024.jpeg"
-              alt="Dhul Hijjah">
-          </div>
-        </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/masjid-update-2-mar24.jpeg"
-              alt="Jummah">
-          </div>
-        </div>
-        <!-- Column -->
-        <div class="col-md-4 on-hover">
-          <div class="card border-0 mb-4">
-            <img class="card-img-top"
-              src="assets/images/posters/jummah-oct-23.jpeg" alt="Takbeer">
-          </div>
+        <div class="col-md-6 col-lg-4 item">
+          <a class="lightbox" href="assets/images/posters/jummah-oct-23.jpeg">
+            <img class="img-fluid image scale-on-hover"
+              src="assets/images/posters/jummah-oct-23.jpeg">
+          </a>
         </div>
       </div>
     </div>
-  </div>
+  </section>
   <!-- MASJID NOTICES END -->
 
   <!-- MASJID SERVICES START -->
@@ -1016,6 +985,15 @@
     <!-- Footer Links -->
   </footer>
   <!-- FOOTER END -->
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js">
+    </script>
+  <script>
+    baguetteBox.run('.grid-gallery', {
+      animation: 'slideIn'
+    });
+  </script>
 </body>
 
 </html>
