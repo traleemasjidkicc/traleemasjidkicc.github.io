@@ -482,9 +482,49 @@
       );
       xhr.send();
     } catch {
+      console.log("error get announces")
       document.getElementById(
         "announcement"
       ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
+    }
+  };
+
+  const getNotices = () => {
+    try {
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE && this.status === 200) {
+          const response = JSON.parse(this.responseText);
+          console.log(response);
+          const notices = response.notices;
+          const noticeContainer = document.getElementById("noticeContainer");
+          notices.forEach(function (notice) {
+            var div = document.createElement("div");
+            div.classList.add("col-md-6", "col-lg-4", "item");
+            var a = document.createElement("a");
+            a.classList.add("lightbox");
+            a.href = notice.fileUrl;
+            var img = document.createElement("img");
+            img.classList.add("img-fluid", "image", "scale-on-hover");
+            img.src = notice.fileUrl;
+            a.appendChild(img);
+            div.appendChild(a);
+            noticeContainer.appendChild(div);
+          });
+          // After dynamically creating div elements, run baguetteBox
+          baguetteBox.run(".grid-gallery", {
+            animation: "slideIn",
+          });
+        }
+      });
+
+      xhr.open(
+        "GET",
+        "https://europe-west1-tralee-masjid.cloudfunctions.net/getNotices"
+      );
+      xhr.send();
+    } catch {
+      console.log("error loading notices")
     }
   };
 
@@ -492,6 +532,7 @@
     var href = window.location.href;
     switch (true) {
       case href.endsWith("/"):
+        getNotices();
         pillarsOfFaith();
         showSignUpModal();
         getAnnouncement();
