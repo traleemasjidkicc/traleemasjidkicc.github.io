@@ -505,7 +505,7 @@
             a.classList.add("lightbox");
             a.href = notice.fileUrl;
             var img = document.createElement("img");
-            img.classList.add("img-fluid", "image", "scale-on-hover");
+            img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
             img.src = notice.fileUrl;
             a.appendChild(img);
             div.appendChild(a);
