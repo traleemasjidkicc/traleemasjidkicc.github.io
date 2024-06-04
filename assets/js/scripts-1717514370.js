@@ -500,7 +500,7 @@
           const noticeContainer = document.getElementById("noticeContainer");
           notices.forEach(function (notice) {
             var div = document.createElement("div");
-            div.classList.add("col-md-6", "col-lg-4", "item");
+            div.classList.add("col-md-6", "col-lg-4", "mx-auto", "item");
             var a = document.createElement("a");
             a.classList.add("lightbox");
             a.href = notice.fileUrl;
