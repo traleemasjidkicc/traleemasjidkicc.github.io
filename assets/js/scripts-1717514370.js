@@ -467,6 +467,9 @@
           if (announcement.active) {
             document
               .getElementById("announcement-bar")
+              .classList.add("bigEntrance", "stretchLeft");
+            document
+              .getElementById("announcement-bar")
               .classList.remove("d-none");
           }
         } else {
@@ -499,8 +502,8 @@
           const notices = response.notices;
           const noticeContainer = document.getElementById("noticeContainer");
           notices.forEach(function (notice) {
-            var div = document.createElement("div");
-            div.classList.add("col-md-6", "col-lg-4", "mx-auto", "item");
+            var div = document.createElement("div", "fadeIn");
+            div.classList.add("col-md-6", "col-lg-4", "mx-auto", "item", "pulse");
             var a = document.createElement("a");
             a.classList.add("lightbox");
             a.href = notice.fileUrl;
