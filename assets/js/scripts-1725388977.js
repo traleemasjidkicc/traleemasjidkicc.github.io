@@ -30,9 +30,7 @@
   };
 
   const getAssetName = (date, format) => {
-    const month = date
-      .toLocaleDateString("default", { month: "short" })
-      .toUpperCase();
+    const month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date).toUpperCase();
     const year = date.getFullYear();
     return `assets/${format}/${month}${year}.${format}`;
   };
