@@ -482,6 +482,7 @@
         "https://europe-west1-tralee-masjid.cloudfunctions.net/getAnnouncement"
       );
       xhr.send();
+      //TODO add the response in local storage if changes are detected then call endpoint
     } catch {
       console.log("error get announces")
       document.getElementById(

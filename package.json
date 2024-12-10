@@ -1,6 +1,7 @@
 {
   "name": "kicc-tralee-masjid",
-  "version": "1.1.0",
+  "version": "1.1.5",
+  "type": "module",
   "description": "Kerry Islamic Cultural Centre website.",
   "main": "index.html",
   "repository": "git@github.com:traleemasjidkicc/traleemasjidkicc.github.io.git",
@@ -13,13 +14,15 @@
   },
   "devDependencies": {
     "browser-sync": "2.29.1",
-    "gulp": "4.0.2"
+    "gulp": "4.0.2",
+    "gulp-replace": "1.1.4"
   },
   "scripts": {
     "start": "npx gulp",
     "verify": "yarn install --check-files",
     "preci": "rm -fr node_modules",
     "ci": "yarn install --frozen-lockfile",
-    "postinstall": "yarn start"
+    "postci": "yarn start",
+    "precommit": "gulp rename-js && gulp update-html && yarn version --patch --no-git-tag-version"
   }
 }
