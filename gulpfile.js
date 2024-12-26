@@ -78,7 +78,7 @@ gulp.task('serve', function () {
     });
 
     // Watch HTML and CSS files for changes
-    gulp.watch(["*.html", "assets/css/*.css"]).on("change", bs.reload);
+    gulp.watch(["*.html", "assets/css/*.css", "assets/js/*.js"]).on("change", bs.reload);
 });
 
 // Default task that runs both the rename-js task once and then starts the server
