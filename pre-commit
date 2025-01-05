@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Skip running the hook if we're in the middle of a pre-commit operation
+if [ "$SKIP_PRECOMMIT_HOOK" = "true" ]; then
+  exit 0
+fi
+
+# Run the precommit tasks (e.g., yarn precommit modifies files)
+yarn precommit
+
+# Check if there are any changes to stage after running the tasks
+if git diff --quiet; then
+  # No changes detected, skip further actions
+  exit 0
+fi
+
+# Stage the changes made by the precommit tasks
+git add .
+
+exit 0

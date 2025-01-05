@@ -21,6 +21,6 @@
         "wudhu"
     ],
     "files.exclude": {
-        "**/.git": false
+        "**/.git": true
     }
 }

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Skip running the hook if we're in the middle of a pre-commit operation
+if [ "$SKIP_POSTCOMMIT_HOOK" = "true" ]; then
+  exit 0
+fi
+
+# Stage any changes made by precommit tasks
+git add .
+
+# Update the commit message with the current staged state
+export SKIP_POSTCOMMIT_HOOK=true
+COMMIT_MSG=$(git log -1 --pretty=%B)  # Get the last commit message
+git commit --amend --no-edit -m "$COMMIT_MSG"
+
+exit 0
