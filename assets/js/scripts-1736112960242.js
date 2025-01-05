@@ -30,7 +30,9 @@
   };
 
   const getAssetName = (date, format) => {
-    const month = new Intl.DateTimeFormat('en', { month: 'short' }).format(date).toUpperCase();
+    const month = new Intl.DateTimeFormat("en", { month: "short" })
+      .format(date)
+      .toUpperCase();
     const year = date.getFullYear();
     return `assets/${format}/${month}${year}.${format}`;
   };
@@ -484,7 +486,7 @@
       xhr.send();
       //TODO add the response in local storage if changes are detected then call endpoint
     } catch {
-      console.log("error get announces")
+      console.log("error get announces");
       document.getElementById(
         "announcement"
       ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
@@ -492,49 +494,79 @@
   };
 
   const getNotices = () => {
+    const NOTICES_KEY = "notices";
+    const NOTICE_API_URL =
+      "https://europe-west1-tralee-masjid.cloudfunctions.net/getNotices";
+
     try {
       var xhr = new XMLHttpRequest();
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE && this.status === 200) {
           const response = JSON.parse(this.responseText);
-          console.log(response);
+          console.log("API response:", response);
           const notices = response.notices;
-          const noticeContainer = document.getElementById("noticeContainer");
-          notices.forEach(function (notice) {
-            var div = document.createElement("div", "fadeIn");
-            div.classList.add("col-md-6", "col-lg-4", "mx-auto");
-            var a = document.createElement("a");
-            a.classList.add("lightbox");
-            a.href = notice.fileUrl;
-            var img = document.createElement("img");
-            img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
-            img.src = notice.fileUrl;
-            a.appendChild(img);
-            div.appendChild(a);
-            noticeContainer.appendChild(div);
-          });
-          // After dynamically creating div elements, run baguetteBox
-          baguetteBox.run(".grid-gallery", {
-            animation: "slideIn",
-          });
+
+          // Update local storage with the fetched notices
+          localStorage.setItem(NOTICES_KEY, JSON.stringify(notices));
+          console.log("Local storage updated with fetched notices:", notices);
+
+          // Render notices
+          renderNotices(notices);
         }
       });
 
-      xhr.open(
-        "GET",
-        "https://europe-west1-tralee-masjid.cloudfunctions.net/getNotices"
-      );
+      xhr.open("GET", NOTICE_API_URL);
       xhr.send();
     } catch {
-      console.log("error loading notices")
+      console.log("Error loading notices");
     }
+  };
+
+  const renderNotices = (notices) => {
+    const noticeContainer = document.getElementById("noticeContainer");
+    noticeContainer.innerHTML = ""; // Clear previous notices
+    notices.forEach(function (notice) {
+      const div = document.createElement("div");
+      div.classList.add("col-md-6", "col-lg-4", "mx-auto", "fadeIn");
+      const a = document.createElement("a");
+      a.classList.add("lightbox");
+      a.href = notice.fileUrl;
+      const img = document.createElement("img");
+      img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
+      img.src = notice.fileUrl;
+      a.appendChild(img);
+      div.appendChild(a);
+      noticeContainer.appendChild(div);
+    });
+
+    // After dynamically creating div elements, run baguetteBox
+    baguetteBox.run(".grid-gallery", {
+      animation: "slideIn",
+    });
+  };
+
+  const showNotices = () => {
+    // Try to load notices from local storage on page load
+    const NOTICES_KEY = "notices";
+
+    const cachedNotices = localStorage.getItem(NOTICES_KEY);
+    if (cachedNotices) {
+      console.log(
+        "Loaded notices from local storage:",
+        JSON.parse(cachedNotices)
+      );
+      renderNotices(JSON.parse(cachedNotices));
+    } else {
+      console.log("No notices found in local storage.");
+    }
+    // Fetch latest notices and update local storage
+    getNotices();
   };
 
   const setLocationSpecific = () => {
     var href = window.location.href;
     switch (true) {
       case href.endsWith("/"):
-        getNotices();
         pillarsOfFaith();
         showSignUpModal();
         getAnnouncement();
@@ -545,6 +577,13 @@
         break;
     }
   };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    var href = window.location.href;
+    if (href.endsWith("/")) {
+      showNotices();
+    }
+  });
 
   window.onload = () => {
     setFooterYear();
