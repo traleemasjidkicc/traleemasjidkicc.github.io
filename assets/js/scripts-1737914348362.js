@@ -432,7 +432,7 @@
 
       xhr.open(
         "GET",
-        "https://europe-west1-tralee-masjid.cloudfunctions.net/randomHadith"
+        "https://randomhadith-rds3nxm6za-ew.a.run.app"
       );
       xhr.send();
     } catch {
@@ -481,7 +481,7 @@
 
       xhr.open(
         "GET",
-        "https://europe-west1-tralee-masjid.cloudfunctions.net/getAnnouncement"
+        "https://getannouncement-rds3nxm6za-ew.a.run.app"
       );
       xhr.send();
       //TODO add the response in local storage if changes are detected then call endpoint
@@ -496,7 +496,7 @@
   const getNotices = () => {
     const NOTICES_KEY = "notices";
     const NOTICE_API_URL =
-      "https://europe-west1-tralee-masjid.cloudfunctions.net/getNotices";
+      "https://getnotices-rds3nxm6za-ew.a.run.app";
 
     try {
       var xhr = new XMLHttpRequest();
