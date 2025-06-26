@@ -1,8 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Cinzel+Decorative:300,400,500,600,700,900|Ubuntu:300,400,500,600,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* GLOBALS START */
 body {
-	font-family: 'Ubuntu', sans-serif;
+	font-family: "Libre Caslon Text", serif;
+	font-weight: 400;
+	font-style: normal;
 }
 
 h1,
@@ -11,7 +13,9 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: 'Cinzel Decorative', cursive;
+	font-family: "Cinzel Decorative", serif;
+	font-weight: 700;
+	font-style: normal;
 }
 
 /* GLOBALS END */
@@ -162,7 +166,7 @@ a.contact-link {
 }
 
 .nav-wide {
-	background-color: #2a267b;
+	background-color: #33334d;
 }
 
 .how-section1 {
@@ -479,12 +483,30 @@ section.pricing {
 
 /* Hover Effects on Card */
 
-
 .bg-cover-2 {
-	background: url(../images/mos-bg5.png) no-repeat center bottom;
-	background-size: cover !important;
-	min-height: 50vh;
+    position: relative;
+    background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
+    background-size: cover !important;
+    min-height: 75vh;
+    z-index: 1;
+    /* Ensure content is above the overlay */
 }
+
+.bg-cover-2::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(51, 51, 77, 0.8); /* Adjust opacity as needed */
+    z-index: 2;
+    pointer-events: none; /* Allows clicks to pass through */
+}
+
+/* Ensure child content is above the overlay */
+.bg-cover-2 > * {
+    position: relative;
+    z-index: 3;
+}
+
 
 .modal-dialog {
 	overflow-y: initial !important
@@ -851,7 +873,6 @@ body .cp-welcome-content p {
 .section-title h2,
 .cp-welcome h2,
 .blog-home2 h2 {
-	font-family: 'Cinzel Decorative', cursive;
 	font-size: 48px;
 	font-weight: 700;
 	margin: 5px 0 0 0;
@@ -940,13 +961,11 @@ body .cp-welcome-content p {
 }
 
 .salah-times .text-box h2 {
-	font-family: 'Cinzel Decorative', cursive;
 	font-size: 15px;
 	font-weight: bold;
 }
 
 .pillars-islam .text-box h2 {
-	font-family: 'Cinzel Decorative', cursive;
 	font-size: 25px;
 }
 
@@ -1053,7 +1072,6 @@ blockquote.quote-card {
 }
 
 .quote-card:before {
-	font-family: Georgia, serif;
 	content: "“";
 	position: absolute;
 	top: 10px;
@@ -1064,7 +1082,6 @@ blockquote.quote-card {
 }
 
 .quote-card:after {
-	font-family: Georgia, serif;
 	content: "”";
 	position: absolute;
 	bottom: -110px;
