@@ -430,10 +430,7 @@
         }
       });
 
-      xhr.open(
-        "GET",
-        "https://randomhadith-rds3nxm6za-ew.a.run.app"
-      );
+      xhr.open("GET", "https://randomhadith-rds3nxm6za-ew.a.run.app");
       xhr.send();
     } catch {
       document.getElementById("hadith-body").innerHTML =
@@ -446,45 +443,116 @@
     }
   };
 
+  const formatTimeToAmPm = (time24) => {
+    if (!time24) return "";
+    const [hourStr, minuteStr] = time24.split(":");
+    let hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
+
+    const period = hour >= 12 ? "pm" : "am";
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+
+    const minutePadded = minute.toString().padStart(2, "0");
+    return `${hour}:${minutePadded} ${period}`;
+  };
+
+  const renderJummahSchedule = (jummahTimes = []) => {
+    const list = document.getElementById("jummah-schedule");
+    if (!list) return;
+
+    // Remove previously rendered dynamic items, keep the header (first li)
+    while (list.children.length > 1) {
+      list.removeChild(list.lastElementChild);
+    }
+
+    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) {
+      return;
+    }
+
+    // For each entry in jummahTimes create a row
+    jummahTimes.forEach((slot, index) => {
+      const khutbahLabel =
+        jummahTimes.length === 1 ? "Khutbah" : `Khutbah ${index + 1}`;
+      const speechTime = formatTimeToAmPm(slot.speech);
+      const khutbahTime = formatTimeToAmPm(slot.khutbah);
+
+      // Speech row
+      if (speechTime) {
+        const liSpeech = document.createElement("li");
+        liSpeech.className =
+          "list-group-item d-flex justify-content-between align-items-center h5";
+        liSpeech.innerHTML = `
+        <span>Speech ${jummahTimes.length > 1 ? index + 1 : ""}</span>
+        <span class="badge badge-primary badge-pill badge-danger">
+          ${speechTime}
+        </span>
+      `;
+        list.appendChild(liSpeech);
+      }
+
+      // Khutbah row
+      if (khutbahTime) {
+        const liKhutbah = document.createElement("li");
+        liKhutbah.className =
+          "list-group-item d-flex justify-content-between align-items-center h5";
+        liKhutbah.innerHTML = `
+        <span>${khutbahLabel}</span>
+        <span class="badge badge-primary badge-pill badge-danger">
+          ${khutbahTime}
+        </span>
+      `;
+        list.appendChild(liKhutbah);
+      }
+    });
+  };
+
   const getAnnouncement = () => {
     try {
       var xhr = new XMLHttpRequest();
 
       xhr.addEventListener("readystatechange", function () {
         if (this.readyState === this.DONE && this.status === 200) {
-          const announcement = JSON.parse(this.responseText);
-          console.log(announcement);
+          const announcements = JSON.parse(this.responseText);
 
-          document.getElementById("announcement").innerHTML =
-            announcement.message;
-          document.getElementById("speech-time").innerHTML =
-            announcement.jummaTime.speech;
-          document.getElementById("khutbah-1").innerHTML =
-            announcement.jummaTime.firstKhutbah;
-          document.getElementById("khutbah-2").innerHTML =
-            announcement.jummaTime.secondKhutbah;
+          const jumuah = announcements.find((a) => a.type === "jumuah");
+          const breaking = announcements.find((a) => a.type === "breaking");
+          const selected = jumuah?.active
+            ? jumuah
+            : breaking || announcements[0];
 
-          if (announcement.active) {
-            document
-              .getElementById("announcement-bar")
-              .classList.add("bigEntrance", "stretchLeft");
-            document
-              .getElementById("announcement-bar")
-              .classList.remove("d-none");
+          if (!selected) {
+            document.getElementById(
+              "announcement"
+            ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
+            return;
           }
-        } else {
+
+          console.log(selected);
+          document.getElementById("announcement").innerHTML = selected.message;
+
+          // Only render schedule for Jumu'ah type
+          if (selected.type === "jumuah") {
+            renderJummahSchedule(selected.jummahTimes);
+          } else {
+            // Clear any existing schedule rows
+            renderJummahSchedule([]);
+          }
+
+          if (selected.active) {
+            const bar = document.getElementById("announcement-bar");
+            bar.classList.add("bigEntrance", "stretchLeft");
+            bar.classList.remove("d-none");
+          }
+        } else if (this.readyState === this.DONE) {
           document.getElementById(
             "announcement"
           ).innerHTML = `<p>Please check the masjid <a href="#notice-board">notice board.</a></p>`;
         }
       });
 
-      xhr.open(
-        "GET",
-        "https://getannouncement-rds3nxm6za-ew.a.run.app"
-      );
+      xhr.open("GET", "https://getannouncements-rds3nxm6za-ew.a.run.app");
       xhr.send();
-      //TODO add the response in local storage if changes are detected then call endpoint
     } catch {
       console.log("error get announces");
       document.getElementById(
@@ -495,8 +563,7 @@
 
   const getNotices = () => {
     const NOTICES_KEY = "notices";
-    const NOTICE_API_URL =
-      "https://getnotices-rds3nxm6za-ew.a.run.app";
+    const NOTICE_API_URL = "https://getnotices-rds3nxm6za-ew.a.run.app";
 
     try {
       var xhr = new XMLHttpRequest();
