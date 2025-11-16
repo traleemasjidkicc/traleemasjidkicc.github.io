@@ -597,10 +597,10 @@
       div.classList.add("col-md-6", "col-lg-4", "mx-auto", "fadeIn");
       const a = document.createElement("a");
       a.classList.add("lightbox");
-      a.href = notice.fileUrl;
+      a.href = notice.url;
       const img = document.createElement("img");
       img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
-      img.src = notice.fileUrl;
+      img.src = notice.url;
       a.appendChild(img);
       div.appendChild(a);
       noticeContainer.appendChild(div);
