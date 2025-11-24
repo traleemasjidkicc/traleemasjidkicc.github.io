@@ -5,21 +5,6 @@
     "html.format.wrapLineLength": 80,
     "html.validate.styles": true,
     "editor.formatOnSave": false,
-    "cSpell.words": [
-        "Fajr",
-        "Jama'ah",
-        "Jamah",
-        "Magrib",
-        "Salah",
-        "Zohr",
-        "deen",
-        "dhuhar",
-        "fajar",
-        "isha",
-        "jamaat",
-        "kicc",
-        "wudhu"
-    ],
     "files.exclude": {
         "**/.git": true
     }

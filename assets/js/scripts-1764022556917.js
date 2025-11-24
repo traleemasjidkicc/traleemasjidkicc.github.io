@@ -45,17 +45,59 @@
 
   const setSalahTimeUrl = () => {
     try {
-      var asset = getAssetName(addDays(getToday(), 3), `pdf`);
-      if (isRamadan()) {
-        asset = `assets/pdf/Ramadan${getToday().getFullYear()}.pdf`;
-      }
-      document.getElementById("salah-times").href = asset;
-      document.getElementById("salah-times-footer").href = asset;
-      if (window.location.href.endsWith(`/`)) {
-        document.getElementById("salah-times-body").href = asset;
-      }
+      var baseUrl = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
+
+      // Month = today + 3 days, full month name
+      var targetDate = addDays(getToday(), 3);
+      var month = targetDate.toLocaleString("en-GB", { month: "long" });
+
+      // Use actual current year
+      var year = targetDate.getFullYear();
+
+      // isRamadan from your existing function
+      var ramadan = isRamadan();
+
+      var url =
+        baseUrl +
+        "?month=" +
+        encodeURIComponent(month) +
+        "&year=" +
+        encodeURIComponent(year) +
+        "&isRamadan=" +
+        encodeURIComponent(ramadan);
+
+      fetch(url, { method: "GET" })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+          return response.json();
+        })
+        .then(function (json) {
+          // expecting { data: [ { url: string, ... } ] }
+          var data = json && json.data;
+          if (!data || !data.length || !data[0].url) {
+            console.error("No salah times data returned");
+            return;
+          }
+
+          var asset = data[0].url;
+
+          var elMain = document.getElementById("salah-times");
+          var elFooter = document.getElementById("salah-times-footer");
+          var elBody = document.getElementById("salah-times-body");
+
+          if (elMain) elMain.href = asset;
+          if (elFooter) elFooter.href = asset;
+          if (window.location.href.endsWith("/") && elBody) {
+            elBody.href = asset;
+          }
+        })
+        .catch(function (error) {
+          console.error("Error loading salah times", error);
+        });
     } catch (error) {
-      console.error(`Error loading salah times ${error}`);
+      console.error("Error loading salah times", error);
     }
   };
 
