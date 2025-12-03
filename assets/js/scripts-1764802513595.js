@@ -192,80 +192,153 @@
     request.send(null);
   };
 
-  const setSalahTimes = () => {
-    var xmlhttp = new XMLHttpRequest();
-    var today = getToday();
-    var addedDays = addDays(today, 3);
-    xmlhttp.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var myObj = JSON.parse(this.responseText);
-        if (window.location.href.endsWith(`/`)) {
-          document.getElementById("fajr").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].fajarTime.toLowerCase();
-          document.getElementById("sunrise").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].sunriseTime.toLowerCase();
-          document.getElementById("dhuhr").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].dhuharTime.toLowerCase();
-          document.getElementById("asr").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].asrTime.toLowerCase();
-          document.getElementById("maghrib").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].maghribTime.toLowerCase();
-          document.getElementById("isha").innerHTML =
-            myObj.dailyPrayers[today.getDate() - 1].ishaTime.toLowerCase();
+  // Helpers
+  const getTodayInIreland = () => {
+    // Europe/Dublin handles Irish TZ including DST
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-IE", {
+      timeZone: "Europe/Dublin",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).formatToParts(now);
 
-          if (isRamadan()) {
-            document.getElementById("cur-month").innerHTML = "Ramadan";
-          } else {
-            document.getElementById("cur-month").innerHTML =
-              addedDays.toLocaleString("default", { month: "long" });
-          }
+    const day = Number(parts.find((p) => p.type === "day").value);
+    const monthName = parts.find((p) => p.type === "month").value; // e.g. "December"
+    const year = Number(parts.find((p) => p.type === "year").value);
+
+    return { year, monthName, day, date: now };
+  };
+
+  const STORAGE_KEY = "iqamah-today";
+
+  // Render into homepage if we are on "/"
+  const applyToHomePage = (d) => {
+    if (!window.location.pathname.endsWith("/")) return;
+
+    const lower = (s) => s.toLowerCase();
+
+    document.getElementById("fajr").innerHTML = lower(d.fajarTime);
+    document.getElementById("sunrise").innerHTML = lower(d.sunriseTime);
+    document.getElementById("dhuhr").innerHTML = lower(d.dhuharTime);
+    document.getElementById("asr").innerHTML = lower(d.asrTime);
+    document.getElementById("maghrib").innerHTML = lower(d.maghribTime);
+    document.getElementById("isha").innerHTML = lower(d.ishaTime);
+
+    const today = new Date();
+    const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    if (isRamadan()) {
+      document.getElementById("cur-month").innerHTML = "Ramadan";
+    } else {
+      const monthName = addedDays.toLocaleString("default", { month: "long" });
+      document.getElementById("cur-month").innerHTML = monthName;
+    }
+  };
+
+  // Render nav/footer elements (independent of path)
+  const applyToNav = (d) => {
+    const lower = (s) => s.toLowerCase();
+
+    document.getElementById(
+      "nav-hijri"
+    ).innerHTML = `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`;
+
+    const today = new Date();
+    const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const monthName = isRamadan()
+      ? "Ramadan"
+      : addedDays.toLocaleString("default", { month: "long" });
+
+    document.getElementById("nav-cur-month").innerHTML = monthName;
+    document.getElementById("footer-cur-month").innerHTML = monthName;
+
+    document.getElementById("nav-fajr-begins").innerHTML = lower(d.fajarTime);
+    document.getElementById("nav-fajr-jamaat").innerHTML = lower(
+      d.fajarJamahTime
+    );
+
+    document.getElementById("nav-sunrise").innerHTML = lower(d.sunriseTime);
+
+    document.getElementById("nav-zohr-begins").innerHTML = lower(d.dhuharTime);
+    document.getElementById("nav-zohr-jamaat").innerHTML = lower(
+      d.zohrJamahTime
+    );
+
+    document.getElementById("nav-asar-begins").innerHTML = lower(d.asrTime);
+    document.getElementById("nav-asar-jamaat").innerHTML = lower(
+      d.asarJamahTime
+    );
+
+    document.getElementById("nav-magrib-begins").innerHTML = lower(
+      d.maghribTime
+    );
+    document.getElementById("nav-magrib-jamaat").innerHTML = lower(
+      d.maghribJamahTime
+    );
+
+    document.getElementById("nav-isha-begins").innerHTML = lower(d.ishaTime);
+    document.getElementById("nav-isha-jamaat").innerHTML = lower(
+      d.ishaJamahTime
+    );
+  };
+
+  // Main function
+  const setSalahTimes = async () => {
+    const { year, monthName, day } = getTodayInIreland();
+    const cacheKey = `${STORAGE_KEY}:${year}-${monthName}-${day}`;
+
+    // 1. Try localStorage first
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        console.log("Loaded iqamah from localStorage", JSON.stringify(parsed));
+        const d = parsed.data && parsed.data[0];
+        if (d) {
+          applyToHomePage(d);
+          applyToNav(d);
         }
-        document.getElementById("nav-hijri").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].hijriDate;
-
-        if (isRamadan()) {
-          document.getElementById("nav-cur-month").innerHTML = "Ramadan";
-          document.getElementById("footer-cur-month").innerHTML = "Ramadan";
-        } else {
-          document.getElementById("nav-cur-month").innerHTML =
-            addedDays.toLocaleString("default", { month: "long" });
-          document.getElementById("footer-cur-month").innerHTML =
-            addedDays.toLocaleString("default", { month: "long" });
-        }
-
-        document.getElementById("nav-fajr-begins").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].fajarTime.toLowerCase();
-        document.getElementById("nav-fajr-jamaat").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].fajarJamahTime.toLowerCase();
-
-        document.getElementById("nav-sunrise").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].sunriseTime.toLowerCase();
-
-        document.getElementById("nav-zohr-begins").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].dhuharTime.toLowerCase();
-        document.getElementById("nav-zohr-jamaat").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].zohrJamahTime.toLowerCase();
-
-        document.getElementById("nav-asar-begins").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].asrTime.toLowerCase();
-        document.getElementById("nav-asar-jamaat").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].asarJamahTime.toLowerCase();
-
-        document.getElementById("nav-magrib-begins").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].maghribTime.toLowerCase();
-        document.getElementById("nav-magrib-jamaat").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].magribJamahTime.toLowerCase();
-
-        document.getElementById("nav-isha-begins").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].ishaTime.toLowerCase();
-        document.getElementById("nav-isha-jamaat").innerHTML =
-          myObj.dailyPrayers[today.getDate() - 1].ishaJamahTime.toLowerCase();
+      } catch (e) {
+        console.warn("Failed to parse cached iqamah", e);
       }
-    };
-    var asset = getAssetName(getToday(), `json`);
-    console.log(asset);
-    xmlhttp.open("GET", asset, true);
-    xmlhttp.send();
+    }
+
+    // 2. Always fetch latest data and update UI + cache
+    const url = `https://getiqamahtimes-rds3nxm6za-ew.a.run.app?year=${year}&month=${encodeURIComponent(
+      monthName
+    )}&day=${day}`;
+
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) {
+        console.error(
+          "Error fetching iqamah times",
+          resp.status,
+          resp.statusText
+        );
+        return;
+      }
+
+      const json = await resp.json();
+      console.log("Fetched iqamah from API", json);
+
+      // Expecting shape { scope: "day", year, month, day, data: [ {...} ] }
+      const d = json.data && json.data[0];
+      if (!d) {
+        console.warn("No data for today in API response");
+        return;
+      }
+
+      // Update cache
+      localStorage.setItem(cacheKey, JSON.stringify(json));
+
+      // Update UI (fresh)
+      applyToHomePage(d);
+      applyToNav(d);
+    } catch (err) {
+      console.error("Failed to fetch iqamah times", err);
+    }
   };
 
   const showWhatsAppButton = () => {
