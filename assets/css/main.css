@@ -484,27 +484,32 @@ section.pricing {
 /* Hover Effects on Card */
 
 .bg-cover-2 {
-    position: relative;
-    background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
-    background-size: cover !important;
-    min-height: 75vh;
-    z-index: 1;
-    /* Ensure content is above the overlay */
+	position: relative;
+	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
+	background-size: cover !important;
+	min-height: 75vh;
+	z-index: 1;
+	/* Ensure content is above the overlay */
 }
 
 .bg-cover-2::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(51, 51, 77, 0.8); /* Adjust opacity as needed */
-    z-index: 2;
-    pointer-events: none; /* Allows clicks to pass through */
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(51, 51, 77, 0.8);
+	/* Adjust opacity as needed */
+	z-index: 2;
+	pointer-events: none;
+	/* Allows clicks to pass through */
 }
 
 /* Ensure child content is above the overlay */
-.bg-cover-2 > * {
-    position: relative;
-    z-index: 3;
+.bg-cover-2>* {
+	position: relative;
+	z-index: 3;
 }
 
 
@@ -1261,5 +1266,102 @@ blockquote.quote-card {
 	.contact4 .right-image {
 		position: relative;
 		bottom: -95px;
+	}
+}
+
+#weekly-programmes-section {
+	padding-top: 1rem;
+	padding-bottom: 2rem;
+}
+
+.weekly-programme-card {
+	background: #ffffff;
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.weekly-programme-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+}
+
+.weekly-programme-image-wrapper {
+	width: 100%;
+	height: 340px;
+	overflow: hidden;
+}
+
+.weekly-programme-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.weekly-programme-body {
+	padding: 1.4rem 1.5rem 1.6rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.weekly-programme-title {
+	font-size: 1.15rem;
+	font-weight: 700;
+	margin: 0;
+	text-transform: none;
+	letter-spacing: 0.01em;
+}
+
+.weekly-programme-meta {
+	font-size: 0.9rem;
+	color: #6c757d;
+	margin: 0 0 0.3rem;
+}
+
+.weekly-programme-description {
+	font-size: 0.95rem;
+	line-height: 1.5;
+}
+
+.weekly-programme-description blockquote {
+	margin: 0.75rem 0;
+	padding-left: 1rem;
+	border-left: 3px solid #dee2e6;
+	font-style: italic;
+}
+
+.weekly-programme-footer {
+	margin-top: 0.5rem;
+	padding-top: 0.6rem;
+	border-top: 1px solid #f1f3f5;
+	font-size: 0.9rem;
+}
+
+.weekly-programme-footer p {
+	margin: 0;
+}
+
+.weekly-programme-footer p+p {
+	margin-top: 0.2rem;
+}
+
+.weekly-programme-link {
+	display: inline-block;
+	margin-top: 0.45rem;
+	font-size: 0.88rem;
+	color: #0d6efd;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.weekly-programme-link:hover {
+	text-decoration: underline;
+}
+
+@media (max-width: 767.98px) {
+	.weekly-programme-image-wrapper {
+		height: 260px;
 	}
 }

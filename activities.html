@@ -56,7 +56,8 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1764802513595.js"></script>
+  <script defer type="text/javascript"
+    src="assets/js/scripts-1764802513595.js"></script>
 </head>
 
 <body>
@@ -271,42 +272,15 @@
         role="tabpanel" aria-labelledby="nav-news-tab">
         <div class="row">
           <div class="col-md-12" id="daily">
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
               <thead class="thead-dark">
                 <tr>
                   <th scope="col">Programme Name</th>
                   <th scope="col">Time</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Hadith from Riyadus Saaliheen</th>
-                  <td>Everyday after Asar</td>
-                </tr>
-                <tr>
-                  <th scope="row">Men's Qur'an Class</th>
-                  <td>Tuesday's after Isha</td>
-                </tr>
-                <tr>
-                  <th scope="row">Women's Qur'an Class</th>
-                  <td>Wednesday's at 10:30am</td>
-                </tr>
-                <tr>
-                  <th scope="row">Durood/Salaat 'alan-Nabi</th>
-                  <td>Thursday's after Maghrib</td>
-                </tr>
-                <tr>
-                  <th scope="row">Tafseer of the Qur'an</th>
-                  <td>Friday's after Maghrib</td>
-                </tr>
-                <tr>
-                  <th scope="row">Children's Youth Programme</th>
-                  <td>Check Events or Masjid Notice Board</td>
-                </tr>
-                <tr>
-                  <th scope="row">Adult's Monthly Programme</th>
-                  <td>Check Events or Masjid Notice Board</td>
-                </tr>
+              <tbody id="weekly-programmes-tbody">
+                <!-- rows inserted dynamically by renderProgrammeTable -->
               </tbody>
             </table>
           </div>
@@ -318,87 +292,10 @@
   </section>
   <!-- NEWS AND EVENTS END -->
 
-  <section class="container py-4">
+  <section class="container py-4" id="weekly-programmes-section">
     <h2 class="py-3">Weekly Programmes</h2>
-    <div class="card-deck">
-      <div class="card" id="women-class">
-        <img src="assets/images/Womens_Class.jpg" class="card-img-top"
-          alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Women's Weekly Class</h5>
-          <p class="card-text">An ideal opportunity for sisters to come and
-            learn about the various deeni aspects and
-            takes steps in coming closer to Allah (سبحانہ وتعالی).</p>
-          <p class="card-text"><small
-              class="badge badge-pill badge-success">Every Wednesday at 10:30
-              am</small></p>
-        </div>
-      </div>
-      <div class="card" id="adult-classes">
-        <img src="assets/images/Quran_Class.jpg" class="card-img-top" alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Qur'an class for Adults</h5>
-          <p class="card-text">The Noble Qur'an is the literal words of Allah
-            (سبحانہ وتعالی) that He revealed as an
-            infallible source of legislation for mankind to live an organised
-            life by. It contains regulations and
-            recommendations about all aspects of life and references to the
-            Hereafter. Being so important, the Qur'an
-            must be read, written, and recited correctly and clearly, so as not
-            to create any sort of ambiguity or
-            misunderstanding whatsoever. Allah (سبحانہ وتعالی) addressed His
-            Messenger ﷺ (may Allah (سبحانہ وتعالی)
-            exalt his mention) in the Qur'an, Saying (what means): <span
-              class="font-weight-bold">"…And recite the
-              Qur'an with measured recitation."</span>
-            [Qur'an 73:4]</p>
-          <p class="card-text">
-            Moreover, reciting the Qur'an with Tajweed is actually obligatory on
-            every Muslim as it’s Fard Ayn. Also, in
-            Sunnah, it was proved in the authenticated hadith that Prophet ﷺ
-            used to read the Qur'an word-by-word and
-            letter-by-letter, applying elongation whenever required.
-            Accordingly, this special branch from Qur'anic
-            sciences compiles lots of rewards to Muslims.
-          </p>
-          <p class="card-text"><small
-              class="badge badge-pill badge-success">Every Tuesday after Isha
-              Salah</small></p>
-        </div>
-      </div>
-      <div class="card" id="tafseer">
-        <img src="assets/images/Tafseer-may-22.jpg" class="card-img-top"
-          alt="...">
-        <div class="card-body">
-          <h5 class="card-title">Tafseer of the Glorious Qur'an</h5>
-          <p class="card-text">Muslims regard the most reliable Qur'anic
-            commentary as being contained in the Qur'an
-            itself. In other words, the ways in which certain ayat clarify other
-            ayat are regarded as being the most
-            significant form of commentary. A second form of Qur'anic commentary
-            is how the Prophet ﷺ interpreted the
-            Qur'an. And his comments on the Qur'an (as well as everything he
-            ever said or did) are recorded in the
-            hadith collections. After these two forms of commentary,
-            knowledgeable companions and later generations of
-            pious and learned Muslims expressed their view of the meaning of
-            various ayat. It was on this foundation
-            that the science of Qur'anic commentary was built.</p>
-          <p class="card-text">
-          <blockquote class="blockquote">
-            <p class="mb-0">(This is) a Scripture that We have revealed unto
-              thee, full of blessing, that they may
-              ponder its
-              revelations, and that men of understanding may reflect.</p>
-            <footer class="blockquote-footer"><cite title="Source Title">[Qur'an
-                38:29]</cite></footer>
-          </blockquote>
-          </p>
-          <p class="card-text"><small
-              class="badge badge-pill badge-success">Every Friday after Isha
-              Salah</small></p>
-        </div>
-      </div>
+    <div id="weekly-programmes">
+      <!-- cards inserted dynamically by renderWeeklyProgrammes -->
     </div>
   </section>
 
