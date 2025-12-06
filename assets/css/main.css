@@ -1288,7 +1288,7 @@ blockquote.quote-card {
 
 .weekly-programme-image-wrapper {
 	width: 100%;
-	height: 340px;
+	height: 520px;
 	overflow: hidden;
 }
 
@@ -1362,9 +1362,11 @@ blockquote.quote-card {
 
 @media (max-width: 767.98px) {
 	.weekly-programme-image-wrapper {
-		height: 260px;
+		height: 520px;
 	}
 }
+
+/* WhatsApp Floating Button Styles start */
 
 .whatsapp-float {
   position: fixed;
@@ -1403,3 +1405,4 @@ blockquote.quote-card {
     right: 15px;
   }
 }
+/* WhatsApp Floating button style end */
