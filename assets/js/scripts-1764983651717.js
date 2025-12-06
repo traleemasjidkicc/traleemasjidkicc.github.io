@@ -1,13 +1,16 @@
 (function () {
   "use strict";
+
   const getToday = () => {
     return new Date();
   };
+
   const addDays = (date, days) => {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
   };
+
   const isToday = (someDate) => {
     var today = getToday();
     return (
@@ -16,164 +19,198 @@
       someDate.getFullYear() == today.getFullYear()
     );
   };
+
   const isRamadan = () => {
-    // Ramadan 2025 is on: March 1, 2025, 00:00:01 AM
-    var ramadanStartDate = new Date(2025, 2, 1, 0, 0, 1, 0);
+    // Ramadan 2026 is on: February 17, 2026, 17:56:00 AM
+    var ramadanStartDate = new Date(2026, 1, 17, 17, 56, 0, 0);
     return (
       addDays(getToday(), 4) >= ramadanStartDate &&
       getToday() < addDays(ramadanStartDate, 27)
     );
   };
-  const getAssetName = (date, format) => {
-    const month = new Intl.DateTimeFormat("en", { month: "short" })
-      .format(date)
-      .toUpperCase();
-    const year = date.getFullYear();
-    return `assets/${format}/${month}${year}.${format}`;
-  };
+
   const setFooterYear = () => {
     const year = getToday().getFullYear();
     document.getElementById("footer-year").innerHTML = year;
-    console.log(`Footer year set to ${year}`);
   };
+
   const setSalahTimeUrl = () => {
+    const SALAH_TIMES_KEY = "salahTimesAssetUrl";
+    const baseUrl = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
+
+    // 1) Try to use cached URL first (non-blocking)
     try {
-      var baseUrl = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
-      // Month = today + 3 days, full month name
-      var targetDate = addDays(getToday(), 3);
-      var month = targetDate.toLocaleString("en-GB", { month: "long" });
-      // Use actual current year
-      var year = targetDate.getFullYear();
-      // isRamadan from your existing function
-      var ramadan = isRamadan();
-      var url =
-        baseUrl +
-        "?month=" +
-        encodeURIComponent(month) +
-        "&year=" +
-        encodeURIComponent(year) +
-        "&isRamadan=" +
-        encodeURIComponent(ramadan);
-      fetch(url, { method: "GET" })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-          }
-          return response.json();
-        })
-        .then(function (json) {
-          // expecting { data: [ { url: string, ... } ] }
-          var data = json && json.data;
-          if (!data || !data.length || !data[0].url) {
-            console.error("No salah times data returned");
-            return;
-          }
-          var asset = data[0].url;
-          var elMain = document.getElementById("salah-times");
-          var elFooter = document.getElementById("salah-times-footer");
-          var elBody = document.getElementById("salah-times-body");
-          if (elMain) elMain.href = asset;
-          if (elFooter) elFooter.href = asset;
-          if (window.location.href.endsWith("/") && elBody) {
-            elBody.href = asset;
-          }
-        })
-        .catch(function (error) {
-          console.error("Error loading salah times", error);
-        });
-    } catch (error) {
-      console.error("Error loading salah times", error);
+      const cached = localStorage.getItem(SALAH_TIMES_KEY);
+      if (cached) {
+        console.log("Using cached salah times URL:", cached);
+        applySalahTimesUrl(cached);
+      }
+    } catch (e) {
+      console.warn("Unable to read localStorage", e);
+    }
+
+    // 2) Always call API to refresh
+    let targetDate;
+    try {
+      targetDate = addDays(getToday(), 3);
+    } catch (e) {
+      console.error("Error computing target date", e);
+      return;
+    }
+
+    const month = targetDate.toLocaleString("en-GB", { month: "long" });
+    const year = targetDate.getFullYear();
+    const ramadan = isRamadan();
+
+    const url = new URL(baseUrl);
+    url.searchParams.set("month", month);
+    url.searchParams.set("year", String(year));
+    url.searchParams.set("isRamadan", String(ramadan));
+
+    fetch(url.toString())
+      .then((response) => {
+        console.log("Salah times API response status:", response.status);
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then((json) => {
+        console.log("Salah times API JSON:", json);
+        const data = json && json.data;
+        if (!Array.isArray(data) || !data.length || !data[0].url) {
+          console.error("No salah times data returned");
+          return;
+        }
+
+        const asset = data[0].url;
+        console.log("Latest salah times URL from API:", asset);
+
+        // Update DOM
+        applySalahTimesUrl(asset);
+
+        // Update localStorage
+        try {
+          localStorage.setItem(SALAH_TIMES_KEY, asset);
+        } catch (e) {
+          console.warn("Unable to write localStorage", e);
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading salah times", error);
+      });
+  };
+
+  const applySalahTimesUrl = (asset) => {
+    const elMain = document.getElementById("salah-times");
+    const elFooter = document.getElementById("salah-times-footer");
+    const elBody = document.getElementById("salah-times-body");
+
+    if (elMain) elMain.href = asset;
+    if (elFooter) elFooter.href = asset;
+    if (elBody && window.location.pathname === "/") {
+      elBody.href = asset;
     }
   };
+
   const setEvent = () => {
-    var request = new XMLHttpRequest();
-    request.responseType = "json";
-    request.open(
-      "GET",
-      "https://api.mixlr.com/users/7752720?source=embed",
-      true
-    );
-    request.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var mixlrData = this.response;
-        if (!mixlrData.is_live) {
-          var code = "Off Air";
-          document.getElementById("live-now").innerHTML = code;
-        } else {
-          var code = "LIVE NOW";
-          document.getElementById("live-now").innerHTML = code;
-        }
-        var allEvents = mixlrData.events;
-        var sortedEvents = [];
-        if (allEvents.length > 0) {
-          sortedEvents = allEvents.sort(
-            (a, b) =>
-              parseInt(a.starts_at_timestamp) - parseInt(b.starts_at_timestamp)
-          );
-        }
-        var events = {
-          title: "Nothing Scheduled Yet",
-          starts_at_timestamp: 1672531201,
-          ends_at_timestamp: 1672534799,
+    const liveNowEl = document.getElementById("live-now");
+    const nameEl = document.getElementById("event-name");
+    const startsAtEl = document.getElementById("starts-at");
+    const dayEl = document.getElementById("event-day");
+    const dateEl = document.getElementById("event-date");
+    const monthEl = document.getElementById("event-month");
+    const yearEl = document.getElementById("event-year");
+
+    if (
+      !liveNowEl ||
+      !nameEl ||
+      !startsAtEl ||
+      !dayEl ||
+      !dateEl ||
+      !monthEl ||
+      !yearEl
+    ) {
+      console.warn("Event elements missing in DOM");
+      return;
+    }
+
+    fetch("https://api.mixlr.com/users/7752720")
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then((mixlrData) => {
+        // Live / Off Air badge
+        const isLive = !!mixlrData.is_live;
+        liveNowEl.innerHTML = isLive
+          ? '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #B80000">LIVE NOW</span>'
+          : '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #808080">Off Air</span>';
+
+        const allEvents = Array.isArray(mixlrData.events)
+          ? mixlrData.events
+          : [];
+
+        // Sort safely
+        const sortedEvents = allEvents.length
+          ? allEvents
+              .slice()
+              .sort(
+                (a, b) =>
+                  Number(a.starts_at_timestamp) - Number(b.starts_at_timestamp)
+              )
+          : [];
+
+        const today = getToday();
+        const todayMs = today.getTime();
+        const defaultStarts = Math.floor((todayMs + 86400 * 1000) / 1000); // +1 day
+        const defaultEnds = Math.floor((todayMs + 90000 * 1000) / 1000); // +1d 1h
+
+        const fallbackEvent = {
+          title: "Check back for upcoming events",
+          starts_at_timestamp: defaultStarts,
+          ends_at_timestamp: defaultEnds,
         };
-        var eventsData =
-          typeof sortedEvents[0] === "undefined" || sortedEvents[0] == null
-            ? events
-            : sortedEvents[0];
-        var startsAt = new Date(
-          eventsData.starts_at_timestamp * 1000
-        ).toLocaleTimeString("en-GB", {
+
+        const eventsData =
+          sortedEvents[0] == null ? fallbackEvent : sortedEvents[0];
+
+        const startDate = new Date(eventsData.starts_at_timestamp * 1000);
+        const endDate = new Date(eventsData.ends_at_timestamp * 1000);
+
+        const startsAt = startDate.toLocaleTimeString("en-GB", {
           hour: "numeric",
           minute: "numeric",
           hour12: true,
         });
-        var endsAt = new Date(
-          eventsData.ends_at_timestamp * 1000
-        ).toLocaleTimeString("en-GB", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
+
+        let eventDay = startDate.toLocaleDateString("en-GB", {
+          weekday: "short",
         });
-        var startAtTimestamp = eventsData.starts_at_timestamp;
-        var eventDate = new Date(startAtTimestamp * 1000).toLocaleDateString(
-          "en-GB",
-          {
-            day: "2-digit",
-          }
-        );
-        var eventMonth = new Date(startAtTimestamp * 1000).toLocaleDateString(
-          "en-GB",
-          {
-            month: "short",
-          }
-        );
-        var eventYear = new Date(startAtTimestamp * 1000).toLocaleDateString(
-          "en-GB",
-          {
-            year: "numeric",
-          }
-        );
-        var eventDay = new Date(startAtTimestamp * 1000).toLocaleDateString(
-          "en-GB",
-          {
-            weekday: "short",
-          }
-        );
-        if (isToday(new Date(eventsData.starts_at_timestamp * 1000))) {
+        const eventDate = startDate.toLocaleDateString("en-GB", {
+          day: "2-digit",
+        });
+        const eventMonth = startDate.toLocaleDateString("en-GB", {
+          month: "short",
+        });
+        const eventYear = startDate.toLocaleDateString("en-GB", {
+          year: "numeric",
+        });
+
+        if (isToday(startDate)) {
           eventDay = "Today";
         }
-        document.getElementById("event-name").innerHTML = eventsData.title;
-        document.getElementById("starts-at").innerHTML = startsAt;
-        // document.getElementById('ends-at').innerHTML = endsAt;
-        document.getElementById("event-day").innerHTML = eventDay;
-        document.getElementById("event-date").innerHTML = eventDate;
-        document.getElementById("event-month").innerHTML = eventMonth;
-        document.getElementById("event-year").innerHTML = eventYear;
-      }
-    };
-    request.send(null);
+
+        nameEl.textContent = eventsData.title;
+        startsAtEl.textContent = startsAt;
+        dayEl.textContent = eventDay;
+        dateEl.textContent = eventDate;
+        monthEl.textContent = eventMonth;
+        yearEl.textContent = eventYear;
+      })
+      .catch((err) => {
+        console.error("Error loading Mixlr events", err);
+      });
   };
-  // Helpers
+
   const getTodayInIreland = () => {
     // Europe/Dublin handles Irish TZ including DST
     const now = new Date();
@@ -188,8 +225,7 @@
     const year = Number(parts.find((p) => p.type === "year").value);
     return { year, monthName, day, date: now };
   };
-  const STORAGE_KEY = "iqamah-today";
-  // Render into homepage if we are on "/"
+
   const applyToHomePage = (d) => {
     if (!window.location.pathname.endsWith("/")) return;
     const lower = (s) => s.toLowerCase();
@@ -210,7 +246,7 @@
       document.getElementById("cur-month").innerHTML = monthName;
     }
   };
-  // Render nav/footer elements (independent of path)
+
   const applyToNav = (d) => {
     const lower = (s) => s.toLowerCase();
     document.getElementById(
@@ -247,10 +283,11 @@
       d.ishaJamahTime
     );
   };
-  // Main function
+
   const setSalahTimes = async () => {
+    const STORAGE_KEY = "iqamah-today";
     const { year, monthName, day } = getTodayInIreland();
-    const cacheKey = `${STORAGE_KEY}:${year}-${monthName}-${day}`;
+    const cacheKey = `${STORAGE_KEY}`;
     // 1. Try localStorage first
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -297,42 +334,7 @@
       console.error("Failed to fetch iqamah times", err);
     }
   };
-  const showWhatsAppButton = () => {
-    var url =
-      "https://wati-integration-service.clare.ai/ShopifyWidget/shopifyWidget.js?69866";
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.async = true;
-    s.src = url;
-    var options = {
-      enabled: true,
-      chatButtonSetting: {
-        backgroundColor: "#247a1f",
-        ctaText: "",
-        borderRadius: "25",
-        marginLeft: "0",
-        marginBottom: "100",
-        marginRight: "20",
-        position: "right",
-      },
-      brandSetting: {
-        brandName: "Tralee Masjid",
-        brandSubTitle: "Kerry Islamic Cultural Centre",
-        brandImg: "https://traleemasjidkicc.ie/assets/images/logo.png",
-        welcomeText: "As-salamu alaikum! How may I help you?",
-        backgroundColor: "#0a5f54",
-        ctaText: "Start Chat",
-        borderRadius: "25",
-        autoShow: false,
-        phoneNumber: "353862440556",
-      },
-    };
-    s.onload = function () {
-      CreateWhatsappChatWidget(options);
-    };
-    var x = document.getElementsByTagName("script")[0];
-    x.parentNode.insertBefore(s, x);
-  };
+
   const pillarsOfFaith = () => {
     let i = 2;
     $(document).ready(function () {
@@ -398,6 +400,7 @@
       }, 10000);
     });
   };
+
   const showSignUpModal = () => {
     setSignUpCookies();
     if (!Cookies.get("kicc-modal-tmw")) {
@@ -416,6 +419,7 @@
       $("#myModal").modal("show");
     });
   };
+
   const showCookiePolicy = () => {
     $("#cookie-accept").click(function () {
       Cookies.set("kicc-accept-cookie", true, { expires: 10 });
@@ -430,6 +434,7 @@
       $("#cookie-bar").hide();
     }
   };
+
   const setSignUpCookies = () => {
     if (Cookies.get("kicc-modal-registered")) {
       Cookies.set("kicc-modal-tmw", true, { expires: 1 });
@@ -441,160 +446,351 @@
       Cookies.set("kicc-modal-registered", true, { expires: 10 });
     });
   };
-  const getHadithTitle = (key) => {
-    const hadithCollectionMap = new Map();
-    const collections = [
-      "bukhari",
-      "muslim",
-      "nasai",
-      "abudawud",
-      "tirmidhi",
-      "ibnmajah",
-      "riyadussalihin",
-    ];
-    const titles = [
-      "Sahih al-Bukhari",
-      "Sahih Muslim",
-      "Sunan an-Nasa'i",
-      "Sunan Abi Dawud",
-      "Jami` at-Tirmidhi",
-      "Sunan Ibn Majah",
-      "Riyad as-Salihin",
-    ];
-    for (let i = 0; i < collections.length; i++) {
-      hadithCollectionMap.set(collections[i], titles[i]);
-    }
-    return hadithCollectionMap.get(key);
-  };
+
   const getRandomHadith = () => {
-    try {
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === this.DONE && this.status === 200) {
-          const randomHadith = JSON.parse(this.responseText);
-          console.log(randomHadith);
-          document.getElementById("hadith-body").innerHTML =
-            randomHadith.hadith.body;
-          document.getElementById("hadith-cite").innerHTML = `${getHadithTitle(
-            randomHadith.collection
-          )} ${randomHadith.hadith.chapterNumber}:${randomHadith.hadithNumber}`;
-          document.getElementById(
-            "hadith-link"
-          ).href = `https://sunnah.com/${randomHadith.collection}:${randomHadith.hadithNumber}`;
+    const HADITH_KEY = "kicc-random-hadith";
+    const HADITH_TITLES = {
+      bukhari: "Sahih al-Bukhari",
+      muslim: "Sahih Muslim",
+      nasai: "Sunan an-Nasa'i",
+      abudawud: "Sunan Abi Dawud",
+      tirmidhi: "Jami` at-Tirmidhi",
+      ibnmajah: "Sunan Ibn Majah",
+      riyadussalihin: "Riyad as-Salihin",
+    };
+    const getHadithTitle = (key) => HADITH_TITLES[key] || key;
+
+    const bodyEl = document.getElementById("hadith-body");
+    const citeEl = document.getElementById("hadith-cite");
+    const linkEl = document.getElementById("hadith-link");
+    if (!bodyEl || !citeEl || !linkEl) return;
+
+    const applyFallback = () => {
+      bodyEl.innerHTML =
+        "<p>Abu Hurairah (May Allah be pleased with him) reported: Messenger of Allah (ﷺ) said, \"The five (daily) Salat (prayers), and from one Jumu'ah prayer to the (next) Jumu'ah prayer, and from Ramadan to Ramadan are expiations for the (sins) committed in between (their intervals); provided the major sins are not committed\".<br/><br/><b>[Muslim]</b>.<br/><br/></p>";
+      citeEl.textContent = "Riyad as-Salihin 189:1059";
+      linkEl.href = "https://sunnah.com/riyadussalihin:1059";
+    };
+
+    const applyHadithToDom = (randomHadith) => {
+      if (!randomHadith || !randomHadith.hadith || !randomHadith.hadith.body) {
+        applyFallback();
+        return;
+      }
+      const { collection, hadith, hadithNumber } = randomHadith;
+      const title = getHadithTitle(collection);
+
+      bodyEl.innerHTML = hadith.body;
+      citeEl.textContent = `${title} ${hadith.chapterNumber}:${hadithNumber}`;
+      linkEl.href = `https://sunnah.com/${collection}:${hadithNumber}`;
+    };
+
+    const loadFromCache = () => {
+      try {
+        const raw = localStorage.getItem(HADITH_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    };
+
+    const saveToCache = (randomHadith) => {
+      try {
+        if (!randomHadith) return;
+        localStorage.setItem(HADITH_KEY, JSON.stringify(randomHadith));
+      } catch {
+        // ignore storage errors
+      }
+    };
+
+    // 1) Render from cache if available
+    const cached = loadFromCache();
+    if (cached) {
+      applyHadithToDom(cached);
+    }
+
+    // 2) Always fetch latest and update cache + DOM
+    fetch("https://randomhadith-rds3nxm6za-ew.a.run.app")
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then((randomHadith) => {
+        saveToCache(randomHadith);
+        applyHadithToDom(randomHadith);
+      })
+      .catch(() => {
+        if (!cached) {
+          applyFallback();
         }
       });
-      xhr.open("GET", "https://randomhadith-rds3nxm6za-ew.a.run.app");
-      xhr.send();
+  };
+
+  const formatTimeToAmPm = (time24) => {
+    if (!time24) return "";
+    const parts = String(time24).split(":");
+    if (parts.length < 2) return "";
+    let hour = parseInt(parts[0], 10);
+    const minute = parseInt(parts[1], 10);
+    if (Number.isNaN(hour) || Number.isNaN(minute)) return "";
+
+    const period = hour >= 12 ? "pm" : "am";
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
+
+    const minutePadded = minute.toString().padStart(2, "0");
+    return `${hour}:${minutePadded} ${period}`;
+  };
+
+  const renderJummahSchedule = (jummahTimes = []) => {
+    const list = document.getElementById("jummah-schedule");
+    if (!list) return;
+
+    // keep first li as header
+    while (list.children.length > 1) {
+      list.removeChild(list.lastElementChild);
+    }
+
+    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) return;
+
+    jummahTimes.forEach((slot, index) => {
+      const speechTime = formatTimeToAmPm(slot.speech);
+      const khutbahTime = formatTimeToAmPm(slot.khutbah);
+      const khutbahLabel =
+        jummahTimes.length === 1 ? "Khutbah" : `Khutbah ${index + 1}`;
+
+      if (speechTime) {
+        const liSpeech = document.createElement("li");
+        liSpeech.className =
+          "list-group-item d-flex justify-content-between align-items-center h5";
+        liSpeech.innerHTML = `
+        <span>Speech ${jummahTimes.length > 1 ? index + 1 : ""}</span>
+        <span class="badge badge-primary badge-pill badge-danger">
+          ${speechTime}
+        </span>
+      `;
+        list.appendChild(liSpeech);
+      }
+
+      if (khutbahTime) {
+        const liKhutbah = document.createElement("li");
+        liKhutbah.className =
+          "list-group-item d-flex justify-content-between align-items-center h5";
+        liKhutbah.innerHTML = `
+        <span>${khutbahLabel}</span>
+        <span class="badge badge-primary badge-pill badge-danger">
+          ${khutbahTime}
+        </span>
+      `;
+        list.appendChild(liKhutbah);
+      }
+    });
+  };
+
+  const selectAnnouncement = (announcements) => {
+    if (!Array.isArray(announcements) || announcements.length === 0) {
+      return null;
+    }
+
+    const jumuah = announcements.find((a) => a.type === "jumuah") || null;
+    const breaking = announcements.find((a) => a.type === "breaking") || null;
+    const general = announcements.find((a) => a.type === "general") || null;
+
+    const today = new Date();
+    const isFriday = today.getDay() === 5; // 0=Sun .. 5=Fri [web:108][web:111]
+
+    const jumuahActive = !!(jumuah && jumuah.active);
+    const breakingActive = !!(breaking && breaking.active);
+
+    if (isFriday) {
+      // On Friday: if Jumuah active, use it; else fall back to general / first
+      if (jumuahActive) return jumuah;
+      if (general) return general;
+      return announcements[0];
+    }
+
+    // Not Friday:
+    // - Prefer active breaking
+    if (breakingActive) return breaking;
+
+    // - If both breaking and jumuah inactive, prefer general
+    if (!breakingActive && !jumuahActive && general) return general;
+
+    // - Otherwise, fall back to first entry
+    return announcements[0];
+  };
+
+  const showDefaultNotice = () => {
+    const announcementEl = document.getElementById("announcement");
+    if (!announcementEl) return;
+    announcementEl.innerHTML =
+      '<p>Please check the masjid <a href="#notice-board">notice board.</a></p>';
+  };
+
+  const loadAnnouncementsFromCache = () => {
+    const ANNOUNCEMENTS_KEY = "kicc-announcements";
+    try {
+      const raw = localStorage.getItem(ANNOUNCEMENTS_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : null;
     } catch {
-      document.getElementById("hadith-body").innerHTML =
-        "\n\nAbu Hurairah (May Allah be pleased with him) reported: Messenger of Allah (ﷺ) said, \"The five (daily) Salat (prayers), and from one Jumu'ah prayer to the (next) Jumu'ah prayer, and from Ramadan to Ramadan are expiations for the (sins) committed in between (their intervals); provided the major sins are not committed\".\n\n**[Muslim]**.... Please check the masjid notice board.";
-      return;
+      return null;
+    }
+  };
+
+  const saveAnnouncementsToCache = (announcements) => {
+    const ANNOUNCEMENTS_KEY = "kicc-announcements";
+    try {
+      if (!Array.isArray(announcements)) return;
+      localStorage.setItem(ANNOUNCEMENTS_KEY, JSON.stringify(announcements));
+    } catch {
+      // ignore storage errors
     }
   };
 
   const getAnnouncement = () => {
-    try {
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === this.DONE && this.status === 200) {
-          const response = JSON.parse(this.responseText);
-          const announcements = response && response.announcements;
-          if (!announcements || !announcements.length) {
-            document.getElementById("announcement").innerHTML =
-              "\n\nPlease check the masjid notice board.";
-            return;
-          }
-          const active = announcements.filter((a) => a && a.active);
-          const selected =
-            active.length > 0
-              ? active[Math.floor(Math.random() * active.length)]
-              : announcements[0];
-          console.log(selected);
-          document.getElementById("announcement").innerHTML = selected.message;
-          // Only render schedule for Jumu'ah type if (existing comment)
-          if (selected.type === "jumuah") {
-            renderJummahSchedule(selected.jummahTimes);
-          } else {
-            // Clear any existing schedule rows
-            renderJummahSchedule([]);
-          }
-          if (selected.active) {
-            const bar = document.getElementById("announcement-bar");
-            bar.classList.add("bigEntrance", "stretchLeft");
-            bar.classList.remove("d-none");
-          }
-        } else if (this.readyState === this.DONE) {
-          document.getElementById("announcement").innerHTML =
-            "\n\nPlease check the masjid notice board.";
+    const announcementEl = document.getElementById("announcement");
+    const bar = document.getElementById("announcement-bar");
+    if (!announcementEl) return;
+
+    const applySelectionToDom = (selected) => {
+      if (!selected) {
+        showDefaultNotice();
+        renderJummahSchedule([]);
+        return;
+      }
+
+      // Always render Jumuah schedule if times exist, even if not Friday or inactive
+      if (selected.type === "jumuah" && Array.isArray(selected.jummahTimes)) {
+        renderJummahSchedule(selected.jummahTimes);
+      } else {
+        // But schedule comes only from jumuah; if selected is not jumuah,
+        // still try to render schedule from the jumuah announcement if available in cache/data
+        renderJummahSchedule([]);
+      }
+
+      announcementEl.innerHTML = selected.message || "";
+
+      if (selected.active && bar) {
+        bar.classList.add("bigEntrance", "stretchLeft");
+        bar.classList.remove("d-none");
+      }
+    };
+
+    // 1) Use cached announcements for fast first paint
+    const cached = loadAnnouncementsFromCache();
+    if (cached) {
+      const selectedCached = selectAnnouncement(cached);
+      applySelectionToDom(selectedCached);
+    }
+
+    // 2) Always fetch latest, update cache + DOM
+    fetch("https://getannouncements-rds3nxm6za-ew.a.run.app")
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then((announcements) => {
+        saveAnnouncementsToCache(announcements);
+
+        const selected = selectAnnouncement(announcements);
+        applySelectionToDom(selected);
+
+        // Additionally, if selected is not jumuah, still ensure schedule is set
+        const jumuah = announcements.find((a) => a.type === "jumuah");
+        if (jumuah && Array.isArray(jumuah.jummahTimes)) {
+          renderJummahSchedule(jumuah.jummahTimes);
+        }
+      })
+      .catch(() => {
+        if (!cached) {
+          showDefaultNotice();
+          renderJummahSchedule([]);
         }
       });
-      xhr.open("GET", "https://getannouncements-rds3nxm6za-ew.a.run.app");
-      xhr.send();
+  };
+
+  const loadNoticesFromCache = () => {
+    const NOTICES_KEY = "notices";
+    try {
+      const raw = localStorage.getItem(NOTICES_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : null;
     } catch {
-      console.log("error get announces");
-      document.getElementById("announcement").innerHTML =
-        "\n\nPlease check the masjid notice board.";
+      return null;
     }
   };
 
-  const getNotices = () => {
+  const saveNoticesToCache = (notices) => {
     const NOTICES_KEY = "notices";
-    const NOTICE_API_URL = "https://getnotices-rds3nxm6za-ew.a.run.app";
     try {
-      var xhr = new XMLHttpRequest();
-      xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === this.DONE && this.status === 200) {
-          const response = JSON.parse(this.responseText);
-          console.log("API response:", response);
-          const notices = response.notices;
-          // Update local storage with the fetched notices
-          localStorage.setItem(NOTICES_KEY, JSON.stringify(notices));
-          console.log("Local storage updated with fetched notices:", notices);
-          // Render notices
-          renderNotices(notices);
-        }
-      });
-      xhr.open("GET", NOTICE_API_URL);
-      xhr.send();
+      if (!Array.isArray(notices)) return;
+      localStorage.setItem(NOTICES_KEY, JSON.stringify(notices));
     } catch {
-      console.log("Error loading notices");
+      // ignore storage errors
     }
   };
-  const renderNotices = (notices) => {
+
+  const renderNotices = (notices = []) => {
     const noticeContainer = document.getElementById("noticeContainer");
-    noticeContainer.innerHTML = ""; // Clear previous notices
-    notices.forEach(function (notice) {
+    if (!noticeContainer) return;
+
+    noticeContainer.innerHTML = "";
+
+    if (!Array.isArray(notices) || notices.length === 0) return;
+
+    notices.forEach((notice) => {
+      if (!notice || !notice.url) return;
+
       const div = document.createElement("div");
       div.classList.add("col-md-6", "col-lg-4", "mx-auto", "fadeIn");
+
       const a = document.createElement("a");
       a.classList.add("lightbox");
       a.href = notice.url;
+
       const img = document.createElement("img");
       img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
       img.src = notice.url;
+      img.alt = "Notice";
+
       a.appendChild(img);
       div.appendChild(a);
       noticeContainer.appendChild(div);
     });
-    // After dynamically creating div elements, run baguetteBox
-    baguetteBox.run(".grid-gallery", {
-      animation: "slideIn",
-    });
-  };
-  const showNotices = () => {
-    // Try to load notices from local storage on page load
-    const NOTICES_KEY = "notices";
-    const cachedNotices = localStorage.getItem(NOTICES_KEY);
-    if (cachedNotices) {
-      console.log(
-        "Loaded notices from local storage:",
-        JSON.parse(cachedNotices)
-      );
-      renderNotices(JSON.parse(cachedNotices));
-    } else {
-      console.log("No notices found in local storage.");
+
+    if (typeof baguetteBox !== "undefined") {
+      baguetteBox.run(".grid-gallery", { animation: "slideIn" });
     }
-    // Fetch latest notices and update local storage
+  };
+
+  const getNotices = () => {
+    const NOTICE_API_URL = "https://getnotices-rds3nxm6za-ew.a.run.app";
+    return fetch(NOTICE_API_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then((response) => {
+        const notices = Array.isArray(response.notices) ? response.notices : [];
+        saveNoticesToCache(notices);
+        renderNotices(notices);
+      })
+      .catch((err) => {
+        console.error("Error loading notices", err);
+      });
+  };
+
+  const showNotices = () => {
+    const cached = loadNoticesFromCache();
+    if (cached) {
+      renderNotices(cached);
+    }
+
+    // Always refresh from API and update cache + UI
     getNotices();
   };
 
@@ -813,6 +1009,24 @@
       });
   };
 
+  const addWhatsAppButton = () => {
+    // Avoid duplicates
+    if (document.querySelector(".whatsapp-float")) return;
+
+    const waLink = document.createElement("a");
+    waLink.href = "https://wa.me/353862440556";
+    waLink.target = "_blank";
+    waLink.rel = "noopener";
+    waLink.className = "whatsapp-float";
+    waLink.setAttribute("aria-label", "Chat on WhatsApp");
+
+    const waIcon = document.createElement("i");
+    waIcon.className = "fa-brands fa-whatsapp whatsapp-icon";
+
+    waLink.appendChild(waIcon);
+    document.body.appendChild(waLink);
+  };
+
   const setLocationSpecific = () => {
     var href = window.location.href;
     switch (true) {
@@ -830,18 +1044,18 @@
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    var href = window.location.href;
+    const href = window.location.href;
     if (href.endsWith("/")) {
       showNotices();
     }
+    addWhatsAppButton();
+    setFooterYear();
+    showCookiePolicy();
   });
 
   window.onload = () => {
-    setFooterYear();
     setSalahTimeUrl();
     setSalahTimes();
-    showCookiePolicy();
-    showWhatsAppButton();
     getRandomHadith();
     setLocationSpecific();
   };

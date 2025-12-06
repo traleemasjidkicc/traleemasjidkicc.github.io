@@ -1365,3 +1365,41 @@ blockquote.quote-card {
 		height: 260px;
 	}
 }
+
+.whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 100px; /* similar to current widget offset */
+  width: 56px;
+  height: 56px;
+  background-color: #247a1f;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  z-index: 1050; /* above most Bootstrap elements */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.whatsapp-float:hover,
+.whatsapp-float:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.whatsapp-icon {
+  font-size: 28px;
+}
+
+/* Optional: hide on very small screens if overlapping content */
+@media (max-width: 575.98px) {
+  .whatsapp-float {
+    bottom: 80px;
+    right: 15px;
+  }
+}
