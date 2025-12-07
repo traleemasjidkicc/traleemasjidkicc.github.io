@@ -133,7 +133,7 @@
       return;
     }
 
-    fetch("https://api.mixlr.com/users/7752720")
+    fetch("https://api.mixlr.com/users/7752720?source=embed")
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
@@ -161,8 +161,8 @@
 
         const today = getToday();
         const todayMs = today.getTime();
-        const defaultStarts = Math.floor((todayMs + 86400 * 1000) / 1000); // +1 day
-        const defaultEnds = Math.floor((todayMs + 90000 * 1000) / 1000); // +1d 1h
+        const defaultStarts = Math.floor((todayMs) / 1000); // today
+        const defaultEnds = Math.floor((todayMs + 86400 * 1000) / 1000); // +1d
 
         const fallbackEvent = {
           title: "Check back for upcoming events",
@@ -762,9 +762,7 @@
       noticeContainer.appendChild(div);
     });
 
-    if (typeof baguetteBox !== "undefined") {
-      baguetteBox.run(".grid-gallery", { animation: "slideIn" });
-    }
+    initBaguetteBox();
   };
 
   const getNotices = () => {
@@ -1027,6 +1025,12 @@
     document.body.appendChild(waLink);
   };
 
+  const initBaguetteBox = () => {
+    if (typeof baguetteBox !== "undefined") {
+      baguetteBox.run(".grid-gallery", { animation: "slideIn" });
+    }
+  };
+
   const setLocationSpecific = () => {
     var href = window.location.href;
     switch (true) {
@@ -1039,6 +1043,9 @@
       case href.endsWith("activities.html"):
         setEvent();
         loadProgrammes();
+        break;
+      case href.endsWith("projects.html"):
+        initBaguetteBox();
         break;
     }
   };
