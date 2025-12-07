@@ -161,7 +161,7 @@
 
         const today = getToday();
         const todayMs = today.getTime();
-        const defaultStarts = Math.floor((todayMs) / 1000); // today
+        const defaultStarts = Math.floor(todayMs / 1000); // today
         const defaultEnds = Math.floor((todayMs + 86400 * 1000) / 1000); // +1d
 
         const fallbackEvent = {
@@ -284,10 +284,11 @@
     );
   };
 
-  const setSalahTimes = async () => {
+  const setSalahTimes = () => {
     const STORAGE_KEY = "iqamah-today";
     const { year, monthName, day } = getTodayInIreland();
-    const cacheKey = `${STORAGE_KEY}`;
+    const cacheKey = STORAGE_KEY;
+
     // 1. Try localStorage first
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -303,36 +304,41 @@
         console.warn("Failed to parse cached iqamah", e);
       }
     }
+
     // 2. Always fetch latest data and update UI + cache
-    const url = `https://getiqamahtimes-rds3nxm6za-ew.a.run.app?year=${year}&month=${encodeURIComponent(
-      monthName
-    )}&day=${day}`;
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        console.error(
-          "Error fetching iqamah times",
-          resp.status,
-          resp.statusText
-        );
-        return;
-      }
-      const json = await resp.json();
-      console.log("Fetched iqamah from API", json);
-      // Expecting shape { scope: "day", year, month, day, data: [ {...} ] }
-      const d = json.data && json.data[0];
-      if (!d) {
-        console.warn("No data for today in API response");
-        return;
-      }
-      // Update cache
-      localStorage.setItem(cacheKey, JSON.stringify(json));
-      // Update UI (fresh)
-      applyToHomePage(d);
-      applyToNav(d);
-    } catch (err) {
-      console.error("Failed to fetch iqamah times", err);
-    }
+    const url =
+      "https://getiqamahtimes-rds3nxm6za-ew.a.run.app" +
+      `?year=${year}&month=${encodeURIComponent(monthName)}&day=${day}`;
+
+    return fetch(url)
+      .then(function (resp) {
+        if (!resp.ok) {
+          console.error(
+            "Error fetching iqamah times",
+            resp.status,
+            resp.statusText
+          );
+          return null;
+        }
+        return resp.json();
+      })
+      .then(function (json) {
+        if (!json) {
+          return;
+        }
+        console.log("Fetched iqamah from API", json);
+        const d = json.data && json.data[0];
+        if (!d) {
+          console.warn("No data for today in API response");
+          return;
+        }
+        localStorage.setItem(cacheKey, JSON.stringify(json));
+        applyToHomePage(d);
+        applyToNav(d);
+      })
+      .catch(function (err) {
+        console.error("Failed to fetch iqamah times", err);
+      });
   };
 
   const pillarsOfFaith = () => {
