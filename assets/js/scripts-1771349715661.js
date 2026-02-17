@@ -229,11 +229,43 @@
   const applyToHomePage = (d) => {
     if (!window.location.pathname.endsWith("/")) return;
     const lower = (s) => s.toLowerCase();
-    document.getElementById("fajr").innerHTML = lower(d.fajarTime);
+
+    // Render fajr as Sehri end (fajr - 10 minutes) with am/pm on separate small line
+    try {
+      const fajrEl = document.getElementById("fajr");
+      if (fajrEl && d.fajarTime) {
+        // compute suhoor end = fajr - 10 minutes
+        const fajrDate = parseTimeToDate(d.fajarTime) || null;
+        let suhoorStr = "—";
+        if (fajrDate) {
+          const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+          const hh = String(suhoorDate.getHours()).padStart(2, "0");
+          const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
+          suhoorStr = `${hh}:${mm}`;
+        }
+        const parts = splitTimeAndPeriod(suhoorStr);
+        fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
+      }
+    } catch (e) {
+      console.warn("Failed to render fajr sehri end", e);
+    }
+
+    // Other simple times (sunrise, dhuhr, asr, isha)
     document.getElementById("sunrise").innerHTML = lower(d.sunriseTime);
     document.getElementById("dhuhr").innerHTML = lower(d.dhuharTime);
     document.getElementById("asr").innerHTML = lower(d.asrTime);
-    document.getElementById("maghrib").innerHTML = lower(d.maghribTime);
+
+    // Render maghrib (iftar) with am/pm on new line
+    try {
+      const magEl = document.getElementById("maghrib");
+      if (magEl && d.maghribTime) {
+        const partsM = splitTimeAndPeriod(d.maghribTime);
+        magEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+      }
+    } catch (e) {
+      console.warn("Failed to render maghrib", e);
+    }
+
     document.getElementById("isha").innerHTML = lower(d.ishaTime);
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -335,6 +367,30 @@
         localStorage.setItem(cacheKey, JSON.stringify(json));
         applyToHomePage(d);
         applyToNav(d);
+
+        // Ensure fajr (sehri end) and maghrib (iftar) circular widgets are updated (if present)
+        try {
+          const fajrEl = document.getElementById("fajr");
+          const maghribEl = document.getElementById("maghrib");
+          if (fajrEl && d.fajarTime) {
+            const fajrDate = parseTimeToDate(d.fajarTime) || null;
+            let suhoorStr = "—";
+            if (fajrDate) {
+              const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+              const hh = String(suhoorDate.getHours()).padStart(2, "0");
+              const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
+              suhoorStr = `${hh}:${mm}`;
+            }
+            const parts = splitTimeAndPeriod(suhoorStr);
+            fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
+          }
+          if (maghribEl && d.maghribTime) {
+            const partsM = splitTimeAndPeriod(d.maghribTime);
+            maghribEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+          }
+        } catch (e) {
+          console.warn("Unable to set fajr/maghrib elements", e);
+        }
       })
       .catch(function (err) {
         console.error("Failed to fetch iqamah times", err);
@@ -533,20 +589,65 @@
       });
   };
 
-  const formatTimeToAmPm = (time24) => {
-    if (!time24) return "";
-    const parts = String(time24).split(":");
-    if (parts.length < 2) return "";
-    let hour = parseInt(parts[0], 10);
-    const minute = parseInt(parts[1], 10);
-    if (Number.isNaN(hour) || Number.isNaN(minute)) return "";
+  const formatTimeToAmPm = (timeInput) => {
+    if (!timeInput) return "";
+    const s = String(timeInput).trim();
 
-    const period = hour >= 12 ? "pm" : "am";
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
+    // Match hh:mm with optional am/pm
+    const m = s.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
+    if (!m) return "";
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const explicit = m[3] ? String(m[3]).toLowerCase() : null;
 
-    const minutePadded = minute.toString().padStart(2, "0");
-    return `${hour}:${minutePadded} ${period}`;
+    let period;
+    let displayHour = hh;
+
+    if (explicit) {
+      period = explicit;
+      // If explicit period is provided, keep hour as-is (assume it's 12-hour input)
+      displayHour = hh;
+      if (displayHour === 0) displayHour = 12;
+    } else {
+      // assume 24-hour input
+      period = hh >= 12 ? "pm" : "am";
+      displayHour = hh % 12;
+      if (displayHour === 0) displayHour = 12;
+    }
+
+    const minutePadded = mm.toString().padStart(2, "0");
+    return `${displayHour}:${minutePadded} ${period}`;
+  };
+
+  // Parse a time string (HH:MM or H:MM with optional am/pm) into a Date for today
+  const parseTimeToDate = (timeStr) => {
+    if (!timeStr) return null;
+    const now = new Date();
+    // Trim and normalize
+    const t = String(timeStr).trim().toLowerCase();
+
+    // Match hh:mm and optional am/pm
+    const m = t.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
+    if (!m) return null;
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ampm = m[3] || null;
+
+    if (ampm) {
+      if (ampm === "pm" && hh !== 12) hh = hh + 12;
+      if (ampm === "am" && hh === 12) hh = 0;
+    }
+
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+    return d;
+  };
+
+  // Given a time string like "04:30" return an object {time, period}
+  const splitTimeAndPeriod = (timeStr) => {
+    const formatted = formatTimeToAmPm(timeStr);
+    if (!formatted) return { time: "—", period: "" };
+    const parts = formatted.split(" ");
+    return { time: parts[0], period: parts[1] || "" };
   };
 
   const renderJummahSchedule = (jummahTimes = []) => {

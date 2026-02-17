@@ -485,7 +485,7 @@ section.pricing {
 
 .bg-cover-2 {
 	position: relative;
-	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
+	background: url(../images/backgrounds/masjid-new-ramadan.png) no-repeat center top;
 	background-size: cover !important;
 	min-height: 75vh;
 	z-index: 1;
@@ -499,7 +499,7 @@ section.pricing {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(51, 51, 77, 0.8);
+	background: rgba(51, 51, 77, 0.3);
 	/* Adjust opacity as needed */
 	z-index: 2;
 	pointer-events: none;
