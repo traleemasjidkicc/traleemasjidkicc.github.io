@@ -155,7 +155,7 @@
               .slice()
               .sort(
                 (a, b) =>
-                  Number(a.starts_at_timestamp) - Number(b.starts_at_timestamp)
+                  Number(a.starts_at_timestamp) - Number(b.starts_at_timestamp),
               )
           : [];
 
@@ -230,43 +230,13 @@
     if (!window.location.pathname.endsWith("/")) return;
     const lower = (s) => s.toLowerCase();
 
-    // Render fajr as Sehri end (fajr - 10 minutes) with am/pm on separate small line
-    try {
-      const fajrEl = document.getElementById("fajr");
-      if (fajrEl && d.fajarTime) {
-        // compute suhoor end = fajr - 10 minutes
-        const fajrDate = parseTimeToDate(d.fajarTime) || null;
-        let suhoorStr = "—";
-        if (fajrDate) {
-          const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-          const hh = String(suhoorDate.getHours()).padStart(2, "0");
-          const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
-          suhoorStr = `${hh}:${mm}`;
-        }
-        const parts = splitTimeAndPeriod(suhoorStr);
-        fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
-      }
-    } catch (e) {
-      console.warn("Failed to render fajr sehri end", e);
-    }
-
-    // Other simple times (sunrise, dhuhr, asr, isha)
+    document.getElementById("fajr").innerHTML = lower(d.fajarTime);
     document.getElementById("sunrise").innerHTML = lower(d.sunriseTime);
     document.getElementById("dhuhr").innerHTML = lower(d.dhuharTime);
     document.getElementById("asr").innerHTML = lower(d.asrTime);
-
-    // Render maghrib (iftar) with am/pm on new line
-    try {
-      const magEl = document.getElementById("maghrib");
-      if (magEl && d.maghribTime) {
-        const partsM = splitTimeAndPeriod(d.maghribTime);
-        magEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
-      }
-    } catch (e) {
-      console.warn("Failed to render maghrib", e);
-    }
-
+    document.getElementById("maghrib").innerHTML = lower(d.maghribTime);
     document.getElementById("isha").innerHTML = lower(d.ishaTime);
+
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
     if (isRamadan()) {
@@ -281,9 +251,8 @@
 
   const applyToNav = (d) => {
     const lower = (s) => s.toLowerCase();
-    document.getElementById(
-      "nav-hijri"
-    ).innerHTML = `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`;
+    document.getElementById("nav-hijri").innerHTML =
+      `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`;
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
     const monthName = isRamadan()
@@ -293,27 +262,53 @@
     document.getElementById("footer-cur-month").innerHTML = monthName;
     document.getElementById("nav-fajr-begins").innerHTML = lower(d.fajarTime);
     document.getElementById("nav-fajr-jamaat").innerHTML = lower(
-      d.fajarJamahTime
+      d.fajarJamahTime,
     );
     document.getElementById("nav-sunrise").innerHTML = lower(d.sunriseTime);
     document.getElementById("nav-zohr-begins").innerHTML = lower(d.dhuharTime);
     document.getElementById("nav-zohr-jamaat").innerHTML = lower(
-      d.zohrJamahTime
+      d.zohrJamahTime,
     );
     document.getElementById("nav-asar-begins").innerHTML = lower(d.asrTime);
     document.getElementById("nav-asar-jamaat").innerHTML = lower(
-      d.asarJamahTime
+      d.asarJamahTime,
     );
     document.getElementById("nav-magrib-begins").innerHTML = lower(
-      d.maghribTime
+      d.maghribTime,
     );
     document.getElementById("nav-magrib-jamaat").innerHTML = lower(
-      d.maghribJamahTime
+      d.maghribJamahTime,
     );
     document.getElementById("nav-isha-begins").innerHTML = lower(d.ishaTime);
     document.getElementById("nav-isha-jamaat").innerHTML = lower(
-      d.ishaJamahTime
+      d.ishaJamahTime,
     );
+  };
+
+  const applyToBanner = (d) => {
+    try {
+      // Ensure fajr (sehri end) and maghrib (iftar) circular widgets are updated (if present)
+      const fajrEl = document.getElementById("sehri");
+      const maghribEl = document.getElementById("iftaar");
+      if (fajrEl && d.fajarTime) {
+        const fajrDate = parseTimeToDate(d.fajarTime) || null;
+        let suhoorStr = "—";
+        if (fajrDate) {
+          const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+          const hh = String(suhoorDate.getHours()).padStart(2, "0");
+          const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
+          suhoorStr = `${hh}:${mm}`;
+        }
+        const parts = splitTimeAndPeriod(suhoorStr);
+        fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
+      }
+      if (maghribEl && d.maghribTime) {
+        const partsM = splitTimeAndPeriod(d.maghribTime);
+        maghribEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+      }
+    } catch (e) {
+      console.warn("Unable to set fajr/maghrib elements", e);
+    }
   };
 
   const setSalahTimes = () => {
@@ -348,7 +343,7 @@
           console.error(
             "Error fetching iqamah times",
             resp.status,
-            resp.statusText
+            resp.statusText,
           );
           return null;
         }
@@ -367,30 +362,7 @@
         localStorage.setItem(cacheKey, JSON.stringify(json));
         applyToHomePage(d);
         applyToNav(d);
-
-        // Ensure fajr (sehri end) and maghrib (iftar) circular widgets are updated (if present)
-        try {
-          const fajrEl = document.getElementById("fajr");
-          const maghribEl = document.getElementById("maghrib");
-          if (fajrEl && d.fajarTime) {
-            const fajrDate = parseTimeToDate(d.fajarTime) || null;
-            let suhoorStr = "—";
-            if (fajrDate) {
-              const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-              const hh = String(suhoorDate.getHours()).padStart(2, "0");
-              const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
-              suhoorStr = `${hh}:${mm}`;
-            }
-            const parts = splitTimeAndPeriod(suhoorStr);
-            fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
-          }
-          if (maghribEl && d.maghribTime) {
-            const partsM = splitTimeAndPeriod(d.maghribTime);
-            maghribEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
-          }
-        } catch (e) {
-          console.warn("Unable to set fajr/maghrib elements", e);
-        }
+        applyToBanner(d);
       })
       .catch(function (err) {
         console.error("Failed to fetch iqamah times", err);
@@ -410,10 +382,10 @@
         step = (2 * Math.PI) / fields.length;
       fields.each(function () {
         var x = Math.round(
-          width / 2 + radius * Math.cos(angle) - $(this).width() / 2
+          width / 2 + radius * Math.cos(angle) - $(this).width() / 2,
         );
         var y = Math.round(
-          height / 2 + radius * Math.sin(angle) - $(this).height() / 2
+          height / 2 + radius * Math.sin(angle) - $(this).height() / 2,
         );
         // if (window.console) {
         // console.log($(this).text(), x, y);
@@ -638,7 +610,15 @@
       if (ampm === "am" && hh === 12) hh = 0;
     }
 
-    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+    const d = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hh,
+      mm,
+      0,
+      0,
+    );
     return d;
   };
 
