@@ -21,12 +21,18 @@
   };
 
   const isRamadan = () => {
-    // Ramadan 2026 is on: February 17, 2026, 17:56:00 AM
-    var ramadanStartDate = new Date(2026, 1, 17, 17, 56, 0, 0);
+    // Ramadan 2026 is on: February 17, 2026, 15:00:00 AM
+    var ramadanStartDate = new Date(2026, 1, 17, 15, 0, 0, 0);
     return (
       addDays(getToday(), 4) >= ramadanStartDate &&
       getToday() < addDays(ramadanStartDate, 27)
     );
+  };
+
+  const isEid = () => {
+    // Eid 2026 is on: March 19, 2026, 15:00:00 PM
+    var eidStartDate = new Date(2026, 2, 19, 15, 0, 0, 0);
+    return getToday() >= eidStartDate && getToday() < addDays(eidStartDate, 1);
   };
 
   const setFooterYear = () => {
@@ -285,29 +291,89 @@
     );
   };
 
-  const applyToBanner = (d) => {
+  const setDynamicCelebrationToBanner = (date) => {
     try {
-      // Ensure fajr (sehri end) and maghrib (iftar) circular widgets are updated (if present)
-      const fajrEl = document.getElementById("sehri");
-      const maghribEl = document.getElementById("iftaar");
-      if (fajrEl && d.fajarTime) {
-        const fajrDate = parseTimeToDate(d.fajarTime) || null;
-        let suhoorStr = "—";
-        if (fajrDate) {
-          const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-          const hh = String(suhoorDate.getHours()).padStart(2, "0");
-          const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
-          suhoorStr = `${hh}:${mm}`;
+      const titleElement = document.getElementById("dynamic-celeb-title");
+      const messageElement = document.getElementById("dynamic-celeb-message");
+      const dynamicTimeOneLabel = document.getElementById(
+        "dynamic-time-one-label",
+      );
+      const dynamicTimeTwoLabel = document.getElementById(
+        "dynamic-time-two-label",
+      );
+      const dynamicTimeOne = document.getElementById("dynamic-time-one");
+      const dynamicTimeTwo = document.getElementById("dynamic-time-two");
+      const dynamicTimeOneCircle = document.getElementById("dynamic-time-one-circle");
+      const dynamicTimeTwoCircle = document.getElementById("dynamic-time-two-circle");
+
+      // Set all to none initially
+      titleElement.style.display = 'none';
+      messageElement.style.display = 'none';
+      dynamicTimeOneLabel.style.display = 'none';
+      dynamicTimeTwoLabel.style.display = 'none';
+      dynamicTimeOne.style.display = 'none';
+      dynamicTimeTwo.style.display = 'none';
+      dynamicTimeOneCircle.style.display = 'none';
+      dynamicTimeTwoCircle.style.display = 'none';
+
+      if (isRamadan()) {
+        // Ramadan logic
+        dynamicTimeOneLabel.innerHTML = "Suhoor ends";
+        dynamicTimeTwoLabel.innerHTML = "Iftaar";
+        if (date.fajarTime) {
+          const fajrDate = parseTimeToDate(date.fajarTime) || null;
+          let suhoorStr = "—";
+          if (fajrDate) {
+            const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+            const hh = String(suhoorDate.getHours()).padStart(2, "0");
+            const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
+            suhoorStr = `${hh}:${mm}`;
+          }
+          const parts = splitTimeAndPeriod(suhoorStr);
+          dynamicTimeOne.innerHTML = `${parts.time} <small>${parts.period}</small>`;
         }
-        const parts = splitTimeAndPeriod(suhoorStr);
-        fajrEl.innerHTML = `${parts.time} <small>${parts.period}</small>`;
-      }
-      if (maghribEl && d.maghribTime) {
-        const partsM = splitTimeAndPeriod(d.maghribTime);
-        maghribEl.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+        if (date.maghribTime) {
+          const partsM = splitTimeAndPeriod(date.maghribTime);
+          dynamicTimeTwo.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+        }
+        titleElement.innerHTML = "Ramadan Mubarak";
+        messageElement.innerHTML = "";
+        titleElement.style.display = '';
+        dynamicTimeOneLabel.style.display = '';
+        dynamicTimeTwoLabel.style.display = '';
+        dynamicTimeOne.style.display = '';
+        dynamicTimeTwo.style.display = '';
+        dynamicTimeOneCircle.style.display = '';
+        dynamicTimeTwoCircle.style.display = '';
+      } else if (isEid()) {
+        // Eid logic
+        dynamicTimeOneLabel.innerHTML = "Speech";
+        dynamicTimeTwoLabel.innerHTML = "Salah";
+        const partsSpeech = splitTimeAndPeriod("7:30 AM");
+        dynamicTimeOne.innerHTML = `${partsSpeech.time} <small>${partsSpeech.period}</small>`;
+        const partsSalah = splitTimeAndPeriod("8:00 AM");
+        dynamicTimeTwo.innerHTML = `${partsSalah.time} <small>${partsSalah.period}</small>`;
+        titleElement.innerHTML = "Eid Mubarak";
+        messageElement.innerHTML =
+          "Taqabbal Allahu minna wa minkum (May Allah accept from us and from you) and bless you and your family with happiness and prosperity";
+        titleElement.style.display = '';
+        messageElement.style.display = '';
+        dynamicTimeOneLabel.style.display = '';
+        dynamicTimeTwoLabel.style.display = '';
+        dynamicTimeOne.style.display = '';
+        dynamicTimeTwo.style.display = '';
+        dynamicTimeOneCircle.style.display = '';
+        dynamicTimeTwoCircle.style.display = '';
+      } else {
+        // Default
+        titleElement.innerHTML = "السلام عليكم";
+        messageElement.innerHTML =
+          "Welcome to the Kerry Islamic Cultural Centre. By the grace of Allah (Subhanahu wa Ta’ala), our mission is to uphold and promote the teachings and values of Islam, nurturing faith and unity among our members. We are dedicated to serving the spiritual and social well-being of our community, so that together we may contribute positively to the wider society.";
+        titleElement.style.display = '';
+        messageElement.style.display = '';
       }
     } catch (e) {
-      console.warn("Unable to set fajr/maghrib elements", e);
+      console.warn("Unable to set banner elements", e);
     }
   };
 
@@ -362,7 +428,7 @@
         localStorage.setItem(cacheKey, JSON.stringify(json));
         applyToHomePage(d);
         applyToNav(d);
-        applyToBanner(d);
+        setDynamicCelebrationToBanner(d);
       })
       .catch(function (err) {
         console.error("Failed to fetch iqamah times", err);

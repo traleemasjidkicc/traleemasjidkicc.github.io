@@ -40,7 +40,7 @@
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous">
-  </script>
+    </script>
 
   <script
     src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
@@ -52,12 +52,12 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous">
     </script>
-    
+
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"
     integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  
+
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
 
@@ -72,9 +72,11 @@
     gtag('config', 'G-3H9CDDS71D');
   </script>
 
-  <script defer type="text/javascript" src="https://www.gofundme.com/static/js/embed.js"></script>
+  <script defer type="text/javascript"
+    src="https://www.gofundme.com/static/js/embed.js"></script>
 
-  <script defer type="text/javascript" src="assets/js/scripts-1771683878338.js"></script>
+  <script defer type="text/javascript"
+    src="assets/js/scripts-1771683878338.js"></script>
 
 </head>
 
@@ -195,40 +197,50 @@
         <!-- Left column: Centered text -->
         <div
           class="col-md-7 d-flex justify-content-center align-items-center text-center">
+
+          <!-- DYNAMIC CELEBRATION START -->
           <div class="cp-welcome-content text-center">
-            <h1>Ramadan Mubarak</h1>
-            <!-- <p>Welcome to the Kerry Islamic Cultural Centre. By the grace of
-              Allah (Subhanahu wa Ta’ala), our mission is to uphold and promote
-              the teachings and values of Islam, nurturing faith and unity among
-              our members. We are dedicated to serving the spiritual and social
-              well-being of our community, so that together we may contribute
-              positively to the wider society.
-            </p> -->
+            <h1 id="dynamic-celeb-title" style="display: none;">-</h1>
+            <p id="dynamic-celeb-message" style="display: none;">
+            </p>
 
             <div class="d-flex justify-content-center align-items-center mt-3">
               <div class="mx-2 text-center">
-                <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width:160px;height:160px;">
+                <div
+                  class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
+                  style="width:160px;height:160px; display: none;" id="dynamic-time-one-circle">
                   <div>
-                    <div class="h6 mb-1">Sehri end</div>
-                    <div id="sehri" class="h3 font-weight-bold">—</div>
+                    <div id="dynamic-time-one-label" style="display: none;"
+                      class="h6 mb-1">-</div>
+                    <div id="dynamic-time-one" style="display: none;"
+                      class="h3 font-weight-bold">—
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="mx-2 text-center">
-                <div class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center" style="width:160px;height:160px;">
+                <div
+                  class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center"
+                  style="width:160px;height:160px; display: none;" id="dynamic-time-two-circle">
                   <div>
-                    <div class="h6 mb-1">Iftaar</div>
-                    <div id="iftaar" class="h3 font-weight-bold">—</div>
+                    <div id="dynamic-time-two-label" style="display: none;"
+                      class="h6 mb-1">-</div>
+                    <div id="dynamic-time-two" style="display: none;"
+                      class="h3 font-weight-bold">—
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
+          <!-- DYNAMIC CELEBRATION END -->
+
         </div>
         <!-- Right column: GoFundMe Embed -->
         <div class="col-md-5 d-flex align-items-stretch justify-content-end">
           <div class="gfm-embed w-100"
-            data-url="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/widget/large?sharesheet=undefined&attribution_id=sl:0ca6053b-3c4e-4a5c-98f4-af75cd9b5220"
+            data-url="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/widget/small
             style="max-width: 100%; max-height: 90%;">
           </div>
         </div>
@@ -307,7 +319,8 @@
       <li class="nav-item flex-sm-fill">
         <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
           aria-controls="news" aria-selected="false"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Ramadan 2026</a>
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Salah
+          Times</a>
       </li>
     </ul>
     <div class="tab-content" id="nav-tabContent">
