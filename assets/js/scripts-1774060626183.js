@@ -295,12 +295,8 @@
     try {
       const titleElement = document.getElementById("dynamic-celeb-title");
       const messageElement = document.getElementById("dynamic-celeb-message");
-      const dynamicTimeOneLabel = document.getElementById(
-        "dynamic-time-one-label",
-      );
-      const dynamicTimeTwoLabel = document.getElementById(
-        "dynamic-time-two-label",
-      );
+      const dynamicTimeOneLabel = document.getElementById("dynamic-time-one-label");
+      const dynamicTimeTwoLabel = document.getElementById("dynamic-time-two-label");
       const dynamicTimeOne = document.getElementById("dynamic-time-one");
       const dynamicTimeTwo = document.getElementById("dynamic-time-two");
       const dynamicTimeOneCircle = document.getElementById("dynamic-time-one-circle");
@@ -368,7 +364,7 @@
         // Default
         titleElement.innerHTML = "السلام عليكم";
         messageElement.innerHTML =
-          "Welcome to the Kerry Islamic Cultural Centre. By the grace of Allah (Subhanahu wa Ta’ala), our mission is to uphold and promote the teachings and values of Islam, nurturing faith and unity among our members. We are dedicated to serving the spiritual and social well-being of our community, so that together we may contribute positively to the wider society.";
+          "Welcome to the Kerry Islamic Cultural Centre. By the grace of Allah (Subhanahu wa Ta’ala), our mission is to uphold and promote the teachings and values of Islam, nurturing faith and unity among our members. We are dedicated to serving the spiritual and social well-being of our community, so that together we may contribute positively to the wider society";
         titleElement.style.display = '';
         messageElement.style.display = '';
       }
@@ -711,7 +707,7 @@
       const speechTime = formatTimeToAmPm(slot.speech);
       const khutbahTime = formatTimeToAmPm(slot.khutbah);
       const khutbahLabel =
-        jummahTimes.length === 1 ? "Khutbah" : `Khutbah ${index + 1}`;
+        jummahTimes.length === 1 ? "Adhan/Khutbah" : `Adhan/Khutbah ${index + 1}`;
 
       if (speechTime) {
         const liSpeech = document.createElement("li");

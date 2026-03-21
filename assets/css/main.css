@@ -485,9 +485,9 @@ section.pricing {
 
 .bg-cover-2 {
 	position: relative;
-	background: url(../images/backgrounds/masjid-new-eid.png) no-repeat center top;
+	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
 	background-size: cover !important;
-	min-height: 95vh;
+	min-height: 75vh;
 	z-index: 1;
 	/* Ensure content is above the overlay */
 }
