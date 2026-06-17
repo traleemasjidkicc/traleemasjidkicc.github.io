@@ -8,6 +8,38 @@ import through2 from 'through2';
 const bs = browserSync.create();
 const jsDir = 'assets/js/';
 const htmlFiles = '**/*.html';
+const hookFiles = ['pre-commit', 'post-commit'];
+
+// Task to install git hooks from repo root into .git/hooks/
+gulp.task('setup-hooks', function (done) {
+    const gitHooksDir = path.join('.git', 'hooks');
+
+    if (!fs.existsSync('.git')) {
+        console.error('Not a git repository — cannot install hooks.');
+        done(new Error('Not a git repository'));
+        return;
+    }
+
+    fs.mkdirSync(gitHooksDir, { recursive: true });
+
+    for (const hook of hookFiles) {
+        const source = path.join('.', hook);
+        const target = path.join(gitHooksDir, hook);
+
+        if (!fs.existsSync(source)) {
+            console.error(`Hook source not found: ${source}`);
+            done(new Error(`Missing hook file: ${hook}`));
+            return;
+        }
+
+        fs.copyFileSync(source, target);
+        fs.chmodSync(target, 0o755);
+        console.log(`Installed: ${target}`);
+    }
+
+    console.log('Git hooks ready. Commits will run yarn precommit automatically.');
+    done();
+});
 
 // Task to rename the JS file and update the HTML files
 gulp.task('rename-js', function (done) {

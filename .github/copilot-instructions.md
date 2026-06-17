@@ -1,5 +1,7 @@
 # Copilot Instructions for Tralee Masjid Website
 
+> See also [AGENTS.md](../AGENTS.md) and [README.md](../README.md) for architecture diagrams and local setup.
+
 ## Project Overview
 This is a static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Mosque). Built with vanilla HTML/CSS/JS, Bootstrap 4, and automated asset management via Gulp.
 
@@ -18,7 +20,8 @@ This is a static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee 
 
 ### Build & Development Workflow
 ```
-yarn ci          # Install dependencies (frozen lockfile - production-safe)
+yarn ci          # Clean install with --immutable (Yarn 4 frozen lockfile)
+yarn verify      # Verify install integrity (--immutable --check-cache)
 yarn start       # Serve locally on http://localhost:3000 with live reload (Browser Sync)
 yarn precommit   # Runs rename-js, update-html, patches version in package.json
 ```
@@ -55,7 +58,7 @@ CNAME                   # GitHub Pages custom domain
 The main script (`assets/js/scripts-*.js`, ~1076 lines) handles:
 
 1. **Ramadan Detection**: Determines if today falls within Ramadan dates for UI/banner logic
-2. **Prayer Times Integration**: Fetches salah times from external Cloud Run API (`getsalahtimes-rds3nxm6za-ew.a.run.app`), with localStorage caching
+2. **Prayer Times Integration**: Fetches salah times PDF URL from `getsalahtimes-rds3nxm6za-ew.a.run.app` and iqamah times from `getiqamahtimes-rds3nxm6za-ew.a.run.app`, with localStorage caching
 3. **Footer Year**: Auto-updates copyright year dynamically
 4. **Date Utilities**: Helper functions for date calculations (isToday, addDays, etc.)
 
@@ -67,7 +70,7 @@ The main script (`assets/js/scripts-*.js`, ~1076 lines) handles:
 ## Development Conventions
 
 ### Commit & Versioning
-- Semantic versioning: Patch increments on every commit (via `--patch` flag in `yarn precommit`)
+- Semantic versioning: Patch increments on every commit (via `yarn version patch --immediate` in `yarn precommit`)
 - Version lives in `package.json` and is incremented automatically
 - **Do not manually edit version numbers**—let the hook handle it
 
@@ -90,9 +93,9 @@ The main script (`assets/js/scripts-*.js`, ~1076 lines) handles:
    - Hooks will auto-version the file on commit
 
 ### Dependency Updates
-- Dependencies locked in `yarn.lock` via `yarn ci --frozen-lockfile`
+- Dependencies locked in `yarn.lock` via `yarn ci` (`yarn install --immutable`)
 - To update: `yarn upgrade [package]`, test locally, commit
-- Ensure `yarn verify` passes before merging
+- Ensure `yarn verify` passes before merging (`yarn install --immutable --check-cache`)
 
 ### Testing
 - Manual browser testing via `yarn start` (serves on localhost)

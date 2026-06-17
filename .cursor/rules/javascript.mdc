@@ -1,0 +1,47 @@
+---
+description: JavaScript conventions for the main scripts file
+globs: assets/js/**/*.js
+alwaysApply: false
+---
+
+# JavaScript rules
+
+## File structure
+
+- Single app file: `assets/js/scripts-{timestamp}.js`
+- Wrapped in IIFE: `(function () { "use strict"; ... })()`
+- Use `const` arrow functions for helpers
+- Init on `window.onload`; page-specific logic in `setLocationSpecific()`
+
+## External APIs (Cloud Run)
+
+| Function | Endpoint |
+|----------|----------|
+| `setSalahTimeUrl` | `getsalahtimes-rds3nxm6za-ew.a.run.app` |
+| `setSalahTimes` | `getiqamahtimes-rds3nxm6za-ew.a.run.app` |
+| `getAnnouncement` | `getannouncements-rds3nxm6za-ew.a.run.app` |
+| `getNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
+| `loadProgrammes` | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` |
+| `getRandomHadith` | `randomhadith-rds3nxm6za-ew.a.run.app` |
+
+## Patterns to follow
+
+```javascript
+// Cache-then-fetch
+const cached = localStorage.getItem(KEY);
+if (cached) { /* apply to DOM */ }
+fetch(url)
+  .then(resp => resp.ok ? resp.json() : null)
+  .then(json => { localStorage.setItem(KEY, JSON.stringify(json)); /* update DOM */ })
+  .catch(err => console.error("...", err));
+```
+
+## Do not
+
+- Manually rename `scripts-*.js` or edit script `src` in HTML (gulp precommit handles this)
+- Use `eval`, inline event handlers, or `innerHTML` with untrusted API data without sanitising
+- Add npm runtime dependencies — this is zero-dependency client JS
+
+## Annual maintenance
+
+Update hardcoded dates in `isRamadan()` and `isEid()` when Islamic calendar dates change.

@@ -1,0 +1,37 @@
+---
+description: Gulp tasks, git hooks, and commit workflow
+globs: "{gulpfile.js,package.json,pre-commit,post-commit}"
+alwaysApply: false
+---
+
+# Build & commit workflow
+
+## Gulp tasks
+
+| Task | Purpose |
+|------|---------|
+| `setup-hooks` | Copy `pre-commit` / `post-commit` into `.git/hooks/` (executable) |
+| `serve` (default) | BrowserSync on `./`, watches HTML/CSS/JS |
+| `rename-js` | Timestamp-rename `scripts-*.js`, update all HTML refs |
+| `update-html` | Sync HTML script refs to current JS filename |
+
+## Commit hooks
+
+`pre-commit` → runs `yarn precommit`:
+1. `gulp rename-js`
+2. `gulp update-html`
+3. `yarn version patch --immediate`
+4. Stages generated changes
+
+`post-commit` → amends commit to include any remaining staged hook output.
+
+## Rules for agents
+
+- **Never** manually edit `package.json` version
+- **Never** manually change `scripts-{timestamp}.js` filename or HTML script `src`
+- After JS changes, verify with `yarn start` before committing
+- Use `yarn ci` (`yarn install --immutable`) in CI; `yarn verify` checks install integrity (`--immutable --check-cache`)
+
+## Adding dependencies
+
+Dev-only tooling belongs in `devDependencies`. Pin exact versions (`save-exact=true` in `.npmrc`).

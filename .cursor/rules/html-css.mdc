@@ -1,0 +1,37 @@
+---
+description: HTML and CSS conventions for static pages
+globs: "**/*.{html,css}"
+alwaysApply: false
+---
+
+# HTML & CSS rules
+
+## HTML pages
+
+- One file per section at repo root; share nav, footer, and meta patterns with `index.html`
+- Bootstrap 4 grid (`container`, `row`, `col-*`)
+- CDN assets must include `integrity` and `crossorigin` where already used
+- Script tag for app JS (do not change filename manually):
+
+```html
+<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>
+```
+
+## CSS
+
+- `assets/css/main.css` — layout, typography, components, responsive rules
+- `assets/css/animations.css` — transitions and keyframe animations only
+- Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
+- Prefer existing colour/spacing variables and class names before adding new ones
+
+## Images
+
+- Store under `assets/images/` in existing subfolders (`backgrounds/`, `masjid/`, `posters/`, `team/`, etc.)
+- Use descriptive `alt` text for accessibility
+- Optimise file size before adding large images
+
+## Accessibility
+
+- Semantic headings (`h1` once per page)
+- `lang="en-GB"` on `<html>`
+- Sufficient colour contrast; don't rely on colour alone for meaning

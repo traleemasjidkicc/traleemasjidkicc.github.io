@@ -1,0 +1,32 @@
+---
+description: Core project context for Tralee Masjid static website
+alwaysApply: true
+---
+
+# Tralee Masjid website
+
+Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no transpilation.
+
+## Stack
+
+- HTML pages at repo root (`index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`)
+- CSS: `assets/css/main.css`, `assets/css/animations.css`
+- JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+)
+- Bootstrap 4, jQuery, Font Awesome, BaguetteBox via CDN
+- Gulp + BrowserSync for local dev (`yarn start`)
+
+## Package manager
+
+Use **Yarn only**. Run `yarn ci` to install, `yarn start` to develop.
+
+## Deployment
+
+- Hosted on GitHub Pages from `main`
+- Custom domain: `traleemasjidkicc.ie` (`CNAME` file)
+- No build step for production — static files are served as-is
+
+## Scope discipline
+
+- Keep changes minimal and page-appropriate
+- Match existing HTML structure, Bootstrap patterns, and JS style
+- Do not add frameworks, bundlers, or TypeScript unless explicitly requested
