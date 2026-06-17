@@ -36,7 +36,7 @@ External APIs (Google Cloud Run, europe-west1)
 
 - One versioned file: `assets/js/scripts-{timestamp}.js`
 - **Never manually edit** `<script src="assets/js/scripts-...">` in HTML
-- On commit, `yarn precommit` runs `gulp rename-js` (new timestamp + updates all HTML) and bumps `package.json` patch version
+- On commit, `yarn precommit` runs `gulp precommit`: renames JS and bumps version **only when** `assets/js/scripts-*.js` has git changes
 - Edit the existing `scripts-*.js` file in place during development
 
 ## Page-specific JS behaviour

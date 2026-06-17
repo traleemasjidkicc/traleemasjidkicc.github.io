@@ -25,6 +25,6 @@
     "preci": "rm -rf node_modules",
     "ci": "yarn install --immutable",
     "postci": "yarn start",
-    "precommit": "gulp rename-js && gulp update-html && yarn version patch --immediate"
+    "precommit": "gulp precommit"
   }
 }

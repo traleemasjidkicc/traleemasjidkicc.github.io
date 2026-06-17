@@ -110,17 +110,18 @@ traleemasjidkicc.github.io/
 
 ### JS asset versioning
 
-JavaScript uses a timestamped filename (`scripts-{timestamp}.js`) to bust browser caches on each commit.
+JavaScript uses a timestamped filename (`scripts-{timestamp}.js`) to bust browser caches when the JS file changes.
 
 ```mermaid
 flowchart LR
     A[Edit scripts-*.js] --> B[git commit]
     B --> C[pre-commit hook]
-    C --> D[gulp rename-js]
-    D --> E[Rename file + update HTML refs]
-    E --> F[bump package.json patch]
-    F --> G[post-commit amend]
-    G --> H[Push to GitHub Pages]
+    C --> D{JS changed?}
+    D -->|Yes| E[gulp rename-js]
+    D -->|No| F[Skip]
+    E --> G[bump package.json patch]
+    F --> H[Push to GitHub Pages]
+    G --> H
 ```
 
 > **Do not** manually rename the JS file or edit `<script src="...">` tags — git hooks handle this automatically.
@@ -143,6 +144,9 @@ cd traleemasjidkicc.github.io
 
 # Install dependencies (frozen lockfile)
 yarn ci
+
+# Update hooks if you have not already
+yarn setup-hooks
 ```
 
 `yarn ci` runs a clean `yarn install --immutable` (Yarn 4 equivalent of `--frozen-lockfile`) and then starts the dev server. To install without starting:

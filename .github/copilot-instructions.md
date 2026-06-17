@@ -11,7 +11,7 @@ This is a static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee 
 **Critical workflow**: JavaScript files use timestamp-based versioning (`scripts-{timestamp}.js`) to prevent browser caching issues.
 
 - All HTML files reference the JS asset with a glob pattern: `<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>`
-- Before commits, the `yarn precommit` hook runs `gulp rename-js` which:
+- Before commits, `yarn precommit` (`gulp precommit`) renames JS and updates HTML **only when** `assets/js/scripts-*.js` has changed:
   1. Generates new timestamp filename
   2. Renames the physical JS file in `assets/js/`
   3. Updates all HTML files with the new reference
@@ -23,7 +23,7 @@ This is a static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee 
 yarn ci          # Clean install with --immutable (Yarn 4 frozen lockfile)
 yarn verify      # Verify install integrity (--immutable --check-cache)
 yarn start       # Serve locally on http://localhost:3000 with live reload (Browser Sync)
-yarn precommit   # Runs rename-js, update-html, patches version in package.json
+yarn precommit   # Renames JS + bumps version only when scripts-*.js changed
 ```
 
 The git hooks (`./.git/hooks/pre-commit`, `./.git/hooks/post-commit`) ensure:
@@ -70,7 +70,7 @@ The main script (`assets/js/scripts-*.js`, ~1076 lines) handles:
 ## Development Conventions
 
 ### Commit & Versioning
-- Semantic versioning: Patch increments on every commit (via `yarn version patch --immediate` in `yarn precommit`)
+- Semantic versioning: Patch increments when JS changes (via `yarn version patch -i` in `gulp precommit`)
 - Version lives in `package.json` and is incremented automatically
 - **Do not manually edit version numbers**—let the hook handle it
 

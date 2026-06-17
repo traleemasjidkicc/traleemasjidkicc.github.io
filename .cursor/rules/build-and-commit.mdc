@@ -11,16 +11,18 @@ alwaysApply: false
 | Task | Purpose |
 |------|---------|
 | `setup-hooks` | Copy `pre-commit` / `post-commit` into `.git/hooks/` (executable) |
+| `rename-js` | Always rename `scripts-*.js` and update HTML refs |
+| `rename-js-if-changed` | Rename + update HTML only if `assets/js/scripts-*.js` changed |
+| `precommit` | Used by git hook: `rename-js-if-changed` + version bump when JS changed |
 | `serve` (default) | BrowserSync on `./`, watches HTML/CSS/JS |
-| `rename-js` | Timestamp-rename `scripts-*.js`, update all HTML refs |
-| `update-html` | Sync HTML script refs to current JS filename |
+| `update-html` | Sync HTML script refs to current JS filename (no rename) |
 
 ## Commit hooks
 
-`pre-commit` → runs `yarn precommit`:
-1. `gulp rename-js`
-2. `gulp update-html`
-3. `yarn version patch --immediate`
+`pre-commit` → runs `yarn precommit` (`gulp precommit`):
+1. If `assets/js/scripts-*.js` has no git changes → skip (no rename, no version bump)
+2. Otherwise `rename-js` (timestamp rename + update all HTML refs)
+3. `yarn version patch -i`
 4. Stages generated changes
 
 `post-commit` → amends commit to include any remaining staged hook output.

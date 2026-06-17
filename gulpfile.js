@@ -2,6 +2,7 @@ import gulp from 'gulp';
 import browserSync from 'browser-sync';
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 import replace from 'gulp-replace';
 import through2 from 'through2';
 
@@ -9,6 +10,42 @@ const bs = browserSync.create();
 const jsDir = 'assets/js/';
 const htmlFiles = '**/*.html';
 const hookFiles = ['pre-commit', 'post-commit'];
+const scriptTagPattern =
+    /<script defer type="text\/javascript" src="assets\/js\/scripts-\d+\.js"><\/script>/g;
+
+const getScriptsJsFile = () => {
+    const jsFiles = fs.readdirSync(jsDir).filter(file => /scripts-\d+\.js$/.test(file));
+    return jsFiles[0] ?? null;
+};
+
+const hasJsChanged = () => {
+    const jsFile = getScriptsJsFile();
+    if (!jsFile) {
+        return false;
+    }
+
+    const jsPath = path.join(jsDir, jsFile);
+    const status = execSync(`git status --porcelain -- "${jsPath}"`, {
+        encoding: 'utf8',
+    }).trim();
+
+    return status.length > 0;
+};
+
+const updateHtmlScriptRefs = (fileName, { forceWrite = false } = {}) => {
+    return gulp.src(htmlFiles, { allowEmpty: true })
+        .pipe(replace(
+            scriptTagPattern,
+            `<script defer type="text/javascript" src="assets/js/${fileName}"></script>`
+        ))
+        .pipe(through2.obj((file, _, cb) => {
+            if (forceWrite && file.isBuffer()) {
+                fs.writeFileSync(file.path, file.contents);
+            }
+            cb(null, file);
+        }))
+        .pipe(gulp.dest(file => file.base));
+};
 
 // Task to install git hooks from repo root into .git/hooks/
 gulp.task('setup-hooks', function (done) {
@@ -43,62 +80,71 @@ gulp.task('setup-hooks', function (done) {
 
 // Task to rename the JS file and update the HTML files
 gulp.task('rename-js', function (done) {
-    const timestamp = Date.now();
-    const jsFiles = fs.readdirSync(jsDir).filter(file => /scripts-\d+\.js$/.test(file));
+    const jsFile = getScriptsJsFile();
 
-    if (jsFiles.length === 0) {
+    if (!jsFile) {
         console.log('No matching JS file found.');
         done();
         return;
     }
 
-    const oldFileName = jsFiles[0];
-    const newFileName = `scripts-${timestamp}.js`;
+    const newFileName = `scripts-${Date.now()}.js`;
 
-    // Rename the JS file
-    fs.renameSync(path.join(jsDir, oldFileName), path.join(jsDir, newFileName));
-    console.log(`Renamed: ${oldFileName} to ${newFileName}`);
+    fs.renameSync(path.join(jsDir, jsFile), path.join(jsDir, newFileName));
+    console.log(`Renamed: ${jsFile} to ${newFileName}`);
 
-    // Update the HTML files with the new script name
-    gulp.src(htmlFiles, { allowEmpty: true })
-        .pipe(replace(
-            /<script defer type="text\/javascript" src="assets\/js\/scripts-\d+\.js"><\/script>/g,
-            `<script defer type="text/javascript" src="assets/js/${newFileName}"></script>`
-        ))
-        .pipe(through2.obj((file, _, cb) => {
-            // Force writing changes to ensure all open files are updated
-            if (file.isBuffer()) {
-                fs.writeFileSync(file.path, file.contents);
-            }
-            cb(null, file);
-        }))
-        .pipe(gulp.dest(function (file) {
-            return file.base;
-        }))
+    updateHtmlScriptRefs(newFileName, { forceWrite: true })
         .on('end', done);
 });
 
-// Task to update the HTML files (used by lint-staged)
-gulp.task('update-html', function (done) {
-    const jsFiles = fs.readdirSync(jsDir).filter(file => /scripts-\d+\.js$/.test(file));
+// Rename JS and update HTML only when the scripts file has changed
+gulp.task('rename-js-if-changed', function (done) {
+    if (!hasJsChanged()) {
+        console.log('No JS changes detected — skipping rename and HTML update.');
+        done();
+        return;
+    }
 
-    if (jsFiles.length === 0) {
+    gulp.series('rename-js')(done);
+});
+
+// Task to update the HTML files (sync refs to current JS filename)
+gulp.task('update-html', function (done) {
+    const jsFile = getScriptsJsFile();
+
+    if (!jsFile) {
         console.log('No matching JS file found for update.');
         done();
         return;
     }
 
-    const newFileName = jsFiles[0];
-
-    gulp.src(htmlFiles, { allowEmpty: true })
-        .pipe(replace(
-            /<script defer type="text\/javascript" src="assets\/js\/scripts-\d+\.js"><\/script>/g,
-            `<script defer type="text/javascript" src="assets/js/${newFileName}"></script>`
-        ))
-        .pipe(gulp.dest(function (file) {
-            return file.base;
-        }))
+    updateHtmlScriptRefs(jsFile)
         .on('end', done);
+});
+
+// Pre-commit: cache-bust JS and bump version only when JS changed
+gulp.task('precommit', function (done) {
+    if (!hasJsChanged()) {
+        console.log('No JS changes detected — skipping cache bust and version bump.');
+        done();
+        return;
+    }
+
+    gulp.series('rename-js')(function (err) {
+        if (err) {
+            done(err);
+            return;
+        }
+
+        try {
+            execSync('yarn version patch -i', { stdio: 'inherit' });
+        } catch (error) {
+            done(error);
+            return;
+        }
+
+        done();
+    });
 });
 
 // Task to serve and watch files

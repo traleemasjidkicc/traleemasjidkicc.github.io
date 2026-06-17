@@ -6,6 +6,8 @@
     "html.validate.styles": true,
     "editor.formatOnSave": false,
     "files.exclude": {
-        "**/.git": false
+        "**/.git": true,
+        "**/.yarn": true,
+        "**/.well-known": true,
     }
 }
