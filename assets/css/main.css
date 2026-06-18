@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap');
 
 /* GLOBALS START */
 body {
@@ -512,6 +512,561 @@ section.pricing {
 	z-index: 3;
 }
 
+
+.bg-cover-projects {
+	position: relative;
+	background: url(../images/masjid/masjid-wide.jpg) no-repeat center center;
+	background-size: cover;
+	min-height: auto;
+	z-index: 1;
+}
+
+.bg-cover-projects::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(51, 51, 77, 0.45);
+	z-index: 2;
+	pointer-events: none;
+}
+
+.bg-cover-projects>* {
+	position: relative;
+	z-index: 3;
+}
+
+.campaign-hero-panel {
+	background-color: rgba(67, 65, 65, 0.55);
+	padding: 2rem;
+	border-radius: 8px;
+}
+
+.campaign-hero-panel h1 {
+	color: #fff;
+}
+
+.campaign-hero-panel .lead {
+	color: rgba(255, 255, 255, 0.92);
+}
+
+.campaign-hero-panel .gfm-stream-goal-bar {
+	display: block;
+	width: 100%;
+	min-height: 260px;
+	height: 280px;
+	border: 0;
+	background: transparent;
+	color-scheme: normal;
+}
+
+.campaign-hero-actions .btn {
+	margin-bottom: 0.5rem;
+}
+
+.btn-campaign {
+	background: #5e0d5b;
+	background: linear-gradient(to right, #5e0d5b, #100d5e);
+	border-color: #5e0d5b;
+	color: #fff;
+	font-weight: bold;
+	border-radius: 5rem;
+	padding: 0.75rem 2rem;
+	letter-spacing: 0.05rem;
+}
+
+.btn-campaign:hover,
+.btn-campaign:focus {
+	color: #fff;
+	opacity: 0.92;
+}
+
+.btn-campaign-outline {
+	border: 2px solid #fff;
+	color: #fff;
+	background: transparent;
+	font-weight: bold;
+	border-radius: 5rem;
+	padding: 0.75rem 2rem;
+	letter-spacing: 0.05rem;
+}
+
+.btn-campaign-outline:hover,
+.btn-campaign-outline:focus {
+	background: rgba(255, 255, 255, 0.15);
+	color: #fff;
+}
+
+/* CAMPAIGN PAGE START */
+.campaign-eyebrow {
+	display: inline-block;
+	font-size: 0.85rem;
+	letter-spacing: 0.12rem;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.85);
+	margin-bottom: 0.75rem;
+}
+
+.campaign-hero-panel .campaign-title {
+	font-size: 2.75rem;
+	line-height: 1.15;
+	margin-bottom: 1rem;
+}
+
+.campaign-hero-unified {
+	text-align: center;
+	padding: 2.5rem 2rem;
+}
+
+.campaign-hero-unified .campaign-hero-hadith {
+	text-align: left;
+	max-width: 36rem;
+	margin: 0 auto 1.5rem;
+}
+
+.campaign-hero-unified .campaign-gfm-widget {
+	margin: 0 0 1.25rem;
+}
+
+@media (max-width: 400px) {
+	.campaign-hero-panel .gfm-stream-goal-bar {
+		min-height: 380px;
+		height: 400px;
+	}
+}
+
+.campaign-hero-unified .campaign-hero-actions {
+	margin-top: 0;
+}
+
+.campaign-hero-hadith {
+	font-style: italic;
+	font-size: 1.05rem;
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.9);
+	border-left: 3px solid rgba(255, 255, 255, 0.5);
+	padding-left: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.campaign-hero-hadith cite {
+	display: block;
+	font-style: normal;
+	font-size: 0.9rem;
+	margin-top: 0.5rem;
+	opacity: 0.85;
+}
+
+.campaign-section {
+	padding: 4.5rem 0;
+}
+
+.campaign-section-warm {
+	background: #f9f0e7;
+}
+
+.campaign-section-title {
+	text-align: center;
+	margin-bottom: 2.5rem;
+}
+
+.campaign-section-title img {
+	max-width: 120px;
+	margin-bottom: 0.5rem;
+}
+
+.campaign-section-title h2 {
+	font-size: 2.25rem;
+	color: #222;
+	margin-bottom: 0.75rem;
+}
+
+.campaign-section-title p {
+	color: #666;
+	font-size: 1.1rem;
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+.campaign-narrative {
+	font-size: 1.125rem;
+	line-height: 1.85;
+	color: #444;
+}
+
+.campaign-narrative p {
+	margin-bottom: 1.25rem;
+}
+
+.campaign-highlight {
+	background: #fff;
+	border-radius: 12px;
+	padding: 2rem;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+	border-left: 4px solid #5e0d5b;
+}
+
+.campaign-rewards {
+	background: url(../images/mos-bg5.png) no-repeat center center fixed;
+	background-size: cover;
+	color: #fff;
+	position: relative;
+}
+
+.campaign-rewards::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 15, 15, 0.82);
+}
+
+.campaign-rewards .container {
+	position: relative;
+	z-index: 2;
+}
+
+.campaign-rewards .campaign-section-title h2,
+.campaign-rewards .campaign-section-title p {
+	color: #fff;
+}
+
+.campaign-reward-card {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 12px;
+	padding: 1.5rem 1.25rem;
+	height: 100%;
+	text-align: center;
+	transition: transform 0.2s, background 0.2s;
+}
+
+.campaign-reward-card:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-3px);
+}
+
+.campaign-reward-card i {
+	font-size: 2rem;
+	color: #c9a84c;
+	margin-bottom: 0.75rem;
+	display: block;
+}
+
+.campaign-reward-card h3 {
+	font-size: 1rem;
+	font-family: "Libre Caslon Text", serif;
+	font-weight: 700;
+	margin-bottom: 0;
+	line-height: 1.4;
+}
+
+.campaign-facility-card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 1.75rem;
+	height: 100%;
+	box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+	text-align: center;
+}
+
+.campaign-facility-card i {
+	font-size: 2.25rem;
+	color: #0d5b5e;
+	margin-bottom: 1rem;
+}
+
+.campaign-facility-card h3 {
+	font-size: 1.1rem;
+	font-family: "Libre Caslon Text", serif;
+	font-weight: 700;
+	color: #222;
+}
+
+.campaign-facility-card p {
+	color: #666;
+	font-size: 0.95rem;
+	margin-bottom: 0;
+}
+
+.campaign-cost-card {
+	border: none;
+	border-radius: 1rem;
+	box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+	height: 100%;
+	transition: transform 0.2s;
+}
+
+.campaign-cost-card:hover {
+	transform: translateY(-4px);
+}
+
+.campaign-cost-card .card-body {
+	padding: 1.75rem;
+}
+
+.campaign-cost-card .cost-amount {
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: #5e0d5b;
+	font-family: "Cinzel Decorative", serif;
+}
+
+.campaign-cost-card .cost-label {
+	font-size: 0.95rem;
+	color: #666;
+}
+
+.campaign-cost-card.urgent {
+	border-top: 4px solid #c0392b;
+}
+
+.campaign-donate-section {
+	background: linear-gradient(135deg, #5e0d5b 0%, #100d5e 100%);
+	color: #fff;
+}
+
+.campaign-donate-section .campaign-section-title h2,
+.campaign-donate-section .campaign-section-title p {
+	color: #fff;
+}
+
+.campaign-donate-card {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 12px;
+	padding: 2rem;
+	height: 100%;
+	text-align: center;
+}
+
+.campaign-donate-card i {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+	color: #c9a84c;
+}
+
+.campaign-donate-card h3 {
+	font-size: 1.25rem;
+	color: #fff;
+	margin-bottom: 0.75rem;
+}
+
+.campaign-bank-details {
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 12px;
+	padding: 1.5rem 2rem;
+	margin-top: 2rem;
+}
+
+.campaign-bank-details dt {
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05rem;
+}
+
+.campaign-bank-details dd {
+	color: #fff;
+	font-size: 1.05rem;
+	margin-bottom: 1rem;
+}
+
+.campaign-timeline {
+	position: relative;
+	padding-left: 2rem;
+	border-left: 2px solid #5e0d5b;
+}
+
+.campaign-timeline-item {
+	position: relative;
+	margin-bottom: 2rem;
+	padding-left: 1rem;
+}
+
+.campaign-timeline-item::before {
+	content: "";
+	position: absolute;
+	left: -2.45rem;
+	top: 0.35rem;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #5e0d5b;
+	border: 2px solid #f9f0e7;
+}
+
+.campaign-timeline-year {
+	font-family: "Cinzel Decorative", serif;
+	font-weight: 700;
+	color: #5e0d5b;
+	font-size: 1.1rem;
+}
+
+.campaign-services-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.campaign-services-list li {
+	padding: 0.75rem 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+	font-size: 1.05rem;
+	color: #444;
+}
+
+.campaign-services-list li i {
+	color: #0D5E10;
+	margin-right: 0.75rem;
+	width: 1.25rem;
+	text-align: center;
+}
+
+.campaign-closing {
+	background: #f9f0e7;
+	text-align: center;
+}
+
+.campaign-closing-card {
+	background: #fff;
+	border-radius: 16px;
+	padding: 3rem 2.5rem;
+	box-shadow: 0 4px 32px rgba(0, 0, 0, 0.06);
+}
+
+.campaign-closing-card .campaign-section-title {
+	margin-bottom: 2rem;
+}
+
+.campaign-closing-card .campaign-section-title h2 {
+	font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.campaign-closing p {
+	font-size: 1.125rem;
+	line-height: 1.85;
+	color: #444;
+	max-width: 36rem;
+	margin: 0 auto 1.25rem;
+}
+
+.campaign-blessing-block {
+	margin: 2.5rem auto 2rem;
+	padding: 2rem 1.5rem 1.75rem;
+	background: linear-gradient(
+		135deg,
+		rgba(94, 13, 91, 0.07),
+		rgba(16, 13, 94, 0.04)
+	);
+	border-radius: 12px;
+	max-width: 28rem;
+}
+
+.campaign-blessing-divider {
+	display: block;
+	width: 4rem;
+	height: 3px;
+	background: linear-gradient(to right, #5e0d5b, #c9a84c, #5e0d5b);
+	margin: 0 auto 1.25rem;
+	border-radius: 2px;
+}
+
+.campaign-closing .arabic-blessing {
+	font-family: "Amiri", "Libre Caslon Text", serif;
+	font-size: clamp(2.25rem, 5vw, 3.5rem);
+	font-weight: 700;
+	color: #5e0d5b;
+	line-height: 1.5;
+	margin: 0;
+	letter-spacing: 0.01em;
+}
+
+.arabic-blessing-translit {
+	font-size: 0.95rem;
+	color: #777;
+	font-style: italic;
+	margin: 0.75rem 0 0;
+	letter-spacing: 0.03em;
+}
+
+.campaign-closing-cta {
+	margin-top: 0.5rem;
+}
+
+@media (min-width: 992px) {
+	.campaign-closing-card {
+		padding: 3.5rem 3rem;
+	}
+
+	.campaign-blessing-block {
+		margin: 3rem auto 2.5rem;
+		padding: 2.5rem 2rem 2rem;
+		max-width: 32rem;
+	}
+
+	.campaign-closing .arabic-blessing {
+		font-size: 3.5rem;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.campaign-closing-card {
+		padding: 2rem 1.25rem;
+	}
+
+	.campaign-blessing-block {
+		margin: 2rem auto 1.5rem;
+		padding: 1.5rem 1rem 1.25rem;
+	}
+
+	.campaign-closing .arabic-blessing {
+		font-size: 2.25rem;
+	}
+}
+
+.campaign-donate-fab {
+	display: none;
+	position: fixed;
+	bottom: 1.25rem;
+	right: 1.25rem;
+	z-index: 1030;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.campaign-gfm-widget {
+	background: transparent;
+	border-radius: 0;
+	padding: 0;
+	overflow: visible;
+	line-height: 0;
+}
+
+.campaign-gfm-widget .gfm-stream-goal-bar {
+	vertical-align: top;
+}
+
+@media (max-width: 767.98px) {
+	.campaign-hero-unified {
+		padding: 1.75rem 1.25rem;
+	}
+
+	.campaign-hero-panel .gfm-stream-goal-bar {
+		min-height: 340px;
+		height: 360px;
+	}
+
+	.campaign-section {
+		padding: 3rem 0;
+	}
+
+	.campaign-donate-fab {
+		display: inline-block;
+	}
+}
+/* CAMPAIGN PAGE END */
 
 .modal-dialog {
 	overflow-y: initial !important
