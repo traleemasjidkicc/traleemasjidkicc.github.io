@@ -235,13 +235,21 @@
   const applyToHomePage = (d) => {
     if (!window.location.pathname.endsWith("/")) return;
     const lower = (s) => s.toLowerCase();
+    const setPrayer = (beginsId, iqamahId, beginsVal, iqamahVal) => {
+      const beginsEl = document.getElementById(beginsId);
+      const iqamahEl = document.getElementById(iqamahId);
+      if (beginsEl) beginsEl.innerHTML = lower(beginsVal);
+      if (iqamahEl) iqamahEl.innerHTML = lower(iqamahVal);
+    };
 
-    document.getElementById("fajr").innerHTML = lower(d.fajarTime);
-    document.getElementById("sunrise").innerHTML = lower(d.sunriseTime);
-    document.getElementById("dhuhr").innerHTML = lower(d.dhuharTime);
-    document.getElementById("asr").innerHTML = lower(d.asrTime);
-    document.getElementById("maghrib").innerHTML = lower(d.maghribTime);
-    document.getElementById("isha").innerHTML = lower(d.ishaTime);
+    setPrayer("fajr-begins", "fajr-iqamah", d.fajarTime, d.fajarJamahTime);
+    setPrayer("dhuhr-begins", "dhuhr-iqamah", d.dhuharTime, d.zohrJamahTime);
+    setPrayer("asr-begins", "asr-iqamah", d.asrTime, d.asarJamahTime);
+    setPrayer("maghrib-begins", "maghrib-iqamah", d.maghribTime, d.maghribJamahTime);
+    setPrayer("isha-begins", "isha-iqamah", d.ishaTime, d.ishaJamahTime);
+
+    const sunriseEl = document.getElementById("sunrise");
+    if (sunriseEl) sunriseEl.innerHTML = lower(d.sunriseTime);
 
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);

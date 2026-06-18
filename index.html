@@ -75,11 +75,11 @@
   <script defer type="text/javascript"
     src="https://www.gofundme.com/static/js/embed.js"></script>
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781714505382.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781795863368.js"></script>
 
 </head>
 
-<body>
+<body class="page-home">
   <!-- START OF NAV -->
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark nav-wide sticky-top">
@@ -122,7 +122,7 @@
             <a class="nav-link" href="contact.html">Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn btn-success btn-lg mr-sm-0 mr-md-2 mr-lg-2 active"
+            <a class="nav-link btn btn-kicc btn-kicc-sm btn-kicc-donate mr-sm-0 mr-md-2 mr-lg-2 active"
               role="button" target="_blank"
               href="https://gofund.me/f75f7c17">Donate</a>
           </li>
@@ -188,76 +188,115 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- BANNER START -->
-  <section class="bg-cover-2 text-white d-none d-md-block"
-    style="position: relative;">
-    <div class="container h-100">
-      <div class="row h-100 align-items-stretch">
-        <!-- Left column: Centered text -->
-        <div
-          class="col-md-7 d-flex justify-content-center align-items-center text-center">
+  <!-- HERO START -->
+  <section id="home-hero" class="bg-cover-2 text-white home-hero-cover">
+    <div class="container home-hero-cover-inner">
+      <div class="home-hero-cover-content text-center">
+        <span class="campaign-eyebrow">Kerry Islamic Cultural Centre
+          &middot; Tralee, Ireland</span>
+        <h1 class="sr-only">Welcome to Tralee Masjid</h1>
 
-          <!-- DYNAMIC CELEBRATION START -->
-          <div class="cp-welcome-content text-center">
-            <div style="background-color: rgba(67, 65, 65, 0.4); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-              <h1 id="dynamic-celeb-title" style="display: none;">-</h1>
-              <p id="dynamic-celeb-message" style="display: none;">
-              </p>
-            </div>
+        <!-- DYNAMIC CELEBRATION START -->
+        <div class="home-hero-welcome">
+          <h2 id="dynamic-celeb-title" class="home-hero-title"
+            style="display: none;">-</h2>
+          <p id="dynamic-celeb-message" class="home-hero-lead mb-0"
+            style="display: none;"></p>
+        </div>
 
-            <div class="d-flex justify-content-center align-items-center mt-3">
-              <div class="mx-2 text-center" style="display: none;" id="dynamic-time-one-circle">
-                <div
-                  class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
-                  style="width:160px;height:160px; display: none;" >
-                  <div>
-                    <div id="dynamic-time-one-label" style="display: none;"
-                      class="h6 mb-1">-</div>
-                    <div id="dynamic-time-one" style="display: none;"
-                      class="h3 font-weight-bold">—
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="mx-2 text-center" style="display: none;" id="dynamic-time-two-circle">
-                <div
-                  class="rounded-circle bg-warning text-dark d-flex justify-content-center align-items-center"
-                  style="width:160px;height:160px;">
-                  <div>
-                    <div id="dynamic-time-two-label" style="display: none;"
-                      class="h6 mb-1">-</div>
-                    <div id="dynamic-time-two" style="display: none;"
-                      class="h3 font-weight-bold">—
-                    </div>
-                  </div>
-                </div>
+        <div class="home-hero-times d-flex justify-content-center flex-wrap">
+          <div class="home-hero-time-item text-center"
+            style="display: none;" id="dynamic-time-one-circle">
+            <div
+              class="home-hero-time-circle home-hero-time-circle-primary d-flex justify-content-center align-items-center mx-2">
+              <div>
+                <div id="dynamic-time-one-label" class="home-hero-time-label"
+                  style="display: none;">-</div>
+                <div id="dynamic-time-one" class="home-hero-time-value"
+                  style="display: none;">&mdash;</div>
               </div>
             </div>
-
           </div>
-          <!-- DYNAMIC CELEBRATION END -->
-
-        </div>
-        <!-- Right column: GoFundMe Embed -->
-        <div class="col-md-5 d-flex align-items-stretch justify-content-end">
-          <div class="gfm-embed w-100"
-            data-url="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/widget/large"
-            style="max-width: 100%; max-height: 90%;">
+          <div class="home-hero-time-item text-center"
+            style="display: none;" id="dynamic-time-two-circle">
+            <div
+              class="home-hero-time-circle home-hero-time-circle-accent d-flex justify-content-center align-items-center mx-2">
+              <div>
+                <div id="dynamic-time-two-label" class="home-hero-time-label"
+                  style="display: none;">-</div>
+                <div id="dynamic-time-two" class="home-hero-time-value"
+                  style="display: none;">&mdash;</div>
+              </div>
+            </div>
           </div>
         </div>
+        <!-- DYNAMIC CELEBRATION END -->
+
+        <div class="home-hero-actions kicc-btn-row justify-content-center mt-3">
+          <a href="about.html#intro"
+            class="btn btn-kicc btn-kicc-lg btn-kicc-light mb-2">
+            <i class="fas fa-info-circle mr-1"></i> Learn More
+          </a>
+          <a href="https://kicc.page.link/gfm"
+            class="btn btn-kicc btn-kicc-lg btn-kicc-donate mb-2"
+            target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-hand-holding-heart mr-1"></i> Donate Now
+          </a>
+        </div>
+      </div>
+
+      <div class="home-hero-prayer-row" aria-label="Today's prayer times">
+        <div class="row home-hero-prayer-grid justify-content-center no-gutters">
+          <div class="col-6 col-md home-hero-prayer-card-wrap">
+            <div class="home-hero-prayer-card">
+              <h3 class="home-hero-prayer-name">Fajr</h3>
+              <p class="home-hero-prayer-begins" id="fajr-begins">--</p>
+              <p class="home-hero-prayer-iqamah" id="fajr-iqamah">--</p>
+              <p class="home-hero-prayer-sunrise"><span id="sunrise">--</span>
+                (sunrise)</p>
+            </div>
+          </div>
+          <div class="col-6 col-md home-hero-prayer-card-wrap">
+            <div class="home-hero-prayer-card">
+              <h3 class="home-hero-prayer-name">Zohr</h3>
+              <p class="home-hero-prayer-begins" id="dhuhr-begins">--</p>
+              <p class="home-hero-prayer-iqamah" id="dhuhr-iqamah">--</p>
+            </div>
+          </div>
+          <div class="col-6 col-md home-hero-prayer-card-wrap">
+            <div class="home-hero-prayer-card">
+              <h3 class="home-hero-prayer-name">Asar</h3>
+              <p class="home-hero-prayer-begins" id="asr-begins">--</p>
+              <p class="home-hero-prayer-iqamah" id="asr-iqamah">--</p>
+            </div>
+          </div>
+          <div class="col-6 col-md home-hero-prayer-card-wrap">
+            <div class="home-hero-prayer-card">
+              <h3 class="home-hero-prayer-name">Magrib</h3>
+              <p class="home-hero-prayer-begins" id="maghrib-begins">--</p>
+              <p class="home-hero-prayer-iqamah" id="maghrib-iqamah">--</p>
+            </div>
+          </div>
+          <div class="col-6 col-md home-hero-prayer-card-wrap">
+            <div class="home-hero-prayer-card">
+              <h3 class="home-hero-prayer-name">Isha</h3>
+              <p class="home-hero-prayer-begins" id="isha-begins">--</p>
+              <p class="home-hero-prayer-iqamah" id="isha-iqamah">--</p>
+            </div>
+          </div>
+        </div>
+        <p class="home-hero-timetable-link text-center mb-0">
+          <a href="#" target="_blank" id="salah-times-body"
+            class="btn btn-kicc btn-kicc-sm btn-kicc-ghost"
+            rel="noopener noreferrer">
+            <i class="far fa-calendar-alt mr-1"></i> Download <span
+              id="cur-month"></span> Timetable
+          </a>
+        </p>
       </div>
     </div>
   </section>
-
-  <!-- BANNER END -->
-
-  <!-- GOFUNDME MOBILE BANNER START -->
-  <section>
-    <div class="gfm-embed col-md-5 d-block d-md-none"
-      data-url="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/widget/large/">
-    </div>
-  </section>
-  <!-- GOFUNDME MOBILE BANNER END -->
+  <!-- HERO END -->
 
   <!-- MODAL START -->
   <div id="myModal" class="modal fade center" tabindex="-1">
@@ -306,10 +345,71 @@
   </div>
   <!-- ANNOUNCEMENT END -->
 
+  <!-- WELCOME START -->
+  <section class="campaign-section campaign-section-warm" id="about-kicc">
+    <div class="container">
+      <div class="row align-items-center mb-4 mb-lg-5">
+        <div class="col-md-5 d-none d-md-block mb-4 mb-md-0">
+          <img src="assets/images/welcome-pic.png"
+            class="img-fluid rounded shadow-sm" alt="Islamic calligraphy and mosque imagery">
+        </div>
+        <div class="col-md-7">
+          <div class="campaign-section-title text-md-left mb-md-0">
+            <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+            <h2>Welcome to Tralee Masjid</h2>
+            <p>Kerry Islamic Cultural Centre — serving Muslims across Co. Kerry</p>
+          </div>
+          <div class="campaign-narrative text-md-left">
+            <p>We are a Muslim community organisation providing religious,
+              cultural and social services. We offer five daily prayers, Jumu'ah,
+              educational programmes, and support for families across Kerry.</p>
+            <a href="about.html#intro"
+              class="btn btn-kicc btn-kicc-lg btn-kicc-primary">Read
+              More</a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4 mb-md-0">
+          <div class="home-vision-card h-100">
+            <span class="home-vision-label">Our Vision</span>
+            <h3>To serve our community</h3>
+            <p>Our aim is to provide for the religious, cultural and social
+              needs of Muslims in Kerry, alongside our neighbours in Tralee and
+              beyond.</p>
+            <a href="about.html#intro"
+              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary">Read more
+              <i class="fas fa-arrow-right ml-1"></i></a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="home-vision-card h-100">
+            <span class="home-vision-label">Our Mission</span>
+            <h3>To enrich through Islam</h3>
+            <p>We promote the teachings of Islam, encourage praying together,
+              and support the spiritual and social well-being of our members so
+              they may contribute to society at large.</p>
+            <a href="activities.html"
+              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary">Our programmes
+              <i class="fas fa-arrow-right ml-1"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- WELCOME END -->
+
   <!-- NEWS AND EVENTS START -->
-  <section class="container pt-4 mb-4 bg-white rounded shadow">
+  <section class="campaign-section home-tabs-section">
+    <div class="container">
+      <div class="campaign-section-title">
+        <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+        <h2>Live Talks &amp; Jumu'ah</h2>
+        <p>Weekly programmes and Friday prayer schedule at Tralee Masjid</p>
+      </div>
+      <div class="home-tabs-wrap">
     <ul
-      class="nav nav-tabs nav-pills flex-column flex-sm-row text-center with-arrow"
+      class="nav nav-tabs nav-pills flex-column flex-sm-row text-center with-arrow home-tabs-nav"
       id="nav-tab" role="tablist">
       <li class="nav-item flex-sm-fill">
         <a id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab"
@@ -320,21 +420,21 @@
       <li class="nav-item flex-sm-fill">
         <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
           aria-controls="news" aria-selected="false"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Salah
-          Times</a>
+          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Jumu'ah
+          Schedule</a>
       </li>
     </ul>
-    <div class="tab-content" id="nav-tabContent">
+    <div class="tab-content pb-4" id="nav-tabContent">
       <!-- LIVE STREAMING EVENTS START -->
       <div class="tab-pane fade px-1 pt-4 show active" id="nav-events"
         role="tabpanel" aria-labelledby="nav-events">
         <div class="row">
           <!-- EVENTS START -->
           <div class="col-md-12 col-lg-6 mb-3">
-            <div class="card h-100">
+            <div class="card h-100 home-tabs-card">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-3">
-                  <p class="h4 card-title">Next Up&hellip;</p>
+                  <p class="h4 card-title mb-0">Next Up&hellip;</p>
                   <p class="h6"><a
                       href="https://mixlr.com/tralee-masjid/events/"
                       target="_blank" class="text-primary">more</a></p>
@@ -374,10 +474,10 @@
           <!-- EVENTS END -->
           <!-- MIXLR PLAY START -->
           <div class="col-md-12 col-lg-6 mb-3">
-            <div class="card h-100">
+            <div class="card h-100 home-tabs-card">
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-0">
-                  <p class="card-title"><i
+                  <p class="card-title mb-0"><i
                       class="h4 fas fa-broadcast-tower"></i>&nbsp;&nbsp;<span
                       class="h6" id="live-now"></span>
                   </p>
@@ -406,141 +506,33 @@
       <!-- NEWS TAB START -->
       <div class="tab-pane fade px-1 pt-4 show" id="nav-news" role="tabpanel"
         aria-labelledby="nav-news-tab">
-        <div class="row">
-          <div class="col-md-12 pl-4 pb-4">
-            <div class="row pb-4">
-              <div class="col-md-2"></div>
-              <div class="col-md-8">
+        <div class="row justify-content-center pb-2">
+          <div class="col-12 col-lg-8">
                 <ul class="list-group" id="jummah-schedule">
                   <li class="list-group-item list-group-item-danger h4">
                     Jumu'ah Schedule
                   </li>
                   <!-- Items will be injected here -->
                 </ul>
-              </div>
-              <div class="col-md-8"></div>
-            </div>
-
-            <p class="blockquote-footer">
+          </div>
+            <p class="blockquote-footer text-center col-12">
               Tralee Masjid Management Committee
             </p>
-          </div>
         </div>
       </div>
       <!-- NEWS TAB END -->
+    </div>
+      </div>
+    </div>
   </section>
   <!-- NEWS AND EVENTS END -->
 
-  <!-- WELCOME START -->
-  <section class="cp-welcome">
-    <div class="container rounded shadow">
-      <div class="row">
-        <div class="col-md-5 d-none d-md-block">
-          <img src="assets/images/welcome-pic.png"
-            class="img-fluid mb-4 mb-lg-0" alt="Islam">
-        </div>
-        <div class="col-md-7">
-          <div class="cp-welcome-content">
-            <h2>About KICC</h2>
-            <p>Welcome to the official website of Kerry Islamic Cultural Centre,
-              Tralee. </p>
-            <p>Our objective is to promote religion in accordance with the
-              tenets and doctrines of the Islamic faith
-              while adhering to Islamic values and we are committed to the
-              general welfare of all our members so that
-              they may contribute to the well being of the community at large.
-            </p>
-            <p>We promote education and teachings of the Islamic faith for the
-              benefit of the Muslim community in
-              Tralee, Co Kerry.</p>
-            <a href="about.html#intro" class="btn btn-success">Read More</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- WELCOME END -->
-
-  <!-- SALAH TIMES START -->
-  <section class="clearfix d-none d-sm-block">
-    <div class="salah-times">
-      <div class="container">
-        <div class="row">
-          <div class="section-title">
-            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png"
-              style="transition-delay: 0ms;">
-            <h2>Adhan Times</h2>
-          </div>
-        </div>
-        <div class="row justify-content-sm-center">
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box pt-5">
-              <div class="text-box pt-2">
-                <h2 class="pt-5">Fajr</h2>
-                <p class="badge badge-info" id="fajr">3:40am</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box pt-5">
-              <div class="text-box pt-2">
-                <h2 class="pt-5">Zohr</h2>
-                <p class="badge badge-info" id="dhuhr">3:40am</p><br>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box pt-5">
-              <div class="text-box pt-2">
-                <h2 class="pt-5">Asar</h2>
-                <p class="badge badge-info" id="asr">3:40am</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box pt-5">
-              <div class="text-box pt-2">
-                <h2 class="pt-5">Magrib</h2>
-                <p class="badge badge-info" id="maghrib">3:40am</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box pt-5">
-              <div class="text-box pt-2">
-                <h2 class="pt-5">Isha</h2>
-                <p class="badge badge-info" id="isha">3:40am</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12 center-block text-center">
-            <p class="h4 p-2">Today's Sunrise is at <span id="sunrise"></span>
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12 center-block text-center">
-            <a href="#" target="_blank" class="btn btn-outline-light"
-              id="salah-times-body" role="button">Download <span
-                id="cur-month"></span> Timetable</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- SALAH TIMES END -->
-
   <!-- MASJID NOTICES START -->
-  <section class="blog-home2 grid-gallery py-5" id="notice-board">
+  <section class="campaign-section blog-home2 grid-gallery" id="notice-board">
     <div class="container">
-      <div class="row justify-content-center mb-3">
-        <div class="col-md-8 text-center">
-          <img src="assets/images/bsml-txt-black.png" alt="Bismillah"
-            style="transition-delay: 0ms; width: 210px; padding-top: 20px;">
-          <h2 class="my-3 text-break">Masjid Notices</h2>
-        </div>
+      <div class="campaign-section-title">
+        <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+        <h2>Masjid Notices</h2>
       </div>
       <div class="row" id="noticeContainer">
         <!-- <div class="col-md-6 col-lg-4 item">
@@ -555,102 +547,132 @@
   <!-- MASJID NOTICES END -->
 
   <!-- MASJID SERVICES START -->
-  <section class="pricing py-5">
-    <div class="container pb-5">
-      <div class="blog-home2 row justify-content-center pb-4">
-        <!-- Column -->
-        <div class="col-md-8 text-center">
-          <img src="assets/images/bsml-txt.png" alt="Bismillah"
-            style="transition-delay: 0ms; width: 210px; padding-top: 20px;">
-          <h2 class="my-3 text-break text-white">Masjid Services</h2>
+  <section class="campaign-section" id="masjid-services">
+    <div class="container">
+      <div class="campaign-section-title">
+        <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+        <h2>Follow the Path of Islam</h2>
+        <p>Prayer, education, and community support for Muslims in Kerry</p>
+      </div>
+      <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-4">
+          <div class="campaign-facility-card">
+            <i class="fas fa-quran" aria-hidden="true"></i>
+            <h3>Teaching Al-Qur'an</h3>
+            <p>Children's madrasa, women's and men's Qur'an classes, and tafseer
+              for all ages.</p>
+          </div>
         </div>
-        <!-- Column -->
+        <div class="col-md-6 col-lg-3 mb-4">
+          <div class="campaign-facility-card">
+            <i class="fas fa-star-and-crescent" aria-hidden="true"></i>
+            <h3>Daily &amp; Jumu'ah Prayer</h3>
+            <p>Five daily prayers, Friday Jumu'ah, Taraweeh, and Eid salah for
+              the community.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+          <div class="campaign-facility-card">
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <h3>Community Services</h3>
+            <p>Eid gatherings, Ramadan iftar, counselling, and our Know thy
+              Neighbours programme.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+          <div class="campaign-facility-card">
+            <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
+            <h3>Funeral &amp; Marriage</h3>
+            <p>We strive to assist every departed soul and support families with
+              marriage and funeral services.</p>
+          </div>
+        </div>
       </div>
       <div class="row">
-        <!-- Free Tier -->
-        <div class="col-lg-4">
-          <div class="card mb-5 mb-lg-0">
-            <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">
-                Religious</h5>
-              <h6 class="card-price text-center"><i
-                  class="fas fa-star-and-crescent fa-2x"></i></span></h6>
-              <hr>
-              <ul class="fa-ul">
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Five
-                  Daily Prayers</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span><strong>Friday's Jumu'ah
-                    Prayer</strong>
-                </li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Congregational Taraweeh
-                  Prayer</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid
-                  Prayers
-                </li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Marriage and Funeral
-                  Services</li>
-              </ul>
-            </div>
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <div class="home-service-panel h-100">
+            <h4 class="home-service-panel-title"><i
+                class="fas fa-star-and-crescent mr-2"></i> Religious</h4>
+            <ul class="home-service-list">
+              <li>Five Daily Prayers</li>
+              <li><strong>Friday Jumu'ah Prayer</strong></li>
+              <li>Congregational Taraweeh</li>
+              <li>Eid Prayers</li>
+              <li>Marriage &amp; Funeral Services</li>
+            </ul>
           </div>
         </div>
-        <!-- Plus Tier -->
-        <div class="col-lg-4">
-          <div class="card mb-5 mb-lg-0">
-            <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">
-                Educational</h5>
-              <h6 class="card-price text-center"><i
-                  class="fas fa-book fa-2x"></i></span></h6>
-              <hr>
-              <ul class="fa-ul">
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span><strong>Children's
-                    Madrasa</strong></li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Women's Qur'an Class</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Men's
-                  Qur'an Class</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Tafseer of the Qur'an</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Islamic Lectures</li>
-              </ul>
-            </div>
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <div class="home-service-panel h-100">
+            <h4 class="home-service-panel-title"><i
+                class="fas fa-book mr-2"></i> Educational</h4>
+            <ul class="home-service-list">
+              <li><strong>Children's Madrasa</strong></li>
+              <li>Women's Qur'an Class</li>
+              <li>Men's Qur'an Class</li>
+              <li>Tafseer of the Qur'an</li>
+              <li>Islamic Lectures</li>
+            </ul>
           </div>
         </div>
-        <!-- Pro Tier -->
         <div class="col-lg-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title text-muted text-uppercase text-center">
-                Social</h5>
-              <h6 class="card-price text-center"><i
-                  class="fas fa-users fa-2x"></i></h6>
-              <hr>
-              <ul class="fa-ul">
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Eid
-                  Celebration Gatherings</li>
-                <li><span class="fa-li"><i class="fas fa-check"></i></span>Daily
-                  Iftar during Ramadan</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>1-to-1 Counselling</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span>Children's Day Out</li>
-                <li><span class="fa-li"><i
-                      class="fas fa-check"></i></span><strong>Know thy
-                    Neighbours
-                    Programme</strong></li>
-              </ul>
-            </div>
+          <div class="home-service-panel h-100">
+            <h4 class="home-service-panel-title"><i
+                class="fas fa-users mr-2"></i> Social</h4>
+            <ul class="home-service-list">
+              <li>Eid Celebration Gatherings</li>
+              <li>Daily Iftar during Ramadan</li>
+              <li>1-to-1 Counselling</li>
+              <li>Children's Day Out</li>
+              <li><strong>Know thy Neighbours</strong></li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
   </section>
   <!-- MASJID SERVICES END -->
+
+  <!-- DONATE START -->
+  <section class="campaign-section campaign-donate-section home-donate-section"
+    id="home-donate">
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+          <div class="campaign-section-title text-lg-left mb-lg-0">
+            <img src="assets/images/bsml-txt.png" alt="Bismillah">
+            <h2>Support Our New Masjid</h2>
+            <p>Help us finalise the remaining costs for Kerry Islamic Cultural
+              Centre. Every contribution is Lillah — charity that continues to
+              benefit you, in sha Allah.</p>
+          </div>
+          <div class="home-donate-actions kicc-btn-row mt-4">
+            <a href="https://kicc.page.link/gfm"
+              class="btn btn-kicc btn-kicc-lg btn-kicc-donate mb-2"
+              target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-hand-holding-heart mr-1"></i> Donate Now
+            </a>
+            <a href="projects.html"
+              class="btn btn-kicc btn-kicc-lg btn-kicc-ghost mb-2">
+              <i class="fas fa-mosque mr-1"></i> Campaign Details
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="home-donate-widget">
+            <iframe class="gfm-stream-goal-bar home-donate-gfm"
+              title="Help Complete Kerry Islamic Cultural Centre"
+              src="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/stream-goal-bar?locale=en-IE"
+              loading="lazy"
+              scrolling="no"
+              allow="payment"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- DONATE END -->
 
   <!-- RANDOM HADITH START -->
   <blockquote class="quote-card blue-card">
@@ -777,88 +799,39 @@
   <!-- PILLARS OF FAITH END -->
 
   <!-- PILLARS OF ISLAM START -->
-  <section class="clearfix d-none d-sm-block">
-    <div class="pillars-islam">
-      <div class="container">
-        <div class="row">
-          <div class="section-title">
-            <!-- <strong>Bismillah</strong> -->
-            <img src="assets/images/bsml-txt.png" alt="bsml-txt.png"
-              style="transition-delay: 0ms;">
-            <h2>Pillars Of Islam</h2>
-          </div>
+  <section class="campaign-section campaign-section-warm" id="pillars-islam">
+    <div class="container">
+      <div class="campaign-section-title">
+        <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+        <h2>Pillars of Islam</h2>
+        <p>Hold these pillars close to your heart. May Allah guide you on the
+          right path.</p>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-6 col-md-4 col-lg home-pillar-card mb-4">
+          <i class="fas fa-hand-point-up" aria-hidden="true"></i>
+          <h3>Shahadah</h3>
+          <p>Faith</p>
         </div>
-        <div class="row justify-content-sm-center">
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box">
-              <span>
-                <!-- <a class="inner" href="#"> -->
-                <!-- <img src="assets/images/features-icon-1.png" alt=""> -->
-                <i class="fas fa-hand-point-up fa-4x"></i>
-                <!-- </a> -->
-              </span>
-              <div class="text-box">
-                <h2>Shahadah</h2>
-                <p class="sub">Faith</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box">
-              <span>
-                <!-- <a class="inner" href="#"> -->
-                <i class="fas fa-praying-hands fa-4x"></i>
-                <!-- <img src="assets/images/features-icon-55.png" alt=""> -->
-                <!-- </a> -->
-              </span>
-              <div class="text-box">
-                <h2>Salah</h2>
-                <p class="sub">Prayer</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box">
-              <span>
-                <!-- <a class="inner" href="#"> -->
-                <!-- <img src="assets/images/features-icon-5.png" alt=""> -->
-                <i class="fas fa-quran fa-4x"></i>
-                <!-- </a> -->
-              </span>
-              <div class="text-box">
-                <h2>Sawm</h2>
-                <p class="sub">Fasting</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box">
-              <span>
-                <!-- <a class="inner" href="#"> -->
-                <!-- <img src="assets/images/features-icon-4.png" alt=""> -->
-                <i class="fas fa-hand-holding-usd fa-4x"></i>
-                <!-- </a> -->
-              </span>
-              <div class="text-box">
-                <h2>Zakah</h2>
-                <p class="sub">Alms Giving</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-4 col-lg">
-            <div class="features-box">
-              <span>
-                <!-- <a class="inner" href="#"> -->
-                <!-- <img src="assets/images/features-icon-2.png" alt=""> -->
-                <i class="fas fa-kaaba fa-4x"></i>
-                <!-- </a> -->
-              </span>
-              <div class="text-box">
-                <h2>Hajj</h2>
-                <p class="sub">Pilgrimage</p>
-              </div>
-            </div>
-          </div>
+        <div class="col-6 col-md-4 col-lg home-pillar-card mb-4">
+          <i class="fas fa-praying-hands" aria-hidden="true"></i>
+          <h3>Salah</h3>
+          <p>Prayer</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg home-pillar-card mb-4">
+          <i class="fas fa-quran" aria-hidden="true"></i>
+          <h3>Sawm</h3>
+          <p>Fasting</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg home-pillar-card mb-4">
+          <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
+          <h3>Zakah</h3>
+          <p>Alms Giving</p>
+        </div>
+        <div class="col-6 col-md-4 col-lg home-pillar-card mb-4">
+          <i class="fas fa-kaaba" aria-hidden="true"></i>
+          <h3>Hajj</h3>
+          <p>Pilgrimage</p>
         </div>
       </div>
     </div>

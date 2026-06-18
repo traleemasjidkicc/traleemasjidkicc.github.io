@@ -20,10 +20,130 @@ h6 {
 
 /* GLOBALS END */
 /* BUTTONS START */
+.btn-kicc {
+	font-weight: 700;
+	border-radius: 5rem;
+	border-width: 2px;
+	border-style: solid;
+	letter-spacing: 0.04em;
+	line-height: 1.25;
+	transition: transform 0.15s ease, box-shadow 0.15s ease,
+		background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-kicc-lg {
+	padding: 0.875rem 2.25rem;
+	font-size: 1rem;
+	min-width: 10.5rem;
+}
+
+.btn-kicc-sm {
+	padding: 0.5625rem 1.35rem;
+	font-size: 0.875rem;
+}
+
+.navbar .btn-kicc-sm {
+	padding: 0.5rem 1.15rem;
+	font-size: 0.85rem;
+	min-width: auto;
+}
+
+.btn-kicc-primary {
+	background: #0d5b5e;
+	border-color: #0d5b5e;
+	color: #fff;
+	box-shadow: 0 4px 16px rgba(13, 91, 94, 0.32);
+}
+
+.btn-kicc-primary:hover,
+.btn-kicc-primary:focus {
+	background: #094548;
+	border-color: #094548;
+	color: #fff;
+	box-shadow: 0 6px 20px rgba(13, 91, 94, 0.42);
+	transform: translateY(-2px);
+}
+
+.btn-kicc-donate,
 .btn-success {
 	color: #fff;
 	background-color: #0D5E10;
 	border-color: #0D5E10;
+	box-shadow: 0 4px 16px rgba(13, 94, 16, 0.38);
+}
+
+.btn-kicc-donate:hover,
+.btn-kicc-donate:focus,
+.btn-success:hover,
+.btn-success:focus {
+	color: #fff;
+	background-color: #0a4d0d;
+	border-color: #0a4d0d;
+	box-shadow: 0 6px 20px rgba(13, 94, 16, 0.48);
+	transform: translateY(-2px);
+}
+
+.btn-kicc-light {
+	background: #fff;
+	border-color: #fff;
+	color: #0d5b5e;
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+.btn-kicc-light:hover,
+.btn-kicc-light:focus {
+	background: #f9f0e7;
+	border-color: #f9f0e7;
+	color: #0d5b5e;
+	box-shadow: 0 6px 22px rgba(0, 0, 0, 0.26);
+	transform: translateY(-2px);
+}
+
+.btn-kicc-secondary {
+	background: #fff;
+	border-color: #0d5b5e;
+	color: #0d5b5e;
+	box-shadow: 0 2px 10px rgba(13, 91, 94, 0.1);
+}
+
+.btn-kicc-secondary:hover,
+.btn-kicc-secondary:focus {
+	background: #0d5b5e;
+	border-color: #0d5b5e;
+	color: #fff;
+	box-shadow: 0 4px 14px rgba(13, 91, 94, 0.28);
+	transform: translateY(-2px);
+}
+
+.btn-kicc-ghost {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.9);
+	color: #fff;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+.btn-kicc-ghost:hover,
+.btn-kicc-ghost:focus {
+	background: rgba(255, 255, 255, 0.22);
+	border-color: #fff;
+	color: #fff;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	transform: translateY(-2px);
+}
+
+.btn-success {
+	font-weight: 700;
+	border-radius: 5rem;
+	border-width: 2px;
+	letter-spacing: 0.04em;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.kicc-btn-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: center;
 }
 
 /* BUTTONS END */
@@ -487,7 +607,7 @@ section.pricing {
 	position: relative;
 	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
 	background-size: cover !important;
-	min-height: 75vh;
+	min-height: auto;
 	z-index: 1;
 	/* Ensure content is above the overlay */
 }
@@ -499,11 +619,9 @@ section.pricing {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(51, 51, 77, 0.3);
-	/* Adjust opacity as needed */
+	background: rgba(51, 51, 77, 0.45);
 	z-index: 2;
 	pointer-events: none;
-	/* Allows clicks to pass through */
 }
 
 /* Ensure child content is above the overlay */
@@ -569,34 +687,42 @@ section.pricing {
 .btn-campaign {
 	background: #5e0d5b;
 	background: linear-gradient(to right, #5e0d5b, #100d5e);
-	border-color: #5e0d5b;
+	border: 2px solid #5e0d5b;
 	color: #fff;
-	font-weight: bold;
+	font-weight: 700;
 	border-radius: 5rem;
-	padding: 0.75rem 2rem;
-	letter-spacing: 0.05rem;
+	padding: 0.875rem 2.25rem;
+	letter-spacing: 0.04em;
+	box-shadow: 0 4px 16px rgba(94, 13, 91, 0.35);
+	transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
 .btn-campaign:hover,
 .btn-campaign:focus {
 	color: #fff;
-	opacity: 0.92;
+	opacity: 0.95;
+	box-shadow: 0 6px 20px rgba(94, 13, 91, 0.45);
+	transform: translateY(-2px);
 }
 
 .btn-campaign-outline {
 	border: 2px solid #fff;
 	color: #fff;
-	background: transparent;
-	font-weight: bold;
+	background: rgba(255, 255, 255, 0.1);
+	font-weight: 700;
 	border-radius: 5rem;
-	padding: 0.75rem 2rem;
-	letter-spacing: 0.05rem;
+	padding: 0.875rem 2.25rem;
+	letter-spacing: 0.04em;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-campaign-outline:hover,
 .btn-campaign-outline:focus {
-	background: rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.2);
 	color: #fff;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	transform: translateY(-2px);
 }
 
 /* CAMPAIGN PAGE START */
@@ -1067,6 +1193,531 @@ section.pricing {
 	}
 }
 /* CAMPAIGN PAGE END */
+
+/* HOME PAGE START */
+#home-hero.bg-cover-2,
+#home-hero.home-hero-cover {
+	min-height: auto;
+	position: relative;
+	padding-bottom: 4rem;
+	margin-bottom: 3.5rem;
+}
+
+.home-hero-cover-inner {
+	position: relative;
+	z-index: 3;
+	padding-top: 2.5rem;
+	padding-bottom: 0;
+}
+
+.home-hero-cover-content {
+	max-width: 42rem;
+	margin: 0 auto;
+	padding-bottom: 1rem;
+}
+
+#home-hero .campaign-eyebrow {
+	display: block;
+	margin-bottom: 1rem;
+}
+
+.home-hero-title {
+	font-size: clamp(1.85rem, 5vw, 3rem);
+	font-weight: 700;
+	color: #fff;
+	margin-bottom: 1rem;
+	line-height: 1.15;
+}
+
+.home-hero-lead {
+	font-size: clamp(1rem, 2.5vw, 1.15rem);
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.92);
+	max-width: 42rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.home-hero-welcome {
+	margin-bottom: 1rem;
+}
+
+.home-hero-times {
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.home-hero-time-circle {
+	width: 140px;
+	height: 140px;
+	border-radius: 50%;
+}
+
+.home-hero-time-circle-primary {
+	background: #0d5b5e;
+	color: #fff;
+}
+
+.home-hero-time-circle-accent {
+	background: #f9f0e7;
+	color: #222;
+}
+
+.home-hero-time-label {
+	font-size: 0.875rem;
+	margin-bottom: 0.25rem;
+}
+
+.home-hero-time-value {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+
+/* Hero prayer cards — Taqwa overlap pattern */
+.home-hero-prayer-row {
+	margin-top: 2.5rem;
+	position: relative;
+	z-index: 5;
+}
+
+.home-hero-prayer-grid {
+	margin-left: -0.35rem;
+	margin-right: -0.35rem;
+}
+
+.home-hero-prayer-card-wrap {
+	padding: 0 0.35rem;
+	margin-bottom: 0.5rem;
+}
+
+.home-hero-prayer-card {
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+	padding: 1.15rem 0.65rem;
+	text-align: center;
+	height: 100%;
+	min-height: 7.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-hero-prayer-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 14px 44px rgba(0, 0, 0, 0.22);
+}
+
+.home-hero-prayer-name {
+	font-family: "Libre Caslon Text", serif;
+	font-size: 1.2rem;
+	font-weight: 700;
+	color: #c9a227;
+	margin-bottom: 0.45rem;
+	line-height: 1.2;
+}
+
+.home-hero-prayer-begins {
+	font-size: 0.78rem;
+	font-weight: 400;
+	color: #777;
+	margin-bottom: 0.1rem;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.3;
+}
+
+.home-hero-prayer-iqamah {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.3;
+}
+
+.home-hero-prayer-sunrise {
+	font-size: 0.72rem;
+	font-weight: 400;
+	color: #888;
+	margin-top: 0.35rem;
+	margin-bottom: 0;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.3;
+}
+
+.home-hero-timetable-link {
+	margin-top: 1.25rem;
+	padding-top: 0.5rem;
+}
+
+.page-home #about-kicc {
+	padding-top: 5.5rem;
+}
+
+.page-home #home-donate .kicc-btn-row {
+	justify-content: flex-start;
+}
+
+/* Vision / Mission cards — Taqwa pattern */
+.home-vision-card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 2rem;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	border-left: 5px solid #0d5b5e;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-vision-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 14px 40px rgba(13, 91, 94, 0.16);
+}
+
+.home-vision-label {
+	display: block;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+	margin-bottom: 0.5rem;
+}
+
+.home-vision-card h3 {
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.75rem;
+}
+
+.home-vision-card p {
+	color: #555;
+	line-height: 1.65;
+	margin-bottom: 1.25rem;
+}
+
+/* Service panels */
+.home-service-panel {
+	background: #fff;
+	border-radius: 12px;
+	padding: 1.75rem;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-home .home-service-panel:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 10px 32px rgba(13, 91, 94, 0.12);
+}
+
+.page-home #masjid-services .campaign-facility-card {
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-home #masjid-services .campaign-facility-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 12px 36px rgba(13, 91, 94, 0.15);
+}
+
+.page-home #masjid-services .campaign-facility-card i {
+	display: inline-block;
+	width: 3.5rem;
+	height: 3.5rem;
+	line-height: 3.5rem;
+	border-radius: 50%;
+	background: rgba(13, 91, 94, 0.08);
+}
+
+.home-service-panel-title {
+	font-size: 1rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #0d5b5e;
+	margin-bottom: 1rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 2px solid rgba(13, 91, 94, 0.15);
+}
+
+.home-service-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.home-service-list li {
+	padding: 0.4rem 0 0.4rem 1.5rem;
+	position: relative;
+	color: #444;
+	font-size: 0.95rem;
+}
+
+.home-service-list li::before {
+	content: "\f00c";
+	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 0;
+	color: #0d5b5e;
+	font-size: 0.75rem;
+	top: 0.55rem;
+}
+
+/* Donation section */
+.home-donate-section .campaign-section-title h2,
+.home-donate-section .campaign-section-title p {
+	color: #fff;
+}
+
+.home-donate-section .campaign-section-title img {
+	max-width: 100px;
+	opacity: 0.9;
+}
+
+.home-donate-widget {
+	background: rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 12px;
+	padding: 1.25rem;
+	width: 100%;
+	overflow: hidden;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.home-donate-gfm {
+	display: block;
+	width: 100%;
+	min-height: 280px;
+	height: 300px;
+	border: 0;
+	background: transparent;
+	color-scheme: normal;
+	vertical-align: top;
+}
+
+/* Pillars — Taqwa card grid */
+.home-pillar-card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 1.75rem 1rem;
+	text-align: center;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	border-top: 4px solid #0d5b5e;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	height: 100%;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-pillar-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 12px 36px rgba(13, 91, 94, 0.14);
+}
+
+.home-pillar-card i {
+	font-size: 2rem;
+	color: #0d5b5e;
+	margin-bottom: 0.75rem;
+	display: inline-block;
+	width: 3.5rem;
+	height: 3.5rem;
+	line-height: 3.5rem;
+	border-radius: 50%;
+	background: rgba(13, 91, 94, 0.08);
+}
+
+.home-pillar-card h3 {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.25rem;
+}
+
+.home-pillar-card p {
+	font-size: 0.9rem;
+	color: #666;
+	margin-bottom: 0;
+	text-transform: capitalize;
+}
+
+.home-tabs-section {
+	background: #fff;
+}
+
+.home-tabs-wrap {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	overflow: hidden;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+}
+
+.home-tabs-nav {
+	border-bottom: 1px solid #dee2e6;
+	padding: 0.5rem 0.5rem 0;
+	background: #f9f0e7;
+}
+
+.home-tabs-card {
+	border: none;
+	box-shadow: none;
+	background: #fafafa;
+}
+
+.page-home #notice-board .item {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-home #notice-board .item:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.page-home #notice-board .item img {
+	border-radius: 12px;
+}
+
+.page-home .home-tabs-nav .nav-link {
+	font-weight: 700;
+	border-radius: 0.5rem 0.5rem 0 0;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.page-home .home-tabs-nav .nav-link.active {
+	background: #0d5b5e;
+	color: #fff;
+	box-shadow: 0 -2px 12px rgba(13, 91, 94, 0.2);
+}
+
+.page-home .home-tabs-card .border {
+	border-color: rgba(13, 91, 94, 0.15) !important;
+	border-radius: 8px;
+	background: rgba(13, 91, 94, 0.03);
+}
+
+@media (min-width: 768px) {
+	.home-hero-time-circle {
+		width: 160px;
+		height: 160px;
+	}
+
+	.home-hero-time-value {
+		font-size: 1.75rem;
+	}
+
+	.home-hero-prayer-name {
+		font-size: 1.35rem;
+	}
+
+	.home-hero-prayer-begins {
+		font-size: 0.82rem;
+	}
+
+	.home-hero-prayer-iqamah {
+		font-size: 1.2rem;
+	}
+
+	.home-hero-prayer-card {
+		min-height: 8rem;
+		padding: 1.25rem 0.85rem;
+	}
+
+	.page-home #about-kicc {
+		padding-top: 6rem;
+	}
+
+	.campaign-section-title.text-md-left,
+	.campaign-section-title.text-lg-left {
+		text-align: left;
+	}
+
+	.campaign-section-title.text-md-left p,
+	.campaign-section-title.text-lg-left p {
+		margin-left: 0;
+		margin-right: auto;
+	}
+
+	.campaign-narrative.text-md-left p {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.home-tabs-card {
+		background: #fff;
+		border: 1px solid rgba(13, 91, 94, 0.1);
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.home-tabs-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 28px rgba(13, 91, 94, 0.12);
+	}
+
+	#home-hero.home-hero-cover {
+		margin-bottom: 4rem;
+	}
+}
+
+@media (min-width: 992px) {
+	.home-hero-prayer-grid > .col-md {
+		flex: 1 1 0;
+		max-width: none;
+	}
+}
+
+@media (max-width: 991.98px) {
+	#home-hero.home-hero-cover {
+		margin-bottom: 3rem;
+	}
+
+	.page-home #about-kicc {
+		padding-top: 4.5rem;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.home-tabs-section .tab-content {
+		padding-left: 0.75rem;
+		padding-right: 0.75rem;
+	}
+
+	.page-home .kicc-btn-row .btn-kicc-lg {
+		width: 100%;
+	}
+
+	.page-home #home-donate .kicc-btn-row {
+		justify-content: center;
+	}
+
+	.home-hero-prayer-card-wrap {
+		margin-bottom: 0.65rem;
+	}
+
+	#home-hero.home-hero-cover {
+		margin-bottom: 2.5rem;
+		padding-bottom: 2.5rem;
+	}
+
+	.page-home #about-kicc {
+		padding-top: 3.5rem;
+	}
+
+	.home-donate-gfm {
+		min-height: 320px;
+		height: 340px;
+	}
+}
+/* HOME PAGE END */
 
 .modal-dialog {
 	overflow-y: initial !important
