@@ -25,7 +25,19 @@ alwaysApply: false
 3. `yarn version patch -i`
 4. Stages generated changes
 
-`post-commit` → amends commit to include any remaining staged hook output.
+`post-commit` → stages any remaining changes and amends the commit (`git commit --amend --no-edit`).
+
+## Yarn scripts
+
+| Script | Command |
+|--------|---------|
+| `start` | `npx gulp` (BrowserSync on port 3000) |
+| `setup-hooks` | Install git hooks from repo root |
+| `ci` | `yarn install --immutable` (then `postci` runs `yarn start`) |
+| `verify` | `yarn install --immutable --check-cache` |
+| `precommit` | `gulp precommit` |
+
+**Package manager:** Yarn 4.17 (`packageManager` field). npm blocked via `engine-strict`.
 
 ## Rules for agents
 

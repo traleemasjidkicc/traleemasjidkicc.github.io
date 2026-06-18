@@ -16,20 +16,22 @@ flowchart TB
         HTML["Static HTML pages"]
         CSS["assets/css/"]
         JS["assets/js/scripts-*.js"]
-        CDN["CDN: Bootstrap, jQuery, Font Awesome"]
+        CDN["CDN: Bootstrap 4.3, jQuery, Font Awesome 6, BaguetteBox, js-cookie"]
+        Embed["Third-party embeds: GoFundMe, Mixlr, Google Analytics"]
     end
 
     subgraph Hosting["GitHub Pages"]
         GH["main branch → traleemasjidkicc.ie"]
     end
 
-    subgraph APIs["Google Cloud Run APIs"]
-        ST["getsalahtimes"]
-        IQ["getiqamahtimes"]
-        AN["getannouncements"]
-        NO["getnotices"]
-        PR["getmasjidprogrammes"]
-        HA["randomhadith"]
+    subgraph APIs["External services"]
+        ST["getsalahtimes (Cloud Run)"]
+        IQ["getiqamahtimes (Cloud Run)"]
+        AN["getannouncements (Cloud Run)"]
+        NO["getnotices (Cloud Run)"]
+        PR["getmasjidprogrammes (Cloud Run)"]
+        HA["randomhadith (Cloud Run)"]
+        MX["api.mixlr.com (live events)"]
     end
 
     HTML --> GH
@@ -37,20 +39,21 @@ flowchart TB
     JS --> GH
     JS --> APIs
     CDN --> Client
+    Embed --> Client
 ```
 
 ---
 
 ## Pages
 
-| Page | File | Purpose |
-|------|------|---------|
-| Home | `index.html` | Prayer times, announcements, notices, events, pillars of faith |
-| About | `about.html` | Centre history and mission |
-| Activities | `activities.html` | Weekly programmes and events |
-| Madrasa | `madrasa.html` | Islamic school information |
-| Projects | `projects.html` | Community projects gallery |
-| Contact | `contact.html` | Location and contact details |
+| Page | File | Nav label | Purpose |
+|------|------|-----------|---------|
+| Home | `index.html` | Home | Prayer times, announcements, notices, live events, hadith, GoFundMe widgets |
+| About | `about.html` | — | Centre history, mission, team |
+| Activities | `activities.html` | Programmes | Weekly programmes table and cards, live events |
+| Madrasa | `madrasa.html` | Madrasa | Islamic school information |
+| New Masjid | `projects.html` | New Masjid | Donation campaign, building progress gallery, GoFundMe goal bar |
+| Contact | `contact.html` | Contact | Location and contact details |
 
 ---
 
@@ -65,22 +68,30 @@ sequenceDiagram
     participant J as scripts-*.js
     participant LS as localStorage
     participant API as Cloud Run APIs
+    participant MX as Mixlr API
 
     U->>P: Load index.html
-    P->>J: Execute on window.onload
-    J->>LS: Read cached salah/iqamah data
+    P->>J: DOMContentLoaded
+    J->>J: footer year, cookie bar, WhatsApp button
+    J->>API: getnotices
+    API-->>J: notices JSON
+    J->>U: Render notice board
+
+    P->>J: window.onload
+    J->>LS: Read cached salah/iqamah/hadith data
     LS-->>J: Cached JSON (if any)
     J->>U: Render cached times immediately
     par Parallel fetches
         J->>API: getsalahtimes (monthly PDF URL)
-        J->>API: getiqamahtimes (today's iqamah)
+        J->>API: getiqamahtimes (today's iqamah + Jumuah)
         J->>API: getannouncements
-        J->>API: getnotices
         J->>API: randomhadith
+        J->>MX: Mixlr user events (live stream)
     end
     API-->>J: JSON responses
+    MX-->>J: events / is_live
     J->>LS: Update cache
-    J->>U: Update DOM
+    J->>U: Update DOM (nav times, banner, events, hadith)
 ```
 
 ### Project structure
@@ -91,17 +102,23 @@ traleemasjidkicc.github.io/
 ├── about.html
 ├── activities.html
 ├── madrasa.html
-├── projects.html
+├── projects.html           # New Masjid donation campaign
 ├── contact.html
 ├── assets/
 │   ├── css/
-│   │   ├── main.css        # Layout, theme, components
+│   │   ├── main.css        # Layout, theme, campaign components
 │   │   └── animations.css  # Transitions and keyframes
 │   ├── js/
-│   │   └── scripts-*.js    # All client logic (versioned filename)
-│   └── images/             # Photos, posters, backgrounds
+│   │   └── scripts-*.js    # All client logic (~1200 lines, versioned filename)
+│   └── images/
+│       ├── backgrounds/    # Hero and section backgrounds
+│       ├── bp/             # Building progress photos and renders
+│       ├── masjid/         # Building photos
+│       ├── posters/        # Event/announcement posters
+│       └── team/           # Staff/volunteer photos
 ├── gulpfile.js             # Dev server + JS cache-busting
 ├── package.json
+├── pre-commit / post-commit
 ├── CNAME                   # Custom domain (traleemasjidkicc.ie)
 ├── site.webmanifest        # PWA manifest
 ├── AGENTS.md               # AI agent instructions
@@ -117,14 +134,21 @@ flowchart LR
     A[Edit scripts-*.js] --> B[git commit]
     B --> C[pre-commit hook]
     C --> D{JS changed?}
-    D -->|Yes| E[gulp rename-js]
+    D -->|Yes| E[gulp rename-js + yarn version patch]
     D -->|No| F[Skip]
-    E --> G[bump package.json patch]
+    E --> G[post-commit amends commit]
     F --> H[Push to GitHub Pages]
     G --> H
 ```
 
 > **Do not** manually rename the JS file or edit `<script src="...">` tags — git hooks handle this automatically.
+
+### Client-side init timing
+
+| Event | Runs on all pages | Homepage only | activities.html | projects.html |
+|-------|-------------------|---------------|-----------------|---------------|
+| `DOMContentLoaded` | footer year, cookie bar, WhatsApp | notices fetch | — | — |
+| `window.onload` | salah URL, iqamah times, hadith | pillars, modal, announcements, Mixlr events | events, programmes | BaguetteBox gallery |
 
 ---
 
@@ -145,7 +169,7 @@ cd traleemasjidkicc.github.io
 # Install dependencies (frozen lockfile)
 yarn ci
 
-# Update hooks if you have not already
+# Install git hooks if you have not already
 yarn setup-hooks
 ```
 
@@ -185,12 +209,7 @@ After cloning, install commit hooks so JS assets are versioned on each commit:
 yarn setup-hooks
 ```
 
-This copies `pre-commit` and `post-commit` into `.git/hooks/` and makes them executable. Equivalent manual setup:
-
-```bash
-cp pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
-cp post-commit .git/hooks/post-commit && chmod +x .git/hooks/post-commit
-```
+This copies `pre-commit` and `post-commit` into `.git/hooks/` and makes them executable.
 
 ---
 
@@ -210,23 +229,35 @@ cp post-commit .git/hooks/post-commit && chmod +x .git/hooks/post-commit
 2. **Styles** — edit `assets/css/main.css` or `animations.css`
 3. **JavaScript** — edit `assets/js/scripts-*.js` in place; commit normally
 4. **Dependencies** — `yarn upgrade <package>`, test locally, commit `yarn.lock`
+5. **Ramadan/Eid dates** — update hardcoded dates in `isRamadan()` / `isEid()` annually
 
 ---
 
-## External APIs
+## External APIs and services
 
-All dynamic content is fetched client-side from Google Cloud Run services:
+### Google Cloud Run (dynamic content)
+
+All masjid content APIs are fetched client-side from Cloud Run services in `europe-west1`:
 
 | API | Used for |
 |-----|----------|
 | `getsalahtimes-rds3nxm6za-ew.a.run.app` | Monthly salah times asset URL |
-| `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Today's iqamah times |
-| `getannouncements-rds3nxm6za-ew.a.run.app` | Homepage announcements |
-| `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notices |
-| `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Activities programmes |
+| `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Today's iqamah times and Jumuah schedule |
+| `getannouncements-rds3nxm6za-ew.a.run.app` | Homepage announcements banner |
+| `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board |
+| `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Activities programmes (table + cards) |
 | `randomhadith-rds3nxm6za-ew.a.run.app` | Daily hadith |
 
 Responses are cached in `localStorage` for resilience when APIs are unavailable.
+
+### Other third-party services
+
+| Service | Used for |
+|---------|----------|
+| `api.mixlr.com` | Live stream status and upcoming events (homepage + activities) |
+| GoFundMe embed | Donation widgets on homepage and `projects.html` |
+| Google Analytics (`G-3H9CDDS71D`) | Site analytics |
+| js-cookie (CDN) | Cookie consent and newsletter modal preferences |
 
 ---
 
@@ -245,7 +276,7 @@ This repo includes files to help AI assistants work effectively:
 | File | Purpose |
 |------|---------|
 | `AGENTS.md` | Primary agent instructions |
-| `.cursor/rules/` | Scoped rules (JS, HTML/CSS, build workflow) |
+| `.cursor/rules/` | Scoped rules (overview, JS, HTML/CSS, build workflow) |
 | `.cursorignore` | Excludes `node_modules` from indexing |
 | `.github/copilot-instructions.md` | GitHub Copilot context |
 

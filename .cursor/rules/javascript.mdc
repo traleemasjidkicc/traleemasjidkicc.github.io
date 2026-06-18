@@ -8,21 +8,41 @@ alwaysApply: false
 
 ## File structure
 
-- Single app file: `assets/js/scripts-{timestamp}.js`
+- Single app file: `assets/js/scripts-{timestamp}.js` (~1200 lines)
 - Wrapped in IIFE: `(function () { "use strict"; ... })()`
 - Use `const` arrow functions for helpers
-- Init on `window.onload`; page-specific logic in `setLocationSpecific()`
+- **Two init hooks:** `DOMContentLoaded` (notices, footer, cookies, WhatsApp) and `window.onload` (API fetches, page-specific logic via `setLocationSpecific()`)
 
-## External APIs (Cloud Run)
+## External APIs
+
+### Cloud Run (masjid content)
 
 | Function | Endpoint |
 |----------|----------|
 | `setSalahTimeUrl` | `getsalahtimes-rds3nxm6za-ew.a.run.app` |
 | `setSalahTimes` | `getiqamahtimes-rds3nxm6za-ew.a.run.app` |
 | `getAnnouncement` | `getannouncements-rds3nxm6za-ew.a.run.app` |
-| `getNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
-| `loadProgrammes` | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` |
+| `showNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
+| `loadProgrammes` | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true` |
 | `getRandomHadith` | `randomhadith-rds3nxm6za-ew.a.run.app` |
+
+### Other services
+
+| Function | Endpoint |
+|----------|----------|
+| `setEvent` | `https://api.mixlr.com/users/7752720?source=embed` |
+
+## localStorage keys
+
+`salahTimesAssetUrl`, `iqamah-today`, `kicc-announcements`, `kicc-notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`
+
+## Page routing (`setLocationSpecific`)
+
+| Match | Init |
+|-------|------|
+| `href.endsWith("/")` | `pillarsOfFaith`, `showSignUpModal`, `getAnnouncement`, `setEvent` |
+| `activities.html` | `setEvent`, `loadProgrammes` |
+| `projects.html` | `initBaguetteBox` (`.grid-gallery`) |
 
 ## Patterns to follow
 
@@ -39,9 +59,9 @@ fetch(url)
 ## Do not
 
 - Manually rename `scripts-*.js` or edit script `src` in HTML (gulp precommit handles this)
-- Use `eval`, inline event handlers, or `innerHTML` with untrusted API data without sanitising
+- Use `eval`, inline event handlers, or `innerHTML` with untrusted user input
 - Add npm runtime dependencies — this is zero-dependency client JS
 
 ## Annual maintenance
 
-Update hardcoded dates in `isRamadan()` and `isEid()` when Islamic calendar dates change.
+Update hardcoded dates in `isRamadan()` and `isEid()` when Islamic calendar dates change (currently set for 2026).

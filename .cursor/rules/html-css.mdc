@@ -9,8 +9,9 @@ alwaysApply: false
 ## HTML pages
 
 - One file per section at repo root; share nav, footer, and meta patterns with `index.html`
-- Bootstrap 4 grid (`container`, `row`, `col-*`)
+- Bootstrap 4.3 grid (`container`, `row`, `col-*`)
 - CDN assets must include `integrity` and `crossorigin` where already used
+- Nav links to `projects.html` are labelled **New Masjid** (not "Projects")
 - Script tag for app JS (do not change filename manually):
 
 ```html
@@ -19,19 +20,35 @@ alwaysApply: false
 
 ## CSS
 
-- `assets/css/main.css` — layout, typography, components, responsive rules
+- `assets/css/main.css` — layout, typography, components, campaign page styles, responsive rules
 - `assets/css/animations.css` — transitions and keyframe animations only
 - Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
 - Prefer existing colour/spacing variables and class names before adding new ones
 
+### Campaign page (`projects.html`)
+
+Use existing `campaign-*` namespace in `main.css`:
+
+- Layout: `campaign-section`, `campaign-section-warm`, `campaign-section-title`
+- Hero: `campaign-hero-panel`, `campaign-hero-unified`, `campaign-gfm-widget`, `bg-cover-projects`
+- Cards: `campaign-reward-card`, `campaign-facility-card`, `campaign-cost-card`
+- Buttons: `btn-campaign`, `btn-campaign-outline`
+- Gallery: `grid-gallery` (BaguetteBox lightbox)
+
+GoFundMe widgets use iframes with class `gfm-stream-goal-bar` or `gfm-embed` divs with `data-url`.
+
 ## Images
 
-- Store under `assets/images/` in existing subfolders (`backgrounds/`, `masjid/`, `posters/`, `team/`, etc.)
+- Store under `assets/images/` in existing subfolders:
+  - `backgrounds/` — hero backgrounds
+  - `bp/` — building progress photos and 3D renders
+  - `masjid/`, `posters/`, `team/`
 - Use descriptive `alt` text for accessibility
 - Optimise file size before adding large images
 
 ## Accessibility
 
-- Semantic headings (`h1` once per page)
+- Semantic headings (`h1` once per page; campaign hero may use `sr-only` h1 with visible blockquote)
 - `lang="en-GB"` on `<html>`
 - Sufficient colour contrast; don't rely on colour alone for meaning
+- External links: `target="_blank"` with `rel="noopener"` where appropriate

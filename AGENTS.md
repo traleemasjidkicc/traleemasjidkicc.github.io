@@ -1,6 +1,6 @@
 # Agent instructions — Tralee Masjid website
 
-Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Mosque). Vanilla HTML/CSS/JS with Bootstrap 4, Gulp for local dev, and timestamp-based JS cache busting on commit.
+Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Mosque). Vanilla HTML/CSS/JS with Bootstrap 4.3, Gulp for local dev, and timestamp-based JS cache busting on commit.
 
 ## Quick reference
 
@@ -20,16 +20,21 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Mosque). Vani
 Browser (GitHub Pages)
   ├── Static HTML pages (root *.html)
   ├── assets/css/ (main.css, animations.css)
-  ├── assets/js/scripts-{timestamp}.js (single bundled app script)
-  └── CDN: Bootstrap 4, jQuery, Font Awesome, BaguetteBox
+  ├── assets/js/scripts-{timestamp}.js (single bundled app script, ~1200 lines)
+  └── CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 
 External APIs (Google Cloud Run, europe-west1)
   ├── getsalahtimes-*     → monthly salah times PDF/image URL
-  ├── getiqamahtimes-*    → today's iqamah times
-  ├── getannouncements-*  → homepage announcements
-  ├── getnotices-*        → homepage notices
-  ├── getmasjidprogrammes-* → activities programmes
+  ├── getiqamahtimes-*    → today's iqamah times + Jumuah schedule
+  ├── getannouncements-*  → homepage announcements banner
+  ├── getnotices-*        → homepage notice board
+  ├── getmasjidprogrammes-* → activities programmes (table + weekly cards)
   └── randomhadith-*      → daily hadith
+
+Other third-party
+  ├── api.mixlr.com       → live stream status and events (homepage + activities)
+  ├── GoFundMe embed      → donation widgets (homepage + projects.html)
+  └── Google Analytics    → gtag G-3H9CDDS71D
 ```
 
 ## Critical: JS asset versioning
@@ -38,24 +43,36 @@ External APIs (Google Cloud Run, europe-west1)
 - **Never manually edit** `<script src="assets/js/scripts-...">` in HTML
 - On commit, `yarn precommit` runs `gulp precommit`: renames JS and bumps version **only when** `assets/js/scripts-*.js` has git changes
 - Edit the existing `scripts-*.js` file in place during development
+- `post-commit` hook amends the commit to include hook-generated changes
 
 ## Page-specific JS behaviour
 
-`setLocationSpecific()` and `DOMContentLoaded` branch on `window.location.href`:
+Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses `window.location.href` in `setLocationSpecific()`.
 
-| Page | Key init |
-|------|----------|
-| `/` (index) | pillars, sign-up modal, announcements, events, notices, salah/iqamah |
-| `activities.html` | events, programmes |
-| `projects.html` | BaguetteBox gallery |
-| All pages | footer year, cookie policy, WhatsApp button |
+| Page | File | Nav label | DOMContentLoaded | window.onload |
+|------|------|-----------|------------------|---------------|
+| `/` (index) | `index.html` | Home | notices | pillars, sign-up modal, announcements, Mixlr events |
+| `activities.html` | activities.html | Programmes | — | Mixlr events, programmes API |
+| `projects.html` | projects.html | New Masjid | — | BaguetteBox gallery |
+| All pages | — | — | footer year, cookie policy, WhatsApp button | salah URL, iqamah times, hadith |
+
+### localStorage cache keys
+
+| Key | Purpose |
+|-----|---------|
+| `salahTimesAssetUrl` | Monthly timetable PDF/image URL |
+| `iqamah-today` | Today's iqamah JSON |
+| `kicc-announcements` | Homepage announcements |
+| `kicc-notices` | Homepage notices |
+| `kicc-random-hadith` | Daily hadith |
+| `masjidProgrammes_programme_active_true_v1` | Activities programmes |
 
 ## Conventions
 
-- **HTML:** Bootstrap 4 grid, shared nav/footer patterns across pages, SRI on CDN assets
-- **CSS:** `main.css` for layout/theme; `animations.css` for motion
-- **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage caching for API responses; defensive fetch error handling
-- **Images:** under `assets/images/` (backgrounds, masjid, posters, team, etc.)
+- **HTML:** Bootstrap 4 grid, shared nav/footer patterns across pages, SRI on CDN assets, `lang="en-GB"`
+- **CSS:** `main.css` for layout/theme/campaign components; `animations.css` for motion
+- **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage cache-then-fetch; defensive fetch error handling
+- **Images:** under `assets/images/` (`backgrounds/`, `bp/`, `masjid/`, `posters/`, `team/`)
 - **Deployment:** `main` branch → GitHub Pages; custom domain via `CNAME` (`traleemasjidkicc.ie`)
 
 ## When editing
@@ -64,19 +81,23 @@ External APIs (Google Cloud Run, europe-west1)
 2. **Styles:** edit CSS; BrowserSync hot-reloads
 3. **Logic:** edit `assets/js/scripts-*.js`; commit normally — hooks version the file
 4. **Dependencies:** `yarn upgrade <pkg>`, test, commit lockfile
-5. **Ramadan/Eid dates:** update hardcoded dates in `isRamadan()` / `isEid()` annually
+5. **Ramadan/Eid dates:** update hardcoded dates in `isRamadan()` / `isEid()` annually (currently 2026)
+6. **Campaign page:** `projects.html` uses `campaign-*` CSS classes and GoFundMe iframes — match existing patterns in `main.css`
 
 ## Pitfalls
 
 - JS changes not visible → hard refresh (Cmd+Shift+R) or rely on commit hook renames
 - API down → check localStorage cache keys in DevTools
 - Do not bump `package.json` version manually — precommit hook handles it
-- `post-commit` hook amends the commit to include hook-generated changes
+- Hadith/announcement HTML from APIs uses `innerHTML` — only trusted backend sources
+- Mixlr API failures are non-fatal; events section falls back gracefully
 
 ## Key files
 
-- `gulpfile.js` — serve, watch, rename-js, update-html
+- `gulpfile.js` — serve, watch, rename-js, update-html, setup-hooks
 - `package.json` — scripts, version, devDependencies
-- `assets/js/scripts-*.js` — all client-side logic (~1200 lines)
-- `index.html` — homepage template and CDN references
-- `pre-commit` / `post-commit` — git hook scripts (copy to `.git/hooks/` if missing)
+- `assets/js/scripts-*.js` — all client-side logic
+- `index.html` — homepage template, CDN references, GoFundMe widgets
+- `projects.html` — New Masjid donation campaign page
+- `assets/css/main.css` — includes `campaign-*` component styles
+- `pre-commit` / `post-commit` — git hook scripts (copy to `.git/hooks/` via `yarn setup-hooks`)
