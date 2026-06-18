@@ -60,7 +60,7 @@
   <script defer type="text/javascript" src="assets/js/scripts-1781799138849.js"></script>
 </head>
 
-<body>
+<body class="page-contact">
   <!-- START OF NAV -->
   <nav class="navbar navbar-expand-lg navbar-dark nav-wide sticky-top">
     <div class="container">
@@ -86,7 +86,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/">Home</span></a>
+            <a class="nav-link" href="/">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="activities.html">Programmes</a>
@@ -168,62 +168,104 @@
   </nav>
   <!-- END OF NAV -->
 
-  <!-- CONTACT START -->
-  <div class="bg-info contact4 overflow-hidden position-relative">
-    <!-- Row  -->
-    <div class="row no-gutters">
+  <main class="contact-main">
+    <!-- CONTACT START -->
+    <section class="contact-hero" aria-labelledby="contact-heading">
       <div class="container">
-        <div class="col-lg-6 contact-box mb-4 mb-md-0">
-          <div class="">
-            <h1 class="title font-weight-light text-white mt-2">Contact Us</h1>
-            <form class="mt-3" action="https://formspree.io/mgevppbl"
-              method="POST">
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="form-group mt-2">
-                    <input class="form-control text-white" type="text"
-                      placeholder="name" name="name" minlength="3" required>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <div class="form-group mt-2">
-                    <input class="form-control text-white" type="email"
-                      placeholder="email address" name="sender"
-                      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
-                      required>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <div class="form-group mt-2">
-                    <textarea class="form-control text-white" rows="3"
-                      placeholder="message" name="message" minlength="20"
-                      required></textarea>
-                  </div>
-                </div>
-                <div class="col-lg-12 d-flex align-items-center mt-2">
-                  <button type="submit"
-                    class="btn bg-white text-inverse px-3 py-2"><span>
-                      Submit</span></button>
-                  <span class="ml-auto text-white align-self-center"><i
-                      class="fas fa-phone-alt mr-2"></i><a class="contact-link"
-                      href="tel:+353862440556">086 244
-                      0556</a></span>
-                </div>
-              </div>
-            </form>
+        <div class="contact-hero-heading text-center">
+          <p class="contact-eyebrow">Assalamu Alaikum</p>
+          <h1 id="contact-heading" class="contact-title">You Are Always Welcome Here</h1>
+          <p class="contact-lead">Whether you wish to ask about programmes, madrasa, or
+            visiting the masjid, we are glad to hear from you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-cards" aria-label="Contact details">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 contact-card-col">
+            <div class="contact-card">
+              <a class="contact-card-link" href="tel:+353862440556">
+                <span class="contact-card-icon" aria-hidden="true">
+                  <i class="fas fa-phone-alt"></i>
+                </span>
+                <p class="contact-card-text">086 244 0556</p>
+              </a>
+              <p class="contact-card-note">
+                <a href="//wa.me/353862440556?text=As-salamu alaikum, Imam Mustafa."
+                  target="_blank" rel="noopener noreferrer">WhatsApp the Imam</a>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 contact-card-col">
+            <div class="contact-card">
+              <a class="contact-card-link" href="//goo.gl/maps/itDbxNWHt4bcUb4A9"
+                target="_blank" rel="noopener noreferrer">
+                <span class="contact-card-icon" aria-hidden="true">
+                  <i class="fas fa-map-marker-alt"></i>
+                </span>
+                <p class="contact-card-text">Tralee, Kerry, V92 N6YR</p>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 contact-card-col">
+            <div class="contact-card">
+              <a class="contact-card-link" href="mailto:info@traleemasjidkicc.ie">
+                <span class="contact-card-icon" aria-hidden="true">
+                  <i class="fas fa-envelope"></i>
+                </span>
+                <p class="contact-card-text">info@traleemasjidkicc.ie</p>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-lg-6 right-image p-r-0">
-        <iframe
-          src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ4XtC4581RUgRXiA3SfgJiG0&key=AIzaSyBTGVSQzjKhiQY1dAJqHou5vLx2dVQscqU"
-          width="100%" height="525" frameborder="0" style="border:0"
-          allowfullscreen data-aos="fade-left"
-          data-aos-duration="3000"></iframe>
+    </section>
+
+    <section class="contact-map-section" aria-label="Map showing Tralee Masjid location">
+      <iframe class="contact-map-iframe"
+        title="Map showing Tralee Masjid location"
+        src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ4XtC4581RUgRXiA3SfgJiG0&key=AIzaSyBTGVSQzjKhiQY1dAJqHou5vLx2dVQscqU"
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen></iframe>
+    </section>
+
+    <section class="contact-form-section">
+      <div class="container">
+        <h2 class="contact-form-heading text-center">Send Your Message</h2>
+        <div class="contact-form-panel">
+          <form class="contact-form" action="https://formspree.io/mgevppbl"
+            method="POST">
+            <div class="form-group">
+              <label class="sr-only" for="contact-name">Name</label>
+              <input class="form-control contact-input" id="contact-name"
+                type="text" placeholder="name" name="name" minlength="3"
+                required>
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="contact-email">Email address</label>
+              <input class="form-control contact-input" id="contact-email"
+                type="email" placeholder="email address" name="sender"
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                required>
+            </div>
+            <div class="form-group mb-0">
+              <label class="sr-only" for="contact-message">Message</label>
+              <textarea class="form-control contact-input contact-textarea"
+                id="contact-message" rows="3" placeholder="message"
+                name="message" minlength="20" required></textarea>
+            </div>
+            <button type="submit"
+              class="btn btn-kicc btn-kicc-lg btn-kicc-primary contact-submit-btn">
+              Submit form
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  </div>
-  <!-- CONTACT END -->
+    </section>
+    <!-- CONTACT END -->
+  </main>
 
   <!-- COOKIE POLICY START -->
   <div id="cookie-bar"
