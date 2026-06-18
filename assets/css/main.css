@@ -131,6 +131,38 @@ h6 {
 	transform: translateY(-2px);
 }
 
+.btn-kicc-salah {
+	background: #c9a84c;
+	border-color: #c9a84c;
+	color: #fff;
+	box-shadow: 0 4px 16px rgba(201, 168, 76, 0.38);
+}
+
+.btn-kicc-salah:hover,
+.btn-kicc-salah:focus {
+	background: #b8923f;
+	border-color: #b8923f;
+	color: #fff;
+	box-shadow: 0 6px 20px rgba(201, 168, 76, 0.48);
+	transform: translateY(-2px);
+}
+
+.btn-kicc-accent {
+	background: linear-gradient(135deg, #e8c96a 0%, #c9a84c 55%, #b8923f 100%);
+	border-color: #b8923f;
+	color: #1a2e2f;
+	box-shadow: 0 6px 24px rgba(201, 168, 76, 0.55), 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.btn-kicc-accent:hover,
+.btn-kicc-accent:focus {
+	background: linear-gradient(135deg, #f0d47a 0%, #d4b35c 55%, #c9a84c 100%);
+	border-color: #c9a84c;
+	color: #122224;
+	box-shadow: 0 8px 28px rgba(201, 168, 76, 0.65), 0 4px 14px rgba(0, 0, 0, 0.22);
+	transform: translateY(-2px);
+}
+
 .btn-success {
 	font-weight: 700;
 	border-radius: 5rem;
@@ -239,9 +271,9 @@ h6 {
 
 /* BACKGROUNDS END */
 #salah-times {
-	border-radius: 20px;
-	padding-left: 20px;
-	padding-right: 20px;
+	border-radius: 5rem;
+	padding-left: 1.35rem;
+	padding-right: 1.35rem;
 }
 
 /* CAROUSEL START */
@@ -803,6 +835,13 @@ section.pricing {
 	margin-bottom: 0.5rem;
 }
 
+.home-welcome-bismillah,
+.page-home #about-kicc .home-welcome-bismillah {
+	max-width: 210px;
+	width: 100%;
+	height: auto;
+}
+
 .campaign-section-title h2 {
 	font-size: 2.25rem;
 	color: #222;
@@ -1195,12 +1234,29 @@ section.pricing {
 /* CAMPAIGN PAGE END */
 
 /* HOME PAGE START */
+.page-home #home-hero.bg-cover-2 {
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.22) 0%,
+			rgba(255, 255, 255, 0.1) 38%,
+			rgba(13, 91, 94, 0.16) 68%,
+			rgba(13, 91, 94, 0.3) 100%
+		),
+		url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
+	background-size: cover !important;
+}
+
+.page-home #home-hero.bg-cover-2::before {
+	background: transparent;
+}
+
 #home-hero.bg-cover-2,
 #home-hero.home-hero-cover {
 	min-height: auto;
 	position: relative;
-	padding-bottom: 4rem;
-	margin-bottom: 3.5rem;
+	padding-bottom: 2.5rem;
+	margin-bottom: 0;
 }
 
 .home-hero-cover-inner {
@@ -1213,12 +1269,20 @@ section.pricing {
 .home-hero-cover-content {
 	max-width: 42rem;
 	margin: 0 auto;
-	padding-bottom: 1rem;
+	padding: 1.75rem 1.35rem 1.25rem;
+	background: rgba(13, 45, 47, 0.48);
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	box-shadow: 0 10px 36px rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
 }
 
 #home-hero .campaign-eyebrow {
 	display: block;
 	margin-bottom: 1rem;
+	color: rgba(255, 255, 255, 0.95);
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
 }
 
 .home-hero-title {
@@ -1227,15 +1291,17 @@ section.pricing {
 	color: #fff;
 	margin-bottom: 1rem;
 	line-height: 1.15;
+	text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.65);
 }
 
 .home-hero-lead {
 	font-size: clamp(1rem, 2.5vw, 1.15rem);
 	line-height: 1.65;
-	color: rgba(255, 255, 255, 0.92);
+	color: rgba(255, 255, 255, 0.96);
 	max-width: 42rem;
 	margin-left: auto;
 	margin-right: auto;
+	text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .home-hero-welcome {
@@ -1273,9 +1339,10 @@ section.pricing {
 	font-weight: 700;
 }
 
-/* Hero prayer cards — Taqwa overlap pattern */
+/* Hero prayer cards — overlap cover bottom; timetable stays in hero */
 .home-hero-prayer-row {
-	margin-top: 2.5rem;
+	margin-top: 1.25rem;
+	margin-bottom: -3.25rem;
 	position: relative;
 	z-index: 5;
 }
@@ -1347,12 +1414,65 @@ section.pricing {
 }
 
 .home-hero-timetable-link {
-	margin-top: 1.25rem;
-	padding-top: 0.5rem;
+	margin-top: 4.25rem;
+	padding-top: 0;
+	position: relative;
+	z-index: 4;
+}
+
+.page-home .home-hero-timetable-link .btn-kicc-ghost {
+	background: rgba(13, 45, 47, 0.5);
+	border-color: rgba(255, 255, 255, 0.85);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .page-home #about-kicc {
 	padding-top: 5.5rem;
+}
+
+.page-home #about-kicc .home-welcome-header {
+	position: relative;
+	z-index: 1;
+}
+
+/* Welcome section — Taqwa overlapping cards layout */
+.home-welcome-section {
+	padding-bottom: 4rem;
+}
+
+.home-welcome-header {
+	margin-bottom: 2.5rem;
+}
+
+.home-welcome-intro {
+	max-width: 720px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.home-welcome-visual {
+	position: relative;
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.home-welcome-image {
+	width: 100%;
+	height: auto;
+	max-height: 520px;
+	object-fit: cover;
+	object-position: center top;
+	border-radius: 12px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+	display: block;
+}
+
+.home-welcome-cards {
+	margin-top: -3.5rem;
+	position: relative;
+	z-index: 2;
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
 }
 
 .page-home #home-donate .kicc-btn-row {
@@ -1377,12 +1497,11 @@ section.pricing {
 
 .home-vision-label {
 	display: block;
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: #0d5b5e;
-	margin-bottom: 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 700;
+	font-family: "Cinzel Decorative", serif;
+	color: #c9a84c;
+	margin-bottom: 0.75rem;
 }
 
 .home-vision-card h3 {
@@ -1396,6 +1515,23 @@ section.pricing {
 	color: #555;
 	line-height: 1.65;
 	margin-bottom: 1.25rem;
+}
+
+.home-vision-link {
+	display: inline-block;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #222;
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.home-vision-link:hover,
+.home-vision-link:focus {
+	color: #0d5b5e;
+	text-decoration: none;
 }
 
 /* Service panels */
@@ -1630,8 +1766,20 @@ section.pricing {
 		padding: 1.25rem 0.85rem;
 	}
 
+	.home-hero-prayer-row {
+		margin-bottom: -3.75rem;
+	}
+
+	.home-hero-timetable-link {
+		margin-top: 4.75rem;
+	}
+
 	.page-home #about-kicc {
 		padding-top: 6rem;
+	}
+
+	.home-welcome-cards {
+		margin-top: -4.5rem;
 	}
 
 	.campaign-section-title.text-md-left,
@@ -1662,10 +1810,6 @@ section.pricing {
 		transform: translateY(-2px);
 		box-shadow: 0 8px 28px rgba(13, 91, 94, 0.12);
 	}
-
-	#home-hero.home-hero-cover {
-		margin-bottom: 4rem;
-	}
 }
 
 @media (min-width: 992px) {
@@ -1676,12 +1820,22 @@ section.pricing {
 }
 
 @media (max-width: 991.98px) {
-	#home-hero.home-hero-cover {
-		margin-bottom: 3rem;
+	.home-hero-prayer-row {
+		margin-bottom: -2.75rem;
+	}
+
+	.home-hero-timetable-link {
+		margin-top: 3.75rem;
 	}
 
 	.page-home #about-kicc {
 		padding-top: 4.5rem;
+	}
+
+	.home-welcome-cards {
+		margin-top: 1.5rem;
+		padding-left: 0;
+		padding-right: 0;
 	}
 }
 
@@ -1699,6 +1853,22 @@ section.pricing {
 		justify-content: center;
 	}
 
+	.home-hero-prayer-row {
+		margin-bottom: -2rem;
+	}
+
+	.home-hero-timetable-link {
+		margin-top: 3rem;
+	}
+
+	.page-home #about-kicc {
+		padding-top: 3.5rem;
+	}
+
+	.home-hero-cover-content {
+		padding: 1.25rem 1rem 1rem;
+	}
+
 	.home-hero-prayer-card-wrap {
 		margin-bottom: 0.65rem;
 	}
@@ -1706,10 +1876,6 @@ section.pricing {
 	#home-hero.home-hero-cover {
 		margin-bottom: 2.5rem;
 		padding-bottom: 2.5rem;
-	}
-
-	.page-home #about-kicc {
-		padding-top: 3.5rem;
 	}
 
 	.home-donate-gfm {

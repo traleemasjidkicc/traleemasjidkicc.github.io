@@ -372,7 +372,7 @@
         // Default
         titleElement.innerHTML = "السلام عليكم";
         messageElement.innerHTML =
-          "Welcome to the Kerry Islamic Cultural Centre. By the grace of Allah (Subhanahu wa Ta’ala), our mission is to uphold and promote the teachings and values of Islam, nurturing faith and unity among our members. We are dedicated to serving the spiritual and social well-being of our community, so that together we may contribute positively to the wider society";
+          "Peace be upon you — welcome to Kerry Islamic Cultural Centre, Tralee.";
         titleElement.style.display = '';
         messageElement.style.display = '';
       }
