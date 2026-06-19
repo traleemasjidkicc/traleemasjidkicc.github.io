@@ -1,6 +1,35 @@
 (function () {
   "use strict";
 
+  const getPathname = () => window.location.pathname || "";
+
+  const isHomePage = () => {
+    const path = getPathname();
+    return path === "/" || /\/index\.html$/i.test(path);
+  };
+
+  const isActivitiesPage = () => /\/activities\.html$/i.test(getPathname());
+
+  const isProjectsPage = () => /\/projects\.html$/i.test(getPathname());
+
+  const scrollToLocationHash = () => {
+    const hash = window.location.hash;
+    if (!hash || hash.length < 2) return;
+
+    const id = decodeURIComponent(hash.slice(1));
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    requestAnimationFrame(function () {
+      target.scrollIntoView({ behavior: "auto", block: "start" });
+    });
+  };
+
+  const setElHtml = (id, html) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  };
+
   const getToday = () => {
     return new Date();
   };
@@ -36,8 +65,7 @@
   };
 
   const setFooterYear = () => {
-    const year = getToday().getFullYear();
-    document.getElementById("footer-year").innerHTML = year;
+    setElHtml("footer-year", String(getToday().getFullYear()));
   };
 
   const setSalahTimeUrl = () => {
@@ -112,7 +140,7 @@
 
     if (elMain) elMain.href = asset;
     if (elFooter) elFooter.href = asset;
-    if (elBody && window.location.pathname === "/") {
+    if (elBody && isHomePage()) {
       elBody.href = asset;
     }
   };
@@ -232,8 +260,244 @@
     return { year, monthName, day, date: now };
   };
 
+  const PRAYER_SLOTS = [
+    {
+      id: "fajr",
+      label: "Fajr",
+      navKey: "fajr",
+      beginsKey: "fajarTime",
+      iqamahKey: "fajarJamahTime",
+    },
+    {
+      id: "dhuhr",
+      label: "Zohr",
+      navKey: "zohr",
+      beginsKey: "dhuharTime",
+      iqamahKey: "zohrJamahTime",
+    },
+    {
+      id: "asr",
+      label: "Asar",
+      navKey: "asar",
+      beginsKey: "asrTime",
+      iqamahKey: "asarJamahTime",
+    },
+    {
+      id: "maghrib",
+      label: "Magrib",
+      navKey: "magrib",
+      beginsKey: "maghribTime",
+      iqamahKey: "maghribJamahTime",
+    },
+    {
+      id: "isha",
+      label: "Isha",
+      navKey: "isha",
+      beginsKey: "ishaTime",
+      iqamahKey: "ishaJamahTime",
+    },
+  ];
+
+  let cachedPrayerDayData = null;
+  let prayerHighlightTimer = null;
+
+  const getDublinDate = () => {
+    return new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Europe/Dublin" }),
+    );
+  };
+
+  const parseTimeToDublinDate = (timeStr, dayOffset) => {
+    if (!timeStr) return null;
+    const base = getDublinDate();
+    if (dayOffset) {
+      base.setDate(base.getDate() + dayOffset);
+    }
+    const t = String(timeStr).trim().toLowerCase();
+    const m = t.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
+    if (!m) return null;
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ampm = m[3] || null;
+    if (ampm) {
+      if (ampm === "pm" && hh !== 12) hh = hh + 12;
+      if (ampm === "am" && hh === 12) hh = 0;
+    }
+    base.setHours(hh, mm, 0, 0);
+    return base;
+  };
+
+  const formatCountdown = (targetDate) => {
+    if (!targetDate) return "";
+    const diffMs = targetDate.getTime() - getDublinDate().getTime();
+    if (diffMs <= 0) return "now";
+    const totalMinutes = Math.ceil(diffMs / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours > 0) {
+      return hours + "h " + minutes + "m";
+    }
+    return minutes + "m";
+  };
+
+  const getPrayerState = (d) => {
+    const now = getDublinDate().getTime();
+    const slots = PRAYER_SLOTS.map(function (slot) {
+      return {
+        id: slot.id,
+        label: slot.label,
+        navKey: slot.navKey,
+        begins: parseTimeToDublinDate(d[slot.beginsKey]),
+        iqamah: parseTimeToDublinDate(d[slot.iqamahKey]),
+      };
+    }).filter(function (slot) {
+      return slot.begins;
+    });
+
+    if (slots.length === 0) return null;
+
+    let current = null;
+    slots.forEach(function (slot) {
+      if (slot.begins.getTime() <= now) {
+        current = slot;
+      }
+    });
+
+    let next = null;
+    let countdownTarget = null;
+    let countdownKind = "begins";
+
+    if (
+      current &&
+      current.iqamah &&
+      current.begins.getTime() <= now &&
+      current.iqamah.getTime() > now
+    ) {
+      countdownTarget = current.iqamah;
+      countdownKind = "iqamah";
+    }
+
+    if (!current) {
+      current = slots[slots.length - 1];
+      next = slots[0];
+      if (!countdownTarget) {
+        countdownTarget = next.begins;
+      }
+    } else {
+      const currentIndex = slots.findIndex(function (slot) {
+        return slot.id === current.id;
+      });
+      if (currentIndex < slots.length - 1) {
+        next = slots[currentIndex + 1];
+        if (!countdownTarget) {
+          countdownTarget = next.begins;
+        }
+      } else {
+        next = slots[0];
+        if (!countdownTarget) {
+          countdownTarget = parseTimeToDublinDate(d.fajarTime, 1);
+        }
+      }
+    }
+
+    return {
+      current: current,
+      next: next,
+      countdownTarget: countdownTarget,
+      countdownKind: countdownKind,
+    };
+  };
+
+  const clearPrayerHighlights = () => {
+    document
+      .querySelectorAll(".home-hero-prayer-card-wrap")
+      .forEach(function (el) {
+        el.classList.remove("is-current-prayer", "is-next-prayer");
+      });
+    document.querySelectorAll(".kicc-nav-prayer-row").forEach(function (el) {
+      el.classList.remove("is-current-prayer", "is-next-prayer");
+    });
+  };
+
+  const highlightPrayerSlot = (slot, className) => {
+    if (!slot) return;
+    var homeCard = document.querySelector(
+      '.home-hero-prayer-card-wrap[data-prayer="' + slot.id + '"]',
+    );
+    if (homeCard) {
+      homeCard.classList.add(className);
+    }
+    var navBegins = document.getElementById("nav-" + slot.navKey + "-begins");
+    if (navBegins) {
+      var navRow = navBegins.closest("tr");
+      if (navRow) {
+        navRow.classList.add("kicc-nav-prayer-row", className);
+      }
+    }
+  };
+
+  const updatePrayerHighlightsUI = () => {
+    if (!cachedPrayerDayData) return;
+
+    var state = getPrayerState(cachedPrayerDayData);
+    clearPrayerHighlights();
+
+    if (!state) return;
+
+    highlightPrayerSlot(state.current, "is-current-prayer");
+    highlightPrayerSlot(state.next, "is-next-prayer");
+
+    var statusEl = document.getElementById("home-prayer-status");
+    var statusLine = document.getElementById("home-prayer-status-line");
+
+    if (statusEl && statusLine) {
+      var countdown = formatCountdown(state.countdownTarget);
+      var countdownLabel =
+        state.countdownKind === "iqamah"
+          ? state.current.label + " iqamah"
+          : state.next.label;
+
+      statusLine.innerHTML =
+        '<div class="home-prayer-status-chip home-prayer-status-chip-current">' +
+        '<span class="home-prayer-status-chip-label">Current prayer</span>' +
+        '<strong class="home-prayer-status-chip-value">' +
+        state.current.label +
+        "</strong></div>" +
+        '<div class="home-prayer-status-chip home-prayer-status-chip-next">' +
+        '<span class="home-prayer-status-chip-label">Next: ' +
+        countdownLabel +
+        "</span>" +
+        '<strong class="home-prayer-status-chip-value home-prayer-countdown">' +
+        countdown +
+        "</strong></div>";
+
+      statusEl.hidden = false;
+
+      if (window.matchMedia("(max-width: 767.98px)").matches) {
+        var activeCard = document.querySelector(
+          ".home-hero-prayer-card-wrap.is-current-prayer, .home-hero-prayer-card-wrap.is-next-prayer",
+        );
+        if (activeCard) {
+          activeCard.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+      }
+    }
+  };
+
+  const schedulePrayerHighlights = (d) => {
+    cachedPrayerDayData = d;
+    updatePrayerHighlightsUI();
+    if (!prayerHighlightTimer) {
+      prayerHighlightTimer = setInterval(updatePrayerHighlightsUI, 30000);
+    }
+  };
+
   const applyToHomePage = (d) => {
-    if (!window.location.pathname.endsWith("/")) return;
+    if (!isHomePage()) return;
     const lower = (s) => s.toLowerCase();
     const setPrayer = (beginsId, iqamahId, beginsVal, iqamahVal) => {
       const beginsEl = document.getElementById(beginsId);
@@ -251,133 +515,142 @@
     const sunriseEl = document.getElementById("sunrise");
     if (sunriseEl) sunriseEl.innerHTML = lower(d.sunriseTime);
 
-    const today = new Date();
-    const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-    if (isRamadan()) {
-      document.getElementById("cur-month").innerHTML = "Ramadan";
-    } else {
-      const monthName = addedDays.toLocaleString("default", {
-        month: "long",
-      });
-      document.getElementById("cur-month").innerHTML = monthName;
+    const hijriEl = document.getElementById("home-hero-hijri");
+    if (hijriEl) {
+      hijriEl.textContent =
+        d.hijriDay + " " + d.hijriMonthName + " " + d.hijriYear + " AH";
+    }
+    const gregEl = document.getElementById("home-hero-gregorian");
+    if (gregEl && d.gregorianDateString) {
+      gregEl.textContent = d.gregorianDateString;
+    }
+
+    const curMonthEl = document.getElementById("cur-month");
+    if (curMonthEl) {
+      const today = new Date();
+      const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+      if (isRamadan()) {
+        curMonthEl.innerHTML = "Ramadan";
+      } else {
+        curMonthEl.innerHTML = addedDays.toLocaleString("default", {
+          month: "long",
+        });
+      }
     }
   };
 
   const applyToNav = (d) => {
     const lower = (s) => s.toLowerCase();
-    document.getElementById("nav-hijri").innerHTML =
-      `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`;
+    setElHtml(
+      "nav-hijri",
+      `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`,
+    );
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
     const monthName = isRamadan()
       ? "Ramadan"
       : addedDays.toLocaleString("default", { month: "long" });
-    document.getElementById("nav-cur-month").innerHTML = monthName;
-    document.getElementById("footer-cur-month").innerHTML = monthName;
-    document.getElementById("nav-fajr-begins").innerHTML = lower(d.fajarTime);
-    document.getElementById("nav-fajr-jamaat").innerHTML = lower(
-      d.fajarJamahTime,
-    );
-    document.getElementById("nav-sunrise").innerHTML = lower(d.sunriseTime);
-    document.getElementById("nav-zohr-begins").innerHTML = lower(d.dhuharTime);
-    document.getElementById("nav-zohr-jamaat").innerHTML = lower(
-      d.zohrJamahTime,
-    );
-    document.getElementById("nav-asar-begins").innerHTML = lower(d.asrTime);
-    document.getElementById("nav-asar-jamaat").innerHTML = lower(
-      d.asarJamahTime,
-    );
-    document.getElementById("nav-magrib-begins").innerHTML = lower(
-      d.maghribTime,
-    );
-    document.getElementById("nav-magrib-jamaat").innerHTML = lower(
-      d.maghribJamahTime,
-    );
-    document.getElementById("nav-isha-begins").innerHTML = lower(d.ishaTime);
-    document.getElementById("nav-isha-jamaat").innerHTML = lower(
-      d.ishaJamahTime,
-    );
+    setElHtml("nav-cur-month", monthName);
+    setElHtml("footer-cur-month", monthName);
+    setElHtml("nav-fajr-begins", lower(d.fajarTime));
+    setElHtml("nav-fajr-jamaat", lower(d.fajarJamahTime));
+    setElHtml("nav-sunrise", lower(d.sunriseTime));
+    setElHtml("nav-zohr-begins", lower(d.dhuharTime));
+    setElHtml("nav-zohr-jamaat", lower(d.zohrJamahTime));
+    setElHtml("nav-asar-begins", lower(d.asrTime));
+    setElHtml("nav-asar-jamaat", lower(d.asarJamahTime));
+    setElHtml("nav-magrib-begins", lower(d.maghribTime));
+    setElHtml("nav-magrib-jamaat", lower(d.maghribJamahTime));
+    setElHtml("nav-isha-begins", lower(d.ishaTime));
+    setElHtml("nav-isha-jamaat", lower(d.ishaJamahTime));
   };
 
   const setDynamicCelebrationToBanner = (date) => {
-    try {
-      const titleElement = document.getElementById("dynamic-celeb-title");
-      const messageElement = document.getElementById("dynamic-celeb-message");
-      const dynamicTimeOneLabel = document.getElementById("dynamic-time-one-label");
-      const dynamicTimeTwoLabel = document.getElementById("dynamic-time-two-label");
-      const dynamicTimeOne = document.getElementById("dynamic-time-one");
-      const dynamicTimeTwo = document.getElementById("dynamic-time-two");
-      const dynamicTimeOneCircle = document.getElementById("dynamic-time-one-circle");
-      const dynamicTimeTwoCircle = document.getElementById("dynamic-time-two-circle");
+    if (!isHomePage()) return;
 
-      // Set all to none initially
-      titleElement.style.display = 'none';
-      messageElement.style.display = 'none';
-      dynamicTimeOneLabel.style.display = 'none';
-      dynamicTimeTwoLabel.style.display = 'none';
-      dynamicTimeOne.style.display = 'none';
-      dynamicTimeTwo.style.display = 'none';
-      dynamicTimeOneCircle.style.display = 'none';
-      dynamicTimeTwoCircle.style.display = 'none';
+    const titleElement = document.getElementById("dynamic-celeb-title");
+    const messageElement = document.getElementById("dynamic-celeb-message");
+    const dynamicTimeOneLabel = document.getElementById("dynamic-time-one-label");
+    const dynamicTimeTwoLabel = document.getElementById("dynamic-time-two-label");
+    const dynamicTimeOne = document.getElementById("dynamic-time-one");
+    const dynamicTimeTwo = document.getElementById("dynamic-time-two");
+    const dynamicTimeOneCircle = document.getElementById("dynamic-time-one-circle");
+    const dynamicTimeTwoCircle = document.getElementById("dynamic-time-two-circle");
 
-      if (isRamadan()) {
-        // Ramadan logic
-        dynamicTimeOneLabel.innerHTML = "Suhoor ends";
-        dynamicTimeTwoLabel.innerHTML = "Iftaar";
-        if (date.fajarTime) {
-          const fajrDate = parseTimeToDate(date.fajarTime) || null;
-          let suhoorStr = "—";
-          if (fajrDate) {
-            const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
-            const hh = String(suhoorDate.getHours()).padStart(2, "0");
-            const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
-            suhoorStr = `${hh}:${mm}`;
-          }
-          const parts = splitTimeAndPeriod(suhoorStr);
-          dynamicTimeOne.innerHTML = `${parts.time} <small>${parts.period}</small>`;
+    if (!titleElement || !messageElement) return;
+
+    const hideCelebrationSlot = (el) => {
+      if (el) el.style.display = "none";
+    };
+    const showCelebrationSlot = (el) => {
+      if (el) el.style.display = "";
+    };
+
+    hideCelebrationSlot(titleElement);
+    hideCelebrationSlot(messageElement);
+    hideCelebrationSlot(dynamicTimeOneLabel);
+    hideCelebrationSlot(dynamicTimeTwoLabel);
+    hideCelebrationSlot(dynamicTimeOne);
+    hideCelebrationSlot(dynamicTimeTwo);
+    hideCelebrationSlot(dynamicTimeOneCircle);
+    hideCelebrationSlot(dynamicTimeTwoCircle);
+
+    if (isRamadan()) {
+      if (dynamicTimeOneLabel) dynamicTimeOneLabel.innerHTML = "Suhoor ends";
+      if (dynamicTimeTwoLabel) dynamicTimeTwoLabel.innerHTML = "Iftaar";
+      if (date.fajarTime && dynamicTimeOne) {
+        const fajrDate = parseTimeToDate(date.fajarTime) || null;
+        let suhoorStr = "—";
+        if (fajrDate) {
+          const suhoorDate = new Date(fajrDate.getTime() - 10 * 60 * 1000);
+          const hh = String(suhoorDate.getHours()).padStart(2, "0");
+          const mm = String(suhoorDate.getMinutes()).padStart(2, "0");
+          suhoorStr = `${hh}:${mm}`;
         }
-        if (date.maghribTime) {
-          const partsM = splitTimeAndPeriod(date.maghribTime);
-          dynamicTimeTwo.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
-        }
-        titleElement.innerHTML = "Ramadan Mubarak";
-        messageElement.innerHTML = "";
-        titleElement.style.display = '';
-        dynamicTimeOneLabel.style.display = '';
-        dynamicTimeTwoLabel.style.display = '';
-        dynamicTimeOne.style.display = '';
-        dynamicTimeTwo.style.display = '';
-        dynamicTimeOneCircle.style.display = '';
-        dynamicTimeTwoCircle.style.display = '';
-      } else if (isEid()) {
-        // Eid logic
-        dynamicTimeOneLabel.innerHTML = "Speech";
-        dynamicTimeTwoLabel.innerHTML = "Salah";
+        const parts = splitTimeAndPeriod(suhoorStr);
+        dynamicTimeOne.innerHTML = `${parts.time} <small>${parts.period}</small>`;
+      }
+      if (date.maghribTime && dynamicTimeTwo) {
+        const partsM = splitTimeAndPeriod(date.maghribTime);
+        dynamicTimeTwo.innerHTML = `${partsM.time} <small>${partsM.period}</small>`;
+      }
+      titleElement.innerHTML = "Ramadan Mubarak";
+      messageElement.innerHTML = "";
+      showCelebrationSlot(titleElement);
+      showCelebrationSlot(dynamicTimeOneLabel);
+      showCelebrationSlot(dynamicTimeTwoLabel);
+      showCelebrationSlot(dynamicTimeOne);
+      showCelebrationSlot(dynamicTimeTwo);
+      showCelebrationSlot(dynamicTimeOneCircle);
+      showCelebrationSlot(dynamicTimeTwoCircle);
+    } else if (isEid()) {
+      if (dynamicTimeOneLabel) dynamicTimeOneLabel.innerHTML = "Speech";
+      if (dynamicTimeTwoLabel) dynamicTimeTwoLabel.innerHTML = "Salah";
+      if (dynamicTimeOne) {
         const partsSpeech = splitTimeAndPeriod("7:30 AM");
         dynamicTimeOne.innerHTML = `${partsSpeech.time} <small>${partsSpeech.period}</small>`;
+      }
+      if (dynamicTimeTwo) {
         const partsSalah = splitTimeAndPeriod("8:00 AM");
         dynamicTimeTwo.innerHTML = `${partsSalah.time} <small>${partsSalah.period}</small>`;
-        titleElement.innerHTML = "Eid Mubarak";
-        messageElement.innerHTML =
-          "Taqabbal Allahu minna wa minkum (May Allah accept from us and from you) and bless you and your family with happiness and prosperity";
-        titleElement.style.display = '';
-        messageElement.style.display = '';
-        dynamicTimeOneLabel.style.display = '';
-        dynamicTimeTwoLabel.style.display = '';
-        dynamicTimeOne.style.display = '';
-        dynamicTimeTwo.style.display = '';
-        dynamicTimeOneCircle.style.display = '';
-        dynamicTimeTwoCircle.style.display = '';
-      } else {
-        // Default
-        titleElement.innerHTML = "السلام عليكم";
-        messageElement.innerHTML =
-          "Peace be upon you — welcome to Kerry Islamic Cultural Centre, Tralee.";
-        titleElement.style.display = '';
-        messageElement.style.display = '';
       }
-    } catch (e) {
-      console.warn("Unable to set banner elements", e);
+      titleElement.innerHTML = "Eid Mubarak";
+      messageElement.innerHTML =
+        "Taqabbal Allahu minna wa minkum (May Allah accept from us and from you) and bless you and your family with happiness and prosperity";
+      showCelebrationSlot(titleElement);
+      showCelebrationSlot(messageElement);
+      showCelebrationSlot(dynamicTimeOneLabel);
+      showCelebrationSlot(dynamicTimeTwoLabel);
+      showCelebrationSlot(dynamicTimeOne);
+      showCelebrationSlot(dynamicTimeTwo);
+      showCelebrationSlot(dynamicTimeOneCircle);
+      showCelebrationSlot(dynamicTimeTwoCircle);
+    } else {
+      titleElement.innerHTML = "السلام عليكم";
+      messageElement.innerHTML =
+        "Peace be upon you — welcome to Kerry Islamic Cultural Centre, Tralee.";
+      showCelebrationSlot(titleElement);
+      showCelebrationSlot(messageElement);
     }
   };
 
@@ -396,6 +669,8 @@
         if (d) {
           applyToHomePage(d);
           applyToNav(d);
+          schedulePrayerHighlights(d);
+          setDynamicCelebrationToBanner(d);
         }
       } catch (e) {
         console.warn("Failed to parse cached iqamah", e);
@@ -432,6 +707,7 @@
         localStorage.setItem(cacheKey, JSON.stringify(json));
         applyToHomePage(d);
         applyToNav(d);
+        schedulePrayerHighlights(d);
         setDynamicCelebrationToBanner(d);
       })
       .catch(function (err) {
@@ -636,49 +912,163 @@
     return { time: parts[0], period: parts[1] || "" };
   };
 
-  const renderJummahSchedule = (jummahTimes = []) => {
-    const list = document.getElementById("jummah-schedule");
-    if (!list) return;
+  const isFridayInDublin = () => getDublinDate().getDay() === 5;
 
-    // keep first li as header
-    while (list.children.length > 1) {
-      list.removeChild(list.lastElementChild);
+  const getJumuahTimes = (announcements) => {
+    if (!Array.isArray(announcements)) return null;
+    const jumuah = announcements.find((a) => a.type === "jumuah") || null;
+    if (
+      !jumuah ||
+      !Array.isArray(jumuah.jummahTimes) ||
+      jumuah.jummahTimes.length === 0
+    ) {
+      return null;
+    }
+    return jumuah.jummahTimes;
+  };
+
+  const buildJumuahTimesHtml = (jummahTimes) => {
+    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) return "";
+
+    return jummahTimes
+      .map(function (slot, index) {
+        const speech = formatTimeToAmPm(slot.speech);
+        const khutbah = formatTimeToAmPm(slot.khutbah);
+        if (!speech && !khutbah) return "";
+
+        const prefix =
+          jummahTimes.length > 1 ? "Jumu'ah " + (index + 1) + ": " : "";
+        const parts = [];
+        if (speech) {
+          parts.push("Speech <strong>" + speech + "</strong>");
+        }
+        if (khutbah) {
+          parts.push("Khutbah &amp; salah <strong>" + khutbah + "</strong>");
+        }
+        return prefix + parts.join(" · ");
+      })
+      .filter(Boolean)
+      .join("<br>");
+  };
+
+  const buildJumuahScheduleFeatureHtml = (jummahTimes) => {
+    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) return "";
+
+    const slot = jummahTimes[0];
+    const speech = formatTimeToAmPm(slot.speech) || "—";
+    const khutbah = formatTimeToAmPm(slot.khutbah) || "—";
+
+    return (
+      '<div class="programmes-jumuah-feature-inner">' +
+      '<div class="programmes-jumuah-feature-head">' +
+      '<span class="programmes-jumuah-feature-badge">Today</span>' +
+      '<h3 class="programmes-jumuah-feature-title">' +
+      '<i class="fas fa-mosque" aria-hidden="true"></i> Jumu\'ah Salah</h3>' +
+      '<p class="programmes-jumuah-feature-lead">Join us for the Friday congregation</p>' +
+      "</div>" +
+      '<div class="programmes-jumuah-feature-times">' +
+      '<div class="programmes-jumuah-feature-slot">' +
+      '<span class="programmes-jumuah-feature-slot-label">Speech</span>' +
+      '<strong class="programmes-jumuah-feature-slot-time">' +
+      speech +
+      "</strong></div>" +
+      '<div class="programmes-jumuah-feature-slot programmes-jumuah-feature-slot-primary">' +
+      '<span class="programmes-jumuah-feature-slot-label">Khutbah &amp; salah</span>' +
+      '<strong class="programmes-jumuah-feature-slot-time">' +
+      khutbah +
+      "</strong></div></div></div>"
+    );
+  };
+
+  const renderNavJumuahRow = (jummahTimes) => {
+    const zohrBegins = document.getElementById("nav-zohr-begins");
+    const zohrRow = zohrBegins ? zohrBegins.closest("tr") : null;
+    const existing = document.getElementById("nav-jumuah-row");
+
+    if (!isFridayInDublin() || !jummahTimes || jummahTimes.length === 0) {
+      if (existing) existing.remove();
+      return;
     }
 
-    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) return;
+    if (!zohrRow) return;
 
-    jummahTimes.forEach((slot, index) => {
-      const speechTime = formatTimeToAmPm(slot.speech);
-      const khutbahTime = formatTimeToAmPm(slot.khutbah);
-      const khutbahLabel =
-        jummahTimes.length === 1 ? "Adhan/Khutbah" : `Adhan/Khutbah ${index + 1}`;
+    const slot = jummahTimes[0];
+    const speech = formatTimeToAmPm(slot.speech) || "—";
+    const khutbah = formatTimeToAmPm(slot.khutbah) || "—";
 
-      if (speechTime) {
-        const liSpeech = document.createElement("li");
-        liSpeech.className =
-          "list-group-item d-flex justify-content-between align-items-center h5";
-        liSpeech.innerHTML = `
-        <span>Speech ${jummahTimes.length > 1 ? index + 1 : ""}</span>
-        <span class="badge badge-primary badge-pill badge-danger">
-          ${speechTime}
-        </span>
-      `;
-        list.appendChild(liSpeech);
-      }
+    let row = existing;
+    if (!row) {
+      row = document.createElement("tr");
+      row.id = "nav-jumuah-row";
+      row.className = "kicc-nav-jumuah-row kicc-nav-prayer-row";
+      zohrRow.insertAdjacentElement("afterend", row);
+    }
 
-      if (khutbahTime) {
-        const liKhutbah = document.createElement("li");
-        liKhutbah.className =
-          "list-group-item d-flex justify-content-between align-items-center h5";
-        liKhutbah.innerHTML = `
-        <span>${khutbahLabel}</span>
-        <span class="badge badge-primary badge-pill badge-danger">
-          ${khutbahTime}
-        </span>
-      `;
-        list.appendChild(liKhutbah);
-      }
-    });
+    row.innerHTML =
+      "<th scope=\"row\">Jumu'ah</th>" +
+      '<td><span class="nav-jumuah-time">' +
+      speech +
+      '</span> <span class="nav-jumuah-hint">speech</span></td>' +
+      '<td><span class="nav-jumuah-time">' +
+      khutbah +
+      '</span> <span class="nav-jumuah-hint">khutbah</span></td>';
+  };
+
+  const renderJumuahFridayBanner = (announcements) => {
+    const banners = document.querySelectorAll(".jumuah-friday-banner");
+    const jummahTimes = getJumuahTimes(announcements);
+    const show = isFridayInDublin() && jummahTimes;
+
+    if (banners.length) {
+      banners.forEach(function (banner) {
+        if (!show) {
+          banner.hidden = true;
+          banner.innerHTML = "";
+          return;
+        }
+
+        const isScheduleFeature = banner.classList.contains(
+          "jumuah-feature-banner",
+        );
+        banner.innerHTML = isScheduleFeature
+          ? buildJumuahScheduleFeatureHtml(jummahTimes)
+          : '<p class="jumuah-friday-banner-label">' +
+            '<i class="fas fa-mosque" aria-hidden="true"></i> Friday Jumu\'ah</p>' +
+            '<p class="jumuah-friday-banner-times">' +
+            buildJumuahTimesHtml(jummahTimes) +
+            "</p>";
+        banner.hidden = false;
+      });
+    }
+
+    renderNavJumuahRow(show ? jummahTimes : null);
+  };
+
+  const loadJumuahFridayTimes = () => {
+    const cached = loadAnnouncementsFromCache();
+    if (cached) {
+      renderJumuahFridayBanner(cached);
+    }
+
+    const isHome = isHomePage();
+    if (isHome && document.getElementById("announcement")) {
+      return;
+    }
+
+    fetch("https://getannouncements-rds3nxm6za-ew.a.run.app")
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (announcements) {
+        saveAnnouncementsToCache(announcements);
+        renderJumuahFridayBanner(announcements);
+      })
+      .catch(function () {
+        if (!cached) {
+          renderJumuahFridayBanner([]);
+        }
+      });
   };
 
   const selectAnnouncement = (announcements) => {
@@ -690,28 +1080,18 @@
     const breaking = announcements.find((a) => a.type === "breaking") || null;
     const general = announcements.find((a) => a.type === "general") || null;
 
-    const today = new Date();
-    const isFriday = today.getDay() === 5; // 0=Sun .. 5=Fri [web:108][web:111]
-
-    const jumuahActive = !!(jumuah && jumuah.active);
     const breakingActive = !!(breaking && breaking.active);
-
-    if (isFriday) {
-      // On Friday: if Jumuah active, use it; else fall back to general / first
-      if (jumuahActive) return jumuah;
-      if (general) return general;
-      return announcements[0];
-    }
-
-    // Not Friday:
-    // - Prefer active breaking
     if (breakingActive) return breaking;
 
-    // - If both breaking and jumuah inactive, prefer general
-    if (!breakingActive && !jumuahActive && general) return general;
+    const isFriday = isFridayInDublin();
+    const jumuahActive = !!(jumuah && jumuah.active);
+    const generalActive = !!(general && general.active);
 
-    // - Otherwise, fall back to first entry
-    return announcements[0];
+    if (isFriday && jumuahActive) return jumuah;
+
+    if (!isFriday && generalActive) return general;
+
+    return null;
   };
 
   const showDefaultNotice = () => {
@@ -750,18 +1130,12 @@
 
     const applySelectionToDom = (selected) => {
       if (!selected) {
-        showDefaultNotice();
-        renderJummahSchedule([]);
+        if (bar) {
+          bar.classList.add("d-none");
+          bar.classList.remove("bigEntrance", "stretchLeft");
+        }
+        announcementEl.innerHTML = "";
         return;
-      }
-
-      // Always render Jumuah schedule if times exist, even if not Friday or inactive
-      if (selected.type === "jumuah" && Array.isArray(selected.jummahTimes)) {
-        renderJummahSchedule(selected.jummahTimes);
-      } else {
-        // But schedule comes only from jumuah; if selected is not jumuah,
-        // still try to render schedule from the jumuah announcement if available in cache/data
-        renderJummahSchedule([]);
       }
 
       announcementEl.innerHTML = selected.message || "";
@@ -769,6 +1143,9 @@
       if (selected.active && bar) {
         bar.classList.add("bigEntrance", "stretchLeft");
         bar.classList.remove("d-none");
+      } else if (bar) {
+        bar.classList.add("d-none");
+        bar.classList.remove("bigEntrance", "stretchLeft");
       }
     };
 
@@ -777,6 +1154,7 @@
     if (cached) {
       const selectedCached = selectAnnouncement(cached);
       applySelectionToDom(selectedCached);
+      renderJumuahFridayBanner(cached);
     }
 
     // 2) Always fetch latest, update cache + DOM
@@ -790,17 +1168,11 @@
 
         const selected = selectAnnouncement(announcements);
         applySelectionToDom(selected);
-
-        // Additionally, if selected is not jumuah, still ensure schedule is set
-        const jumuah = announcements.find((a) => a.type === "jumuah");
-        if (jumuah && Array.isArray(jumuah.jummahTimes)) {
-          renderJummahSchedule(jumuah.jummahTimes);
-        }
+        renderJumuahFridayBanner(announcements);
       })
       .catch(() => {
         if (!cached) {
           showDefaultNotice();
-          renderJummahSchedule([]);
         }
       });
   };
@@ -1280,7 +1652,7 @@
     if (todayBanner && todayProgrammes.length > 0) {
       todayBanner.hidden = false;
 
-      var bannerLabel = document.createElement("p");
+      var bannerLabel = document.createElement("div");
       bannerLabel.className = "programmes-today-banner-label";
       bannerLabel.innerHTML =
         '<i class="fas fa-sun" aria-hidden="true"></i> Today &mdash; ' +
@@ -1760,6 +2132,7 @@
     renderProgrammeTable(programmes);
     renderWeeklyProgrammes(programmes);
     renderRecordings(recordings);
+    scrollToLocationHash();
   };
 
   const loadProgrammes = () => {
@@ -1945,29 +2318,102 @@
       });
   };
 
+  const initMobileNav = () => {
+    const nav = document.querySelector(".kicc-nav-v2");
+    const collapseEl = document.getElementById("navbarResponsive");
+    if (!nav || !collapseEl || typeof $ === "undefined") return;
+
+    const mobileQuery = window.matchMedia("(max-width: 991.98px)");
+
+    let backdrop = document.querySelector(".kicc-nav-backdrop");
+    if (!backdrop) {
+      backdrop = document.createElement("div");
+      backdrop.className = "kicc-nav-backdrop";
+      backdrop.setAttribute("aria-hidden", "true");
+      document.body.appendChild(backdrop);
+    }
+
+    const closeOpenDropdowns = () => {
+      nav.querySelectorAll(".dropdown.show").forEach(function (dropdown) {
+        dropdown.classList.remove("show");
+        var menu = dropdown.querySelector(".dropdown-menu");
+        var toggle = dropdown.querySelector(".dropdown-toggle");
+        if (menu) menu.classList.remove("show");
+        if (toggle) toggle.setAttribute("aria-expanded", "false");
+      });
+    };
+
+    const closeNav = () => {
+      if ($(collapseEl).hasClass("show")) {
+        $(collapseEl).collapse("hide");
+      }
+    };
+
+    backdrop.addEventListener("click", closeNav);
+
+    $(collapseEl)
+      .on("shown.bs.collapse", function () {
+        backdrop.classList.add("is-visible");
+        document.body.classList.add("kicc-nav-open");
+      })
+      .on("hidden.bs.collapse", function () {
+        backdrop.classList.remove("is-visible");
+        document.body.classList.remove("kicc-nav-open");
+        closeOpenDropdowns();
+      });
+
+    nav.querySelectorAll(
+      ".kicc-nav-mega-link, .kicc-nav-main > .nav-item:not(.dropdown) .kicc-nav-link, .kicc-nav-donate-btn, .kicc-nav-salah-menu a",
+    ).forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (mobileQuery.matches) closeNav();
+      });
+    });
+
+    nav.querySelectorAll(".dropdown").forEach(function (dropdownEl) {
+      $(dropdownEl).on("show.bs.dropdown", function () {
+        if (!mobileQuery.matches) return;
+        var menu = dropdownEl.querySelector(".dropdown-menu");
+        if (!menu) return;
+        menu.style.position = "static";
+        menu.style.transform = "none";
+        menu.style.willChange = "auto";
+      });
+    });
+
+    nav.querySelectorAll(".kicc-nav-mega-item > .dropdown-toggle").forEach(
+      function (toggle) {
+        toggle.addEventListener("click", function (e) {
+          if (!mobileQuery.matches) return;
+          e.preventDefault();
+        });
+      },
+    );
+  };
+
   const setLocationSpecific = () => {
-    var href = window.location.href;
-    switch (true) {
-      case href.endsWith("/"):
-        showSignUpModal();
-        getAnnouncement();
-        setEvent();
-        break;
-      case href.endsWith("activities.html"):
-        setEvent();
-        loadProgrammes();
-        break;
-      case href.endsWith("projects.html"):
-        initBaguetteBox();
-        break;
+    if (isHomePage()) {
+      showSignUpModal();
+      getAnnouncement();
+      setEvent();
+      loadProgrammes();
+      return;
+    }
+    if (isActivitiesPage()) {
+      setEvent();
+      loadProgrammes();
+      return;
+    }
+    if (isProjectsPage()) {
+      initBaguetteBox();
     }
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    const href = window.location.href;
-    if (href.endsWith("/")) {
+    if (isHomePage()) {
       showNotices();
     }
+    initMobileNav();
     addWhatsAppButton();
     addBackToTopButton();
     setFooterYear();
@@ -1979,6 +2425,8 @@
     setSalahTimes();
     getRandomHadith();
     loadFundraiserProgress();
+    loadJumuahFridayTimes();
     setLocationSpecific();
+    scrollToLocationHash();
   };
 })();

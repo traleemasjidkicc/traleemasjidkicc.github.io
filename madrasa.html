@@ -21,7 +21,7 @@
     href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/main-1781897375578.css">
+  <link rel="stylesheet" href="assets/css/main-1781902016884.css">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
@@ -58,67 +58,111 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781897375445.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781902016748.js"></script>
 </head>
 
 <body class="page-madrasa">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- START OF NAV -->
-  <nav class="navbar navbar-expand-lg navbar-light site-nav kicc-nav sticky-top">
-    <div class="container">
-      <!-- Nab brand -->
-      <a class="navbar-brand d-none d-lg-block" href="/">
-        <img src="assets/images/brand/logo.png" width="20%" height="20%"
-          class="d-inline-block align-center"
-          alt="Kerry Islamic Cultural Centre">
-        Tralee Masjid
-      </a>
-      <a class="navbar-brand d-block d-lg-none" href="/">
-        Tralee Masjid
+  <nav class="navbar navbar-expand-lg navbar-light site-nav kicc-nav kicc-nav-v2 sticky-top"
+    aria-label="Main navigation">
+    <div class="container kicc-nav-container">
+      <a class="navbar-brand kicc-nav-brand" href="/">
+        <img src="assets/images/brand/logo.png" width="44" height="44"
+          class="kicc-nav-logo" alt="Kerry Islamic Cultural Centre">
+        <span class="kicc-nav-brand-text">
+          <span class="kicc-nav-brand-name">Tralee Masjid</span>
+          <span class="kicc-nav-brand-sub d-none d-xl-inline">Kerry Islamic Cultural Centre</span>
+        </span>
       </a>
       <button class="navbar-toggler collapsed border-0" type="button"
-        data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false"
+        data-toggle="collapse" data-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false"
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-        <div class="close-icon py-2"><i class="fas fa-times fa-lg"></i></div>
+        <div class="close-icon py-2"><i class="fas fa-times fa-lg" aria-hidden="true"></i></div>
       </button>
-      <!-- End -->
-      <!-- Nav items -->
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Home</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="activities.html">Programmes</a>
+      <div class="collapse navbar-collapse kicc-nav-collapse" id="navbarResponsive">
+        <ul class="navbar-nav kicc-nav-main">
+          <li class="nav-item dropdown kicc-nav-mega-item">
+            <a class="nav-link kicc-nav-link dropdown-toggle" href="activities.html"
+              id="navProgrammesDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Programmes
+            </a>
+            <div class="dropdown-menu kicc-nav-mega" aria-labelledby="navProgrammesDropdown">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-4 kicc-nav-mega-col">
+                    <p class="kicc-nav-mega-label">This week</p>
+                    <a class="kicc-nav-mega-link" href="activities.html#schedule">Weekly schedule</a>
+                    <a class="kicc-nav-mega-link" href="activities.html#weekly-programmes-section">Programme highlights</a>
+                    <a class="kicc-nav-mega-link" href="activities.html">All programmes</a>
+                  </div>
+                  <div class="col-md-4 kicc-nav-mega-col">
+                    <p class="kicc-nav-mega-label">Classes</p>
+                    <a class="kicc-nav-mega-link" href="activities.html#women-class">Women's class</a>
+                    <a class="kicc-nav-mega-link" href="activities.html#adult-classes">Men's class</a>
+                    <a class="kicc-nav-mega-link" href="madrasa.html#madrasa-schedule">Children's madrasa</a>
+                  </div>
+                  <div class="col-md-4 kicc-nav-mega-col">
+                    <p class="kicc-nav-mega-label">Listen &amp; join</p>
+                    <a class="kicc-nav-mega-link" href="activities.html#listen">Talks &amp; recordings</a>
+                    <a class="kicc-nav-mega-link" href="https://mixlr.com/tralee-masjid/showreel/"
+                      target="_blank" rel="noopener noreferrer">Previous talks</a>
+                    <a class="kicc-nav-mega-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
+                      target="_blank" rel="noopener noreferrer">Register for programmes</a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="madrasa.html">Madrasa <span
-                class="sr-only">(current)</span></a>
+            <a class="nav-link kicc-nav-link" href="madrasa.html">Madrasa <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="projects.html">New Masjid</a>
+            <a class="nav-link kicc-nav-link" href="projects.html">New Masjid</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="contact.html">Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-kicc btn-kicc-sm btn-kicc-donate mr-sm-0 mr-md-2 mr-lg-2 active"
-              role="button" target="_blank"
-              href="https://gofund.me/f75f7c17">Donate</a>
-          </li>
-          <li class="nav-item dropdown active">
-            <a class="nav-link dropdown-toggle btn btn-kicc btn-kicc-sm btn-kicc-salah active"
-              href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          <li class="nav-item dropdown kicc-nav-mega-item">
+            <a class="nav-link kicc-nav-link dropdown-toggle" href="about.html"
+              id="navAboutDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
-              Salah Times
+              About
             </a>
-            <div class="dropdown-menu active" aria-labelledby="navbarDropdown">
-              <div class="col-sm-12 center-block text-center">
-                <p class="h6"><span id="nav-hijri"></span></p>
+            <div class="dropdown-menu kicc-nav-mega kicc-nav-mega-about" aria-labelledby="navAboutDropdown">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-6 kicc-nav-mega-col">
+                    <p class="kicc-nav-mega-label">Our centre</p>
+                    <a class="kicc-nav-mega-link" href="about.html#intro">Who we are</a>
+                    <a class="kicc-nav-mega-link" href="about.html#our-story">Our story</a>
+                    <a class="kicc-nav-mega-link" href="about.html#our-journey">Our journey</a>
+                    <a class="kicc-nav-mega-link" href="about.html#community-today">Community today</a>
+                  </div>
+                  <div class="col-md-6 kicc-nav-mega-col">
+                    <p class="kicc-nav-mega-label">People &amp; contact</p>
+                    <a class="kicc-nav-mega-link" href="about.html#our-team">Our team</a>
+                    <a class="kicc-nav-mega-link" href="contact.html">Contact us</a>
+                    <a class="kicc-nav-mega-link" href="https://goo.gl/maps/itDbxNWHt4bcUb4A9"
+                      target="_blank" rel="noopener noreferrer">Find us on the map</a>
+                    <a class="kicc-nav-mega-link" href="mailto:info@traleemasjidkicc.ie">info@traleemasjidkicc.ie</a>
+                  </div>
+                </div>
               </div>
-              <table class="table table-sm table-striped table-bordered">
+            </div>
+          </li>
+        </ul>
+        <div class="kicc-nav-actions">
+          <div class="dropdown kicc-nav-salah-dropdown">
+            <a class="nav-link kicc-nav-link kicc-nav-salah-toggle dropdown-toggle"
+              href="#" id="navSalahDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Salah times
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg-right kicc-nav-salah-menu"
+              aria-labelledby="navSalahDropdown">
+              <p class="kicc-nav-salah-hijri mb-2"><span id="nav-hijri"></span></p>
+              <table class="table table-sm table-striped table-bordered mb-2">
                 <thead class="thead-dark">
                   <tr>
                     <th scope="col"></th>
@@ -129,43 +173,43 @@
                 <tbody>
                   <tr>
                     <th scope="row">Fajr</th>
-                    <td id="nav-fajr-begins">3.14 am</td>
-                    <td id="nav-fajr-jamaat">5.14 am</td>
+                    <td id="nav-fajr-begins">—</td>
+                    <td id="nav-fajr-jamaat">—</td>
                   </tr>
                   <tr>
                     <th scope="row">Zohr</th>
-                    <td id="nav-zohr-begins">3.14 am</td>
-                    <td id="nav-zohr-jamaat">5.14 am</td>
+                    <td id="nav-zohr-begins">—</td>
+                    <td id="nav-zohr-jamaat">—</td>
                   </tr>
                   <tr>
                     <th scope="row">Asar</th>
-                    <td id="nav-asar-begins">3.14 am</td>
-                    <td id="nav-asar-jamaat">5.14 am</td>
+                    <td id="nav-asar-begins">—</td>
+                    <td id="nav-asar-jamaat">—</td>
                   </tr>
                   <tr>
                     <th scope="row">Magrib</th>
-                    <td id="nav-magrib-begins">3.14 am</td>
-                    <td id="nav-magrib-jamaat">5.14 am</td>
+                    <td id="nav-magrib-begins">—</td>
+                    <td id="nav-magrib-jamaat">—</td>
                   </tr>
                   <tr>
                     <th scope="row">Isha</th>
-                    <td id="nav-isha-begins">3.14 am</td>
-                    <td id="nav-isha-jamaat">5.14 am</td>
+                    <td id="nav-isha-begins">—</td>
+                    <td id="nav-isha-jamaat">—</td>
                   </tr>
                 </tbody>
               </table>
-              <div class="col-sm-12 center-block text-center">
-                <p class="text-muted">Sunrise: <span id="nav-sunrise"></span>
-                </p>
-                <a class="btn btn-kicc btn-kicc-sm btn-kicc-salah" id="salah-times" role="button"
-                  href="assets/pdf/Jan2020.pdf" target="_blank"><span
-                    id="nav-cur-month"></span> Timetable</a>
-              </div>
+              <p class="kicc-nav-salah-sunrise text-muted mb-2">Sunrise:
+                <span id="nav-sunrise"></span></p>
+              <a class="btn btn-kicc btn-kicc-sm btn-kicc-salah d-block text-center"
+                id="salah-times" role="button" href="#" target="_blank"
+                rel="noopener noreferrer"><span id="nav-cur-month"></span>
+                Timetable</a>
             </div>
-          </li>
-        </ul>
+          </div>
+          <a class="kicc-nav-donate-btn" href="https://gofund.me/f75f7c17"
+            target="_blank" rel="noopener noreferrer">Donate now</a>
+        </div>
       </div>
-      <!-- End -->
     </div>
   </nav>
   <!-- END OF NAV -->
@@ -557,124 +601,142 @@
   <!-- COOKIE POLICY END -->
 
   <!-- FOOTER START -->
-  <footer class="site-footer page-footer pt-4 bg-secondary">
-    <!-- Footer Links -->
-    <div class="container text-center text-md-left">
-      <!-- Footer links -->
-      <div class="row text-center text-md-left mt-3 pb-3">
-        <!-- Grid column -->
-        <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Kerry Islamic
-            Cultural Centre</h6>
-          <p>To cater for the religious, cultural and social needs of Muslims in
-            the county of Kerry.</p>
-
-        </div>
-        <!-- Grid column -->
-        <hr class="w-100 clearfix d-md-none">
-        <!-- Grid column -->
-        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Services</h6>
-          <p>
-            <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
-              target="_blank">Register Now</a>
-          </p>
-          <p>
-            <a href="activities.html#women-class">Women's Class</a>
-          </p>
-          <p>
-            <a href="activities.html#adult-classes">Men's Class</a>
-          </p>
-          <p>
-            <a href="madrasa.html#madrasa-schedule">Children's Madrasa</a>
-          </p>
-        </div>
-        <!-- Grid column -->
-        <hr class="w-100 clearfix d-md-none">
-        <!-- Grid column -->
-        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Useful links</h6>
-          <p>
-            <a target="_blank" href="https://gofund.me/f75f7c17">Donate
-              Now</a>
-          </p>
-          <p>
-            <a href="about.html#our-team">Our Team</a>
-          </p>
-          <p>
-            <a href="https://mixlr.com/tralee-masjid/showreel/"
-              target="_blank">Previous Talks</a>
-          </p>
-          <p>
-            <a href="#" target="_blank" id="salah-times-footer"><span
-                id="footer-cur-month"></span> Timetable</a>
-          </p>
-        </div>
-        <!-- Grid column -->
-        <hr class="w-100 clearfix d-md-none">
-        <!-- Grid column -->
-        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
-          <p>
-            <i class="fas fa-mosque fa-lg mr-2"></i> <a
-              href="//goo.gl/maps/itDbxNWHt4bcUb4A9" target="_blank">Tralee,
-              Kerry,
-              V92 N6YR</a>
-          </p>
-          <p>
-            <i class="fas fa-at fa-lg mr-3"></i> <a
-              href="mailto:info@traleemasjidkicc.ie">info@traleemasjidkicc.ie</a>
-          </p>
-          <p>
-            <i class="fas fa-phone-alt fa-lg mr-3"></i> <a
-              href="tel:+353866038982">086 603 8982</a>
-          </p>
-          <p>
-            <i class="fab fa-whatsapp fa-lg mr-3"></i> <a
-              href="//wa.me/353862440556?text=As-salamu alaikum, Imam Mustafa.">086
-              244 0556</a>
-          </p>
-        </div>
-        <!-- Grid column -->
-      </div>
-      <!-- Footer links -->
-      <hr>
-      <!-- Grid row -->
-      <div class="row d-flex align-items-center">
-        <!-- Grid column -->
-        <div class="col-md-7 col-lg-8">
-          <!--Copyright-->
-          <p class="text-center text-md-left">© <span
-              id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made
-            with
-            <i class="fas fa-heart" ></i>
-            & <i class="fas fa-mug-hot" ></i> by <a
-              href="//nalam.me" rel="external" target="_blank">
-              <strong> Nazmul Alam</strong>
+  <footer class="site-footer page-footer" aria-label="Site footer">
+    <div class="site-footer-glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="site-footer-main row">
+        <div class="col-lg-4 site-footer-brand-col">
+          <div class="site-footer-brand">
+            <a href="/" class="site-footer-logo-link">
+              <img src="assets/images/brand/logo.png" width="56" height="56"
+                class="site-footer-logo" alt="">
+              <span class="site-footer-logo-text">
+                <span class="site-footer-logo-name">Tralee Masjid</span>
+                <span class="site-footer-logo-sub">Kerry Islamic Cultural Centre</span>
+              </span>
             </a>
-          </p>
-        </div>
-        <!-- Grid column -->
-        <!-- Grid column -->
-        <div class="col-md-5 col-lg-4 ml-lg-0">
-          <!-- Social buttons -->
-          <div class="text-center text-md-right">
-            <ul class="list-unstyled list-inline">
-              <li class="list-inline-item">
-                <a class="btn-floating btn-sm rgba-white-slight mx-1"
-                  target="_blank" href="https://github.com/traleemasjidkicc">
-                  <i class="fab fa-github"></i>
-                </a>
-              </li>
-
-            </ul>
+            <p class="site-footer-tagline">Serving the religious, cultural and social needs of Muslims across County Kerry.</p>
+            <div class="site-footer-registrations" aria-label="Registered charity identifiers">
+              <div class="site-footer-registration">
+                <span class="site-footer-registration-label">CHY</span>
+                <span class="site-footer-registration-value">14981</span>
+              </div>
+              <div class="site-footer-registration">
+                <span class="site-footer-registration-label">RCN</span>
+                <a class="site-footer-registration-link"
+                  href="https://www.charitiesregulator.ie/en/information-for-the-public/search-the-register-of-charities/sonra%C3%AD-carthanachta/?srchstr=kerry%20islamic&amp;regid=20050351"
+                  target="_blank" rel="noopener noreferrer">20050351</a>
+              </div>
+              <div class="site-footer-registration">
+                <span class="site-footer-registration-label">CRO</span>
+                <a class="site-footer-registration-link"
+                  href="https://core.cro.ie/e-commerce/company/4340"
+                  target="_blank" rel="noopener noreferrer">1794SA</a>
+              </div>
+            </div>
+            <a class="site-footer-donate-btn"
+              href="https://gofund.me/f75f7c17" target="_blank"
+              rel="noopener noreferrer">
+              <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
+              Support the masjid
+            </a>
           </div>
         </div>
-        <!-- Grid column -->
+
+        <div class="col-6 col-md-4 col-lg-2 site-footer-nav-col">
+          <h2 class="site-footer-heading">Explore</h2>
+          <ul class="site-footer-links list-unstyled mb-0">
+            <li><a href="/">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="about.html#our-team">Our team</a></li>
+            <li><a href="activities.html">Programmes</a></li>
+            <li><a href="madrasa.html">Madrasa</a></li>
+            <li><a href="projects.html">New Masjid</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-2 site-footer-nav-col">
+          <h2 class="site-footer-heading">Community</h2>
+          <ul class="site-footer-links list-unstyled mb-0">
+            <li>
+              <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
+                target="_blank" rel="noopener noreferrer">Register</a>
+            </li>
+            <li><a href="activities.html#women-class">Women's class</a></li>
+            <li><a href="activities.html#adult-classes">Men's class</a></li>
+            <li><a href="madrasa.html#madrasa-schedule">Children's madrasa</a></li>
+            <li><a href="activities.html#listen">Talks &amp; recordings</a></li>
+            <li>
+              <a href="#" target="_blank" rel="noopener noreferrer"
+                id="salah-times-footer"><span id="footer-cur-month"></span> timetable</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-md-4 col-lg-4 site-footer-visit-col">
+          <h2 class="site-footer-heading">Find us</h2>
+          <div class="site-footer-location-card">
+            <div class="site-footer-location-visual" aria-hidden="true">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <address class="site-footer-address">
+              Kerry Islamic Cultural Centre<br>
+              Tralee, Co. Kerry<br>
+              V92 N6YR, Ireland
+            </address>
+            <ul class="site-footer-contact list-unstyled mb-0">
+              <li>
+                <a href="mailto:info@traleemasjidkicc.ie">
+                  <i class="fas fa-envelope" aria-hidden="true"></i>
+                  info@traleemasjidkicc.ie
+                </a>
+              </li>
+              <li>
+                <a href="tel:+353866038982">
+                  <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                  086 603 8982
+                </a>
+              </li>
+              <li>
+                <a href="https://wa.me/353862440556?text=As-salamu%20alaikum"
+                  target="_blank" rel="noopener noreferrer">
+                  <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                  WhatsApp · 086 244 0556
+                </a>
+              </li>
+            </ul>
+            <a class="site-footer-directions-btn"
+              href="https://goo.gl/maps/itDbxNWHt4bcUb4A9" target="_blank"
+              rel="noopener noreferrer">
+              <i class="fas fa-directions" aria-hidden="true"></i>
+              Get directions
+            </a>
+          </div>
+        </div>
       </div>
-      <!-- Grid row -->
+
+      <div class="site-footer-bottom">
+        <p class="site-footer-copy mb-0">
+          © <span id="footer-year">2019</span> Kerry Islamic Cultural Centre
+          <span class="site-footer-credit">Made with
+            <i class="fas fa-heart" aria-hidden="true"></i> &amp;
+            <i class="fas fa-mug-hot" aria-hidden="true"></i> by
+            <a href="https://nalam.me" rel="external noopener"
+              target="_blank">Nazmul Alam</a>
+          </span>
+        </p>
+        <ul class="site-footer-social list-unstyled mb-0">
+          <li>
+            <a class="site-footer-social-link"
+              href="https://github.com/traleemasjidkicc" target="_blank"
+              rel="noopener noreferrer" aria-label="GitHub repository">
+              <i class="fab fa-github" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <!-- Footer Links -->
   </footer>
   <!-- FOOTER END -->
 </body>
