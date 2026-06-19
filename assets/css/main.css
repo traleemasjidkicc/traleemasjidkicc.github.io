@@ -1436,6 +1436,134 @@ section.pricing {
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
+/* GoFundMe live progress widget */
+.gfm-progress {
+	background: #fff;
+	border-radius: 12px;
+	padding: 1.5rem 1.35rem;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	text-align: left;
+}
+
+.gfm-progress-light {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: none;
+	color: #fff;
+}
+
+.gfm-progress-name {
+	font-size: 0.95rem;
+	font-weight: 700;
+	line-height: 1.45;
+	margin-bottom: 1rem;
+	color: inherit;
+}
+
+.gfm-progress-amounts {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.35rem 0.65rem;
+	margin-bottom: 0.85rem;
+}
+
+.gfm-progress-raised {
+	font-family: "Cinzel Decorative", serif;
+	font-size: clamp(1.35rem, 3vw, 1.75rem);
+	font-weight: 700;
+	line-height: 1.2;
+	color: #0d5b5e;
+}
+
+.gfm-progress-light .gfm-progress-raised {
+	color: #e8c96a;
+}
+
+.gfm-progress-goal {
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.gfm-progress-light .gfm-progress-goal {
+	color: rgba(255, 255, 255, 0.82);
+}
+
+.gfm-progress-track {
+	height: 0.65rem;
+	border-radius: 999px;
+	background: rgba(13, 91, 94, 0.12);
+	overflow: hidden;
+	margin-bottom: 0.65rem;
+}
+
+.gfm-progress-light .gfm-progress-track {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.gfm-progress-fill {
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(to right, #0d5b5e, #0D5E10);
+	transition: width 0.6s ease;
+	min-width: 0;
+}
+
+.gfm-progress-light .gfm-progress-fill {
+	background: linear-gradient(to right, #c9a84c, #0D5E10);
+}
+
+.gfm-progress-meta {
+	margin-bottom: 0;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+}
+
+.gfm-progress-light .gfm-progress-meta {
+	color: rgba(255, 255, 255, 0.88);
+}
+
+.gfm-progress-loading .gfm-progress-name,
+.gfm-progress-loading .gfm-progress-raised,
+.gfm-progress-loading .gfm-progress-goal {
+	opacity: 0.55;
+}
+
+.gfm-progress-loading .gfm-progress-track {
+	position: relative;
+	overflow: hidden;
+}
+
+.gfm-progress-loading .gfm-progress-track::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.35),
+		transparent
+	);
+	animation: gfm-progress-shimmer 1.4s infinite;
+}
+
+@keyframes gfm-progress-shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.campaign-hero-unified .gfm-progress {
+	margin-bottom: 1.25rem;
+}
+
 .campaign-gfm-widget {
 	background: transparent;
 	border-radius: 0;
@@ -3006,3 +3134,685 @@ blockquote.quote-card {
   }
 }
 /* WhatsApp Floating button style end */
+
+.back-to-top {
+	position: fixed;
+	right: 20px;
+	bottom: 24px;
+	width: 48px;
+	height: 48px;
+	border: none;
+	border-radius: 50%;
+	background: #0d5b5e;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	box-shadow: 0 4px 16px rgba(13, 91, 94, 0.35);
+	z-index: 1050;
+	cursor: pointer;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(10px);
+	transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease,
+		box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.back-to-top.is-visible {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.back-to-top:hover,
+.back-to-top:focus {
+	background: #094548;
+	color: #fff;
+	box-shadow: 0 6px 20px rgba(13, 91, 94, 0.45);
+	transform: translateY(-2px);
+	outline: none;
+}
+
+@media (max-width: 575.98px) {
+	.back-to-top {
+		right: 15px;
+		bottom: 20px;
+		width: 44px;
+		height: 44px;
+	}
+}
+
+/* ABOUT PAGE START */
+.page-about {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background-color: #fff;
+	--kicc-nav-offset: 3.5rem;
+}
+
+@media (min-width: 992px) {
+	.page-about {
+		--kicc-nav-offset: 5rem;
+	}
+}
+
+.page-about .about-main {
+	flex: 1 0 auto;
+}
+
+.page-about [id] {
+	scroll-margin-top: calc(var(--kicc-nav-offset) + 1rem);
+}
+
+.page-about .about-hero {
+	min-height: 38vh;
+	display: flex;
+	align-items: center;
+}
+
+.page-about .about-hero-title {
+	color: #fff;
+	font-size: clamp(2.25rem, 5vw, 3.25rem);
+	line-height: 1.15;
+	margin-bottom: 1rem;
+	text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+}
+
+.page-about .about-hero-lead {
+	color: rgba(255, 255, 255, 0.92);
+	font-size: 1.15rem;
+	line-height: 1.65;
+	max-width: 36rem;
+	margin: 0 auto;
+	text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+}
+
+.page-about .about-scroll-cue {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	margin-top: 1.75rem;
+	color: rgba(255, 255, 255, 0.85);
+	border: 1px solid rgba(255, 255, 255, 0.45);
+	border-radius: 50%;
+	text-decoration: none;
+	transition: transform 0.2s ease, background-color 0.2s ease,
+		border-color 0.2s ease;
+	animation: about-scroll-bob 2s ease-in-out infinite;
+}
+
+.page-about .about-scroll-cue:hover,
+.page-about .about-scroll-cue:focus {
+	color: #fff;
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.75);
+	text-decoration: none;
+	transform: translateY(2px);
+}
+
+@keyframes about-scroll-bob {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(6px);
+	}
+}
+
+.page-about .about-stats {
+	background: #fff;
+	margin-top: -2.5rem;
+	position: relative;
+	z-index: 4;
+	padding-bottom: 0;
+}
+
+.page-about .about-section-nav {
+	background: #fff;
+	border-bottom: 1px solid rgba(13, 91, 94, 0.08);
+	padding: 0.85rem 0 1rem;
+}
+
+.page-about .about-section-nav-list {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 0.5rem;
+	scrollbar-width: none;
+	justify-content: center;
+}
+
+.page-about .about-section-nav-list::-webkit-scrollbar {
+	display: none;
+}
+
+.page-about .about-section-nav-list li {
+	flex: 0 0 auto;
+}
+
+.page-about .about-section-nav-list a {
+	display: block;
+	padding: 0.45rem 1rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: #555;
+	text-decoration: none;
+	border-radius: 999px;
+	border: 1px solid rgba(13, 91, 94, 0.12);
+	background: #f9f0e7;
+	white-space: nowrap;
+	transition: background-color 0.15s ease, color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.page-about .about-section-nav-list a:hover,
+.page-about .about-section-nav-list a:focus {
+	background: #0d5b5e;
+	border-color: #0d5b5e;
+	color: #fff;
+	text-decoration: none;
+}
+
+.page-about .about-section-eyebrow {
+	font-size: 0.85rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+	margin-bottom: 0.5rem;
+}
+
+.page-about #intro.home-welcome-section {
+	padding-bottom: 4.5rem;
+}
+
+.page-about .about-quote-break .parallax-section {
+	margin-bottom: 0;
+}
+
+.page-about .about-stats-grid {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 12px 40px rgba(13, 91, 94, 0.12);
+	border: 1px solid rgba(13, 91, 94, 0.08);
+	padding: 1.5rem 0.5rem;
+}
+
+.page-about .about-stat-col {
+	margin-bottom: 0.5rem;
+}
+
+.page-about .about-stat {
+	padding: 0.75rem 0.5rem;
+}
+
+.page-about .about-stat-icon {
+	display: block;
+	font-size: 1.15rem;
+	color: #c9a84c;
+	margin-bottom: 0.35rem;
+}
+
+.page-about .about-stat-value {
+	display: block;
+	font-family: "Cinzel Decorative", serif;
+	font-size: clamp(1.35rem, 3vw, 1.75rem);
+	font-weight: 700;
+	color: #0d5b5e;
+	line-height: 1.2;
+	margin-bottom: 0.35rem;
+}
+
+.page-about .about-stat-label {
+	display: block;
+	font-size: 0.82rem;
+	color: #666;
+	line-height: 1.4;
+	max-width: 9rem;
+	margin: 0 auto;
+}
+
+.page-about .about-hero-nav .btn-kicc-ghost {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.75);
+}
+
+.page-about .about-visit-card {
+	display: block;
+	height: 100%;
+	padding: 2rem 1.5rem;
+	text-align: center;
+	background: #fff;
+	border-radius: 12px;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	color: inherit;
+	text-decoration: none;
+	transition: transform 0.2s ease, box-shadow 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.page-about .about-visit-card:hover,
+.page-about .about-visit-card:focus {
+	color: inherit;
+	text-decoration: none;
+	transform: translateY(-4px);
+	box-shadow: 0 12px 32px rgba(13, 91, 94, 0.14);
+	border-color: rgba(13, 91, 94, 0.2);
+}
+
+.page-about .about-visit-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 3.5rem;
+	height: 3.5rem;
+	margin-bottom: 1rem;
+	border-radius: 50%;
+	background: rgba(13, 91, 94, 0.08);
+	color: #0d5b5e;
+	font-size: 1.25rem;
+}
+
+.page-about .about-visit-card h3 {
+	font-family: "Libre Caslon Text", serif;
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.5rem;
+}
+
+.page-about .about-visit-card p {
+	color: #666;
+	font-size: 0.95rem;
+	line-height: 1.5;
+	margin-bottom: 0.75rem;
+}
+
+.page-about .about-visit-cta {
+	display: inline-block;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+}
+
+.page-about .about-support-row {
+	margin-top: 0.5rem;
+}
+
+.page-about .about-support-blessing {
+	margin: 0 auto 1.5rem;
+	max-width: none;
+}
+
+.page-about .about-gfm-progress {
+	max-width: none;
+	margin: 0;
+}
+
+.page-about .about-vision-card {
+	position: relative;
+	padding-top: 2.75rem;
+}
+
+.page-about .about-vision-icon {
+	position: absolute;
+	top: 1.25rem;
+	right: 1.25rem;
+	font-size: 1.35rem;
+	color: rgba(201, 168, 76, 0.55);
+}
+
+.page-about .about-story-image-wrap {
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.page-about .about-story-image {
+	width: 100%;
+	height: auto;
+	display: block;
+	object-fit: cover;
+}
+
+.page-about .about-story-caption {
+	margin: 0;
+	padding: 0.65rem 1rem;
+	font-size: 0.85rem;
+	color: #666;
+	background: #f9f0e7;
+	text-align: center;
+}
+
+.page-about .about-story-highlight {
+	margin: 1.25rem 0;
+	border-left-color: #0d5b5e;
+}
+
+.page-about .about-milestones-wrap {
+	margin-top: 3.5rem;
+	padding-top: 2.5rem;
+	border-top: 1px solid rgba(13, 91, 94, 0.12);
+}
+
+.page-about .about-milestones-heading {
+	font-family: "Cinzel Decorative", serif;
+	font-size: 1.35rem;
+	color: #222;
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.page-about .about-milestones {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.75rem;
+	position: relative;
+}
+
+.page-about .about-milestones::before {
+	content: "";
+	position: absolute;
+	top: 1.15rem;
+	left: 10%;
+	right: 10%;
+	height: 2px;
+	background: linear-gradient(to right, #0d5b5e, #c9a84c, #0d5b5e);
+	z-index: 0;
+}
+
+.page-about .about-milestone {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+	padding: 0 0.35rem;
+}
+
+.page-about .about-milestone-year {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 3.25rem;
+	height: 2.35rem;
+	padding: 0 0.65rem;
+	margin-bottom: 0.75rem;
+	font-family: "Cinzel Decorative", serif;
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: #0d5b5e;
+	background: #f9f0e7;
+	border: 2px solid #0d5b5e;
+	border-radius: 999px;
+}
+
+.page-about .about-milestone-current .about-milestone-year {
+	background: #0d5b5e;
+	color: #fff;
+	border-color: #c9a84c;
+	box-shadow: 0 4px 16px rgba(13, 91, 94, 0.28);
+}
+
+.page-about .about-milestone-text {
+	font-size: 0.82rem;
+	color: #555;
+	line-height: 1.45;
+	margin-bottom: 0;
+}
+
+.page-about .about-service-link {
+	display: block;
+	height: 100%;
+	color: inherit;
+	text-decoration: none;
+}
+
+.page-about .about-service-link:hover,
+.page-about .about-service-link:focus {
+	color: inherit;
+	text-decoration: none;
+}
+
+.page-about .about-service-card {
+	height: 100%;
+	transition: transform 0.2s ease, box-shadow 0.2s ease,
+		border-color 0.2s ease;
+	border: 1px solid transparent;
+}
+
+.page-about .about-service-link:hover .about-service-card,
+.page-about .about-service-link:focus .about-service-card {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 32px rgba(13, 91, 94, 0.14);
+	border-color: rgba(13, 91, 94, 0.15);
+}
+
+.page-about .about-service-cta {
+	display: inline-block;
+	margin-top: 0.75rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+}
+
+.page-about .about-team-quote {
+	font-style: italic;
+	color: #666;
+	max-width: 36rem;
+	margin: 0 auto;
+}
+
+.page-about .about-team-group-label {
+	font-family: "Cinzel Decorative", serif;
+	font-size: 0.95rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+	margin-bottom: 1.25rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid rgba(201, 168, 76, 0.45);
+}
+
+.page-about .about-team-card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 2rem 1.25rem 1.5rem;
+	height: 100%;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	border: 1px solid rgba(13, 91, 94, 0.08);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-about .about-team-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 32px rgba(13, 91, 94, 0.14);
+}
+
+.page-about .about-team-card-featured {
+	padding-top: 2.25rem;
+	border-top: 4px solid #c9a84c;
+}
+
+.page-about .about-team-card-imam {
+	border-top-color: #0d5b5e;
+}
+
+.page-about .about-team-photo {
+	border-radius: 50%;
+	object-fit: cover;
+	margin-bottom: 1rem;
+	border: 3px solid rgba(201, 168, 76, 0.35);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.page-about .about-team-card-imam .about-team-photo {
+	border-color: rgba(13, 91, 94, 0.25);
+}
+
+.page-about .about-team-name {
+	font-family: "Libre Caslon Text", serif;
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.35rem;
+}
+
+.page-about .about-team-card-featured .about-team-name {
+	font-size: 1.15rem;
+}
+
+.page-about .about-team-role {
+	display: inline-block;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: #0d5b5e;
+	background: rgba(13, 91, 94, 0.08);
+	padding: 0.25rem 0.65rem;
+	border-radius: 999px;
+}
+
+.page-about .about-team-role-imam {
+	color: #7a5e12;
+	background: rgba(201, 168, 76, 0.18);
+}
+
+.page-about .about-team-social {
+	margin-top: 1rem;
+}
+
+.page-about .about-tech-banner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 1.25rem;
+	background: #fff;
+	border-radius: 12px;
+	padding: 2rem 1.5rem;
+	box-shadow: 0 6px 28px rgba(0, 0, 0, 0.07);
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	max-width: 40rem;
+	margin: 0 auto;
+}
+
+.page-about .about-tech-photo {
+	border-radius: 50%;
+	object-fit: cover;
+	border: 3px solid rgba(13, 91, 94, 0.2);
+	flex-shrink: 0;
+}
+
+.page-about .about-tech-eyebrow {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: #c9a84c;
+	margin-bottom: 0.35rem;
+}
+
+.page-about .about-tech-name {
+	font-family: "Libre Caslon Text", serif;
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.5rem;
+}
+
+.page-about .about-tech-desc {
+	color: #666;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	margin-bottom: 0.75rem;
+}
+
+.page-about .campaign-closing .campaign-blessing-block {
+	margin-bottom: 2rem;
+}
+
+.page-about .about-support-blessing.campaign-blessing-block {
+	margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.page-about .about-tech-banner {
+		flex-direction: row;
+		text-align: left;
+		padding: 2rem 2.25rem;
+		gap: 1.75rem;
+	}
+}
+
+@media (max-width: 991.98px) {
+	.page-about .about-milestones {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.25rem 0.75rem;
+	}
+
+	.page-about .about-milestones::before {
+		display: none;
+	}
+
+	.page-about .about-milestone {
+		background: #fff;
+		border-radius: 10px;
+		padding: 1rem 0.75rem;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+		border: 1px solid rgba(13, 91, 94, 0.08);
+	}
+
+	.page-about .about-milestone:nth-child(odd):last-child {
+		grid-column: 1 / -1;
+		max-width: 14rem;
+		margin: 0 auto;
+		width: 100%;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.page-about .about-hero {
+		min-height: auto;
+	}
+
+	.page-about [id] {
+		scroll-margin-top: calc(var(--kicc-nav-offset) + 0.75rem);
+	}
+
+	.page-about .about-section-nav-list {
+		justify-content: flex-start;
+		padding-bottom: 0.15rem;
+	}
+
+	.page-about .about-stats {
+		margin-top: -1.5rem;
+	}
+
+	.page-about .about-stat-col:nth-child(odd) {
+		border-right: 1px solid rgba(13, 91, 94, 0.08);
+	}
+
+	.page-about .about-stat-col:nth-child(-n + 2) {
+		border-bottom: 1px solid rgba(13, 91, 94, 0.08);
+		padding-bottom: 0.75rem;
+		margin-bottom: 0.75rem;
+	}
+}
+/* ABOUT PAGE END */

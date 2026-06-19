@@ -1182,10 +1182,149 @@
     document.body.appendChild(waLink);
   };
 
+  const addBackToTopButton = () => {
+    if (!document.body.classList.contains("page-about")) return;
+    if (document.querySelector(".back-to-top")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "back-to-top";
+    btn.setAttribute("aria-label", "Back to top");
+    btn.innerHTML = '<i class="fas fa-arrow-up" aria-hidden="true"></i>';
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const toggleVisibility = () => {
+      btn.classList.toggle("is-visible", window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
+    toggleVisibility();
+    document.body.appendChild(btn);
+  };
+
   const initBaguetteBox = () => {
     if (typeof baguetteBox !== "undefined") {
       baguetteBox.run(".grid-gallery", { animation: "slideIn" });
     }
+  };
+
+  const GFM_GRAPHQL_URL = "https://graphql.gofundme.com/graphql";
+  const GFM_FUNDRAISER_SLUG =
+    "ub7t7-kerry-islamic-cultural-centre-requires-donation";
+  const GFM_PROGRESS_KEY = "kicc-gfm-progress";
+  const GFM_FUNDRAISER_QUERY = `
+    query GetFundraiser($slug: ID!) {
+      fundraiser(slug: $slug) {
+        fundName
+        goalAmount {
+          amount
+          currencyCode
+        }
+        currentAmount {
+          amount
+          currencyCode
+        }
+      }
+    }
+  `;
+
+  const formatFundraiserAmount = (amount, currencyCode) => {
+    return new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: currencyCode || "EUR",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const applyFundraiserProgress = (fundraiser) => {
+    const goal = Number(fundraiser.goalAmount.amount);
+    const raised = Number(fundraiser.currentAmount.amount);
+    const currencyCode =
+      fundraiser.goalAmount.currencyCode ||
+      fundraiser.currentAmount.currencyCode ||
+      "EUR";
+    const pct = goal > 0 ? Math.min(100, (raised / goal) * 100) : 0;
+    const pctLabel = pct.toFixed(1).replace(/\.0$/, "");
+
+    document.querySelectorAll("[data-gfm-progress]").forEach((el) => {
+      const nameEl = el.querySelector("[data-gfm-name]");
+      const raisedEl = el.querySelector("[data-gfm-raised]");
+      const goalEl = el.querySelector("[data-gfm-goal]");
+      const fillEl = el.querySelector("[data-gfm-fill]");
+      const pctEl = el.querySelector("[data-gfm-percent]");
+      const trackEl = el.querySelector("[data-gfm-track]");
+
+      if (nameEl) nameEl.textContent = fundraiser.fundName;
+      if (raisedEl) raisedEl.textContent = formatFundraiserAmount(raised, currencyCode);
+      if (goalEl) {
+        goalEl.textContent =
+          "raised of " + formatFundraiserAmount(goal, currencyCode) + " goal";
+      }
+      if (fillEl) fillEl.style.width = pct + "%";
+      if (pctEl) pctEl.textContent = pctLabel;
+      if (trackEl) {
+        trackEl.setAttribute("aria-valuenow", pctLabel);
+        trackEl.setAttribute("aria-valuemin", "0");
+        trackEl.setAttribute("aria-valuemax", "100");
+        trackEl.setAttribute(
+          "aria-label",
+          "Campaign " + pctLabel + "% funded"
+        );
+      }
+      el.classList.remove("gfm-progress-loading");
+    });
+  };
+
+  const loadFundraiserProgress = () => {
+    const widgets = document.querySelectorAll("[data-gfm-progress]");
+    if (!widgets.length) return;
+
+    try {
+      const cached = localStorage.getItem(GFM_PROGRESS_KEY);
+      if (cached) {
+        applyFundraiserProgress(JSON.parse(cached));
+      }
+    } catch (e) {
+      console.warn("Unable to read GoFundMe cache", e);
+    }
+
+    fetch(GFM_GRAPHQL_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: GFM_FUNDRAISER_QUERY,
+        variables: { slug: GFM_FUNDRAISER_SLUG },
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then((json) => {
+        const fundraiser = json && json.data && json.data.fundraiser;
+        if (!fundraiser) throw new Error("No fundraiser data");
+        try {
+          localStorage.setItem(GFM_PROGRESS_KEY, JSON.stringify(fundraiser));
+        } catch (e) {
+          console.warn("Unable to cache GoFundMe progress", e);
+        }
+        applyFundraiserProgress(fundraiser);
+      })
+      .catch((err) => {
+        console.error("Error loading GoFundMe progress", err);
+        widgets.forEach((el) => {
+          if (!el.classList.contains("gfm-progress-loading")) return;
+          const nameEl = el.querySelector("[data-gfm-name]");
+          if (nameEl) {
+            nameEl.textContent =
+              "Help Complete Kerry Islamic Cultural Centre this Year!";
+          }
+          el.classList.remove("gfm-progress-loading");
+        });
+      });
   };
 
   const setLocationSpecific = () => {
@@ -1213,6 +1352,7 @@
       showNotices();
     }
     addWhatsAppButton();
+    addBackToTopButton();
     setFooterYear();
     showCookiePolicy();
   });
@@ -1221,6 +1361,7 @@
     setSalahTimeUrl();
     setSalahTimes();
     getRandomHadith();
+    loadFundraiserProgress();
     setLocationSpecific();
   };
 })();
