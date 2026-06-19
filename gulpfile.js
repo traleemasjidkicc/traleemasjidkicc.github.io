@@ -8,14 +8,30 @@ import through2 from 'through2';
 
 const bs = browserSync.create();
 const jsDir = 'assets/js/';
+const cssDir = 'assets/css/';
 const htmlFiles = '**/*.html';
 const hookFiles = ['pre-commit', 'post-commit'];
 const scriptTagPattern =
     /<script defer type="text\/javascript" src="assets\/js\/scripts-\d+\.js"><\/script>/g;
+const mainCssLinkPattern =
+    /<link rel="stylesheet" href="assets\/css\/main(?:-\d+)?\.css">/g;
 
 const getScriptsJsFile = () => {
     const jsFiles = fs.readdirSync(jsDir).filter(file => /scripts-\d+\.js$/.test(file));
     return jsFiles[0] ?? null;
+};
+
+const getMainCssFile = () => {
+    const versionedCssFiles = fs.readdirSync(cssDir).filter(file => /^main-\d+\.css$/.test(file));
+    if (versionedCssFiles[0]) {
+        return versionedCssFiles[0];
+    }
+
+    if (fs.existsSync(path.join(cssDir, 'main.css'))) {
+        return 'main.css';
+    }
+
+    return null;
 };
 
 const hasJsChanged = () => {
@@ -32,11 +48,40 @@ const hasJsChanged = () => {
     return status.length > 0;
 };
 
+const hasCssChanged = () => {
+    const cssFile = getMainCssFile();
+    if (!cssFile) {
+        return false;
+    }
+
+    const cssPath = path.join(cssDir, cssFile);
+    const status = execSync(`git status --porcelain -- "${cssPath}"`, {
+        encoding: 'utf8',
+    }).trim();
+
+    return status.length > 0;
+};
+
 const updateHtmlScriptRefs = (fileName, { forceWrite = false } = {}) => {
     return gulp.src(htmlFiles, { allowEmpty: true })
         .pipe(replace(
             scriptTagPattern,
             `<script defer type="text/javascript" src="assets/js/${fileName}"></script>`
+        ))
+        .pipe(through2.obj((file, _, cb) => {
+            if (forceWrite && file.isBuffer()) {
+                fs.writeFileSync(file.path, file.contents);
+            }
+            cb(null, file);
+        }))
+        .pipe(gulp.dest(file => file.base));
+};
+
+const updateHtmlCssRefs = (fileName, { forceWrite = false } = {}) => {
+    return gulp.src(htmlFiles, { allowEmpty: true })
+        .pipe(replace(
+            mainCssLinkPattern,
+            `<link rel="stylesheet" href="assets/css/${fileName}">`
         ))
         .pipe(through2.obj((file, _, cb) => {
             if (forceWrite && file.isBuffer()) {
@@ -97,6 +142,25 @@ gulp.task('rename-js', function (done) {
         .on('end', done);
 });
 
+// Task to rename the main CSS file and update the HTML files
+gulp.task('rename-css', function (done) {
+    const cssFile = getMainCssFile();
+
+    if (!cssFile) {
+        console.log('No matching CSS file found.');
+        done();
+        return;
+    }
+
+    const newFileName = `main-${Date.now()}.css`;
+
+    fs.renameSync(path.join(cssDir, cssFile), path.join(cssDir, newFileName));
+    console.log(`Renamed: ${cssFile} to ${newFileName}`);
+
+    updateHtmlCssRefs(newFileName, { forceWrite: true })
+        .on('end', done);
+});
+
 // Rename JS and update HTML only when the scripts file has changed
 gulp.task('rename-js-if-changed', function (done) {
     if (!hasJsChanged()) {
@@ -108,29 +172,69 @@ gulp.task('rename-js-if-changed', function (done) {
     gulp.series('rename-js')(done);
 });
 
-// Task to update the HTML files (sync refs to current JS filename)
-gulp.task('update-html', function (done) {
-    const jsFile = getScriptsJsFile();
-
-    if (!jsFile) {
-        console.log('No matching JS file found for update.');
+// Rename CSS and update HTML only when the main CSS file has changed
+gulp.task('rename-css-if-changed', function (done) {
+    if (!hasCssChanged()) {
+        console.log('No CSS changes detected — skipping rename and HTML update.');
         done();
         return;
     }
 
-    updateHtmlScriptRefs(jsFile)
+    gulp.series('rename-css')(done);
+});
+
+// Task to update the HTML files (sync refs to current JS/CSS filenames)
+gulp.task('update-html', function (done) {
+    const jsFile = getScriptsJsFile();
+    const cssFile = getMainCssFile();
+
+    if (!jsFile && !cssFile) {
+        console.log('No matching JS or CSS files found for update.');
+        done();
+        return;
+    }
+
+    let stream = gulp.src(htmlFiles, { allowEmpty: true });
+
+    if (jsFile) {
+        stream = stream.pipe(replace(
+            scriptTagPattern,
+            `<script defer type="text/javascript" src="assets/js/${jsFile}"></script>`
+        ));
+    }
+
+    if (cssFile) {
+        stream = stream.pipe(replace(
+            mainCssLinkPattern,
+            `<link rel="stylesheet" href="assets/css/${cssFile}">`
+        ));
+    }
+
+    stream
+        .pipe(gulp.dest(file => file.base))
         .on('end', done);
 });
 
-// Pre-commit: cache-bust JS and bump version only when JS changed
+// Pre-commit: cache-bust JS/CSS and bump version when either asset changed
 gulp.task('precommit', function (done) {
-    if (!hasJsChanged()) {
-        console.log('No JS changes detected — skipping cache bust and version bump.');
+    const jsChanged = hasJsChanged();
+    const cssChanged = hasCssChanged();
+
+    if (!jsChanged && !cssChanged) {
+        console.log('No JS or CSS changes detected — skipping cache bust and version bump.');
         done();
         return;
     }
 
-    gulp.series('rename-js')(function (err) {
+    const renameTasks = [];
+    if (jsChanged) {
+        renameTasks.push('rename-js');
+    }
+    if (cssChanged) {
+        renameTasks.push('rename-css');
+    }
+
+    gulp.series(...renameTasks)(function (err) {
         if (err) {
             done(err);
             return;

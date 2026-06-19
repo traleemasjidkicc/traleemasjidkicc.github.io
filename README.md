@@ -125,23 +125,23 @@ traleemasjidkicc.github.io/
 └── .cursor/rules/          # Cursor IDE rules
 ```
 
-### JS asset versioning
+### JS and CSS asset versioning
 
-JavaScript uses a timestamped filename (`scripts-{timestamp}.js`) to bust browser caches when the JS file changes.
+JavaScript and main CSS use timestamped filenames (`scripts-{timestamp}.js`, `main-{timestamp}.css`) to bust browser caches when those files change.
 
 ```mermaid
 flowchart LR
-    A[Edit scripts-*.js] --> B[git commit]
+    A[Edit scripts-*.js or main*.css] --> B[git commit]
     B --> C[pre-commit hook]
-    C --> D{JS changed?}
-    D -->|Yes| E[gulp rename-js + yarn version patch]
+    C --> D{JS or CSS changed?}
+    D -->|Yes| E[gulp rename-js / rename-css + yarn version patch]
     D -->|No| F[Skip]
     E --> G[post-commit amends commit]
     F --> H[Push to GitHub Pages]
     G --> H
 ```
 
-> **Do not** manually rename the JS file or edit `<script src="...">` tags — git hooks handle this automatically.
+> **Do not** manually rename versioned assets or edit `<script src="...">` / `<link href="assets/css/main...">` tags — git hooks handle this automatically.
 
 ### Client-side init timing
 

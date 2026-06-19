@@ -18,9 +18,15 @@ alwaysApply: false
 <script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>
 ```
 
+- Main stylesheet link (do not change filename manually):
+
+```html
+<link rel="stylesheet" href="assets/css/main-{timestamp}.css">
+```
+
 ## CSS
 
-- `assets/css/main.css` — layout, typography, components, campaign page styles, responsive rules
+- `assets/css/main-{timestamp}.css` — layout, typography, components, campaign page styles, responsive rules
 - `assets/css/animations.css` — transitions and keyframe animations only
 - Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
 - Prefer existing colour/spacing variables and class names before adding new ones

@@ -10,17 +10,18 @@ Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Mosque). B
 
 ### Asset Versioning Strategy
 
-**Critical workflow**: JavaScript files use timestamp-based versioning (`scripts-{timestamp}.js`) to prevent browser caching issues.
+**Critical workflow**: JavaScript and main CSS use timestamp-based versioning to prevent browser caching issues.
 
-- All HTML files reference the JS asset: `<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>`
-- Before commits, `yarn precommit` (`gulp precommit`) renames JS and updates HTML **only when** `assets/js/scripts-*.js` has changed:
-  1. Generates new timestamp filename
-  2. Renames the physical JS file in `assets/js/`
-  3. Updates all HTML files with the new reference
-  4. Bumps `package.json` patch version
+- JS: `<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>`
+- Main CSS: `<link rel="stylesheet" href="assets/css/main-{timestamp}.css">`
+- Before commits, `yarn precommit` (`gulp precommit`) renames changed assets and updates HTML:
+  1. Generates new timestamp filename(s) for changed JS and/or main CSS
+  2. Renames the physical file(s) in `assets/js/` and/or `assets/css/`
+  3. Updates all HTML files with the new reference(s)
+  4. Bumps `package.json` patch version (once, if either asset changed)
 - `post-commit` hook amends the commit to include staged hook output
-- **When modifying JS**: Always run `yarn start` to preview changes, then commit naturally — hooks handle versioning
-- **When modifying HTML**: Manual edits work fine; hooks only update script references during commits
+- **When modifying JS or main CSS**: Always run `yarn start` to preview changes, then commit naturally — hooks handle versioning
+- **When modifying HTML**: Manual edits work fine; hooks only update script/stylesheet references during commits
 
 ### Build & Development Workflow
 
@@ -29,7 +30,7 @@ yarn ci          # Clean install with --immutable (Yarn 4 frozen lockfile), then
 yarn verify      # Verify install integrity (--immutable --check-cache)
 yarn start       # Serve locally on http://localhost:3000 with live reload (BrowserSync)
 yarn setup-hooks # Install pre-commit / post-commit hooks
-yarn precommit   # Renames JS + bumps version only when scripts-*.js changed
+yarn precommit   # Renames changed JS/CSS + bumps version when scripts-*.js or main*.css changed
 ```
 
 ## Project Structure
@@ -37,7 +38,7 @@ yarn precommit   # Renames JS + bumps version only when scripts-*.js changed
 ```
 assets/
   ├── css/
-  │   ├── main.css        # Core styling, campaign components
+  │   ├── main-*.css      # Versioned core styling, campaign components
   │   └── animations.css  # Animations & transitions
   ├── images/
   │   ├── backgrounds/    # Hero & section backgrounds

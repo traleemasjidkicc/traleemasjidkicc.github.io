@@ -37,12 +37,12 @@ Other third-party
   └── Google Analytics    → gtag G-3H9CDDS71D
 ```
 
-## Critical: JS asset versioning
+## Critical: JS and CSS asset versioning
 
-- One versioned file: `assets/js/scripts-{timestamp}.js`
-- **Never manually edit** `<script src="assets/js/scripts-...">` in HTML
-- On commit, `yarn precommit` runs `gulp precommit`: renames JS and bumps version **only when** `assets/js/scripts-*.js` has git changes
-- Edit the existing `scripts-*.js` file in place during development
+- Versioned files: `assets/js/scripts-{timestamp}.js`, `assets/css/main-{timestamp}.css`
+- **Never manually edit** `<script src="assets/js/scripts-...">` or `<link href="assets/css/main...">` in HTML
+- On commit, `yarn precommit` runs `gulp precommit`: renames changed JS/CSS and bumps version **only when** `assets/js/scripts-*.js` and/or `assets/css/main*.css` has git changes
+- Edit the existing `scripts-*.js` and `main*.css` files in place during development
 - `post-commit` hook amends the commit to include hook-generated changes
 
 ## Page-specific JS behaviour
@@ -70,7 +70,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 ## Conventions
 
 - **HTML:** Bootstrap 4 grid, shared nav/footer patterns across pages, SRI on CDN assets, `lang="en-GB"`
-- **CSS:** `main.css` for layout/theme/campaign components; `animations.css` for motion
+- **CSS:** `main-{timestamp}.css` for layout/theme/campaign components; `animations.css` for motion (not versioned)
 - **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage cache-then-fetch; defensive fetch error handling
 - **Images:** under `assets/images/` (`backgrounds/`, `bp/`, `masjid/`, `posters/`, `team/`)
 - **Deployment:** `main` branch → GitHub Pages; custom domain via `CNAME` (`traleemasjidkicc.ie`)
@@ -78,7 +78,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 ## When editing
 
 1. **Content (HTML):** edit directly; test with `yarn start`
-2. **Styles:** edit CSS; BrowserSync hot-reloads
+2. **Styles:** edit `assets/css/main*.css`; BrowserSync hot-reloads; commit normally — hooks version the file
 3. **Logic:** edit `assets/js/scripts-*.js`; commit normally — hooks version the file
 4. **Dependencies:** `yarn upgrade <pkg>`, test, commit lockfile
 5. **Ramadan/Eid dates:** update hardcoded dates in `isRamadan()` / `isEid()` annually (currently 2026)
@@ -86,7 +86,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 ## Pitfalls
 
-- JS changes not visible → hard refresh (Cmd+Shift+R) or rely on commit hook renames
+- JS/CSS changes not visible → hard refresh (Cmd+Shift+R) or rely on commit hook renames
 - API down → check localStorage cache keys in DevTools
 - Do not bump `package.json` version manually — precommit hook handles it
 - Hadith/announcement HTML from APIs uses `innerHTML` — only trusted backend sources
@@ -94,7 +94,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 ## Key files
 
-- `gulpfile.js` — serve, watch, rename-js, update-html, setup-hooks
+- `gulpfile.js` — serve, watch, rename-js, rename-css, update-html, setup-hooks
 - `package.json` — scripts, version, devDependencies
 - `assets/js/scripts-*.js` — all client-side logic
 - `index.html` — homepage template, CDN references, GoFundMe widgets

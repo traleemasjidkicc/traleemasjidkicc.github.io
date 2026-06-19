@@ -11,18 +11,20 @@ alwaysApply: false
 | Task | Purpose |
 |------|---------|
 | `setup-hooks` | Copy `pre-commit` / `post-commit` into `.git/hooks/` (executable) |
-| `rename-js` | Always rename `scripts-*.js` and update HTML refs |
+| `rename-js` | Always rename `scripts-*.js` and update HTML script refs |
 | `rename-js-if-changed` | Rename + update HTML only if `assets/js/scripts-*.js` changed |
-| `precommit` | Used by git hook: `rename-js-if-changed` + version bump when JS changed |
+| `rename-css` | Always rename `main*.css` and update HTML stylesheet refs |
+| `rename-css-if-changed` | Rename + update HTML only if `assets/css/main*.css` changed |
+| `precommit` | Used by git hook: rename changed JS/CSS + version bump |
 | `serve` (default) | BrowserSync on `./`, watches HTML/CSS/JS |
-| `update-html` | Sync HTML script refs to current JS filename (no rename) |
+| `update-html` | Sync HTML script/stylesheet refs to current filenames (no rename) |
 
 ## Commit hooks
 
 `pre-commit` → runs `yarn precommit` (`gulp precommit`):
-1. If `assets/js/scripts-*.js` has no git changes → skip (no rename, no version bump)
-2. Otherwise `rename-js` (timestamp rename + update all HTML refs)
-3. `yarn version patch -i`
+1. If neither `assets/js/scripts-*.js` nor `assets/css/main*.css` has git changes → skip
+2. Otherwise run `rename-js` and/or `rename-css` (timestamp rename + update all HTML refs)
+3. `yarn version patch -i` (once, if either asset changed)
 4. Stages generated changes
 
 `post-commit` → stages any remaining changes and amends the commit (`git commit --amend --no-edit`).
@@ -43,6 +45,7 @@ alwaysApply: false
 
 - **Never** manually edit `package.json` version
 - **Never** manually change `scripts-{timestamp}.js` filename or HTML script `src`
+- **Never** manually change `main-{timestamp}.css` filename or HTML stylesheet `href`
 - After JS changes, verify with `yarn start` before committing
 - Use `yarn ci` (`yarn install --immutable`) in CI; `yarn verify` checks install integrity (`--immutable --check-cache`)
 
