@@ -33,7 +33,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1781902016884.css">
+  <link rel="stylesheet" href="assets/css/main-1781906542757.css">
   <link rel="stylesheet" href="assets/css/animations.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -72,7 +72,15 @@
     gtag('config', 'G-3H9CDDS71D');
   </script>
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781902016748.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781906542620.js"></script>
+
+  <script>
+    (function () {
+      if (!/(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie)) {
+        document.documentElement.classList.add("cookie-consent-pending");
+      }
+    })();
+  </script>
 
 </head>
 
@@ -365,33 +373,40 @@
   <!-- HERO END -->
 
   <!-- MODAL START -->
-  <div id="myModal" class="modal fade center" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Muslim Database</h5>
-          <button type="button" class="close"
-            data-dismiss="modal">&times;</button>
+  <div id="myModal" class="modal fade signup-modal" tabindex="-1" role="dialog"
+    aria-labelledby="signup-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered signup-modal-dialog" role="document">
+      <div class="modal-content signup-modal-content">
+        <button type="button" class="signup-modal-close close" data-dismiss="modal"
+          aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="signup-modal-hero" aria-hidden="true">
+          <span class="signup-modal-hero-glow"></span>
+          <span class="signup-modal-hero-ring"></span>
+          <img src="assets/images/ui/newsletter-signup.png" alt=""
+            class="signup-modal-image" width="160" height="160">
         </div>
-        <div class="modal-body">
-          <div class="d-flex justify-content-center mb-2">
-            <img src="assets/images/ui/newsletter-signup.png">
-          </div>
-          <p>We are building out a Muslim Database within the Kerry region.</p>
-          <p>The database will help us provide timely updates of salah
-            timetable, madrasa news and masjid announcements to the community.
-          </p>
-          <button type="submit"
-            class="btn btn-kicc btn-kicc-lg btn-kicc-primary btn-block"
-            onclick="window.open('https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u','_blank')">Register
-            Now</button>
-          <div class="d-flex justify-content-center mt-2">
+        <div class="signup-modal-body">
+          <span class="signup-modal-eyebrow">Stay connected</span>
+          <h2 id="signup-modal-title" class="signup-modal-title">Join the Kerry Muslim Database</h2>
+          <p class="signup-modal-lead">We are building a community database for Muslims across Kerry
+            &mdash; so you receive timely salah timetables, madrasa news, and masjid announcements.</p>
+          <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
+            class="signup-modal-primary btn btn-kicc btn-kicc-lg btn-kicc-primary btn-block"
+            target="_blank" rel="noopener noreferrer">
+            <span>Register now</span>
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+          </a>
+          <div class="signup-modal-actions">
             <button id="sub-btn-registered" type="button"
-              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary mr-2">Already
-              registered</button>
+              class="signup-modal-secondary btn btn-kicc btn-kicc-sm btn-kicc-secondary">
+              Already registered
+            </button>
             <button id="sub-btn-tomorrow" type="button"
-              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary">Remind me
-              tomorrow</button>
+              class="signup-modal-secondary btn btn-kicc btn-kicc-sm btn-kicc-secondary">
+              Remind me tomorrow
+            </button>
           </div>
         </div>
       </div>
@@ -413,50 +428,36 @@
   </div>
   <!-- ANNOUNCEMENT END -->
 
-  <!-- Quick links — thumb-friendly on mobile -->
-  <nav class="home-quick-nav-section" aria-label="Quick links">
+  <!-- Masjid notices spotlight (populated from API) -->
+  <aside id="masjid-notice-spotlight" class="notices-spotlight grid-gallery" hidden
+    aria-label="Latest masjid notices">
+    <div class="notices-spotlight-shimmer" aria-hidden="true"></div>
     <div class="container">
-      <ul class="home-quick-nav list-unstyled mb-0">
-        <li>
-          <a href="#home-hero" class="home-quick-nav-link">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-clock"></i></span>
-            <span class="home-quick-nav-label">Salah</span>
+      <div class="notices-spotlight-inner">
+        <div class="notices-spotlight-head">
+          <span class="notices-spotlight-pulse-ring" aria-hidden="true"></span>
+          <div class="notices-spotlight-meta">
+            <span class="notices-spotlight-badge">
+              <i class="fas fa-thumbtack notices-spotlight-pin" aria-hidden="true"></i>
+              Masjid notices
+            </span>
+            <p id="masjidNoticeSpotlightCount" class="notices-spotlight-count mb-0"></p>
+          </div>
+        </div>
+        <div id="masjidNoticeSpotlightTrack" class="notices-spotlight-track"
+          role="list"></div>
+        <div class="notices-spotlight-actions">
+          <a href="#notice-board" class="notices-spotlight-all">
+            View all <i class="fas fa-arrow-down" aria-hidden="true"></i>
           </a>
-        </li>
-        <li>
-          <a href="activities.html" class="home-quick-nav-link">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
-            <span class="home-quick-nav-label">Programmes</span>
-          </a>
-        </li>
-        <li>
-          <a href="madrasa.html" class="home-quick-nav-link">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-child"></i></span>
-            <span class="home-quick-nav-label">Madrasa</span>
-          </a>
-        </li>
-        <li>
-          <a href="projects.html" class="home-quick-nav-link">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
-            <span class="home-quick-nav-label">New Masjid</span>
-          </a>
-        </li>
-        <li>
-          <a href="contact.html" class="home-quick-nav-link">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-map-marker-alt"></i></span>
-            <span class="home-quick-nav-label">Visit</span>
-          </a>
-        </li>
-        <li>
-          <a href="https://kicc.page.link/gfm" class="home-quick-nav-link home-quick-nav-link-accent"
-            target="_blank" rel="noopener noreferrer">
-            <span class="home-quick-nav-icon" aria-hidden="true"><i class="fas fa-hand-holding-heart"></i></span>
-            <span class="home-quick-nav-label">Donate</span>
-          </a>
-        </li>
-      </ul>
+          <button type="button" id="masjidNoticeSpotlightDismiss"
+            class="notices-spotlight-dismiss" aria-label="Dismiss notices for now">
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
     </div>
-  </nav>
+  </aside>
 
   <!-- Today at the masjid -->
   <section class="campaign-section home-live-section programmes-live-section"
@@ -541,9 +542,16 @@
           </header>
           <div id="programmes-recording-player" class="programmes-recording-player" hidden
             aria-live="polite">
-            <div class="programmes-recording-player-label">
-              <i class="fas fa-circle programmes-recording-pulse" aria-hidden="true"></i>
-              Now playing
+            <div class="programmes-recording-player-bar">
+              <div class="programmes-recording-player-label">
+                <i class="fas fa-circle programmes-recording-pulse" aria-hidden="true"></i>
+                Now playing
+              </div>
+              <button type="button" id="programmes-recording-close"
+                class="programmes-recording-close" aria-label="Stop and close player">
+                <span aria-hidden="true">Close</span>
+                <i class="fas fa-times" aria-hidden="true"></i>
+              </button>
             </div>
             <div class="programmes-recording-now-playing">
               <img id="programmes-recording-art" class="programmes-recording-art" alt=""
@@ -576,21 +584,21 @@
   <!-- LIVE TALKS END -->
 
   <!-- MASJID NOTICES START -->
-  <section class="campaign-section notice-board-section grid-gallery home-notices-section" id="notice-board">
+  <section class="notices-showcase home-notices-section grid-gallery" id="notice-board" hidden
+    aria-labelledby="notice-board-heading">
+    <div class="notices-showcase-bg" aria-hidden="true">
+      <span class="notices-showcase-orb notices-showcase-orb--1"></span>
+      <span class="notices-showcase-orb notices-showcase-orb--2"></span>
+    </div>
     <div class="container">
-      <div class="campaign-section-title campaign-section-title-left">
+      <header class="notices-showcase-header notices-reveal">
         <span class="home-section-eyebrow">Updates</span>
-        <h2>Masjid Notices</h2>
-        <p>Important posters and announcements from the community.</p>
-      </div>
-      <div class="row" id="noticeContainer">
-        <!-- <div class="col-md-6 col-lg-4 item">
-          <a class="lightbox" href="assets/images/posters/ramadan-2024.jpeg">
-            <img class="img-fluid image scale-on-hover"
-              src="assets/images/posters/ramadan-2024.jpeg">
-          </a>
-        </div> -->
-      </div>
+        <h2 id="notice-board-heading">Masjid Notices</h2>
+        <p class="notices-showcase-lead">Posters and announcements from the community.
+          Tap any notice to view full size.</p>
+      </header>
+      <div class="notices-showcase-grid notices-reveal notices-reveal--d1" id="noticeContainer"
+        role="list" aria-label="Notice posters"></div>
     </div>
   </section>
   <!-- MASJID NOTICES END -->
@@ -628,6 +636,384 @@
   </section>
   <!-- WELCOME END -->
 
+  <!-- PILLARS OF FAITH START -->
+  <section class="pillars-showcase pillars-showcase--faith" id="pillars-faith"
+    aria-labelledby="pillars-faith-heading">
+    <div class="container">
+      <header class="pillars-showcase-header pillars-reveal">
+        <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah"
+          class="pillars-showcase-bismillah">
+        <span class="home-section-eyebrow">Belief</span>
+        <h2 id="pillars-faith-heading">Pillars of Faith</h2>
+        <p class="pillars-showcase-lead">The six articles of <em>Iman</em> &mdash; the foundation of
+          every Muslim&rsquo;s belief. Select each pillar to explore what we hold true.</p>
+      </header>
+
+      <div class="pillars-faith-layout pillars-reveal pillars-reveal--delay-1">
+        <nav class="pillars-faith-tabs" role="tablist" aria-label="Pillars of faith">
+          <button type="button" class="pillars-faith-tab is-active" role="tab"
+            id="faith-tab-tawheed" aria-selected="true" aria-controls="faith-panel-tawheed"
+            data-faith-tab="tawheed">
+            <span class="pillars-faith-tab-num" aria-hidden="true">1</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-hand-point-up"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Oneness of God</span>
+              <span class="pillars-faith-tab-arabic">Tawheed</span>
+            </span>
+          </button>
+          <button type="button" class="pillars-faith-tab" role="tab"
+            id="faith-tab-angels" aria-selected="false" aria-controls="faith-panel-angels"
+            data-faith-tab="angels" tabindex="-1">
+            <span class="pillars-faith-tab-num" aria-hidden="true">2</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-dove"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Angels</span>
+              <span class="pillars-faith-tab-arabic">Mala&rsquo;ika</span>
+            </span>
+          </button>
+          <button type="button" class="pillars-faith-tab" role="tab"
+            id="faith-tab-books" aria-selected="false" aria-controls="faith-panel-books"
+            data-faith-tab="books" tabindex="-1">
+            <span class="pillars-faith-tab-num" aria-hidden="true">3</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Revealed Books</span>
+              <span class="pillars-faith-tab-arabic">Kutub</span>
+            </span>
+          </button>
+          <button type="button" class="pillars-faith-tab" role="tab"
+            id="faith-tab-prophets" aria-selected="false" aria-controls="faith-panel-prophets"
+            data-faith-tab="prophets" tabindex="-1">
+            <span class="pillars-faith-tab-num" aria-hidden="true">4</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Prophets</span>
+              <span class="pillars-faith-tab-arabic">Rusul</span>
+            </span>
+          </button>
+          <button type="button" class="pillars-faith-tab" role="tab"
+            id="faith-tab-judgement" aria-selected="false" aria-controls="faith-panel-judgement"
+            data-faith-tab="judgement" tabindex="-1">
+            <span class="pillars-faith-tab-num" aria-hidden="true">5</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-balance-scale"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Day of Judgement</span>
+              <span class="pillars-faith-tab-arabic">Akhirah</span>
+            </span>
+          </button>
+          <button type="button" class="pillars-faith-tab" role="tab"
+            id="faith-tab-decree" aria-selected="false" aria-controls="faith-panel-decree"
+            data-faith-tab="decree" tabindex="-1">
+            <span class="pillars-faith-tab-num" aria-hidden="true">6</span>
+            <span class="pillars-faith-tab-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
+            <span class="pillars-faith-tab-text">
+              <span class="pillars-faith-tab-title">Divine Decree</span>
+              <span class="pillars-faith-tab-arabic">Qadar</span>
+            </span>
+          </button>
+        </nav>
+
+        <div class="pillars-faith-panels">
+          <article class="pillars-faith-panel is-active" role="tabpanel"
+            id="faith-panel-tawheed" aria-labelledby="faith-tab-tawheed"
+            data-faith-panel="tawheed">
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-hand-point-up"></i></div>
+            <h3 class="pillars-faith-panel-title">Oneness of God <span class="pillars-faith-panel-arabic">Tawheed</span></h3>
+            <p class="pillars-faith-panel-tagline">Allah alone is worthy of worship</p>
+            <p>We believe that God exists and that He is the Master and Lord of the universe and the
+              only One deserving of worship, devotion and ultimate obedience.
+              &ldquo;There is no true God worthy of worship but God and Muhammad is the last and
+              final Messenger of God.&rdquo;</p>
+          </article>
+          <article class="pillars-faith-panel" role="tabpanel" id="faith-panel-angels"
+            aria-labelledby="faith-tab-angels" data-faith-panel="angels" hidden>
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-dove"></i></div>
+            <h3 class="pillars-faith-panel-title">Angels <span class="pillars-faith-panel-arabic">Mala&rsquo;ika</span></h3>
+            <p class="pillars-faith-panel-tagline">Noble servants of Allah, unseen yet real</p>
+            <p>We believe that angels exist, believe in the names we are informed of and of their
+              descriptions in authentic reports. They are created by God and have no share in
+              divinity. Their purpose is to serve God and to carry out His commands in the universe.</p>
+          </article>
+          <article class="pillars-faith-panel" role="tabpanel" id="faith-panel-books"
+            aria-labelledby="faith-tab-books" data-faith-panel="books" hidden>
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-book-open"></i></div>
+            <h3 class="pillars-faith-panel-title">Revealed Books <span class="pillars-faith-panel-arabic">Kutub</span></h3>
+            <p class="pillars-faith-panel-tagline">Divine guidance sent to humanity</p>
+            <p>We believe that God sent revelations and communicated with His chosen messengers.
+              We believe in the names of the original scriptures and believe in the truth contained
+              therein which is confirmed by the Qur&rsquo;an.</p>
+          </article>
+          <article class="pillars-faith-panel" role="tabpanel" id="faith-panel-prophets"
+            aria-labelledby="faith-tab-prophets" data-faith-panel="prophets" hidden>
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></div>
+            <h3 class="pillars-faith-panel-title">Prophets <span class="pillars-faith-panel-arabic">Rusul</span></h3>
+            <p class="pillars-faith-panel-tagline">Messengers who called mankind to Allah</p>
+            <p>We believe that God sent human Messengers to remind people to worship God alone on His
+              terms and to obey His commandments. They promised reward for those who comply and do
+              good and warned of a punishment for those who do evil.</p>
+          </article>
+          <article class="pillars-faith-panel" role="tabpanel" id="faith-panel-judgement"
+            aria-labelledby="faith-tab-judgement" data-faith-panel="judgement" hidden>
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-balance-scale"></i></div>
+            <h3 class="pillars-faith-panel-title">Day of Judgement <span class="pillars-faith-panel-arabic">Akhirah</span></h3>
+            <p class="pillars-faith-panel-tagline">Accountability before Allah after death</p>
+            <p>We believe that we will be brought back to life after death to be judged by God.
+              Paradise and Hell are the eternal destination of people based on how they lived their
+              lives and the choices they made.</p>
+          </article>
+          <article class="pillars-faith-panel" role="tabpanel" id="faith-panel-decree"
+            aria-labelledby="faith-tab-decree" data-faith-panel="decree" hidden>
+            <div class="pillars-faith-panel-icon" aria-hidden="true"><i class="fas fa-heart"></i></div>
+            <h3 class="pillars-faith-panel-title">Divine Decree <span class="pillars-faith-panel-arabic">Qadar</span></h3>
+            <p class="pillars-faith-panel-tagline">Allah&rsquo;s perfect knowledge and plan</p>
+            <p>We believe that God knows everything that is to come and He recorded everything in a
+              preserved tablet before the creation came into existence.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- PILLARS OF FAITH END -->
+
+  <!-- PILLARS OF ISLAM START -->
+  <section class="pillars-showcase pillars-showcase--islam campaign-section-warm" id="pillars-islam"
+    aria-labelledby="pillars-islam-heading">
+    <div class="container">
+      <header class="pillars-showcase-header pillars-reveal">
+        <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah"
+          class="pillars-showcase-bismillah">
+        <span class="home-section-eyebrow">Practice</span>
+        <h2 id="pillars-islam-heading">Pillars of Islam</h2>
+        <p class="pillars-showcase-lead">Five acts that uphold a Muslim&rsquo;s way of life. Hover or tap
+          each pillar to learn more.</p>
+      </header>
+
+      <div class="pillars-islam-stage pillars-reveal pillars-reveal--delay-1" role="list"
+        aria-label="Five pillars of Islam">
+        <article class="pillars-islam-pillar" role="listitem" style="--pillar-index: 0">
+          <button type="button" class="pillars-islam-pillar-trigger" aria-expanded="false"
+            aria-controls="islam-pillar-shahadah">
+            <span class="pillars-islam-pillar-num" aria-hidden="true">1</span>
+            <span class="pillars-islam-pillar-icon" aria-hidden="true"><i class="fas fa-hand-point-up"></i></span>
+            <h3 class="pillars-islam-pillar-title">Shahadah</h3>
+            <span class="pillars-islam-pillar-sub">Declaration of faith</span>
+          </button>
+          <div class="pillars-islam-pillar-body" id="islam-pillar-shahadah">
+            <p>Testifying that there is no god worthy of worship except Allah and that Muhammad
+              &#xFDFA; is His final Messenger &mdash; the gateway through which every act of worship
+              becomes meaningful.</p>
+          </div>
+        </article>
+        <article class="pillars-islam-pillar" role="listitem" style="--pillar-index: 1">
+          <button type="button" class="pillars-islam-pillar-trigger" aria-expanded="false"
+            aria-controls="islam-pillar-salah">
+            <span class="pillars-islam-pillar-num" aria-hidden="true">2</span>
+            <span class="pillars-islam-pillar-icon" aria-hidden="true"><i class="fas fa-praying-hands"></i></span>
+            <h3 class="pillars-islam-pillar-title">Salah</h3>
+            <span class="pillars-islam-pillar-sub">Prayer</span>
+          </button>
+          <div class="pillars-islam-pillar-body" id="islam-pillar-salah">
+            <p>Five daily prayers anchor the believer&rsquo;s day in remembrance of Allah, build
+              discipline and humility, and unite the community at the masjid.</p>
+          </div>
+        </article>
+        <article class="pillars-islam-pillar" role="listitem" style="--pillar-index: 2">
+          <button type="button" class="pillars-islam-pillar-trigger" aria-expanded="false"
+            aria-controls="islam-pillar-sawm">
+            <span class="pillars-islam-pillar-num" aria-hidden="true">3</span>
+            <span class="pillars-islam-pillar-icon" aria-hidden="true"><i class="fas fa-book-quran"></i></span>
+            <h3 class="pillars-islam-pillar-title">Sawm</h3>
+            <span class="pillars-islam-pillar-sub">Fasting</span>
+          </button>
+          <div class="pillars-islam-pillar-body" id="islam-pillar-sawm">
+            <p>Fasting in Ramadan cultivates taqwa, self-restraint, and empathy for those who go
+              hungry &mdash; a month of spiritual renewal for the whole ummah.</p>
+          </div>
+        </article>
+        <article class="pillars-islam-pillar" role="listitem" style="--pillar-index: 3">
+          <button type="button" class="pillars-islam-pillar-trigger" aria-expanded="false"
+            aria-controls="islam-pillar-zakah">
+            <span class="pillars-islam-pillar-num" aria-hidden="true">4</span>
+            <span class="pillars-islam-pillar-icon" aria-hidden="true"><i class="fas fa-hand-holding-usd"></i></span>
+            <h3 class="pillars-islam-pillar-title">Zakah</h3>
+            <span class="pillars-islam-pillar-sub">Alms giving</span>
+          </button>
+          <div class="pillars-islam-pillar-body" id="islam-pillar-zakah">
+            <p>Obligatory charity purifies wealth, supports those in need, and strengthens bonds of
+              care and responsibility within the Muslim community.</p>
+          </div>
+        </article>
+        <article class="pillars-islam-pillar" role="listitem" style="--pillar-index: 4">
+          <button type="button" class="pillars-islam-pillar-trigger" aria-expanded="false"
+            aria-controls="islam-pillar-hajj">
+            <span class="pillars-islam-pillar-num" aria-hidden="true">5</span>
+            <span class="pillars-islam-pillar-icon" aria-hidden="true"><i class="fas fa-kaaba"></i></span>
+            <h3 class="pillars-islam-pillar-title">Hajj</h3>
+            <span class="pillars-islam-pillar-sub">Pilgrimage</span>
+          </button>
+          <div class="pillars-islam-pillar-body" id="islam-pillar-hajj">
+            <p>The journey to Makkah once in a lifetime for those who are able &mdash; a profound act
+              of submission, equality, and unity with Muslims from every corner of the world.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  <!-- PILLARS OF ISLAM END -->
+
+  <!-- MASJID SERVICES START -->
+  <section class="home-services-showcase" id="masjid-services"
+    aria-labelledby="masjid-services-heading">
+    <div class="home-services-bg" aria-hidden="true">
+      <span class="home-services-orb home-services-orb--1"></span>
+      <span class="home-services-orb home-services-orb--2"></span>
+      <span class="home-services-orb home-services-orb--3"></span>
+    </div>
+    <div class="container">
+      <header class="home-services-header services-reveal">
+        <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah"
+          class="home-services-bismillah">
+        <span class="home-section-eyebrow">Community</span>
+        <h2 id="masjid-services-heading">Services We Provide</h2>
+        <p class="home-services-lead">Prayer, education, and support for Muslims across Kerry
+          &mdash; open to all who wish to learn and connect.</p>
+      </header>
+
+      <div class="home-services-spotlight services-reveal services-reveal--d1">
+        <article class="home-services-card" style="--service-i: 0">
+          <span class="home-services-card-glow" aria-hidden="true"></span>
+          <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-book-quran"></i></span>
+          <h3>Teaching Al-Qur&rsquo;an</h3>
+          <p>Children&rsquo;s madrasa, Hifz, adult Tajweed, and weekly tafseer for all ages.</p>
+          <a href="madrasa.html" class="home-services-card-link">Madrasa &amp; classes</a>
+        </article>
+        <article class="home-services-card" style="--service-i: 1">
+          <span class="home-services-card-glow" aria-hidden="true"></span>
+          <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
+          <h3>Daily &amp; Jumu&rsquo;ah Prayer</h3>
+          <p>Five daily salah, Friday Jumu&rsquo;ah, Taraweeh, and Eid congregations for the community.</p>
+          <a href="#home-hero" class="home-services-card-link">View salah times</a>
+        </article>
+        <article class="home-services-card" style="--service-i: 2">
+          <span class="home-services-card-glow" aria-hidden="true"></span>
+          <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-users"></i></span>
+          <h3>Community Services</h3>
+          <p>Eid gatherings, Ramadan iftar, youth programmes, and our Know thy Neighbours outreach.</p>
+          <a href="activities.html" class="home-services-card-link">See programmes</a>
+        </article>
+        <article class="home-services-card" style="--service-i: 3">
+          <span class="home-services-card-glow" aria-hidden="true"></span>
+          <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-hand-holding-heart"></i></span>
+          <h3>Funeral &amp; Marriage</h3>
+          <p>Religious guidance and practical support for families at every stage of life.</p>
+          <a href="contact.html" class="home-services-card-link">Get in touch</a>
+        </article>
+      </div>
+
+      <div class="home-services-hub services-reveal services-reveal--d2">
+        <nav class="home-services-tabs" role="tablist" aria-label="Service categories">
+          <button type="button" class="home-services-tab is-active" role="tab"
+            id="services-tab-religious" aria-selected="true"
+            aria-controls="services-panel-religious" data-services-tab="religious">
+            <i class="fas fa-star-and-crescent" aria-hidden="true"></i>
+            <span>Religious</span>
+          </button>
+          <button type="button" class="home-services-tab" role="tab"
+            id="services-tab-educational" aria-selected="false"
+            aria-controls="services-panel-educational" data-services-tab="educational" tabindex="-1">
+            <i class="fas fa-book" aria-hidden="true"></i>
+            <span>Educational</span>
+          </button>
+          <button type="button" class="home-services-tab" role="tab"
+            id="services-tab-social" aria-selected="false"
+            aria-controls="services-panel-social" data-services-tab="social" tabindex="-1">
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <span>Social</span>
+          </button>
+        </nav>
+
+        <div class="home-services-panels">
+          <article class="home-services-panel is-active" role="tabpanel"
+            id="services-panel-religious" aria-labelledby="services-tab-religious"
+            data-services-panel="religious">
+            <ul class="home-services-list">
+              <li style="--item-i: 0">Five daily prayers</li>
+              <li style="--item-i: 1"><strong>Friday Jumu&rsquo;ah prayer</strong></li>
+              <li style="--item-i: 2">Congregational Taraweeh</li>
+              <li style="--item-i: 3">Eid salah</li>
+              <li style="--item-i: 4">Monthly bayaan for men &amp; women</li>
+              <li style="--item-i: 5">Marriage &amp; funeral services</li>
+              <li style="--item-i: 6">Religious advice &amp; counselling</li>
+            </ul>
+          </article>
+          <article class="home-services-panel" role="tabpanel"
+            id="services-panel-educational" aria-labelledby="services-tab-educational"
+            data-services-panel="educational" hidden>
+            <ul class="home-services-list">
+              <li style="--item-i: 0"><strong>Children&rsquo;s madrasa</strong> &mdash; 140+ students</li>
+              <li style="--item-i: 1">Hifz class</li>
+              <li style="--item-i: 2">Women&rsquo;s Qur&rsquo;an class</li>
+              <li style="--item-i: 3">Men&rsquo;s Qur&rsquo;an &amp; Tajweed</li>
+              <li style="--item-i: 4">Weekly tafseer lessons</li>
+              <li style="--item-i: 5">Islamic lectures &amp; bayaan</li>
+              <li style="--item-i: 6">Adult learning circles</li>
+            </ul>
+          </article>
+          <article class="home-services-panel" role="tabpanel"
+            id="services-panel-social" aria-labelledby="services-tab-social"
+            data-services-panel="social" hidden>
+            <ul class="home-services-list">
+              <li style="--item-i: 0">Eid celebration gatherings</li>
+              <li style="--item-i: 1">Daily iftar during Ramadan</li>
+              <li style="--item-i: 2">Youth programmes</li>
+              <li style="--item-i: 3">1-to-1 counselling &amp; social advice</li>
+              <li style="--item-i: 4">Children&rsquo;s day out</li>
+              <li style="--item-i: 5"><strong>Know thy Neighbours</strong> outreach</li>
+              <li style="--item-i: 6">School visits &amp; community outreach</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <div class="home-services-ticker-wrap services-reveal services-reveal--d3"
+        aria-hidden="true">
+        <div class="home-services-ticker">
+          <div class="home-services-ticker-track">
+            <span>Five Daily Prayers</span>
+            <span>Jumu&rsquo;ah</span>
+            <span>Madrasa</span>
+            <span>Hifz</span>
+            <span>Tafseer</span>
+            <span>Taraweeh</span>
+            <span>Eid Gatherings</span>
+            <span>Ramadan Iftar</span>
+            <span>Youth Programmes</span>
+            <span>Marriage Services</span>
+            <span>Funeral Support</span>
+            <span>Know thy Neighbours</span>
+            <span>Qur&rsquo;an Classes</span>
+            <span>Community Outreach</span>
+            <span>Five Daily Prayers</span>
+            <span>Jumu&rsquo;ah</span>
+            <span>Madrasa</span>
+            <span>Hifz</span>
+            <span>Tafseer</span>
+            <span>Taraweeh</span>
+            <span>Eid Gatherings</span>
+            <span>Ramadan Iftar</span>
+            <span>Youth Programmes</span>
+            <span>Marriage Services</span>
+            <span>Funeral Support</span>
+            <span>Know thy Neighbours</span>
+            <span>Qur&rsquo;an Classes</span>
+            <span>Community Outreach</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- MASJID SERVICES END -->
+
   <!-- Explore the masjid -->
   <section class="campaign-section home-explore-section" id="home-explore"
     aria-labelledby="home-explore-heading">
@@ -663,7 +1049,7 @@
           </a>
         </div>
         <div class="col-6 col-md-4 col-lg-3 mb-4">
-          <a href="about.html" class="home-explore-card">
+          <a href="#pillars-faith" class="home-explore-card">
             <span class="home-explore-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
             <h3>About us</h3>
             <p>Our history, vision, and pillars of faith</p>
@@ -811,15 +1197,27 @@
   </main>
 
   <!-- COOKIE POLICY START -->
-  <div id="cookie-bar"
-    class="alert alert-info alert-dismissible fade sticky-footer" role="alert">
-    <p class="text-center">The website uses cookies to ensure you get the best
-      experience on our website.
-    </p>
-    <button id="cookie-accept" type="button" class="close" data-dismiss="alert"
-      aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
+  <div id="cookie-consent" class="cookie-consent" aria-hidden="true">
+    <div class="cookie-consent-backdrop" aria-hidden="true"></div>
+    <div class="cookie-consent-dialog" role="dialog" aria-modal="true"
+      aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc">
+      <div class="cookie-consent-card">
+        <div class="cookie-consent-shine" aria-hidden="true"></div>
+        <div class="cookie-consent-icon-wrap" aria-hidden="true">
+          <span class="cookie-consent-icon-ring"></span>
+          <i class="fas fa-cookie-bite cookie-consent-icon"></i>
+        </div>
+        <h2 id="cookie-consent-title" class="cookie-consent-title">Cookies &amp; your privacy</h2>
+        <p id="cookie-consent-desc" class="cookie-consent-text">We use cookies to remember your
+          preferences &mdash; such as dismissing reminders and saving prayer times &mdash; so the
+          site works smoothly for you.</p>
+        <p class="cookie-consent-note">Please accept to continue browsing Tralee Masjid.</p>
+        <button type="button" id="cookie-accept" class="cookie-consent-accept">
+          <span class="cookie-consent-accept-label">Accept &amp; continue</span>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
   </div>
   <!-- COOKIE POLICY END -->
 

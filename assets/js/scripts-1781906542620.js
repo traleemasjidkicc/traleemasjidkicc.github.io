@@ -12,6 +12,22 @@
 
   const isProjectsPage = () => /\/projects\.html$/i.test(getPathname());
 
+  const isAboutPage = () => /\/about\.html$/i.test(getPathname());
+
+  const isMadrasaPage = () => /\/madrasa\.html$/i.test(getPathname());
+
+  const isContactPage = () => /\/contact\.html$/i.test(getPathname());
+
+  const getPageKey = () => {
+    if (isHomePage()) return "home";
+    if (isActivitiesPage()) return "activities";
+    if (isMadrasaPage()) return "madrasa";
+    if (isProjectsPage()) return "projects";
+    if (isAboutPage()) return "about";
+    if (isContactPage()) return "contact";
+    return null;
+  };
+
   const scrollToLocationHash = () => {
     const hash = window.location.hash;
     if (!hash || hash.length < 2) return;
@@ -491,8 +507,12 @@
   const schedulePrayerHighlights = (d) => {
     cachedPrayerDayData = d;
     updatePrayerHighlightsUI();
+    refreshJumuahDisplay();
     if (!prayerHighlightTimer) {
-      prayerHighlightTimer = setInterval(updatePrayerHighlightsUI, 30000);
+      prayerHighlightTimer = setInterval(function () {
+        updatePrayerHighlightsUI();
+        refreshJumuahDisplay();
+      }, 30000);
     }
   };
 
@@ -715,8 +735,104 @@
       });
   };
 
+  const COOKIE_CONSENT_KEY = "kicc-accept-cookie";
+  let postCookieConsentDone = false;
+
+  const hasCookieConsent = () => {
+    try {
+      if (typeof Cookies === "undefined") return false;
+      const val = Cookies.get(COOKIE_CONSENT_KEY);
+      return val !== undefined && val !== "false";
+    } catch {
+      return false;
+    }
+  };
+
+  const runPostCookieConsent = () => {
+    if (!hasCookieConsent() || postCookieConsentDone) return;
+    postCookieConsentDone = true;
+    document.documentElement.classList.remove("cookie-consent-pending");
+    document.body.classList.remove("cookie-consent-active");
+    if (isHomePage()) {
+      showSignUpModal();
+    }
+  };
+
+  const hideCookieConsent = (animate) => {
+    const el = document.getElementById("cookie-consent");
+    if (!el) return;
+
+    const finish = () => {
+      el.classList.remove("is-visible", "is-leaving");
+      el.setAttribute("aria-hidden", "true");
+    };
+
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
+
+    el.classList.add("is-leaving");
+    el.classList.remove("is-visible");
+    window.setTimeout(finish, 420);
+  };
+
+  const showCookieConsent = () => {
+    const el = document.getElementById("cookie-consent");
+    if (!el) return;
+
+    el.setAttribute("aria-hidden", "false");
+    document.body.classList.add("cookie-consent-active");
+    document.documentElement.classList.add("cookie-consent-pending");
+
+    requestAnimationFrame(function () {
+      el.classList.add("is-visible");
+    });
+  };
+
+  const acceptCookiePolicy = () => {
+    Cookies.set(COOKIE_CONSENT_KEY, true, { expires: 10 });
+    hideCookieConsent(true);
+    runPostCookieConsent();
+  };
+
+  const initSignUpModal = () => {
+    const modal = document.getElementById("myModal");
+    if (!modal || modal.dataset.bound) return;
+    modal.dataset.bound = "true";
+
+    if (typeof $ !== "undefined") {
+      $(modal).on("shown.bs.modal", function () {
+        modal.classList.add("is-content-visible");
+      });
+      $(modal).on("hidden.bs.modal", function () {
+        modal.classList.remove("is-content-visible");
+      });
+    }
+
+    $("#sub-btn-tomorrow").on("click", function () {
+      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
+      $("#myModal").modal("hide");
+    });
+    $("#sub-btn-registered").on("click", function () {
+      Cookies.set("kicc-modal-registered", true, { expires: 10 });
+      $("#myModal").modal("hide");
+    });
+
+    const newsTab = document.getElementById("nav-news-tab");
+    if (newsTab) {
+      newsTab.addEventListener("click", function () {
+        if (!hasCookieConsent()) return;
+        $("#myModal").modal("show");
+      });
+    }
+  };
+
   const showSignUpModal = () => {
+    if (!hasCookieConsent()) return;
     setSignUpCookies();
+    initSignUpModal();
+
     if (!Cookies.get("kicc-modal-tmw")) {
       setTimeout(function () {
         $("#myModal").modal("show");
@@ -725,29 +841,28 @@
         }, 30000);
       }, 2500);
     }
-    $("#sub-btn-tomorrow").on("click", function () {
-      $("#myModal").modal("hide");
-    });
-    $("#sub-btn-registered").on("click", function () {
-      $("#myModal").modal("hide");
-    });
-    $("#nav-news-tab").on("click", function () {
-      $("#myModal").modal("show");
-    });
   };
 
   const showCookiePolicy = () => {
-    $("#cookie-accept").click(function () {
-      Cookies.set("kicc-accept-cookie", true, { expires: 10 });
-    });
-    if (
-      Cookies.get("kicc-accept-cookie") === undefined ||
-      Cookies.get("kicc-accept-cookie") === "false"
-    ) {
-      $("#cookie-bar").toggleClass("show");
-      // $("#cookie-bar").show();
+    const btn = document.getElementById("cookie-accept");
+    if (btn && !btn.dataset.bound) {
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", acceptCookiePolicy);
+    }
+
+    if (typeof $ !== "undefined") {
+      $(document).on("show.bs.modal", function (e) {
+        if (!hasCookieConsent()) {
+          e.preventDefault();
+        }
+      });
+    }
+
+    if (hasCookieConsent()) {
+      hideCookieConsent(false);
+      runPostCookieConsent();
     } else {
-      $("#cookie-bar").hide();
+      showCookieConsent();
     }
   };
 
@@ -755,12 +870,6 @@
     if (Cookies.get("kicc-modal-registered")) {
       Cookies.set("kicc-modal-tmw", true, { expires: 1 });
     }
-    $("#sub-btn-tomorrow").click(function () {
-      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
-    });
-    $("#sub-btn-registered").click(function () {
-      Cookies.set("kicc-modal-registered", true, { expires: 10 });
-    });
   };
 
   const getRandomHadith = () => {
@@ -912,6 +1021,49 @@
     return { time: parts[0], period: parts[1] || "" };
   };
 
+  const getPrayerDayData = () => {
+    if (cachedPrayerDayData) return cachedPrayerDayData;
+    try {
+      const cached = localStorage.getItem("iqamah-today");
+      if (!cached) return null;
+      const parsed = JSON.parse(cached);
+      return parsed.data && parsed.data[0] ? parsed.data[0] : null;
+    } catch {
+      return null;
+    }
+  };
+
+  /** Show Jumu'ah from Thursday Maghrib until Friday Asr (Dublin time). */
+  const isJumuahDisplayWindow = () => {
+    const now = getDublinDate();
+    const day = now.getDay();
+    const prayerData = getPrayerDayData();
+
+    if (day === 4) {
+      if (!prayerData || !prayerData.maghribTime) return false;
+      const maghrib = parseTimeToDublinDate(prayerData.maghribTime);
+      if (!maghrib) return false;
+      return now.getTime() >= maghrib.getTime();
+    }
+
+    if (day === 5) {
+      if (!prayerData || !prayerData.asrTime) return true;
+      const asr = parseTimeToDublinDate(prayerData.asrTime);
+      if (!asr) return true;
+      return now.getTime() < asr.getTime();
+    }
+
+    return false;
+  };
+
+  const getJumuahBannerBadge = () =>
+    getDublinDate().getDay() === 5 ? "Today" : "This Friday";
+
+  const refreshJumuahDisplay = () => {
+    const cached = loadAnnouncementsFromCache();
+    renderJumuahFridayBanner(cached || []);
+  };
+
   const isFridayInDublin = () => getDublinDate().getDay() === 5;
 
   const getJumuahTimes = (announcements) => {
@@ -957,11 +1109,14 @@
     const slot = jummahTimes[0];
     const speech = formatTimeToAmPm(slot.speech) || "—";
     const khutbah = formatTimeToAmPm(slot.khutbah) || "—";
+    const badge = getJumuahBannerBadge();
 
     return (
       '<div class="programmes-jumuah-feature-inner">' +
       '<div class="programmes-jumuah-feature-head">' +
-      '<span class="programmes-jumuah-feature-badge">Today</span>' +
+      '<span class="programmes-jumuah-feature-badge">' +
+      badge +
+      "</span>" +
       '<h3 class="programmes-jumuah-feature-title">' +
       '<i class="fas fa-mosque" aria-hidden="true"></i> Jumu\'ah Salah</h3>' +
       '<p class="programmes-jumuah-feature-lead">Join us for the Friday congregation</p>' +
@@ -985,7 +1140,7 @@
     const zohrRow = zohrBegins ? zohrBegins.closest("tr") : null;
     const existing = document.getElementById("nav-jumuah-row");
 
-    if (!isFridayInDublin() || !jummahTimes || jummahTimes.length === 0) {
+    if (!isJumuahDisplayWindow() || !jummahTimes || jummahTimes.length === 0) {
       if (existing) existing.remove();
       return;
     }
@@ -1017,7 +1172,7 @@
   const renderJumuahFridayBanner = (announcements) => {
     const banners = document.querySelectorAll(".jumuah-friday-banner");
     const jummahTimes = getJumuahTimes(announcements);
-    const show = isFridayInDublin() && jummahTimes;
+    const show = isJumuahDisplayWindow() && jummahTimes;
 
     if (banners.length) {
       banners.forEach(function (banner) {
@@ -1087,7 +1242,7 @@
     const jumuahActive = !!(jumuah && jumuah.active);
     const generalActive = !!(general && general.active);
 
-    if (isFriday && jumuahActive) return jumuah;
+    if (isJumuahDisplayWindow() && jumuahActive) return jumuah;
 
     if (!isFriday && generalActive) return general;
 
@@ -1199,34 +1354,262 @@
     }
   };
 
+  const formatNoticeLabel = (name) => {
+    if (!name || typeof name !== "string") return "Masjid notice";
+    return (
+      name
+        .replace(/\.(jpe?g|png|webp|gif)$/i, "")
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, (char) => char.toUpperCase())
+        .trim() || "Masjid notice"
+    );
+  };
+
+  const sortNotices = (notices) => {
+    if (!Array.isArray(notices)) return [];
+    return notices
+      .filter((notice) => notice && typeof notice.url === "string" && notice.url.trim() !== "")
+      .slice()
+      .sort(
+        (a, b) =>
+          (Number(b.createdTime) || Number(b.order) || 0) -
+          (Number(a.createdTime) || Number(a.order) || 0),
+      );
+  };
+
+  const getNoticeSpotlightDismissKey = (notices) => {
+    const latest = sortNotices(notices)[0];
+    return latest ? String(latest.id || latest.key || latest.url) : "none";
+  };
+
+  const isNoticeSpotlightDismissed = (notices) => {
+    try {
+      const dismissed = sessionStorage.getItem("kicc-notices-spotlight-dismissed");
+      if (!dismissed) return false;
+      return dismissed === getNoticeSpotlightDismissKey(notices);
+    } catch {
+      return false;
+    }
+  };
+
+  const dismissNoticeSpotlight = () => {
+    const cached = loadNoticesFromCache() || [];
+    const section = document.getElementById("masjid-notice-spotlight");
+    if (!section) return;
+
+    const finishDismiss = () => {
+      try {
+        sessionStorage.setItem(
+          "kicc-notices-spotlight-dismissed",
+          getNoticeSpotlightDismissKey(cached),
+        );
+      } catch {
+        // ignore storage errors
+      }
+      section.hidden = true;
+      section.classList.remove("is-dismissing");
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finishDismiss();
+      return;
+    }
+
+    section.classList.add("is-dismissing");
+    window.setTimeout(finishDismiss, 480);
+  };
+
+  const bindNoticeSpotlightDismiss = () => {
+    const btn = document.getElementById("masjidNoticeSpotlightDismiss");
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", dismissNoticeSpotlight);
+  };
+
+  let noticesRevealObserver = null;
+
+  const observeNoticeReveals = () => {
+    const els = document.querySelectorAll(
+      ".notices-reveal:not([data-notices-observed])",
+    );
+    if (!els.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      els.forEach(function (el) {
+        el.classList.add("is-visible");
+        el.dataset.noticesObserved = "true";
+      });
+      return;
+    }
+
+    if (!noticesRevealObserver) {
+      noticesRevealObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              noticesRevealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -28px 0px" },
+      );
+    }
+
+    els.forEach(function (el) {
+      el.dataset.noticesObserved = "true";
+      noticesRevealObserver.observe(el);
+    });
+  };
+
+  const initHomeNotices = () => {
+    if (!isHomePage()) return;
+    observeNoticeReveals();
+  };
+
+  const renderNoticeSpotlight = (notices) => {
+    const section = document.getElementById("masjid-notice-spotlight");
+    const track = document.getElementById("masjidNoticeSpotlightTrack");
+    const countEl = document.getElementById("masjidNoticeSpotlightCount");
+    if (!section || !track) return;
+
+    const sorted = sortNotices(notices);
+    if (sorted.length === 0 || isNoticeSpotlightDismissed(sorted)) {
+      section.hidden = true;
+      track.innerHTML = "";
+      return;
+    }
+
+    track.innerHTML = "";
+    sorted.slice(0, 4).forEach(function (notice, index) {
+      const card = document.createElement("a");
+      card.className =
+        "notices-spotlight-card lightbox" +
+        (index === 0 ? " notices-spotlight-card--featured" : "");
+      card.href = notice.url;
+      card.setAttribute("role", "listitem");
+      card.style.setProperty("--spotlight-i", index);
+      card.setAttribute(
+        "aria-label",
+        "View notice: " + formatNoticeLabel(notice.name),
+      );
+
+      if (index === 0) {
+        const badge = document.createElement("span");
+        badge.className = "notices-spotlight-card-new";
+        badge.textContent = "Latest";
+        card.appendChild(badge);
+      }
+
+      const frame = document.createElement("div");
+      frame.className = "notices-spotlight-card-frame";
+
+      const img = document.createElement("img");
+      img.src = notice.url;
+      img.alt = "";
+      img.loading = index === 0 ? "eager" : "lazy";
+      img.decoding = "async";
+
+      const overlay = document.createElement("span");
+      overlay.className = "notices-spotlight-card-overlay";
+      overlay.setAttribute("aria-hidden", "true");
+      overlay.innerHTML = '<i class="fas fa-expand"></i>';
+
+      frame.appendChild(img);
+      frame.appendChild(overlay);
+
+      const label = document.createElement("span");
+      label.className = "notices-spotlight-card-label";
+      label.textContent = formatNoticeLabel(notice.name);
+
+      card.appendChild(frame);
+      card.appendChild(label);
+      track.appendChild(card);
+    });
+
+    if (countEl) {
+      countEl.textContent =
+        sorted.length === 1 ? "1 new poster" : sorted.length + " posters available";
+    }
+
+    bindNoticeSpotlightDismiss();
+    section.hidden = false;
+    section.classList.remove("is-dismissing");
+    initBaguetteBox();
+  };
+
   const renderNotices = (notices = []) => {
     const noticeContainer = document.getElementById("noticeContainer");
+    const noticeBoard = document.getElementById("notice-board");
     if (!noticeContainer) return;
+
+    const sorted = sortNotices(notices);
+    renderNoticeSpotlight(sorted);
 
     noticeContainer.innerHTML = "";
 
-    if (!Array.isArray(notices) || notices.length === 0) return;
+    if (sorted.length === 0) {
+      if (noticeBoard) noticeBoard.hidden = true;
+      return;
+    }
 
-    notices.forEach((notice) => {
-      if (!notice || !notice.url) return;
+    if (noticeBoard) noticeBoard.hidden = false;
 
-      const div = document.createElement("div");
-      div.classList.add("col-md-6", "col-lg-4", "mx-auto", "fadeIn");
+    sorted.forEach(function (notice, index) {
+      const article = document.createElement("article");
+      article.className =
+        "notices-card" + (index === 0 ? " notices-card--featured" : "");
+      article.setAttribute("role", "listitem");
+      article.style.setProperty("--notice-i", index);
 
       const a = document.createElement("a");
-      a.classList.add("lightbox");
+      a.className = "notices-card-link lightbox";
       a.href = notice.url;
+      a.setAttribute(
+        "aria-label",
+        "View notice: " + formatNoticeLabel(notice.name),
+      );
+
+      const media = document.createElement("div");
+      media.className = "notices-card-media";
+
+      if (index === 0) {
+        const badge = document.createElement("span");
+        badge.className = "notices-card-new";
+        badge.textContent = "Latest";
+        media.appendChild(badge);
+      }
 
       const img = document.createElement("img");
-      img.classList.add("img-fluid", "image", "scale-on-hover", "pb-4");
+      img.className = "notices-card-image";
       img.src = notice.url;
-      img.alt = "Notice";
+      img.alt = formatNoticeLabel(notice.name);
+      img.loading = index === 0 ? "eager" : "lazy";
+      img.decoding = "async";
 
-      a.appendChild(img);
-      div.appendChild(a);
-      noticeContainer.appendChild(div);
+      const shade = document.createElement("div");
+      shade.className = "notices-card-shade";
+      shade.setAttribute("aria-hidden", "true");
+
+      const zoom = document.createElement("span");
+      zoom.className = "notices-card-zoom";
+      zoom.setAttribute("aria-hidden", "true");
+      zoom.innerHTML = '<i class="fas fa-expand"></i>';
+
+      const caption = document.createElement("span");
+      caption.className = "notices-card-caption";
+      caption.textContent = formatNoticeLabel(notice.name);
+
+      media.appendChild(img);
+      media.appendChild(shade);
+      media.appendChild(zoom);
+      media.appendChild(caption);
+      a.appendChild(media);
+      article.appendChild(a);
+      noticeContainer.appendChild(article);
     });
 
+    observeNoticeReveals();
     initBaguetteBox();
   };
 
@@ -1825,6 +2208,21 @@
     }
   };
 
+  const stopRecording = () => {
+    var playerWrap = document.getElementById("programmes-recording-player");
+    var audio = document.getElementById("programmes-recording-audio");
+
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+    if (playerWrap) {
+      playerWrap.hidden = true;
+    }
+    setActiveRecordingItem(null);
+  };
+
   const playRecording = (recording, buttonEl) => {
     var playerWrap = document.getElementById("programmes-recording-player");
     var audio = document.getElementById("programmes-recording-audio");
@@ -2000,6 +2398,12 @@
         }
         setActiveRecordingItem(null);
       });
+    }
+
+    var closeBtn = document.getElementById("programmes-recording-close");
+    if (closeBtn && !closeBtn.dataset.bound) {
+      closeBtn.dataset.bound = "true";
+      closeBtn.addEventListener("click", stopRecording);
     }
   };
 
@@ -2179,50 +2583,267 @@
   };
 
   const addWhatsAppButton = () => {
-    // Avoid duplicates
-    if (document.querySelector(".whatsapp-float")) return;
-
-    const waLink = document.createElement("a");
-    waLink.href = "https://wa.me/353862440556";
-    waLink.target = "_blank";
-    waLink.rel = "noopener";
-    waLink.className = "whatsapp-float";
-    waLink.setAttribute("aria-label", "Chat on WhatsApp");
-
-    const waIcon = document.createElement("i");
-    waIcon.className = "fa-brands fa-whatsapp whatsapp-icon";
-
-    waLink.appendChild(waIcon);
-    document.body.appendChild(waLink);
+    initSiteActionDock();
   };
 
   const addBackToTopButton = () => {
-    if (!document.body.classList.contains("page-about")) return;
-    if (document.querySelector(".back-to-top")) return;
-
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "back-to-top";
-    btn.setAttribute("aria-label", "Back to top");
-    btn.innerHTML = '<i class="fas fa-arrow-up" aria-hidden="true"></i>';
-
-    btn.addEventListener("click", () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    const toggleVisibility = () => {
-      btn.classList.toggle("is-visible", window.scrollY > 400);
-    };
-
-    window.addEventListener("scroll", toggleVisibility, { passive: true });
-    toggleVisibility();
-    document.body.appendChild(btn);
+    /* handled by initSiteActionDock */
   };
 
   const initBaguetteBox = () => {
     if (typeof baguetteBox !== "undefined") {
       baguetteBox.run(".grid-gallery", { animation: "slideIn" });
     }
+  };
+
+  const SITE_PAGE_NAV = {
+    home: [
+      { href: "#home-hero", icon: "fas fa-clock", label: "Salah" },
+      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
+      { href: "madrasa.html", icon: "fas fa-child", label: "Madrasa" },
+      { href: "projects.html", icon: "fas fa-mosque", label: "New Masjid" },
+      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
+      {
+        href: "https://kicc.page.link/gfm",
+        icon: "fas fa-hand-holding-heart",
+        label: "Donate",
+        accent: true,
+        external: true,
+      },
+    ],
+    activities: [
+      { href: "#listen", icon: "fas fa-broadcast-tower", label: "Listen" },
+      { href: "#schedule", icon: "fas fa-calendar-week", label: "Schedule" },
+      {
+        href: "#weekly-programmes-section",
+        icon: "fas fa-book-open",
+        label: "Programmes",
+      },
+      { href: "/", icon: "fas fa-clock", label: "Salah" },
+      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
+    ],
+    madrasa: [
+      { href: "#madrasa-schedule", icon: "fas fa-calendar-alt", label: "Schedule" },
+      { href: "#madrasa-register", icon: "fas fa-user-plus", label: "Register" },
+      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
+      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
+    ],
+    projects: [
+      { href: "#campaign-hero", icon: "fas fa-mosque", label: "Campaign" },
+      { href: "#campaign-progress", icon: "fas fa-hard-hat", label: "Progress" },
+      {
+        href: "https://kicc.page.link/gfm",
+        icon: "fas fa-hand-holding-heart",
+        label: "Donate",
+        accent: true,
+        external: true,
+      },
+      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
+    ],
+    about: [
+      { href: "#intro", icon: "fas fa-info-circle", label: "About" },
+      { href: "#our-story", icon: "fas fa-book", label: "Story" },
+      { href: "#community-today", icon: "fas fa-users", label: "Community" },
+      { href: "#our-team", icon: "fas fa-user-friends", label: "Team" },
+      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
+    ],
+    contact: [
+      { href: "#contact-heading", icon: "fas fa-envelope", label: "Contact" },
+      { href: "#contact-map", icon: "fas fa-map-marker-alt", label: "Map" },
+      { href: "/", icon: "fas fa-clock", label: "Salah" },
+      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
+    ],
+  };
+
+  const buildSitePageNavLink = (item, index) => {
+    const li = document.createElement("li");
+    li.className = "site-page-nav-item";
+    li.style.setProperty("--nav-i", index);
+
+    const a = document.createElement("a");
+    a.className =
+      "site-page-nav-link" + (item.accent ? " site-page-nav-link-accent" : "");
+    a.href = item.href;
+    if (item.external) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+
+    const icon = document.createElement("span");
+    icon.className = "site-page-nav-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.innerHTML = '<i class="' + item.icon + '"></i>';
+
+    const label = document.createElement("span");
+    label.className = "site-page-nav-label";
+    label.textContent = item.label;
+
+    a.appendChild(icon);
+    a.appendChild(label);
+    li.appendChild(a);
+    return li;
+  };
+
+  const initSitePageNav = () => {
+    const pageKey = getPageKey();
+    const items = pageKey ? SITE_PAGE_NAV[pageKey] : null;
+    if (!items || items.length === 0) return;
+
+    document.querySelector(".home-quick-nav-section")?.remove();
+    document.querySelector(".programmes-quick-nav")?.remove();
+
+    if (document.querySelector(".site-page-nav-section")) return;
+
+    const mainNav = document.querySelector(".kicc-nav-v2");
+    if (!mainNav) return;
+
+    const section = document.createElement("nav");
+    section.className = "site-page-nav-section site-page-nav-section--ready";
+    section.setAttribute("aria-label", "Page quick links");
+
+    const container = document.createElement("div");
+    container.className = "container";
+
+    const list = document.createElement("ul");
+    list.className = "site-page-nav list-unstyled mb-0";
+
+    items.forEach(function (item, index) {
+      list.appendChild(buildSitePageNavLink(item, index));
+    });
+
+    container.appendChild(list);
+    section.appendChild(container);
+    mainNav.insertAdjacentElement("afterend", section);
+  };
+
+  const PAGE_SECTION_NAV_SELECTOR =
+    ".madrasa-section-nav, .about-section-nav, .campaign-section-nav";
+
+  const initPageSectionNavDock = () => {
+    const nav = document.querySelector(PAGE_SECTION_NAV_SELECTOR);
+    if (!nav || nav.classList.contains("page-section-nav-dock--ready")) return;
+
+    nav.classList.add("page-section-nav-dock--ready");
+    document.body.classList.add("has-page-section-nav");
+    document.body.appendChild(nav);
+
+    const lists = nav.querySelectorAll(
+      ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list"
+    );
+    lists.forEach(function (list) {
+      list.querySelectorAll("li").forEach(function (li, index) {
+        li.style.setProperty("--pill-i", index);
+      });
+    });
+
+    const revealDock = () => {
+      nav.classList.add("is-visible");
+    };
+
+    requestAnimationFrame(revealDock);
+
+    const links = nav.querySelectorAll('a[href^="#"]');
+    const sections = [];
+    links.forEach(function (link) {
+      const id = decodeURIComponent(link.getAttribute("href").slice(1));
+      const el = document.getElementById(id);
+      if (el) sections.push({ link: link, el: el });
+    });
+
+    const setActiveLink = (activeEl) => {
+      sections.forEach(function (item) {
+        item.link.classList.toggle("is-active", item.el === activeEl);
+      });
+    };
+
+    if (sections.length && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              setActiveLink(entry.target);
+            }
+          });
+        },
+        {
+          rootMargin: "-42% 0px -38% 0px",
+          threshold: 0,
+        }
+      );
+      sections.forEach(function (item) {
+        observer.observe(item.el);
+      });
+    }
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function () {
+        const id = decodeURIComponent(link.getAttribute("href").slice(1));
+        const el = document.getElementById(id);
+        if (el) setActiveLink(el);
+      });
+    });
+  };
+
+  const initSiteActionDock = () => {
+    if (document.querySelector(".site-action-dock")) return;
+
+    document.querySelector(".whatsapp-float")?.remove();
+    document.querySelector(".back-to-top")?.remove();
+
+    const dock = document.createElement("aside");
+    dock.className = "site-action-dock";
+    dock.setAttribute("aria-label", "Quick actions");
+
+    const waLink = document.createElement("a");
+    waLink.href = "https://wa.me/353862440556";
+    waLink.target = "_blank";
+    waLink.rel = "noopener noreferrer";
+    waLink.className = "site-action-btn site-action-btn--whatsapp";
+    waLink.setAttribute("aria-label", "Chat on WhatsApp");
+    waLink.style.setProperty("--action-i", "0");
+    waLink.innerHTML =
+      '<span class="site-action-btn-icon" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></span>' +
+      '<span class="site-action-btn-label">WhatsApp</span>';
+
+    const donateLink = document.createElement("a");
+    donateLink.href = "https://kicc.page.link/gfm";
+    donateLink.target = "_blank";
+    donateLink.rel = "noopener noreferrer";
+    donateLink.className = "site-action-btn site-action-btn--donate";
+    donateLink.setAttribute("aria-label", "Donate to the masjid");
+    donateLink.style.setProperty("--action-i", "1");
+    donateLink.innerHTML =
+      '<span class="site-action-btn-icon" aria-hidden="true"><i class="fas fa-hand-holding-heart"></i></span>' +
+      '<span class="site-action-btn-label">Donate</span>';
+
+    const topBtn = document.createElement("button");
+    topBtn.type = "button";
+    topBtn.className = "site-action-btn site-action-btn--top";
+    topBtn.setAttribute("aria-label", "Back to top");
+    topBtn.style.setProperty("--action-i", "2");
+    topBtn.innerHTML =
+      '<span class="site-action-btn-icon" aria-hidden="true"><i class="fas fa-arrow-up"></i></span>' +
+      '<span class="site-action-btn-label">Top</span>';
+
+    topBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const toggleTopVisibility = () => {
+      topBtn.classList.toggle("is-visible", window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", toggleTopVisibility, { passive: true });
+    toggleTopVisibility();
+
+    dock.appendChild(waLink);
+    dock.appendChild(donateLink);
+    dock.appendChild(topBtn);
+    document.body.appendChild(dock);
+
+    requestAnimationFrame(function () {
+      dock.classList.add("is-visible");
+    });
   };
 
   const CAMPAIGNS_API_URL =
@@ -2318,6 +2939,204 @@
       });
   };
 
+  const initHomePillars = () => {
+    if (!isHomePage()) return;
+
+    const layout = document.querySelector(".pillars-faith-layout");
+    if (layout) {
+      const tabs = layout.querySelectorAll('[role="tab"]');
+      const panels = layout.querySelectorAll('[role="tabpanel"]');
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          const id = tab.getAttribute("data-faith-tab");
+          tabs.forEach(function (t) {
+            const active = t === tab;
+            t.classList.toggle("is-active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+            t.tabIndex = active ? 0 : -1;
+          });
+          panels.forEach(function (panel) {
+            const active = panel.getAttribute("data-faith-panel") === id;
+            panel.classList.toggle("is-active", active);
+            panel.hidden = !active;
+          });
+        });
+      });
+    }
+
+    const islamTriggers = document.querySelectorAll(".pillars-islam-pillar-trigger");
+    const islamMobileQuery = window.matchMedia("(max-width: 767px)");
+
+    islamTriggers.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const pillar = btn.closest(".pillars-islam-pillar");
+        if (!pillar) return;
+        const expanded = pillar.classList.toggle("is-expanded");
+        btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+        if (islamMobileQuery.matches) {
+          document.querySelectorAll(".pillars-islam-pillar.is-expanded").forEach(function (p) {
+            if (p !== pillar) {
+              p.classList.remove("is-expanded");
+              const otherBtn = p.querySelector(".pillars-islam-pillar-trigger");
+              if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
+            }
+          });
+        }
+      });
+    });
+
+    const revealEls = document.querySelectorAll(".pillars-reveal");
+    if (!revealEls.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      revealEls.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -32px 0px" },
+    );
+
+    revealEls.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+
+    initMasjidServices();
+  };
+
+  const initMasjidServices = () => {
+    if (!isHomePage()) return;
+
+    const section = document.getElementById("masjid-services");
+    if (!section) return;
+
+    const hub = section.querySelector(".home-services-hub");
+    if (hub) {
+      const tabs = hub.querySelectorAll('[role="tab"]');
+      const panels = hub.querySelectorAll('[role="tabpanel"]');
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          const id = tab.getAttribute("data-services-tab");
+          tabs.forEach(function (t) {
+            const active = t === tab;
+            t.classList.toggle("is-active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+            t.tabIndex = active ? 0 : -1;
+          });
+          panels.forEach(function (panel) {
+            panel.classList.remove("is-active");
+            panel.hidden = true;
+          });
+          const activePanel = hub.querySelector(
+            '[data-services-panel="' + id + '"]',
+          );
+          if (activePanel) {
+            activePanel.hidden = false;
+            void activePanel.offsetWidth;
+            activePanel.classList.add("is-active");
+          }
+        });
+      });
+    }
+
+    const cards = section.querySelectorAll(".home-services-card");
+    let highlightIdx = 0;
+    let highlightTimer = null;
+
+    const setHighlight = function (idx) {
+      cards.forEach(function (card, i) {
+        card.classList.toggle("is-highlighted", i === idx);
+      });
+    };
+
+    if (cards.length) {
+      setHighlight(0);
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        highlightTimer = window.setInterval(function () {
+          highlightIdx = (highlightIdx + 1) % cards.length;
+          setHighlight(highlightIdx);
+        }, 4000);
+      }
+
+      cards.forEach(function (card, i) {
+        card.addEventListener("mouseenter", function () {
+          if (highlightTimer) {
+            window.clearInterval(highlightTimer);
+            highlightTimer = null;
+          }
+          setHighlight(i);
+        });
+      });
+
+      section.addEventListener("mouseleave", function () {
+        if (highlightTimer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+        highlightTimer = window.setInterval(function () {
+          highlightIdx = (highlightIdx + 1) % cards.length;
+          setHighlight(highlightIdx);
+        }, 4000);
+      });
+    }
+
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      cards.forEach(function (card) {
+        card.addEventListener("mousemove", function (e) {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          card.style.transform =
+            "perspective(800px) rotateY(" +
+            x * 10 +
+            "deg) rotateX(" +
+            -y * 10 +
+            "deg) translateY(-4px)";
+        });
+        card.addEventListener("mouseleave", function () {
+          card.style.transform = "";
+        });
+      });
+    }
+
+    const serviceReveals = section.querySelectorAll(".services-reveal");
+    if (!serviceReveals.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      serviceReveals.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const servicesObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            servicesObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -24px 0px" },
+    );
+
+    serviceReveals.forEach(function (el) {
+      servicesObserver.observe(el);
+    });
+  };
+
   const initMobileNav = () => {
     const nav = document.querySelector(".kicc-nav-v2");
     const collapseEl = document.getElementById("navbarResponsive");
@@ -2393,7 +3212,6 @@
 
   const setLocationSpecific = () => {
     if (isHomePage()) {
-      showSignUpModal();
       getAnnouncement();
       setEvent();
       loadProgrammes();
@@ -2412,8 +3230,12 @@
   document.addEventListener("DOMContentLoaded", () => {
     if (isHomePage()) {
       showNotices();
+      initHomeNotices();
+      initHomePillars();
     }
     initMobileNav();
+    initSitePageNav();
+    initPageSectionNavDock();
     addWhatsAppButton();
     addBackToTopButton();
     setFooterYear();

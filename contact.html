@@ -21,7 +21,7 @@
     href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/main-1781902016884.css">
+  <link rel="stylesheet" href="assets/css/main-1781906542757.css">
 
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
@@ -57,7 +57,14 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781902016748.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781906542620.js"></script>
+  <script>
+    (function () {
+      if (!/(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie)) {
+        document.documentElement.classList.add("cookie-consent-pending");
+      }
+    })();
+  </script>
 </head>
 
 <body class="page-contact">
@@ -268,7 +275,7 @@
       </div>
     </section>
 
-    <section class="contact-map-section" aria-label="Map showing Tralee Masjid location">
+    <section class="contact-map-section" id="contact-map" aria-label="Map showing Tralee Masjid location">
       <iframe class="contact-map-iframe"
         title="Map showing Tralee Masjid location"
         src="https://maps.google.com/maps?q=Kerry+Islamic+Cultural+Centre,+Oakpark,+Tralee,+County+Kerry,+Ireland&amp;hl=en&amp;z=15&amp;output=embed"
@@ -353,15 +360,27 @@
   <!-- RANDOM HADITH END -->
 
   <!-- COOKIE POLICY START -->
-  <div id="cookie-bar"
-    class="alert alert-info alert-dismissible fade sticky-footer" role="alert">
-    <p class="text-center">The website uses cookies to ensure you get the best
-      experience on our website.
-    </p>
-    <button id="cookie-accept" type="button" class="close" data-dismiss="alert"
-      aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
+  <div id="cookie-consent" class="cookie-consent" aria-hidden="true">
+    <div class="cookie-consent-backdrop" aria-hidden="true"></div>
+    <div class="cookie-consent-dialog" role="dialog" aria-modal="true"
+      aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc">
+      <div class="cookie-consent-card">
+        <div class="cookie-consent-shine" aria-hidden="true"></div>
+        <div class="cookie-consent-icon-wrap" aria-hidden="true">
+          <span class="cookie-consent-icon-ring"></span>
+          <i class="fas fa-cookie-bite cookie-consent-icon"></i>
+        </div>
+        <h2 id="cookie-consent-title" class="cookie-consent-title">Cookies &amp; your privacy</h2>
+        <p id="cookie-consent-desc" class="cookie-consent-text">We use cookies to remember your
+          preferences &mdash; such as dismissing reminders and saving prayer times &mdash; so the
+          site works smoothly for you.</p>
+        <p class="cookie-consent-note">Please accept to continue browsing Tralee Masjid.</p>
+        <button type="button" id="cookie-accept" class="cookie-consent-accept">
+          <span class="cookie-consent-accept-label">Accept &amp; continue</span>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
   </div>
   <!-- COOKIE POLICY END -->
 
