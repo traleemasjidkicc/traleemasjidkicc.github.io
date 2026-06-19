@@ -1653,6 +1653,73 @@ img {
 	opacity: 0.88;
 }
 
+.page-projects .campaign-vision-showcase {
+	margin-bottom: 2.5rem;
+}
+
+.page-projects .campaign-vision-showcase-link {
+	display: block;
+	position: relative;
+	border-radius: var(--kicc-radius-lg);
+	overflow: hidden;
+	box-shadow: var(--kicc-shadow-lg);
+	border: 2px solid rgba(255, 255, 255, 0.12);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-projects .campaign-vision-showcase-link:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.35);
+}
+
+.page-projects .campaign-vision-showcase-img {
+	width: 100%;
+	display: block;
+}
+
+.page-projects .campaign-vision-showcase-badge {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 0.4rem 0.85rem;
+	border-radius: var(--kicc-radius-pill);
+	background: rgba(4, 69, 72, 0.88);
+	color: var(--kicc-text-on-dark);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.page-projects .campaign-vision-showcase-body {
+	margin-top: 1.5rem;
+	text-align: center;
+	max-width: 42rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.page-projects .campaign-vision-showcase-body h3 {
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--kicc-text-on-dark);
+	margin-bottom: 0.75rem;
+}
+
+.page-projects .campaign-vision-showcase-body p {
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1.65;
+	margin-bottom: 0.75rem;
+	font-size: 0.98rem;
+}
+
+.page-projects .campaign-vision-showcase-note {
+	font-size: 0.85rem;
+	opacity: 0.78;
+	font-style: italic;
+}
+
 .page-projects .campaign-narrative-card {
 	background: var(--kicc-surface);
 	border-radius: var(--kicc-radius-lg);

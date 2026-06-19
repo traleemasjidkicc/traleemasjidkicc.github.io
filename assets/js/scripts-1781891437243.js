@@ -1147,25 +1147,9 @@
     }
   };
 
-  const GFM_GRAPHQL_URL = "https://graphql.gofundme.com/graphql";
-  const GFM_FUNDRAISER_SLUG =
-    "ub7t7-kerry-islamic-cultural-centre-requires-donation";
-  const GFM_PROGRESS_KEY = "kicc-gfm-progress";
-  const GFM_FUNDRAISER_QUERY = `
-    query GetFundraiser($slug: ID!) {
-      fundraiser(slug: $slug) {
-        fundName
-        goalAmount {
-          amount
-          currencyCode
-        }
-        currentAmount {
-          amount
-          currencyCode
-        }
-      }
-    }
-  `;
+  const CAMPAIGNS_API_URL =
+    "https://getcampaigns-rds3nxm6za-ew.a.run.app";
+  const CAMPAIGN_PROGRESS_KEY = "kicc-campaign-progress";
 
   const formatFundraiserAmount = (amount, currencyCode) => {
     return new Intl.NumberFormat("en-IE", {
@@ -1219,22 +1203,15 @@
     if (!widgets.length) return;
 
     try {
-      const cached = localStorage.getItem(GFM_PROGRESS_KEY);
+      const cached = localStorage.getItem(CAMPAIGN_PROGRESS_KEY);
       if (cached) {
         applyFundraiserProgress(JSON.parse(cached));
       }
     } catch (e) {
-      console.warn("Unable to read GoFundMe cache", e);
+      console.warn("Unable to read campaign progress cache", e);
     }
 
-    fetch(GFM_GRAPHQL_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: GFM_FUNDRAISER_QUERY,
-        variables: { slug: GFM_FUNDRAISER_SLUG },
-      }),
-    })
+    fetch(CAMPAIGNS_API_URL)
       .then((response) => {
         if (!response.ok) throw new Error("HTTP " + response.status);
         return response.json();
@@ -1243,14 +1220,14 @@
         const fundraiser = json && json.data && json.data.fundraiser;
         if (!fundraiser) throw new Error("No fundraiser data");
         try {
-          localStorage.setItem(GFM_PROGRESS_KEY, JSON.stringify(fundraiser));
+          localStorage.setItem(CAMPAIGN_PROGRESS_KEY, JSON.stringify(fundraiser));
         } catch (e) {
-          console.warn("Unable to cache GoFundMe progress", e);
+          console.warn("Unable to cache campaign progress", e);
         }
         applyFundraiserProgress(fundraiser);
       })
       .catch((err) => {
-        console.error("Error loading GoFundMe progress", err);
+        console.error("Error loading campaign progress", err);
         widgets.forEach((el) => {
           if (!el.classList.contains("gfm-progress-loading")) return;
           const nameEl = el.querySelector("[data-gfm-name]");
