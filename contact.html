@@ -57,12 +57,13 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781869584609.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781883461587.js"></script>
 </head>
 
 <body class="page-contact">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- START OF NAV -->
-  <nav class="navbar navbar-expand-lg navbar-dark nav-wide sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-light site-nav kicc-nav sticky-top">
     <div class="container">
       <!-- Nab brand -->
       <a class="navbar-brand d-none d-lg-block" href="/">
@@ -168,7 +169,7 @@
   </nav>
   <!-- END OF NAV -->
 
-  <main class="contact-main">
+  <main class="contact-main" id="main-content">
     <!-- CONTACT START -->
     <section class="contact-hero" aria-labelledby="contact-heading">
       <div class="container">
@@ -226,9 +227,17 @@
     <section class="contact-map-section" aria-label="Map showing Tralee Masjid location">
       <iframe class="contact-map-iframe"
         title="Map showing Tralee Masjid location"
-        src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ4XtC4581RUgRXiA3SfgJiG0&key=AIzaSyBTGVSQzjKhiQY1dAJqHou5vLx2dVQscqU"
+        src="https://maps.google.com/maps?q=Kerry+Islamic+Cultural+Centre,+Oakpark,+Tralee,+County+Kerry,+Ireland&amp;hl=en&amp;z=15&amp;output=embed"
         loading="lazy" referrerpolicy="no-referrer-when-downgrade"
         allowfullscreen></iframe>
+      <p class="contact-map-fallback">
+        <a class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+          href="//goo.gl/maps/itDbxNWHt4bcUb4A9" target="_blank"
+          rel="noopener noreferrer">
+          <i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>
+          Open in Google Maps
+        </a>
+      </p>
     </section>
 
     <section class="contact-form-section">
@@ -240,25 +249,25 @@
             <div class="form-group">
               <label class="sr-only" for="contact-name">Name</label>
               <input class="form-control contact-input" id="contact-name"
-                type="text" placeholder="name" name="name" minlength="3"
+                type="text" placeholder="Your name" name="name" minlength="3"
                 required>
             </div>
             <div class="form-group">
               <label class="sr-only" for="contact-email">Email address</label>
               <input class="form-control contact-input" id="contact-email"
-                type="email" placeholder="email address" name="sender"
+                type="email" placeholder="Email address" name="sender"
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
                 required>
             </div>
             <div class="form-group mb-0">
               <label class="sr-only" for="contact-message">Message</label>
               <textarea class="form-control contact-input contact-textarea"
-                id="contact-message" rows="3" placeholder="message"
+                id="contact-message" rows="5" placeholder="Your message"
                 name="message" minlength="20" required></textarea>
             </div>
             <button type="submit"
               class="btn btn-kicc btn-kicc-lg btn-kicc-primary contact-submit-btn">
-              Submit form
+              Submit message
             </button>
           </form>
         </div>
@@ -266,6 +275,38 @@
     </section>
     <!-- CONTACT END -->
   </main>
+
+  <!-- RANDOM HADITH START -->
+  <section class="hadith-section" aria-label="Hadith of the day">
+    <div class="container">
+      <article class="hadith-card">
+        <header class="hadith-card-header">
+          <i class="fas fa-book-quran hadith-card-icon" aria-hidden="true"></i>
+          <p class="hadith-card-label">Daily Hadith</p>
+        </header>
+        <blockquote class="hadith-card-quote">
+          <div id="hadith-body">
+            <p>Abu Hurairah (May Allah be pleased with him) reported: Messenger
+              of Allah (ﷺ) said, &ldquo;The five (daily) Salat (prayers), and from
+              one Jumu&rsquo;ah prayer to the (next) Jumu&rsquo;ah prayer, and from
+              Ramadan to Ramadan are expiations for the (sins) committed in
+              between (their intervals); provided the major sins are not
+              committed&rdquo;.<br /><br /><b>[Muslim]</b>.</p>
+          </div>
+        </blockquote>
+        <footer class="hadith-card-footer">
+          <a id="hadith-link" class="hadith-card-source"
+            href="https://sunnah.com/riyadussalihin:1059"
+            target="_blank" rel="noopener noreferrer">
+            <cite><span id="hadith-cite">Riyad as-Salihin 189:1059</span></cite>
+            <i class="fas fa-external-link-alt hadith-card-source-icon"
+              aria-hidden="true"></i>
+          </a>
+        </footer>
+      </article>
+    </div>
+  </section>
+  <!-- RANDOM HADITH END -->
 
   <!-- COOKIE POLICY START -->
   <div id="cookie-bar"
@@ -281,7 +322,7 @@
   <!-- COOKIE POLICY END -->
 
   <!-- FOOTER START -->
-  <footer class="page-footer font-small mdb-color pt-4 bg-secondary">
+  <footer class="site-footer page-footer pt-4 bg-secondary">
     <!-- Footer Links -->
     <div class="container text-center text-md-left">
       <!-- Footer links -->
@@ -370,8 +411,8 @@
           <!--Copyright-->
           <p class="text-center text-md-left">© <span
               id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
-            <i class="fas fa-heart" style="color:red"></i>
-            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a
+            <i class="fas fa-heart" ></i>
+            & <i class="fas fa-mug-hot" ></i> by <a
               href="//nalam.me" rel="external" target="_blank">
               <strong> Nazmul Alam</strong>
             </a>

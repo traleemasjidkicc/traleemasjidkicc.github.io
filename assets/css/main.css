@@ -1,10 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700;900&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap');
+/*
+ * ==========================================================================
+ * Tralee Masjid — main.css
+ * Kerry Islamic Cultural Centre (KICC)
+ * ==========================================================================
+ *
+ * TABLE OF CONTENTS
+ *  1. Design tokens & fonts
+ *  2. Global typography & bright base theme
+ *  3. Buttons & badges
+ *  4. Surfaces & Bootstrap overrides
+ *  5. Site navigation (.site-nav / .kicc-nav)
+ *  6. Site footer (.site-footer)
+ *  7. Shared components (tabs, icons, heroes, widgets)
+ *  8. Page sections (home, about, contact, campaign, madrasa, activities)
+ *  9. Responsive overrides
+ * ==========================================================================
+ */
 
-/* GLOBALS START */
+/* ==========================================================================
+   1. DESIGN TOKENS & FONTS
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel+Decorative:wght@400;700;900&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+	/* Brand palette — bright, high-contrast */
+	--kicc-teal: #0a8a8e;
+	--kicc-teal-dark: #067075;
+	--kicc-teal-deep: #055a5e;
+	--kicc-teal-soft: #e8f7f6;
+	--kicc-teal-muted: #b8e8e6;
+	--kicc-gold: #d4a843;
+	--kicc-gold-light: #f5e6a8;
+	--kicc-gold-bright: #ffe082;
+	--kicc-green: #1a9e22;
+	--kicc-green-dark: #0d7a14;
+
+	/* Bright surfaces */
+	--kicc-bg: #f8fcfb;
+	--kicc-bg-white: #ffffff;
+	--kicc-bg-warm: #fffdf8;
+	--kicc-surface: #ffffff;
+	--kicc-surface-muted: #eef9f7;
+
+	/* Text */
+	--kicc-text: #1a3d3f;
+	--kicc-text-muted: #4a6b6d;
+	--kicc-text-soft: #6a8a8c;
+	--kicc-text-on-dark: #ffffff;
+
+	/* Effects */
+	--kicc-shadow-sm: 0 2px 12px rgba(10, 138, 142, 0.1);
+	--kicc-shadow-md: 0 8px 28px rgba(10, 138, 142, 0.14);
+	--kicc-shadow-lg: 0 16px 48px rgba(10, 138, 142, 0.18);
+	--kicc-radius-pill: 5rem;
+	--kicc-radius-lg: 1rem;
+	--kicc-border-gold: 3px solid var(--kicc-gold);
+
+	/* Typography stacks */
+	--kicc-font-display: "Cinzel Decorative", serif;
+	--kicc-font-body: "Source Sans 3", sans-serif;
+	--kicc-font-arabic: "Amiri", serif;
+}
+
+/* ==========================================================================
+   2. GLOBAL TYPOGRAPHY & BRIGHT BASE THEME
+   ========================================================================== */
+
+html {
+	scroll-behavior: smooth;
+}
+
 body {
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-weight: 400;
-	font-style: normal;
+	font-size: 1rem;
+	line-height: 1.65;
+	color: var(--kicc-text);
+	background-color: var(--kicc-bg);
+	-webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -13,16 +87,66 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: "Cinzel Decorative", serif;
+	font-family: var(--kicc-font-display);
 	font-weight: 700;
-	font-style: normal;
+	color: var(--kicc-teal-deep);
+	line-height: 1.25;
 }
 
-/* GLOBALS END */
-/* BUTTONS START */
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 1rem; }
+
+p {
+	color: var(--kicc-text-muted);
+}
+
+a {
+	color: var(--kicc-teal);
+	transition: color 0.15s ease;
+}
+
+a:hover,
+a:focus {
+	color: var(--kicc-teal-dark);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+.text-uppercase {
+	letter-spacing: 0.12em;
+}
+
+/* Font Awesome icons — consistent bright accent */
+.fas,
+.far,
+.fab {
+	color: var(--kicc-teal);
+}
+
+.btn .fas,
+.btn .far,
+.btn .fab,
+.site-footer .fas,
+.site-footer .fab {
+	color: inherit;
+}
+
+/* ==========================================================================
+   3. BUTTONS & BADGES
+   ========================================================================== */
+
+/* Base pill button — combine with variant class e.g. btn-kicc-primary */
 .btn-kicc {
+	font-family: var(--kicc-font-body);
 	font-weight: 700;
-	border-radius: 5rem;
+	border-radius: var(--kicc-radius-pill);
 	border-width: 2px;
 	border-style: solid;
 	letter-spacing: 0.04em;
@@ -48,202 +172,530 @@ h6 {
 	min-width: auto;
 }
 
+/* Teal — primary site actions */
 .btn-kicc-primary {
-	background: #0d5b5e;
-	border-color: #0d5b5e;
-	color: #fff;
-	box-shadow: 0 4px 16px rgba(13, 91, 94, 0.32);
+	background: var(--kicc-teal);
+	border-color: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	box-shadow: 0 4px 18px rgba(10, 138, 142, 0.35);
 }
 
 .btn-kicc-primary:hover,
 .btn-kicc-primary:focus {
-	background: #094548;
-	border-color: #094548;
-	color: #fff;
-	box-shadow: 0 6px 20px rgba(13, 91, 94, 0.42);
+	background: var(--kicc-teal-dark);
+	border-color: var(--kicc-teal-dark);
+	color: var(--kicc-text-on-dark);
+	box-shadow: 0 6px 22px rgba(10, 138, 142, 0.45);
 	transform: translateY(-2px);
 }
 
-.btn-kicc-donate,
-.btn-success {
-	color: #fff;
-	background-color: #0D5E10;
-	border-color: #0D5E10;
-	box-shadow: 0 4px 16px rgba(13, 94, 16, 0.38);
+/* Green — donate / success actions */
+.btn-kicc-donate {
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-green);
+	border-color: var(--kicc-green);
+	box-shadow: 0 4px 18px rgba(26, 158, 34, 0.38);
 }
 
 .btn-kicc-donate:hover,
-.btn-kicc-donate:focus,
-.btn-success:hover,
-.btn-success:focus {
-	color: #fff;
-	background-color: #0a4d0d;
-	border-color: #0a4d0d;
-	box-shadow: 0 6px 20px rgba(13, 94, 16, 0.48);
+.btn-kicc-donate:focus {
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-green-dark);
+	border-color: var(--kicc-green-dark);
+	box-shadow: 0 6px 22px rgba(26, 158, 34, 0.48);
 	transform: translateY(-2px);
 }
 
-.btn-kicc-light {
-	background: #fff;
-	border-color: #fff;
-	color: #0d5b5e;
-	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
-}
-
-.btn-kicc-light:hover,
-.btn-kicc-light:focus {
-	background: #f9f0e7;
-	border-color: #f9f0e7;
-	color: #0d5b5e;
-	box-shadow: 0 6px 22px rgba(0, 0, 0, 0.26);
-	transform: translateY(-2px);
-}
-
+/* White — on dark hero backgrounds */
 .btn-kicc-secondary {
-	background: #fff;
-	border-color: #0d5b5e;
-	color: #0d5b5e;
-	box-shadow: 0 2px 10px rgba(13, 91, 94, 0.1);
+	background: var(--kicc-bg-white);
+	border-color: var(--kicc-teal);
+	color: var(--kicc-teal);
+	box-shadow: var(--kicc-shadow-sm);
 }
 
 .btn-kicc-secondary:hover,
 .btn-kicc-secondary:focus {
-	background: #0d5b5e;
-	border-color: #0d5b5e;
-	color: #fff;
-	box-shadow: 0 4px 14px rgba(13, 91, 94, 0.28);
+	background: var(--kicc-teal);
+	border-color: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	box-shadow: var(--kicc-shadow-md);
 	transform: translateY(-2px);
 }
 
+/* Transparent — hero overlays */
 .btn-kicc-ghost {
-	background: rgba(255, 255, 255, 0.12);
-	border-color: rgba(255, 255, 255, 0.9);
-	color: #fff;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	background: rgba(255, 255, 255, 0.18);
+	border-color: rgba(255, 255, 255, 0.95);
+	color: var(--kicc-text-on-dark);
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-kicc-ghost:hover,
 .btn-kicc-ghost:focus {
-	background: rgba(255, 255, 255, 0.22);
+	background: rgba(255, 255, 255, 0.32);
 	border-color: #fff;
-	color: #fff;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	color: var(--kicc-text-on-dark);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
 	transform: translateY(-2px);
 }
 
+/* Gold — salah times */
 .btn-kicc-salah {
-	background: #c9a84c;
-	border-color: #c9a84c;
-	color: #fff;
-	box-shadow: 0 4px 16px rgba(201, 168, 76, 0.38);
+	background: var(--kicc-gold);
+	border-color: var(--kicc-gold);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 4px 18px rgba(212, 168, 67, 0.42);
 }
 
 .btn-kicc-salah:hover,
 .btn-kicc-salah:focus {
-	background: #b8923f;
-	border-color: #b8923f;
-	color: #fff;
-	box-shadow: 0 6px 20px rgba(201, 168, 76, 0.48);
+	background: var(--kicc-gold-bright);
+	border-color: var(--kicc-gold-bright);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 6px 22px rgba(212, 168, 67, 0.52);
 	transform: translateY(-2px);
 }
 
+/* Gold gradient — hero accent CTAs */
 .btn-kicc-accent {
-	background: linear-gradient(135deg, #e8c96a 0%, #c9a84c 55%, #b8923f 100%);
-	border-color: #b8923f;
-	color: #1a2e2f;
-	box-shadow: 0 6px 24px rgba(201, 168, 76, 0.55), 0 2px 10px rgba(0, 0, 0, 0.18);
+	background: linear-gradient(
+		135deg,
+		var(--kicc-gold-bright) 0%,
+		var(--kicc-gold) 55%,
+		#c49a38 100%
+	);
+	border-color: var(--kicc-gold);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 6px 24px rgba(212, 168, 67, 0.55);
 }
 
 .btn-kicc-accent:hover,
 .btn-kicc-accent:focus {
-	background: linear-gradient(135deg, #f0d47a 0%, #d4b35c 55%, #c9a84c 100%);
-	border-color: #c9a84c;
-	color: #122224;
-	box-shadow: 0 8px 28px rgba(201, 168, 76, 0.65), 0 4px 14px rgba(0, 0, 0, 0.22);
+	background: linear-gradient(
+		135deg,
+		#fff0b3 0%,
+		var(--kicc-gold-bright) 55%,
+		var(--kicc-gold) 100%
+	);
+	border-color: var(--kicc-gold-bright);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 8px 28px rgba(212, 168, 67, 0.65);
 	transform: translateY(-2px);
 }
 
-.btn-success {
-	font-weight: 700;
-	border-radius: 5rem;
-	border-width: 2px;
-	letter-spacing: 0.04em;
-	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+.btn-kicc-whatsapp {
+	background: #25d366;
+	border-color: #25d366;
+	color: #fff;
+	box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
 }
 
-.kicc-btn-row {
+.btn-kicc-whatsapp:hover,
+.btn-kicc-whatsapp:focus {
+	background: #1ebe57;
+	border-color: #1ebe57;
+	color: #fff;
+	box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+	transform: translateY(-2px);
+}
+
+/* Horizontal button group */
+.action-btn-row {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.75rem;
 	align-items: center;
 }
 
-/* BUTTONS END */
-/* BADGES START */
 .badge-success {
-	color: #fff;
-	background-color: #0D5E10;
-	border-color: #0D5E10;
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-green);
+	border-color: var(--kicc-green);
 }
 
-/* BADGES END */
-/* BACKGROUNDS START */
+/* ==========================================================================
+   4. SURFACES & BOOTSTRAP OVERRIDES
+   ========================================================================== */
+
+/* Footer background utility (used by .site-footer) */
 .bg-secondary {
-	color: #fff;
-	background-color: #0d5b5e !important;
-	background: linear-gradient(to right, #0d5b5e, #100d5e);
-}
-
-.bg-custom {
-	color: #fff;
-	width: 100%;
-	min-height: 40vh;
-	background: #5e0d5b;
-	background: linear-gradient(to right, #100d5e, #5e0d5b);
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-teal-deep) !important;
+	background: linear-gradient(
+		165deg,
+		var(--kicc-teal-dark) 0%,
+		var(--kicc-teal) 42%,
+		var(--kicc-teal-deep) 100%
+	);
 }
 
 .bg-secondary a {
-	color: #d2973b;
-	font-weight: bold;
+	color: var(--kicc-gold-light);
+	font-weight: 600;
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.bg-secondary a:hover,
+.bg-secondary a:focus {
+	color: var(--kicc-text-on-dark);
+	text-decoration: none;
 }
 
 .dropdown-item.active,
 .dropdown-item:active {
-	color: #fff;
+	color: var(--kicc-text-on-dark);
 	text-decoration: none;
-	background-color: #0D5E10;
+	background-color: var(--kicc-green);
 }
+
+#salah-times {
+	border-radius: var(--kicc-radius-pill);
+	padding-left: 1.35rem;
+	padding-right: 1.35rem;
+}
+
+/* ==========================================================================
+   5. SITE NAVIGATION (.site-nav / .kicc-nav)
+   ========================================================================== */
 
 .navbar {
 	font-weight: 600;
 }
 
+.navbar-light.site-nav,
+.navbar-light.kicc-nav {
+	background: linear-gradient(
+		180deg,
+		var(--kicc-bg-white) 0%,
+		var(--kicc-surface-muted) 100%
+	);
+	border-bottom: var(--kicc-border-gold);
+	box-shadow: var(--kicc-shadow-md),
+		0 1px 0 rgba(212, 168, 67, 0.45);
+	padding-top: 0.55rem;
+	padding-bottom: 0.55rem;
+	transition: box-shadow 0.2s ease;
+}
+
+.navbar-light.site-nav.sticky-top,
+.navbar-light.kicc-nav.sticky-top {
+	z-index: 1030;
+}
+
+.navbar-light.site-nav .navbar-brand,
+.navbar-light.kicc-nav .navbar-brand {
+	color: var(--kicc-teal);
+	font-family: var(--kicc-font-display);
+	font-weight: 700;
+	font-size: 1.05rem;
+	letter-spacing: 0.02em;
+	transition: color 0.15s ease;
+}
+
+.navbar-light.site-nav .navbar-brand:hover,
+.navbar-light.site-nav .navbar-brand:focus,
+.navbar-light.kicc-nav .navbar-brand:hover,
+.navbar-light.kicc-nav .navbar-brand:focus {
+	color: var(--kicc-teal-dark);
+}
+
+.navbar-light.site-nav .nav-link:not(.btn),
+.navbar-light.kicc-nav .nav-link:not(.btn) {
+	color: var(--kicc-text);
+	padding: 0.5rem 0.95rem;
+	border-radius: var(--kicc-radius-pill);
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.navbar-light.site-nav .nav-link:not(.btn):hover,
+.navbar-light.site-nav .nav-link:not(.btn):focus,
+.navbar-light.kicc-nav .nav-link:not(.btn):hover,
+.navbar-light.kicc-nav .nav-link:not(.btn):focus {
+	color: var(--kicc-teal);
+	background-color: rgba(10, 138, 142, 0.1);
+}
+
+.navbar-light.site-nav .nav-item.active > .nav-link:not(.btn),
+.navbar-light.kicc-nav .nav-item.active > .nav-link:not(.btn) {
+	color: var(--kicc-teal);
+	font-weight: 700;
+	background: linear-gradient(
+		135deg,
+		rgba(212, 168, 67, 0.32) 0%,
+		rgba(212, 168, 67, 0.16) 100%
+	);
+	box-shadow: inset 0 0 0 1px rgba(212, 168, 67, 0.4);
+}
+
+.navbar-light.site-nav .navbar-toggler,
+.navbar-light.kicc-nav .navbar-toggler {
+	border: 2px solid rgba(10, 138, 142, 0.2);
+	border-radius: 0.5rem;
+	padding: 0.35rem 0.55rem;
+	background: var(--kicc-bg-white);
+}
+
+.navbar-light.site-nav .navbar-toggler:focus,
+.navbar-light.kicc-nav .navbar-toggler:focus {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.45);
+}
+
+.navbar-light.site-nav .navbar-toggler-icon,
+.navbar-light.kicc-nav .navbar-toggler-icon {
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(10, 138, 142, 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-light.site-nav .close-icon,
+.navbar-light.kicc-nav .close-icon {
+	color: var(--kicc-teal);
+}
+
+.navbar-light.site-nav .dropdown-menu,
+.navbar-light.kicc-nav .dropdown-menu {
+	border: 1px solid rgba(212, 168, 67, 0.35);
+	border-radius: var(--kicc-radius-lg);
+	box-shadow: var(--kicc-shadow-lg);
+	margin-top: 0.5rem;
+	padding: 0.75rem;
+	background: var(--kicc-bg-white);
+}
+
+@media (max-width: 991.98px) {
+	.navbar-light.site-nav .navbar-collapse,
+	.navbar-light.kicc-nav .navbar-collapse {
+		background: var(--kicc-bg-white);
+		border: 1px solid rgba(212, 168, 67, 0.35);
+		border-radius: 0.85rem;
+		margin-top: 0.75rem;
+		padding: 0.75rem 0.5rem 1rem;
+		box-shadow: var(--kicc-shadow-md);
+	}
+
+	.navbar-light.site-nav .navbar-nav .nav-item,
+	.navbar-light.kicc-nav .navbar-nav .nav-item {
+		margin-bottom: 0.15rem;
+	}
+
+	.navbar-light.site-nav .navbar-nav .nav-item:last-child,
+	.navbar-light.kicc-nav .navbar-nav .nav-item:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.navbar-toggler.collapsed .close-icon {
+	display: none;
+}
+
+.navbar-toggler:not(.collapsed) .navbar-toggler-icon {
+	display: inline;
+}
+
+/* ==========================================================================
+   6. SITE FOOTER (.site-footer)
+   ========================================================================== */
+
+.site-footer.page-footer.bg-secondary,
+.page-footer.bg-secondary {
+	position: relative;
+	overflow: hidden;
+	border-top: var(--kicc-border-gold);
+	box-shadow: 0 -10px 40px rgba(10, 138, 142, 0.22);
+	padding-top: 3.25rem !important;
+	padding-bottom: 0 !important;
+}
+
+.site-footer.page-footer.bg-secondary::before,
+.page-footer.bg-secondary::before {
+	content: "";
+	position: absolute;
+	top: 3px;
+	left: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(245, 230, 168, 0.65),
+		transparent
+	);
+	pointer-events: none;
+}
+
+.site-footer.page-footer.bg-secondary::after,
+.page-footer.bg-secondary::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(
+			ellipse 80% 50% at 15% 0%,
+			rgba(212, 168, 67, 0.14),
+			transparent 70%
+		),
+		radial-gradient(
+			ellipse 60% 40% at 90% 100%,
+			rgba(255, 255, 255, 0.08),
+			transparent 65%
+		);
+	pointer-events: none;
+}
+
+.site-footer.page-footer.bg-secondary > .container,
+.page-footer.bg-secondary > .container {
+	position: relative;
+	z-index: 1;
+}
+
+.site-footer.page-footer.bg-secondary h6,
+.page-footer.bg-secondary h6 {
+	font-family: var(--kicc-font-display);
+	color: var(--kicc-gold-light);
+	font-weight: 700;
+	font-size: 0.82rem;
+	letter-spacing: 0.1em;
+	position: relative;
+	padding-bottom: 0.7rem;
+	margin-bottom: 1.35rem !important;
+}
+
+.site-footer.page-footer.bg-secondary h6::after,
+.page-footer.bg-secondary h6::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 2.75rem;
+	height: 2px;
+	background: linear-gradient(
+		90deg,
+		var(--kicc-gold),
+		rgba(212, 168, 67, 0.15)
+	);
+	border-radius: 1px;
+}
+
+@media (max-width: 767.98px) {
+	.site-footer.page-footer.bg-secondary h6::after,
+	.page-footer.bg-secondary h6::after {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
+
+.site-footer.page-footer.bg-secondary p,
+.page-footer.bg-secondary p {
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1.65;
+	margin-bottom: 0.6rem;
+	font-size: 0.95rem;
+}
+
+.site-footer.page-footer.bg-secondary .fas,
+.site-footer.page-footer.bg-secondary .fab:not(.fa-github),
+.page-footer.bg-secondary .fas,
+.page-footer.bg-secondary .fab:not(.fa-github) {
+	color: var(--kicc-gold);
+}
+
+.site-footer.page-footer.bg-secondary hr,
+.page-footer.bg-secondary hr {
+	border: 0;
+	border-top: 1px solid rgba(212, 168, 67, 0.28);
+	margin: 2rem 0 0;
+}
+
+.site-footer.page-footer.bg-secondary > .container > hr + .row,
+.page-footer.bg-secondary > .container > hr + .row {
+	background: rgba(0, 0, 0, 0.22);
+	margin-left: -15px;
+	margin-right: -15px;
+	padding: 1.15rem 15px;
+	border-top: 1px solid rgba(212, 168, 67, 0.18);
+}
+
+.site-footer.page-footer.bg-secondary > .container > hr + .row p,
+.page-footer.bg-secondary > .container > hr + .row p {
+	margin-bottom: 0;
+	color: rgba(255, 255, 255, 0.82);
+	font-size: 0.875rem;
+}
+
+.site-footer.page-footer.bg-secondary > .container > hr + .row a,
+.page-footer.bg-secondary > .container > hr + .row a {
+	color: var(--kicc-gold-light);
+	font-weight: 700;
+}
+
+.site-footer.page-footer.bg-secondary .fa-heart,
+.page-footer.bg-secondary .fa-heart {
+	color: #f07178 !important;
+}
+
+.site-footer.page-footer.bg-secondary .fa-mug-hot,
+.page-footer.bg-secondary .fa-mug-hot {
+	color: var(--kicc-gold) !important;
+}
+
+.site-footer.page-footer.bg-secondary .btn-floating,
+.page-footer.bg-secondary .btn-floating {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.35rem;
+	height: 2.35rem;
+	border-radius: 50%;
+	background: rgba(212, 168, 67, 0.16);
+	border: 1px solid rgba(212, 168, 67, 0.45);
+	color: var(--kicc-gold-light);
+	transition: transform 0.15s ease, background-color 0.15s ease,
+		color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.site-footer.page-footer.bg-secondary .btn-floating:hover,
+.site-footer.page-footer.bg-secondary .btn-floating:focus,
+.page-footer.bg-secondary .btn-floating:hover,
+.page-footer.bg-secondary .btn-floating:focus {
+	background: var(--kicc-gold);
+	color: var(--kicc-teal-deep);
+	transform: translateY(-2px);
+	box-shadow: 0 6px 18px rgba(212, 168, 67, 0.35);
+	text-decoration: none;
+}
+
+.site-footer.page-footer.bg-secondary .btn-floating .fab,
+.page-footer.bg-secondary .btn-floating .fab {
+	color: inherit;
+}
+
+/* ==========================================================================
+   7. SHARED COMPONENTS — tabs, social links, heroes
+   ========================================================================== */
+
 .nav-pills .nav-link.active {
-	color: #fff;
-	background-color: #0D5E10;
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-teal);
 }
 
 .nav-pills .nav-link {
-	color: #555;
+	color: var(--kicc-text-muted);
 	text-transform: capitalize;
 }
 
-.text-uppercase {
-	letter-spacing: 0.2em;
-}
-
-/* With arrow tabs */
-
+/* Programme / home tab arrows */
 .with-arrow .nav-link.active {
 	position: relative;
-	background: #0d5b5e;
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
 }
 
 .with-arrow .nav-link.active::after {
-	content: '';
+	content: "";
 	border-left: 20px solid transparent;
 	border-right: 20px solid transparent;
-	border-top: 20px solid #d94e2b;
+	border-top: 20px solid var(--kicc-gold);
 	position: absolute;
 	bottom: -20px;
 	left: 50%;
@@ -251,100 +703,1235 @@ h6 {
 	display: block;
 }
 
-/* lined tabs */
-
-.lined .nav-link {
-	border: none;
-	border-bottom: 3px solid transparent;
-}
-
-.lined .nav-link:hover {
-	border: none;
-	border-bottom: 3px solid transparent;
-}
-
-.lined .nav-link.active {
-	background: none;
-	color: #555;
-	border-color: #2b90d9;
-}
-
-/* BACKGROUNDS END */
-#salah-times {
-	border-radius: 5rem;
-	padding-left: 1.35rem;
-	padding-right: 1.35rem;
-}
-
-/* CAROUSEL START */
-.carousel-item {
-	height: 100vh;
-	min-height: 350px;
-	background: no-repeat center center scroll;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;
-}
-
-/* CAROUSEL END */
+/* Team card social icons */
 .social-link {
-	width: 30px;
-	height: 30px;
-	border: 1px solid #ddd;
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--kicc-teal-muted);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #666;
+	color: var(--kicc-teal);
 	border-radius: 50%;
-	transition: all 0.3s;
-	font-size: 0.9rem;
+	transition: all 0.2s ease;
+	font-size: 0.95rem;
+	background: var(--kicc-bg-white);
+	box-shadow: var(--kicc-shadow-sm);
 }
 
 .social-link:hover,
 .social-link:focus {
-	background: #ddd;
+	background: var(--kicc-teal);
+	border-color: var(--kicc-teal);
 	text-decoration: none;
-	color: #555;
+	color: var(--kicc-text-on-dark);
+	transform: translateY(-2px);
+	box-shadow: var(--kicc-shadow-md);
 }
 
-a.contact-link {
+.social-link .fab,
+.social-link .fas {
+	color: inherit;
+}
+
+/* Full-width hero image bands */
+.hero-cover {
+	position: relative;
+	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
+	background-size: cover !important;
+	min-height: auto;
+	z-index: 1;
+}
+
+.hero-cover::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(10, 138, 142, 0.55) 0%,
+		rgba(5, 90, 94, 0.45) 100%
+	);
+	z-index: 2;
+	pointer-events: none;
+}
+
+.hero-cover > * {
+	position: relative;
+	z-index: 3;
+}
+
+.hero-cover-campaign {
+	position: relative;
+	background: url(../images/masjid/masjid-wide.jpg) no-repeat center center;
+	background-size: cover;
+	min-height: auto;
+	z-index: 1;
+}
+
+.hero-cover-campaign::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(10, 138, 142, 0.5) 0%,
+		rgba(5, 90, 94, 0.4) 100%
+	);
+	z-index: 2;
+	pointer-events: none;
+}
+
+.hero-cover-campaign > * {
+	position: relative;
+	z-index: 3;
+}
+
+.hero-cover-madrasa {
+	position: relative;
+	color: var(--kicc-text-on-dark);
+	background: url(../images/backgrounds/quran.jpg) no-repeat top center;
+	background-size: cover;
+	padding: 20px 0;
+	width: 100%;
+	min-height: 40vh;
+}
+
+.hero-cover-madrasa::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		180deg,
+		rgba(10, 138, 142, 0.45) 0%,
+		rgba(5, 90, 94, 0.72) 100%
+	);
+	z-index: 2;
+	pointer-events: none;
+}
+
+.hero-cover-madrasa .container {
+	position: relative;
+	z-index: 3;
+}
+
+/* Notice board section (homepage) */
+.notice-board-section {
+	background: var(--kicc-surface-muted);
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+}
+
+.notice-board-section h2 {
+	color: var(--kicc-teal-deep);
+}
+
+/* Cookie / info sticky bar */
+.sticky-footer {
+	position: fixed;
+	width: 100%;
+	bottom: -20px;
+	text-align: center;
+	color: var(--kicc-text);
+	transition: all 0.25s;
+	z-index: 999;
+	background: var(--kicc-gold-light);
+	border-top: 2px solid var(--kicc-gold);
+}
+
+.sticky-footer p {
+	margin: 0;
+	color: var(--kicc-teal-deep);
+}
+
+.sticky-footer.alert-dismissible .close {
+	top: 50%;
+	transform: translateY(-55%);
+}
+
+/* ==========================================================================
+   7b. CROSS-PAGE UX — skip link, inner pages, accessibility
+   ========================================================================== */
+
+.skip-link {
+	position: absolute;
+	top: -100%;
+	left: 1rem;
+	z-index: 2000;
+	padding: 0.65rem 1.15rem;
+	background: var(--kicc-gold-bright);
+	color: var(--kicc-teal-deep);
+	font-weight: 700;
+	border-radius: 0 0 0.5rem 0.5rem;
+	box-shadow: var(--kicc-shadow-md);
 	text-decoration: none;
-	color: #fff;
+	transition: top 0.15s ease;
 }
 
-.nav-narrow {
-	height: 30px !important;
+.skip-link:focus {
+	top: 0;
+	outline: none;
+	box-shadow: 0 0 0 3px var(--kicc-teal), var(--kicc-shadow-md);
 }
 
-.nav-wide {
-	background-color: #33334d;
+:focus-visible {
+	outline: 3px solid var(--kicc-gold);
+	outline-offset: 2px;
 }
 
-.how-section1 {
-	margin-top: -10%;
-	padding: 5%;
+.btn:focus-visible,
+.nav-link:focus-visible {
+	outline-offset: 3px;
 }
 
-.how-section1 h4 {
-	font-size: 30px;
-}
-
-.how-section1 .subheading {
-	color: #3931af;
-	font-size: 20px;
-}
-
-.how-section1 .row {
-	margin-top: 10%;
-}
-
-.how-img {
+/* Inner-page intro band (Programmes, Madrasa) */
+.page-intro-hero {
+	background: linear-gradient(
+		135deg,
+		var(--kicc-teal-soft) 0%,
+		var(--kicc-surface-muted) 100%
+	);
+	border-bottom: var(--kicc-border-gold);
+	padding: 2.5rem 0 2rem;
 	text-align: center;
 }
 
-.how-img img {
+.page-intro-hero .campaign-eyebrow {
+	display: inline-block;
+	margin-bottom: 0.75rem;
+	color: var(--kicc-teal);
+}
+
+.page-intro-hero h1 {
+	font-size: clamp(1.85rem, 4vw, 2.75rem);
+	margin-bottom: 0.75rem;
+	color: var(--kicc-teal-deep);
+}
+
+.page-intro-hero .lead {
+	max-width: 42rem;
+	margin: 0 auto;
+	color: var(--kicc-text-muted);
+	font-size: 1.05rem;
+}
+
+.page-content-section {
+	padding: 2.5rem 0;
+}
+
+.page-tabs-panel {
+	background: var(--kicc-bg-white);
+	border: 1px solid rgba(212, 168, 67, 0.28);
+	border-radius: var(--kicc-radius-lg);
+	box-shadow: var(--kicc-shadow-sm);
+	padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.page-tabs-panel .nav-tabs {
+	border-bottom: 1px solid rgba(10, 138, 142, 0.12);
+}
+
+.page-tabs-panel .nav-link {
+	color: var(--kicc-text-muted);
+	font-weight: 700;
+	border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.page-tabs-panel .nav-link.active {
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+}
+
+.page-tabs-panel .with-arrow .nav-link.active::after {
+	border-top-color: var(--kicc-gold);
+}
+
+/* Daily Hadith section */
+.hadith-section {
+	padding: 3.5rem 0;
+	background: var(--kicc-bg);
+}
+
+.hadith-card {
+	max-width: 40rem;
+	margin: 0 auto;
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	border: 1px solid rgba(10, 138, 142, 0.12);
+	border-top: 4px solid var(--kicc-gold);
+	box-shadow: var(--kicc-shadow-sm);
+	padding: 2rem 2rem 1.5rem;
+	text-align: center;
+}
+
+.hadith-card-header {
+	margin-bottom: 1rem;
+}
+
+.hadith-card-icon {
+	display: block;
+	font-size: 1.5rem;
+	color: var(--kicc-teal);
+	margin-bottom: 0.35rem;
+	opacity: 0.85;
+}
+
+.hadith-card-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--kicc-teal);
+	margin: 0;
+}
+
+.hadith-card-quote {
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.hadith-card-quote,
+.hadith-card-quote p,
+.hadith-card-quote #hadith-body,
+.hadith-card-quote #hadith-body p {
+	font-size: 1.05rem;
+	line-height: 1.75;
+	color: var(--kicc-text);
+}
+
+.hadith-card-quote p:last-child,
+.hadith-card-quote #hadith-body p:last-child {
+	margin-bottom: 0;
+}
+
+.hadith-card-footer {
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(10, 138, 142, 0.1);
+}
+
+.hadith-card-source {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--kicc-teal);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.hadith-card-source:hover {
+	color: var(--kicc-teal-dark);
+	text-decoration: none;
+}
+
+.hadith-card-source cite {
+	font-style: normal;
+}
+
+.hadith-card-source-icon {
+	font-size: 0.65rem;
+	opacity: 0.7;
+}
+
+@media (max-width: 575px) {
+	.hadith-section {
+		padding: 2.5rem 0;
+	}
+
+	.hadith-card {
+		padding: 1.5rem 1.25rem 1.25rem;
+	}
+
+	.hadith-card-quote,
+	.hadith-card-quote p,
+	.hadith-card-quote #hadith-body,
+	.hadith-card-quote #hadith-body p {
+		font-size: 1rem;
+	}
+}
+
+/* Bright donation bands (home + projects) */
+.campaign-donate-section,
+.home-donate-section.campaign-donate-section {
+	background: linear-gradient(
+		135deg,
+		var(--kicc-teal-dark) 0%,
+		var(--kicc-teal) 50%,
+		#089aa0 100%
+	);
+	color: var(--kicc-text-on-dark);
+}
+
+.campaign-rewards::after {
+	background: linear-gradient(
+		135deg,
+		rgba(10, 138, 142, 0.88) 0%,
+		rgba(5, 90, 94, 0.92) 100%
+	);
+}
+
+.campaign-reward-card {
+	background: rgba(255, 255, 255, 0.14);
+	border-color: rgba(255, 255, 255, 0.22);
+}
+
+.campaign-cost-card .cost-amount {
+	color: var(--kicc-teal);
+}
+
+.campaign-highlight {
+	border-left-color: var(--kicc-teal);
+}
+
+.campaign-timeline {
+	border-left-color: var(--kicc-teal);
+}
+
+/* Home hero prayer time labels */
+.home-hero-prayer-label {
+	display: block;
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--kicc-text-soft);
+	margin-bottom: 0.1rem;
+}
+
+.home-hero-prayer-card .home-hero-prayer-begins::before {
+	content: none;
+}
+
+.page-home #about-kicc {
+	padding-top: 4.5rem;
+}
+
+.page-home #notice-board .item img {
 	width: 100%;
+	min-height: 180px;
+	object-fit: cover;
+}
+
+@media (min-width: 768px) {
+	.page-home #notice-board .item img {
+		min-height: 220px;
+	}
+}
+
+/* Activities page */
+.page-activities {
+	background: var(--kicc-bg);
+}
+
+.page-activities #weekly-programmes-section h2 {
+	font-size: clamp(1.5rem, 3vw, 2rem);
+	color: var(--kicc-teal-deep);
+	margin-bottom: 1.25rem;
+}
+
+.page-activities .table thead th {
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	border-color: var(--kicc-teal-dark);
+}
+
+/* Madrasa page */
+.page-madrasa {
+	background: var(--kicc-bg);
+}
+
+.page-madrasa .hero-cover-madrasa .campaign-eyebrow {
+	display: inline-block;
+	margin-bottom: 0.75rem;
+	color: var(--kicc-gold-light);
+}
+
+.page-madrasa .hero-cover-madrasa header,
+.page-madrasa .madrasa-hero-header {
+	max-width: 42rem;
+	margin: 0 auto;
+	color: var(--kicc-text-on-dark);
+}
+
+.page-madrasa .hero-cover-madrasa h1 {
+	color: var(--kicc-text-on-dark);
+}
+
+.page-madrasa .hero-cover-madrasa .lead {
+	font-size: 1.1rem;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.94);
+}
+
+.page-madrasa .madrasa-hero-actions .btn-kicc-ghost {
+	border-color: rgba(255, 255, 255, 0.55);
+	color: #fff;
+}
+
+.page-madrasa .madrasa-hero-actions .btn-kicc-ghost:hover,
+.page-madrasa .madrasa-hero-actions .btn-kicc-ghost:focus {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: #fff;
+	color: #fff;
+}
+
+.page-madrasa .madrasa-section-nav {
+	background: var(--kicc-bg-white);
+	border-bottom: 1px solid rgba(10, 138, 142, 0.12);
+}
+
+.page-madrasa .madrasa-section-nav-list {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0.75rem 0;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+
+.page-madrasa .madrasa-section-nav-list::-webkit-scrollbar {
+	display: none;
+}
+
+.page-madrasa .madrasa-section-nav-list li {
+	flex: 0 0 auto;
+}
+
+.page-madrasa .madrasa-section-nav-list a {
+	display: block;
+	padding: 0.45rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--kicc-teal);
+	background: var(--kicc-teal-soft);
+	border-radius: var(--kicc-radius-pill);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.page-madrasa .madrasa-section-nav-list a:hover,
+.page-madrasa .madrasa-section-nav-list a:focus {
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	text-decoration: none;
+}
+
+.page-madrasa .madrasa-benefit-card {
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	padding: 1.75rem 1.5rem;
+	border: 1px solid rgba(10, 138, 142, 0.1);
+	border-top: 4px solid var(--kicc-teal);
+	box-shadow: var(--kicc-shadow-sm);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-madrasa .madrasa-benefit-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--kicc-shadow-md);
+}
+
+.page-madrasa .madrasa-benefit-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	border-radius: 50%;
+	background: var(--kicc-teal-soft);
+	color: var(--kicc-teal);
+	font-size: 1.15rem;
+	margin-bottom: 1rem;
+}
+
+.page-madrasa .madrasa-benefit-card h3 {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 0.65rem;
+}
+
+.page-madrasa .madrasa-benefit-card p {
+	color: var(--kicc-text-muted);
+	line-height: 1.65;
+	margin-bottom: 0;
+}
+
+.page-madrasa .madrasa-steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-width: 36rem;
+	margin-left: auto;
+	margin-right: auto;
+	counter-reset: madrasa-step;
+}
+
+.page-madrasa .madrasa-step {
+	display: flex;
+	align-items: flex-start;
+	gap: 1.25rem;
+	padding: 1.25rem 0;
+	border-bottom: 1px solid rgba(10, 138, 142, 0.1);
+}
+
+.page-madrasa .madrasa-step:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.page-madrasa .madrasa-step-num {
+	flex: 0 0 2.5rem;
+	width: 2.5rem;
+	height: 2.5rem;
+	line-height: 2.5rem;
+	text-align: center;
+	font-weight: 700;
+	font-size: 1.1rem;
+	color: var(--kicc-text-on-dark);
+	background: var(--kicc-teal);
+	border-radius: 50%;
+}
+
+.page-madrasa .madrasa-step-body h3 {
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 0.35rem;
+}
+
+.page-madrasa .madrasa-step-body p {
+	color: var(--kicc-text-muted);
+	line-height: 1.65;
+	margin-bottom: 0;
+}
+
+.page-madrasa .madrasa-enrol-alt {
+	font-size: 0.9rem;
+	color: var(--kicc-text-soft);
+}
+
+.page-madrasa .madrasa-enrol-alt a {
+	font-weight: 600;
+	color: var(--kicc-teal);
+}
+
+.page-madrasa .madrasa-curriculum-eyebrow {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--kicc-teal);
+	margin-bottom: 0.35rem;
+}
+
+.page-madrasa .madrasa-curriculum-points {
+	list-style: none;
+	margin: 1.25rem 0 0;
+	padding: 0;
+}
+
+.page-madrasa .madrasa-curriculum-points li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	margin-bottom: 0.75rem;
+	color: var(--kicc-text-muted);
+	line-height: 1.6;
+}
+
+.page-madrasa .madrasa-curriculum-points li i {
+	color: var(--kicc-teal);
+	margin-top: 0.2rem;
+	flex-shrink: 0;
+}
+
+.page-madrasa #madrasa-curriculum a {
+	color: var(--kicc-teal);
+	font-weight: 600;
+}
+
+.page-madrasa .madrasa-subjects-card {
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	padding: 1.75rem;
+	border: 1px solid rgba(10, 138, 142, 0.12);
+	box-shadow: var(--kicc-shadow-sm);
+}
+
+.page-madrasa .madrasa-subjects-heading {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 1rem;
+}
+
+.page-madrasa .madrasa-subjects-list {
+	list-style: none;
+	margin: 0 0 1rem;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.page-madrasa .madrasa-subject-tag {
+	display: inline-block;
+	padding: 0.35rem 0.85rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--kicc-teal-deep);
+	background: var(--kicc-teal-soft);
+	border-radius: var(--kicc-radius-pill);
+}
+
+.page-madrasa .madrasa-subjects-note {
+	font-size: 0.875rem;
+	color: var(--kicc-text-soft);
+	line-height: 1.55;
+}
+
+.page-madrasa .madrasa-subjects-note a {
+	color: var(--kicc-teal);
+	font-weight: 600;
+}
+
+.page-madrasa .madrasa-schedule-heading {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 0.5rem;
+}
+
+.page-madrasa .madrasa-schedule-teachers {
+	font-size: 0.9rem;
+	color: var(--kicc-text-muted);
+	margin-bottom: 1.25rem;
+}
+
+.page-madrasa .madrasa-schedule-teachers i {
+	color: var(--kicc-teal);
+	margin-right: 0.35rem;
+}
+
+.page-madrasa .madrasa-schedule-variation {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	max-width: 42rem;
+	margin: 0 auto;
+	padding: 1rem 1.25rem;
+	background: var(--kicc-teal-soft);
+	border-radius: var(--kicc-radius-lg);
+	border-left: 4px solid var(--kicc-teal);
+}
+
+.page-madrasa .madrasa-schedule-variation-icon {
+	flex-shrink: 0;
+	color: var(--kicc-teal);
+	font-size: 1.1rem;
+	margin-top: 0.15rem;
+}
+
+.page-madrasa .madrasa-schedule-variation p {
+	font-size: 0.9rem;
+	line-height: 1.6;
+	color: var(--kicc-text-muted);
+}
+
+.page-madrasa .madrasa-schedule-note {
+	font-size: 0.95rem;
+	color: var(--kicc-text-muted);
+}
+
+.page-madrasa .madrasa-schedule-note a {
+	font-weight: 600;
+	color: var(--kicc-teal);
+}
+
+.page-madrasa .madrasa-parents-section {
+	padding-bottom: 3rem;
+}
+
+.page-madrasa .madrasa-notes {
+	background: var(--kicc-surface-muted);
+	border-radius: var(--kicc-radius-lg);
+	padding: 1.75rem;
+	border: 1px solid rgba(10, 138, 142, 0.1);
+}
+
+.page-madrasa .madrasa-notes-heading {
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 1rem;
+}
+
+.page-madrasa .madrasa-notes-list {
+	margin: 0;
+	padding-left: 1.25rem;
+	color: var(--kicc-text-muted);
+	line-height: 1.65;
+}
+
+.page-madrasa .madrasa-notes-list li {
+	margin-bottom: 0.65rem;
+}
+
+.page-madrasa .madrasa-notes-list li:last-child {
+	margin-bottom: 0;
+}
+
+.page-madrasa .madrasa-register-band {
+	padding: 0 0 4rem;
+	background: var(--kicc-bg);
+}
+
+.page-madrasa .madrasa-register-card {
+	background: linear-gradient(
+		135deg,
+		var(--kicc-teal-dark) 0%,
+		var(--kicc-teal) 100%
+	);
+	border-radius: var(--kicc-radius-lg);
+	padding: 2.5rem 2rem;
+	box-shadow: var(--kicc-shadow-lg);
+	color: var(--kicc-text-on-dark);
+}
+
+.page-madrasa .madrasa-register-title {
+	font-size: clamp(1.5rem, 3vw, 2rem);
+	font-weight: 700;
+	color: var(--kicc-text-on-dark);
+	margin-bottom: 0.75rem;
+}
+
+.page-madrasa .madrasa-register-lead {
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.92);
+}
+
+.page-madrasa .madrasa-register-card .btn-kicc-ghost {
+	border-color: rgba(255, 255, 255, 0.5);
+	color: #fff;
+}
+
+.page-madrasa .madrasa-register-card .btn-kicc-ghost:hover,
+.page-madrasa .madrasa-register-card .btn-kicc-ghost:focus {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: #fff;
+	color: #fff;
+}
+
+@media (min-width: 992px) {
+	.page-madrasa .madrasa-section-nav {
+		position: sticky;
+		top: 4.5rem;
+		z-index: 1020;
+		box-shadow: var(--kicc-shadow-sm);
+	}
+}
+
+/* Projects (New Masjid campaign) page */
+.page-projects {
+	background: var(--kicc-bg);
+}
+
+.page-projects .hero-cover-campaign::before {
+	background: linear-gradient(
+		160deg,
+		rgba(5, 90, 94, 0.82) 0%,
+		rgba(10, 138, 142, 0.65) 45%,
+		rgba(5, 45, 48, 0.88) 100%
+	);
+}
+
+.page-projects .campaign-hero-panel {
+	background: rgba(5, 55, 58, 0.92);
+	border: 2px solid rgba(212, 168, 67, 0.45);
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(10px);
+}
+
+.page-projects .campaign-title {
+	font-size: clamp(1.85rem, 4.5vw, 2.75rem);
+	font-weight: 700;
+	color: #fff;
+	line-height: 1.15;
+	margin-bottom: 1rem;
+}
+
+.page-projects .campaign-hero-lead {
+	font-size: 1.1rem;
+	line-height: 1.65;
+	color: rgba(255, 255, 255, 0.92);
+	max-width: 36rem;
+	margin: 0 auto 1.25rem;
+}
+
+.page-projects .campaign-section-nav {
+	background: var(--kicc-bg-white);
+	border-bottom: 1px solid rgba(10, 138, 142, 0.12);
+}
+
+.page-projects .campaign-section-nav-list {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0;
+	padding: 0.75rem 0;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+
+.page-projects .campaign-section-nav-list::-webkit-scrollbar {
+	display: none;
+}
+
+.page-projects .campaign-section-nav-list li {
+	flex: 0 0 auto;
+}
+
+.page-projects .campaign-section-nav-list a {
+	display: block;
+	padding: 0.45rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--kicc-teal);
+	background: var(--kicc-teal-soft);
+	border-radius: var(--kicc-radius-pill);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.page-projects .campaign-section-nav-list a:hover,
+.page-projects .campaign-section-nav-list a:focus {
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	text-decoration: none;
+}
+
+.page-projects .campaign-section-elevated {
+	background: var(--kicc-bg-white);
+}
+
+.page-projects .campaign-section-dark {
+	background: linear-gradient(
+		180deg,
+		var(--kicc-teal-deep) 0%,
+		#044548 100%
+	);
+	color: var(--kicc-text-on-dark);
+}
+
+.page-projects .campaign-section-dark .campaign-section-title h2,
+.page-projects .campaign-section-dark .campaign-section-title p {
+	color: var(--kicc-text-on-dark);
+}
+
+.page-projects .campaign-section-dark .campaign-section-title p {
+	opacity: 0.88;
+}
+
+.page-projects .campaign-narrative-card {
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	padding: 2rem 2.25rem;
+	box-shadow: var(--kicc-shadow-md);
+	border: 1px solid rgba(10, 138, 142, 0.1);
+	border-top: 4px solid var(--kicc-gold);
+}
+
+.page-projects .campaign-need-list {
+	list-style: none;
+	margin: 0 0 1.25rem;
+	padding: 0;
+}
+
+.page-projects .campaign-need-list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	margin-bottom: 0.65rem;
+	color: var(--kicc-text);
+	line-height: 1.55;
+}
+
+.page-projects .campaign-need-list li i {
+	color: var(--kicc-teal);
+	margin-top: 0.2rem;
+	flex-shrink: 0;
+}
+
+.page-projects .campaign-highlight {
+	background: var(--kicc-teal-soft);
+	border-left-color: var(--kicc-gold);
+	box-shadow: none;
+}
+
+.page-projects .campaign-phase-card {
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	overflow: hidden;
+	box-shadow: var(--kicc-shadow-md);
+	border: 1px solid rgba(10, 138, 142, 0.1);
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-projects .campaign-phase-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--kicc-shadow-lg);
+}
+
+.page-projects .campaign-phase-badge {
+	display: inline-block;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 0.35rem 0.85rem;
+	border-radius: var(--kicc-radius-pill);
+	margin: 1.25rem 1.25rem 0;
+	align-self: flex-start;
+}
+
+.page-projects .campaign-phase-badge-progress {
+	background: var(--kicc-teal-soft);
+	color: var(--kicc-teal-deep);
+}
+
+.page-projects .campaign-phase-badge-vision {
+	background: rgba(212, 168, 67, 0.2);
+	color: #8a6d1f;
+}
+
+.page-projects .campaign-phase-media {
+	margin: 1rem 1.25rem 0;
+	border-radius: 0.65rem;
+	overflow: hidden;
+	border: 1px solid rgba(10, 138, 142, 0.12);
+}
+
+.page-projects .campaign-phase-media img {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	display: block;
+}
+
+.page-projects .campaign-phase-body {
+	padding: 1.25rem 1.25rem 1.5rem;
+	flex: 1;
+}
+
+.page-projects .campaign-phase-body h3 {
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	margin-bottom: 0.75rem;
+}
+
+.page-projects .campaign-phase-body p {
+	color: var(--kicc-text-muted);
+	line-height: 1.65;
+	margin-bottom: 0.75rem;
+	font-size: 0.95rem;
+}
+
+.page-projects .campaign-gallery-item {
+	margin-bottom: 1.5rem;
+}
+
+.page-projects .campaign-gallery-link {
+	display: block;
+	position: relative;
+	border-radius: var(--kicc-radius-lg);
+	overflow: hidden;
+	box-shadow: var(--kicc-shadow-md);
+	border: 2px solid rgba(255, 255, 255, 0.08);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-projects .campaign-section:not(.campaign-section-dark) .campaign-gallery-link {
+	border-color: rgba(10, 138, 142, 0.12);
+}
+
+.page-projects .campaign-gallery-link:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--kicc-shadow-lg);
+}
+
+.page-projects .campaign-gallery-img {
+	width: 100%;
+	height: 220px;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.3s ease;
+}
+
+.page-projects .campaign-gallery-link:hover .campaign-gallery-img {
+	transform: scale(1.04);
+}
+
+.page-projects .campaign-gallery-caption {
+	display: block;
+	padding: 0.75rem 1rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-align: center;
+	background: var(--kicc-surface);
+	color: var(--kicc-teal-deep);
+}
+
+.page-projects .campaign-section-dark .campaign-gallery-caption {
+	background: rgba(255, 255, 255, 0.1);
+	color: var(--kicc-text-on-dark);
+}
+
+.page-projects .campaign-updates-note {
+	font-size: 0.95rem;
+	color: var(--kicc-text-muted);
+}
+
+.page-projects .campaign-cost-card {
+	background: var(--kicc-surface);
+	border: 1px solid rgba(10, 138, 142, 0.1);
+}
+
+.page-projects .campaign-cost-card .cost-icon {
+	font-size: 1.5rem;
+	color: var(--kicc-teal);
+	margin-bottom: 0.75rem;
+}
+
+.page-projects .campaign-cost-summary {
+	max-width: 42rem;
+	margin: 1.5rem auto 0;
+	padding: 1.25rem 1.5rem;
+	background: var(--kicc-surface);
+	border-radius: var(--kicc-radius-lg);
+	border-left: 4px solid var(--kicc-gold);
+	box-shadow: var(--kicc-shadow-sm);
+	text-align: center;
+	color: var(--kicc-text-muted);
+	line-height: 1.65;
+}
+
+.page-projects .campaign-facility-card {
+	border-top: 4px solid var(--kicc-teal);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-projects .campaign-facility-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--kicc-shadow-md);
+}
+
+.page-projects .campaign-section + .campaign-section {
+	border-top: none;
+}
+
+@media (min-width: 992px) {
+	.page-projects .campaign-section-nav {
+		position: sticky;
+		top: 4.5rem;
+		z-index: 1020;
+		box-shadow: var(--kicc-shadow-sm);
+	}
+
+	.page-projects .campaign-phase-media img {
+		height: 220px;
+	}
+
+	.page-projects .campaign-gallery-img {
+		height: 240px;
+	}
+}
+
+.page-activities .home-tabs-wrap {
+	margin-bottom: 0;
+}
+
+.page-activities .home-tabs-nav {
+	background: var(--kicc-bg-warm);
+}
+
+.page-activities .home-tabs-card {
+	border-radius: 0.5rem;
+}
+
+.page-activities .home-tabs-card .border {
+	border-color: rgba(10, 138, 142, 0.15) !important;
+}
+
+/* Contact page polish */
+.page-contact .contact-form-panel {
+	border-radius: var(--kicc-radius-lg);
+	box-shadow: var(--kicc-shadow-sm);
+}
+
+.page-contact .contact-input {
+	border-radius: 0.5rem;
+}
+
+.page-contact .contact-submit-btn {
+	border-radius: var(--kicc-radius-pill);
+}
+
+.page-contact .contact-card {
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.page-contact .contact-card:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--kicc-shadow-md);
+}
+
+/* About — sticky section nav on desktop */
+@media (min-width: 992px) {
+	.page-about .about-section-nav {
+		position: sticky;
+		top: 4.5rem;
+		z-index: 1020;
+		background: var(--kicc-bg-white);
+		box-shadow: var(--kicc-shadow-sm);
+		border-bottom: 1px solid rgba(212, 168, 67, 0.25);
+	}
+}
+
+.page-about .about-stats {
+	background: var(--kicc-bg-white);
+	box-shadow: var(--kicc-shadow-sm);
+}
+
+.page-about .about-stat-value {
+	color: var(--kicc-teal);
+}
+
+.page-about .about-stat-icon {
+	color: var(--kicc-gold);
 }
 
 /*===========================================================================*/
@@ -369,82 +1956,30 @@ a.contact-link {
 
 .parallax-section .right-box strong.title {
 	display: block;
-	font: 300 25px/25px 'Cinzel Decorative', cursive;
-	color: #fff;
+	font-family: var(--kicc-font-display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--kicc-text-on-dark);
 	clear: both;
 	padding: 0 0 15px 0;
 }
 
 .parallax-section .right-box a {
-	color: #ffad05;
+	color: var(--kicc-gold-bright);
 	display: inline-block;
-	font: 400 14px/14px 'Cinzel Decorative', cursive;
+	font-family: var(--kicc-font-display);
+	font-size: 0.875rem;
 	text-decoration: none;
 }
 
-.contact4 {
-	color: #8d97ad;
-	font-weight: 300;
-}
-
-.contact4 h1,
-.contact4 h2,
-.contact4 h3,
-.contact4 h4,
-.contact4 h5,
-.contact4 h6 {
-	color: #3e4555;
-}
-
-.contact4 .font-weight-medium {
-	font-weight: 500;
-}
-
-.contact4 .form-control {
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-.contact4 .form-control:focus {
-	border-color: #ffffff;
-}
-
-.contact4 input::-webkit-input-placeholder,
-.contact4 textarea::-webkit-input-placeholder {
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.contact4 input:-ms-input-placeholder,
-.contact4 textarea:-ms-input-placeholder {
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.contact4 input::placeholder,
-.contact4 textarea::placeholder {
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.contact4 .right-image {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	top: 0;
-}
-
-.contact4.bg-info {
-	background-color: #1f201f !important;
-}
-
-.contact4 .text-inverse {
-	color: #3e4555 !important;
-}
-
-/* CONTACT PAGE START */
+/* ==========================================================================
+   8. PAGE — CONTACT
+   ========================================================================== */
 .page-contact {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background-color: #f9fafb;
+	background-color: var(--kicc-bg);
 }
 
 .page-contact .contact-main {
@@ -454,7 +1989,7 @@ a.contact-link {
 .page-contact .contact-hero,
 .page-contact .contact-cards,
 .page-contact .contact-form-section {
-	background: #f9fafb;
+	background: var(--kicc-bg);
 }
 
 .page-contact .contact-hero {
@@ -581,7 +2116,20 @@ a.contact-link {
 	flex-shrink: 0;
 	width: 100%;
 	height: 28rem;
-	background: #eaecf0;
+	background: var(--kicc-surface-muted);
+	position: relative;
+}
+
+.page-contact .contact-map-fallback {
+	position: absolute;
+	bottom: 1rem;
+	right: 1rem;
+	margin: 0;
+	z-index: 2;
+}
+
+.page-contact .contact-map-fallback .btn {
+	box-shadow: var(--kicc-shadow-sm);
 }
 
 .page-contact .contact-map-iframe {
@@ -674,41 +2222,21 @@ a.contact-link {
 }
 /* CONTACT PAGE END */
 
-.alert-warning {
-	background-color: #ffee00;
-	color: #211d22;
-}
-
-.navbar-toggler.collapsed .close-icon {
-	display: none;
-}
-
-.navbar-toggler:not(.collapsed) .navbar-toggler-icon {
-	display: inline;
-}
+/* ==========================================================================
+   8. PAGE — MADRASA (schedule cards)
+   ========================================================================== */
 
 .schedule-warp {
-	padding-right: 20px;
-	padding-left: 20px;
 	padding: 20px 30px;
-	border: solid 1px #ddd;
-	background-color: #f5f5f5;
-	-webkit-transition: all 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
-	transition: all 0.7s cubic-bezier(0.11, 0.6, 0.24, 0.89);
-}
-
-.schedule {
-	background-color: #fff;
+	border: 1px solid var(--kicc-teal-muted);
+	background-color: var(--kicc-surface-muted);
+	border-radius: var(--kicc-radius-lg);
+	transition: all 0.3s ease;
 }
 
 .schedule-warp:hover {
-	box-shadow: 0 6px 20px rgba(0, 0, 0, .07);
-	border: solid 1px rgba(100, 40, 145, .97);
-}
-
-.schedule {
-	padding: 100px 0px;
-	background-color: #ecedf0;
+	box-shadow: var(--kicc-shadow-md);
+	border-color: var(--kicc-teal);
 }
 
 .schedule-tag {
@@ -719,22 +2247,14 @@ a.contact-link {
 }
 
 .schedule-tag-boys {
-	color: #fff;
-	background-color: #2779d6;
+	color: var(--kicc-text-on-dark);
+	background-color: var(--kicc-teal);
 }
 
 .schedule-tag-girls {
-	color: #fff;
-	background-color: #b261b2;
-}
-
-.schedule-header span {
-	display: inline-block;
-	margin-right: 25px;
-}
-
-.schedule-header {
-	margin-bottom: 80px;
+	color: var(--kicc-teal-deep);
+	background-color: var(--kicc-gold-light);
+	font-weight: 700;
 }
 
 .schedule-card {
@@ -749,7 +2269,7 @@ a.contact-link {
 }
 
 .schedule-card:hover:after {
-	background: #8a56d1;
+	background: var(--kicc-teal);
 	width: 25px;
 }
 
@@ -765,168 +2285,34 @@ a.contact-link {
 }
 
 .insidebox {
-	box-shadow: 0 0px 5px rgba(0, 0, 0, .07);
-	background: #ffffff;
+	box-shadow: var(--kicc-shadow-sm);
+	background: var(--kicc-bg-white);
 	width: 100%;
 	height: auto;
 	display: flex;
-	display: -moz-flex;
-	display: -ms-flex;
-	display: -webkit-flex;
-	display: -o-flex;
-	-webkit-align-items: center;
 	align-items: center;
 	padding: 10px 20px;
-	color: #6164B2;
+	color: var(--kicc-teal);
 	transition: all 0.2s ease-in;
-	/*    justify-content: center;*/
 }
 
 .day-one {
 	margin-bottom: 50px;
 	font-weight: bold;
 	font-size: 20px;
-	color: #6164B2;
+	color: var(--kicc-teal);
 }
 
-.bg-cover {
-	color: #ffffff;
-}
-
-.bg-cover {
-	background: url(../images/backgrounds/quran.jpg) no-repeat top center fixed;
-	background-size: cover;
-	padding: 20px 0;
-	width: 100%;
-	float: left;
-	position: relative;
-}
-
-.bg-cover:after {
-	content: "";
-	background: rgba(29, 26, 26, 0.9);
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0;
-	top: 0;
-}
-
-.bg-cover .container {
-	position: relative;
-	z-index: 99;
-}
-
-section.pricing {
-	background: #5e0d5b;
-	background: linear-gradient(to right, #5e0d5b, #100d5e);
-}
-
-.pricing .card {
-	border: none;
-	border-radius: 1rem;
-	transition: all 0.2s;
-	box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
-}
-
-.pricing hr {
-	margin: 1.5rem 0;
-}
-
-.pricing .card-title {
-	margin: 0.5rem 0;
-	font-size: 0.9rem;
-	letter-spacing: .1rem;
-	font-weight: bold;
-}
-
-.pricing .card-price {
-	font-size: 3rem;
-	margin: 0;
-	color: #0d5b5e;
-}
-
-.pricing .card-price .period {
-	font-size: 0.8rem;
-}
-
-.pricing ul li {
-	margin-bottom: 1rem;
-}
-
-.pricing .text-muted {
-	opacity: 0.7;
-}
-
-.pricing .btn {
-	font-size: 80%;
-	border-radius: 5rem;
-	letter-spacing: .1rem;
-	font-weight: bold;
-	padding: 1rem;
-	opacity: 0.7;
-	transition: all 0.2s;
-}
-
-/* Hover Effects on Card */
-
-.bg-cover-2 {
-	position: relative;
-	background: url(../images/backgrounds/masjid-new.jpg) no-repeat center top;
-	background-size: cover !important;
-	min-height: auto;
-	z-index: 1;
-	/* Ensure content is above the overlay */
-}
-
-.bg-cover-2::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(51, 51, 77, 0.45);
-	z-index: 2;
-	pointer-events: none;
-}
-
-/* Ensure child content is above the overlay */
-.bg-cover-2>* {
-	position: relative;
-	z-index: 3;
-}
-
-
-.bg-cover-projects {
-	position: relative;
-	background: url(../images/masjid/masjid-wide.jpg) no-repeat center center;
-	background-size: cover;
-	min-height: auto;
-	z-index: 1;
-}
-
-.bg-cover-projects::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(51, 51, 77, 0.45);
-	z-index: 2;
-	pointer-events: none;
-}
-
-.bg-cover-projects>* {
-	position: relative;
-	z-index: 3;
-}
+/* ==========================================================================
+   9. CAMPAIGN / PROJECTS COMPONENTS
+   ========================================================================== */
 
 .campaign-hero-panel {
-	background-color: rgba(67, 65, 65, 0.55);
+	background-color: rgba(255, 255, 255, 0.18);
 	padding: 2rem;
-	border-radius: 8px;
+	border-radius: var(--kicc-radius-lg);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	backdrop-filter: blur(6px);
 }
 
 .campaign-hero-panel h1 {
@@ -952,43 +2338,48 @@ section.pricing {
 }
 
 .btn-campaign {
-	background: #5e0d5b;
-	background: linear-gradient(to right, #5e0d5b, #100d5e);
-	border: 2px solid #5e0d5b;
-	color: #fff;
+	background: var(--kicc-teal);
+	background: linear-gradient(
+		135deg,
+		var(--kicc-teal) 0%,
+		var(--kicc-teal-dark) 100%
+	);
+	border: 2px solid var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
 	font-weight: 700;
-	border-radius: 5rem;
+	border-radius: var(--kicc-radius-pill);
 	padding: 0.875rem 2.25rem;
 	letter-spacing: 0.04em;
-	box-shadow: 0 4px 16px rgba(94, 13, 91, 0.35);
-	transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+	box-shadow: 0 4px 18px rgba(10, 138, 142, 0.35);
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-campaign:hover,
 .btn-campaign:focus {
-	color: #fff;
-	opacity: 0.95;
-	box-shadow: 0 6px 20px rgba(94, 13, 91, 0.45);
+	color: var(--kicc-text-on-dark);
+	background: var(--kicc-teal-dark);
+	border-color: var(--kicc-teal-dark);
+	box-shadow: 0 6px 22px rgba(10, 138, 142, 0.45);
 	transform: translateY(-2px);
 }
 
 .btn-campaign-outline {
 	border: 2px solid #fff;
-	color: #fff;
-	background: rgba(255, 255, 255, 0.1);
+	color: var(--kicc-text-on-dark);
+	background: rgba(255, 255, 255, 0.15);
 	font-weight: 700;
-	border-radius: 5rem;
+	border-radius: var(--kicc-radius-pill);
 	padding: 0.875rem 2.25rem;
 	letter-spacing: 0.04em;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-campaign-outline:hover,
 .btn-campaign-outline:focus {
-	background: rgba(255, 255, 255, 0.2);
-	color: #fff;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+	background: rgba(255, 255, 255, 0.28);
+	color: var(--kicc-text-on-dark);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
 	transform: translateY(-2px);
 }
 
@@ -1105,7 +2496,7 @@ section.pricing {
 	border-radius: 12px;
 	padding: 2rem;
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-	border-left: 4px solid #5e0d5b;
+	border-left: 4px solid var(--kicc-teal);
 }
 
 .campaign-rewards {
@@ -1119,7 +2510,12 @@ section.pricing {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: rgba(15, 15, 15, 0.82);
+	background: linear-gradient(
+		135deg,
+		rgba(6, 112, 117, 0.92) 0%,
+		rgba(10, 138, 142, 0.88) 50%,
+		rgba(5, 90, 94, 0.9) 100%
+	);
 }
 
 .campaign-rewards .container {
@@ -1156,7 +2552,7 @@ section.pricing {
 
 .campaign-reward-card h3 {
 	font-size: 1rem;
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-weight: 700;
 	margin-bottom: 0;
 	line-height: 1.4;
@@ -1179,7 +2575,7 @@ section.pricing {
 
 .campaign-facility-card h3 {
 	font-size: 1.1rem;
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-weight: 700;
 	color: #222;
 }
@@ -1209,7 +2605,7 @@ section.pricing {
 .campaign-cost-card .cost-amount {
 	font-size: 1.75rem;
 	font-weight: 700;
-	color: #5e0d5b;
+	color: var(--kicc-teal-deep);
 	font-family: "Cinzel Decorative", serif;
 }
 
@@ -1223,8 +2619,13 @@ section.pricing {
 }
 
 .campaign-donate-section {
-	background: linear-gradient(135deg, #5e0d5b 0%, #100d5e 100%);
-	color: #fff;
+	background: linear-gradient(
+		135deg,
+		var(--kicc-teal-dark) 0%,
+		var(--kicc-teal) 50%,
+		#089aa0 100%
+	);
+	color: var(--kicc-text-on-dark);
 }
 
 .campaign-donate-section .campaign-section-title h2,
@@ -1277,7 +2678,7 @@ section.pricing {
 .campaign-timeline {
 	position: relative;
 	padding-left: 2rem;
-	border-left: 2px solid #5e0d5b;
+	border-left: 2px solid var(--kicc-teal);
 }
 
 .campaign-timeline-item {
@@ -1294,14 +2695,14 @@ section.pricing {
 	width: 12px;
 	height: 12px;
 	border-radius: 50%;
-	background: #5e0d5b;
+	background: var(--kicc-teal);
 	border: 2px solid #f9f0e7;
 }
 
 .campaign-timeline-year {
 	font-family: "Cinzel Decorative", serif;
 	font-weight: 700;
-	color: #5e0d5b;
+	color: var(--kicc-teal-deep);
 	font-size: 1.1rem;
 }
 
@@ -1358,8 +2759,8 @@ section.pricing {
 	padding: 2rem 1.5rem 1.75rem;
 	background: linear-gradient(
 		135deg,
-		rgba(94, 13, 91, 0.07),
-		rgba(16, 13, 94, 0.04)
+		rgba(10, 138, 142, 0.08),
+		rgba(212, 168, 67, 0.06)
 	);
 	border-radius: 12px;
 	max-width: 28rem;
@@ -1369,16 +2770,21 @@ section.pricing {
 	display: block;
 	width: 4rem;
 	height: 3px;
-	background: linear-gradient(to right, #5e0d5b, #c9a84c, #5e0d5b);
+	background: linear-gradient(
+		to right,
+		var(--kicc-teal),
+		var(--kicc-gold),
+		var(--kicc-teal)
+	);
 	margin: 0 auto 1.25rem;
 	border-radius: 2px;
 }
 
 .campaign-closing .arabic-blessing {
-	font-family: "Amiri", "Libre Caslon Text", serif;
+	font-family: "Amiri", var(--kicc-font-body);
 	font-size: clamp(2.25rem, 5vw, 3.5rem);
 	font-weight: 700;
-	color: #5e0d5b;
+	color: var(--kicc-teal-deep);
 	line-height: 1.5;
 	margin: 0;
 	letter-spacing: 0.01em;
@@ -1597,7 +3003,7 @@ section.pricing {
 /* CAMPAIGN PAGE END */
 
 /* HOME PAGE START */
-.page-home #home-hero.bg-cover-2 {
+.page-home #home-hero.hero-cover {
 	background:
 		linear-gradient(
 			180deg,
@@ -1610,11 +3016,11 @@ section.pricing {
 	background-size: cover !important;
 }
 
-.page-home #home-hero.bg-cover-2::before {
+.page-home #home-hero.hero-cover::before {
 	background: transparent;
 }
 
-#home-hero.bg-cover-2,
+#home-hero.hero-cover,
 #home-hero.home-hero-cover {
 	min-height: auto;
 	position: relative;
@@ -1740,18 +3146,18 @@ section.pricing {
 }
 
 .home-hero-prayer-name {
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-size: 1.2rem;
 	font-weight: 700;
-	color: #c9a227;
-	margin-bottom: 0.45rem;
+	color: var(--kicc-gold);
+	margin-bottom: 0.35rem;
 	line-height: 1.2;
 }
 
 .home-hero-prayer-begins {
 	font-size: 0.78rem;
 	font-weight: 400;
-	color: #777;
+	color: var(--kicc-text-soft);
 	margin-bottom: 0.1rem;
 	font-variant-numeric: tabular-nums;
 	line-height: 1.3;
@@ -1760,7 +3166,7 @@ section.pricing {
 .home-hero-prayer-iqamah {
 	font-size: 1.1rem;
 	font-weight: 700;
-	color: #222;
+	color: var(--kicc-teal-deep);
 	margin-bottom: 0;
 	font-variant-numeric: tabular-nums;
 	line-height: 1.3;
@@ -1838,7 +3244,7 @@ section.pricing {
 	padding-right: 0.75rem;
 }
 
-.page-home #home-donate .kicc-btn-row {
+.page-home #home-donate .action-btn-row {
 	justify-content: flex-start;
 }
 
@@ -2043,6 +3449,61 @@ section.pricing {
 	text-transform: capitalize;
 }
 
+/* Pillars of Faith — pillar card grid */
+.home-faith-pillar {
+	background: #fff;
+	border-radius: 0 0 12px 12px;
+	border: 1px solid rgba(13, 91, 94, 0.1);
+	border-top: none;
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-faith-pillar:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 12px 36px rgba(13, 91, 94, 0.14);
+}
+
+.home-faith-pillar-cap {
+	background: linear-gradient(180deg, #0d5b5e 0%, #0a484b 100%);
+	color: #fff;
+	text-align: center;
+	padding: 1.25rem 1rem;
+	border-radius: 12px 12px 0 0;
+	border-bottom: 4px solid rgba(255, 255, 255, 0.25);
+}
+
+.home-faith-pillar-cap i {
+	font-size: 1.75rem;
+	display: inline-block;
+	width: 3rem;
+	height: 3rem;
+	line-height: 3rem;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.15);
+}
+
+.home-faith-pillar-body {
+	padding: 1.25rem 1.25rem 1.5rem;
+	flex: 1;
+}
+
+.home-faith-pillar-body h3 {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 0.75rem;
+}
+
+.home-faith-pillar-body p {
+	font-size: 0.9rem;
+	color: #666;
+	line-height: 1.6;
+	margin-bottom: 0;
+}
+
 .home-tabs-section {
 	background: #fff;
 }
@@ -2208,11 +3669,11 @@ section.pricing {
 		padding-right: 0.75rem;
 	}
 
-	.page-home .kicc-btn-row .btn-kicc-lg {
+	.page-home .action-btn-row .btn-kicc-lg {
 		width: 100%;
 	}
 
-	.page-home #home-donate .kicc-btn-row {
+	.page-home #home-donate .action-btn-row {
 		justify-content: center;
 	}
 
@@ -2250,6 +3711,30 @@ section.pricing {
 
 .modal-dialog {
 	overflow-y: initial !important
+}
+
+#myModal .modal-content {
+	border: none;
+	border-radius: var(--kicc-radius-lg);
+	box-shadow: var(--kicc-shadow-lg);
+	border-top: 4px solid var(--kicc-gold);
+	overflow: hidden;
+}
+
+#myModal .modal-header {
+	background: linear-gradient(135deg, var(--kicc-teal-soft) 0%, #fff 100%);
+	border-bottom: 1px solid var(--kicc-teal-muted);
+}
+
+#myModal .modal-title {
+	font-family: var(--kicc-font-display);
+	color: var(--kicc-teal-deep);
+	font-size: 1.15rem;
+}
+
+#myModal .modal-body p {
+	color: var(--kicc-text-muted);
+	line-height: 1.6;
 }
 
 .modal-body {
@@ -2290,597 +3775,13 @@ section.pricing {
 }
 
 /* GALLERY END */
-.circle-button {
-	box-shadow: 2px 4px 0 2px rgba(0, 0, 0, 0.1);
-	border: .5em solid #0d404d;
-	font-size: 1em;
-	line-height: 1.1em;
-	color: #ffffff;
-	background-color: #0d404d;
-	margin: auto;
-	border-radius: 50%;
-	height: 10em;
-	width: 10em;
-	position: relative;
-}
 
-.circle-button:hover {
-	color: #ffffff;
-	background-color: #145363;
-	text-decoration: none;
-	border-color: #24758a;
-}
-
-.holderCircle {
-	width: 600px;
-	height: 600px;
-	border-radius: 100%;
-	margin: auto;
-	position: relative;
-}
-
-.dotCircle {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	margin: auto;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border-radius: 100%;
-	z-index: 20;
-}
-
-.dotCircle .itemDot {
-	display: block;
-	width: 80px;
-	height: 80px;
-	position: absolute;
-	background: #ffffff;
-	color: #7d4ac7;
-	border-radius: 20px;
-	text-align: center;
-	line-height: 80px;
-	font-size: 30px;
-	z-index: 3;
-	cursor: pointer;
-	border: 2px solid #e6e6e6;
-}
-
-.dotCircle .itemDot .forActive {
-	width: 56px;
-	height: 56px;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	display: none;
-}
-
-.dotCircle .itemDot .forActive::after {
-	content: '';
-	width: 5px;
-	height: 5px;
-	border: 3px solid #7d4ac7;
-	bottom: -31px;
-	left: -14px;
-	filter: blur(1px);
-	position: absolute;
-	border-radius: 100%;
-}
-
-.dotCircle .itemDot .forActive::before {
-	content: '';
-	width: 6px;
-	height: 6px;
-	filter: blur(5px);
-	top: -15px;
-	position: absolute;
-	transform: rotate(-45deg);
-	border: 6px solid #a733bb;
-	right: -39px;
-}
-
-.dotCircle .itemDot.active .forActive {
-	display: block;
-}
-
-.round {
-	position: absolute;
-	left: 40px;
-	top: 45px;
-	width: 510px;
-	height: 510px;
-	border: 2px dotted #a733bb;
-	border-radius: 100%;
-	-webkit-animation: rotation 100s infinite linear;
-}
-
-.dotCircle .itemDot:hover,
-.dotCircle .itemDot.active {
-	color: #ffffff;
-	transition: 0.5s;
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7d4ac7+0,a733bb+100 */
-	background: #7d4ac7;
-	/* Old browsers */
-	background: -moz-linear-gradient(left, #7d4ac7 0%, #a733bb 100%);
-	/* FF3.6-15 */
-	background: -webkit-linear-gradient(left, #7d4ac7 0%, #a733bb 100%);
-	/* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right, #7d4ac7 0%, #a733bb 100%);
-	/* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7d4ac7', endColorstr='#a733bb', GradientType=1);
-	/* IE6-9 */
-	border: 2px solid #ffffff;
-	-webkit-box-shadow: 0 30px 30px 0 rgba(0, 0, 0, .13);
-	-moz-box-shadow: 0 30px 30px 0 rgba(0, 0, 0, .13);
-	box-shadow: 0 30px 30px 0 rgba(0, 0, 0, .13);
-}
-
-.dotCircle .itemDot {
-	font-size: 40px;
-}
-
-.contentCircle {
-	width: 300px;
-	border-radius: 100%;
-	color: #222222;
-	position: relative;
-	top: 150px;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
-.contentCircle .CirItem {
-	border-radius: 100%;
-	color: #222222;
-	position: absolute;
-	text-align: center;
-	bottom: 0;
-	left: 0;
-	opacity: 0;
-	transform: scale(0);
-	transition: 0.5s;
-	font-size: 15px;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	right: 0;
-	margin: auto;
-	line-height: 250px;
-}
-
-.CirItem.active {
-	z-index: 1;
-	opacity: 1;
-	transform: scale(1);
-	transition: 0.5s;
-}
-
-.contentCircle .CirItem i {
-	font-size: 180px;
-	position: absolute;
-	top: 0;
-	left: 50%;
-	margin-left: -90px;
-	color: #000000;
-	opacity: 0.1;
-}
-
-.title-box .title {
-	font-weight: 600;
-	letter-spacing: 2px;
-	position: relative;
-	z-index: -1;
-}
-
-.title-box span {
-	text-shadow: 0 10px 10px rgba(0, 0, 0, .15);
-	font-weight: 800;
-	color: #640178;
-}
-
-.title-box p {
-	font-size: 17px;
-	line-height: 2em;
-}
-
-.blog-home2 {
-	font-family: "Montserrat", sans-serif;
-	color: #8d97ad;
-	font-weight: 300;
-}
-
-.blog-home2 h1,
-.blog-home2 h2,
-.blog-home2 h3,
-.blog-home2 h4,
-.blog-home2 h5,
-.blog-home2 h6 {
-	color: #3e4555;
-}
-
-.blog-home2 .font-weight-medium {
-	font-weight: 500;
-}
-
-.blog-home2 .bg-light {
-	background-color: #f4f8fa !important;
-}
-
-.blog-home2 .subtitle {
-	color: #8d97ad;
-	line-height: 24px;
-}
-
-.blog-home2 .text-themecolor {
-	color: #316ce8;
-}
-
-.blog-home2 h5 {
-	line-height: 22px;
-	font-size: 18px;
-}
-
-.blog-home2 a.link {
-	color: #3e4555;
-}
-
-.blog-home2 a.link:hover {
-	color: #316ce8;
-}
-
-.blog-home2 .on-hover {
-	-webkit-transition: 0.2s ease-in;
-	-o-transition: 0.2s ease-in;
-	transition: 0.2s ease-in;
-}
-
-.blog-home2 .on-hover:hover {
-	-webkit-transform: translateY(-10px);
-	-ms-transform: translateY(-10px);
-	transform: translateY(-10px);
-}
-
-.blog-home2 .date-pos {
-	right: 10px;
-	top: 10px;
-}
-
-.blog-home2 .date-pos span {
-	font-size: 30px;
-	line-height: 30px;
-}
-
-.blog-home2 .bg-info-gradiant {
-	background: #0D5E10;
-	background: -webkit-linear-gradient(legacy-direction(to right), #0D5E10 0%, rgb(16, 177, 21) 100%);
-	background: -webkit-gradient(linear, left top, right top, from(#0D5E10), to(rgb(16, 177, 21)));
-	background: -webkit-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
-	background: -o-linear-gradient(left, #0D5E10 0%, rgb(16, 177, 21) 100%);
-	background: linear-gradient(to right, #0D5E10 0%, rgb(16, 177, 21) 100%);
-}
-
-/*************************  Welcome Section Start  ****************************/
-.cp-welcome {
-	background: #f9f0e7;
-	padding: 80px 0;
-	width: 100%;
-}
-
-.cp-welcome .container {
-	background: #fff;
-}
-
-.cp-welcome img {
-	padding: 20px;
-}
-
-.cp-welcome h2 {
-	font-size: 36px;
-}
-
-.cp-welcome-content {
-	padding: 45px 45px 0;
-}
-
-body .cp-welcome-content p {
-	margin: 20px 0;
-}
-
-.cp-welcome .btn {
-	margin-bottom: 15px;
-}
-
-/*************************  Welcome Section End  ****************************/
-/*************************  Pillars Of Islam Section Start  ****************************/
-.section-title {
-	text-align: center;
-	width: 100%;
-	float: left;
-	margin-bottom: 30px;
-}
-
-.section-title strong {
-	text-align: center;
-	font-size: 16px;
-	font-weight: 400;
-	color: #222;
-}
-
-.section-title h2,
-.cp-welcome h2,
-.blog-home2 h2 {
-	font-size: 48px;
+.notice-board-section h2 {
+	font-size: clamp(2rem, 4vw, 3rem);
 	font-weight: 700;
 	margin: 5px 0 0 0;
-	line-height: 50px;
-	color: #222;
-}
-
-.salah-times,
-.pillars-islam {
-	color: #fff;
-}
-
-.salah-times .section-title strong,
-.salah-times .section-title h2,
-.pillars-islam .section-title strong,
-.pillars-islam .section-title h2 {
-	color: #fff;
-}
-
-.salah-times {
-	background: url(../images/salat-times-bg-large.jpg) no-repeat top center fixed;
-	background-size: cover;
-	padding: 80px 0;
-	width: 100%;
-	float: left;
-	position: relative;
-}
-
-.pillars-islam {
-	background: url(../images/mos-bg5.png) no-repeat top center fixed;
-	background-size: cover;
-	padding: 80px 0;
-	width: 100%;
-	float: left;
-	position: relative;
-}
-
-.salah-times:after,
-.pillars-islam:after {
-	content: "";
-	background: rgba(15, 15, 15, 0.8);
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	left: 0;
-	top: 0;
-}
-
-.salah-times .container,
-.pillars-islam .container {
-	position: relative;
-	z-index: 99;
-}
-
-.salah-times .features-box {
-	background: url(../images/pillar-bg.png) no-repeat top;
-	width: 177px;
-	height: 232px;
-	margin: 10px auto;
-	background-size: 177px 250px;
-}
-
-.salah-times .features-box p,
-.salah-times .features-box h2 {
-	text-align: center;
-	vertical-align: middle;
-}
-
-.salah-times .features-box p {
-	font-size: 20px;
-}
-
-.pillars-islam .features-box span {
-	background: url(../images/poi-bg.png) no-repeat;
-	width: 177px;
-	height: 177px;
-	display: block;
-	text-align: center;
-	line-height: 177px;
-	margin: 0 auto
-}
-
-.salah-times .text-box,
-.pillars-islam .text-box {
-	text-align: center;
-}
-
-.salah-times .text-box h2 {
-	font-size: 15px;
-	font-weight: bold;
-}
-
-.pillars-islam .text-box h2 {
-	font-size: 25px;
-}
-
-.pillars-islam .sub {
-	text-align: center;
-	font-size: 14px;
-	font-style: italic;
-	font-weight: 400;
-	color: #d2973b;
-}
-
-.pillars-islam .features-box i {
-	vertical-align: middle;
-	border-style: none;
-	color: #0d5b5e;
-}
-
-/*************************  Pillars Of Islam Section End  ****************************/
-.sticky-footer {
-	position: fixed;
-	width: 100%;
-	bottom: -20px;
-	text-align: center;
-	color: #000;
-	transition: all 0.250s;
-	z-index: 999;
-}
-
-.sticky-footer p {
-	margin: 0;
-}
-
-.sticky-footer.alert-dismissible .close {
-	top: 50%;
-	transform: translateY(-55%);
-}
-
-.video-container {
-	position: relative;
-	padding-bottom: 56.25%;
-}
-
-.video-container iframe {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-}
-
-blockquote.quote-card {
-	margin: 0 0 0;
-}
-
-.quote-card a:link {
-	color: #FFF;
-	text-decoration: none;
-	font-weight: normal;
-}
-
-.quote-card a:visited {
-	color: #FFF;
-	text-decoration: none;
-	font-weight: normal;
-}
-
-.quote-card a:hover {
-	color: #FFF;
-	text-decoration: none;
-	font-weight: normal;
-}
-
-.quote-card a:active {
-	color: #FFF;
-	text-decoration: none;
-	font-weight: normal;
-}
-
-.quote-card {
-	background: #fff;
-	color: #222222;
-	padding: 20px;
-	padding-left: 50px;
-	box-sizing: border-box;
-	box-shadow: 0 2px 4px rgba(34, 34, 34, 0.12);
-	position: relative;
-	overflow: hidden;
-	min-height: 120px;
-}
-
-.quote-card p {
-	font-size: 22px;
-	line-height: 1.5;
-	margin: 0;
-	max-width: 80%;
-}
-
-.quote-card cite {
-	font-size: 16px;
-	margin-top: 10px;
-	display: block;
-	font-weight: 200;
-	opacity: 0.8;
-}
-
-.quote-card:before {
-	content: "“";
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	font-size: 5em;
-	color: rgba(238, 238, 238, 0.8);
-	font-weight: normal;
-}
-
-.quote-card:after {
-	content: "”";
-	position: absolute;
-	bottom: -110px;
-	line-height: 100px;
-	right: -32px;
-	font-size: 25em;
-	color: rgba(238, 238, 238, 0.8);
-	font-weight: normal;
-}
-
-@media (max-width: 640px) {
-	.quote-card:after {
-		font-size: 22em;
-		right: -25px;
-	}
-}
-
-.quote-card.blue-card {
-	background: #0078FF;
-	color: #ffffff;
-	box-shadow: 0 1px 2px rgba(34, 34, 34, 0.12), 0 2px 4px rgba(34, 34, 34, 0.24);
-}
-
-.quote-card.blue-card:before,
-.quote-card.blue-card:after {
-	color: #5FAAFF;
-}
-
-.quote-card.green-card {
-	background: #0D5E10;
-	color: #ffffff;
-	box-shadow: 0 1px 2px rgba(34, 34, 34, 0.12), 0 2px 4px rgba(34, 34, 34, 0.24);
-}
-
-.quote-card.green-card:before,
-.quote-card.green-card:after {
-	color: #59E063;
-}
-
-.quote-card.red-card {
-	background: #F61E32;
-	color: #ffffff;
-	box-shadow: 0 1px 2px rgba(34, 34, 34, 0.12), 0 2px 4px rgba(34, 34, 34, 0.24);
-}
-
-.quote-card.red-card:before,
-.quote-card.red-card:after {
-	color: #F65665;
-}
-
-.quote-card.yellow-card {
-	background: #F9A825;
-	color: #222222;
-	box-shadow: 0 1px 2px rgba(34, 34, 34, 0.12), 0 2px 4px rgba(34, 34, 34, 0.24);
-}
-
-.quote-card.yellow-card:before,
-.quote-card.yellow-card:after {
-	color: #FBC02D;
+	line-height: 1.15;
+	color: var(--kicc-teal-deep);
 }
 
 /* ################################################ */
@@ -2899,27 +3800,6 @@ blockquote.quote-card {
 	.gallery-block.grid-gallery .scale-on-hover:hover {
 		transform: scale(1.05);
 		box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.15) !important;
-	}
-
-	.holderCircle {
-		width: 300px;
-		height: 300px;
-		margin: 110px auto;
-	}
-
-	.holderCircle::after {
-		width: 100%;
-		height: 100%;
-	}
-
-	.dotCircle {
-		width: 100%;
-		height: 100%;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		margin: auto;
 	}
 
 	.with-arrow .nav-link.active::after {
@@ -2956,47 +3836,12 @@ blockquote.quote-card {
 
 /* col-lg-* - 992px */
 @media only screen and (min-width:992px) and (max-width:1199px) {
-	.pricing .card:hover {
-		margin-top: -.25rem;
-		margin-bottom: .25rem;
-		box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
-	}
-
-	.pricing .card:hover .btn {
-		opacity: 1;
-	}
 }
-
-/* col-xl-* - 1200px */
-@media only screen and (min-width:1200px) and (max-width:1499px) {}
 
 /* RESPONSIVE END */
 
 
-/* MISC RESPONSIVENESS */
-@media (min-width: 576px) {
-	.rounded-nav {
-		border-radius: 50rem !important;
-	}
-
-	.rounded-nav .nav-link {
-		border-radius: 50rem !important;
-	}
-}
-
-@media (min-width: 1024px) {
-	.contact4 .contact-box {
-		padding: 80px 105px 80px 0px;
-	}
-}
-
-@media (max-width: 767px) {
-	.contact4 .contact-box {
-		padding-left: 15px;
-		padding-right: 15px;
-	}
-}
-
+/* MISC RESPONSIVENESS — activities programmes */
 #weekly-programmes-section {
 	padding-top: 1rem;
 	padding-bottom: 2rem;
@@ -3188,7 +4033,7 @@ blockquote.quote-card {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background-color: #fff;
+	background-color: var(--kicc-bg);
 	--kicc-nav-offset: 3.5rem;
 }
 
@@ -3383,11 +4228,6 @@ blockquote.quote-card {
 	margin: 0 auto;
 }
 
-.page-about .about-hero-nav .btn-kicc-ghost {
-	background: rgba(255, 255, 255, 0.1);
-	border-color: rgba(255, 255, 255, 0.75);
-}
-
 .page-about .about-visit-card {
 	display: block;
 	height: 100%;
@@ -3426,7 +4266,7 @@ blockquote.quote-card {
 }
 
 .page-about .about-visit-card h3 {
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-size: 1.1rem;
 	font-weight: 700;
 	color: #222;
@@ -3666,7 +4506,7 @@ blockquote.quote-card {
 }
 
 .page-about .about-team-name {
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-size: 1.05rem;
 	font-weight: 700;
 	color: #222;
@@ -3730,7 +4570,7 @@ blockquote.quote-card {
 }
 
 .page-about .about-tech-name {
-	font-family: "Libre Caslon Text", serif;
+	font-family: var(--kicc-font-body);
 	font-size: 1.25rem;
 	font-weight: 700;
 	color: #222;

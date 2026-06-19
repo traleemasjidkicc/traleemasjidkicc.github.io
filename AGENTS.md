@@ -51,7 +51,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 | Page | File | Nav label | DOMContentLoaded | window.onload |
 |------|------|-----------|------------------|---------------|
-| `/` (index) | `index.html` | Home | notices | pillars, sign-up modal, announcements, Mixlr events |
+| `/` (index) | `index.html` | Home | notices | sign-up modal, announcements, Mixlr events |
 | `activities.html` | activities.html | Programmes | — | Mixlr events, programmes API |
 | `projects.html` | projects.html | New Masjid | — | BaguetteBox gallery |
 | All pages | — | — | footer year, cookie policy, WhatsApp button | salah URL, iqamah times, hadith |

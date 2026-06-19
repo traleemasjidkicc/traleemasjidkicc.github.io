@@ -40,7 +40,7 @@ alwaysApply: false
 
 | Match | Init |
 |-------|------|
-| `href.endsWith("/")` | `pillarsOfFaith`, `showSignUpModal`, `getAnnouncement`, `setEvent` |
+| `href.endsWith("/")` | `showSignUpModal`, `getAnnouncement`, `setEvent` |
 | `activities.html` | `setEvent`, `loadProgrammes` |
 | `projects.html` | `initBaguetteBox` (`.grid-gallery`) |
 

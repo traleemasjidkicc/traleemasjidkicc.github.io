@@ -72,14 +72,15 @@
     gtag('config', 'G-3H9CDDS71D');
   </script>
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781869584609.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781883461587.js"></script>
 
 </head>
 
 <body class="page-home">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- START OF NAV -->
   <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark nav-wide sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-light site-nav kicc-nav sticky-top">
     <div class="container">
       <!-- Nab brand -->
       <a class="navbar-brand d-none d-lg-block" href="/">
@@ -186,7 +187,8 @@
   <!-- END OF NAV -->
 
   <!-- HERO START -->
-  <section id="home-hero" class="bg-cover-2 text-white home-hero-cover">
+  <main id="main-content">
+  <section id="home-hero" class="hero-cover text-white home-hero-cover">
     <div class="container home-hero-cover-inner">
       <div class="home-hero-cover-content text-center">
         <span class="campaign-eyebrow">Kerry Islamic Cultural Centre
@@ -229,7 +231,7 @@
         </div>
         <!-- DYNAMIC CELEBRATION END -->
 
-        <div class="home-hero-actions kicc-btn-row justify-content-center mt-3">
+        <div class="home-hero-actions action-btn-row justify-content-center mt-3">
           <a href="https://kicc.page.link/gfm"
             class="btn btn-kicc btn-kicc-lg btn-kicc-accent mb-2"
             target="_blank" rel="noopener noreferrer">
@@ -243,7 +245,9 @@
           <div class="col-6 col-md home-hero-prayer-card-wrap">
             <div class="home-hero-prayer-card">
               <h3 class="home-hero-prayer-name">Fajr</h3>
+              <span class="home-hero-prayer-label">Begins</span>
               <p class="home-hero-prayer-begins" id="fajr-begins">--</p>
+              <span class="home-hero-prayer-label">Iqamah</span>
               <p class="home-hero-prayer-iqamah" id="fajr-iqamah">--</p>
               <p class="home-hero-prayer-sunrise"><span id="sunrise">--</span>
                 (sunrise)</p>
@@ -252,28 +256,36 @@
           <div class="col-6 col-md home-hero-prayer-card-wrap">
             <div class="home-hero-prayer-card">
               <h3 class="home-hero-prayer-name">Zohr</h3>
+              <span class="home-hero-prayer-label">Begins</span>
               <p class="home-hero-prayer-begins" id="dhuhr-begins">--</p>
+              <span class="home-hero-prayer-label">Iqamah</span>
               <p class="home-hero-prayer-iqamah" id="dhuhr-iqamah">--</p>
             </div>
           </div>
           <div class="col-6 col-md home-hero-prayer-card-wrap">
             <div class="home-hero-prayer-card">
               <h3 class="home-hero-prayer-name">Asar</h3>
+              <span class="home-hero-prayer-label">Begins</span>
               <p class="home-hero-prayer-begins" id="asr-begins">--</p>
+              <span class="home-hero-prayer-label">Iqamah</span>
               <p class="home-hero-prayer-iqamah" id="asr-iqamah">--</p>
             </div>
           </div>
           <div class="col-6 col-md home-hero-prayer-card-wrap">
             <div class="home-hero-prayer-card">
               <h3 class="home-hero-prayer-name">Magrib</h3>
+              <span class="home-hero-prayer-label">Begins</span>
               <p class="home-hero-prayer-begins" id="maghrib-begins">--</p>
+              <span class="home-hero-prayer-label">Iqamah</span>
               <p class="home-hero-prayer-iqamah" id="maghrib-iqamah">--</p>
             </div>
           </div>
           <div class="col-6 col-md home-hero-prayer-card-wrap">
             <div class="home-hero-prayer-card">
               <h3 class="home-hero-prayer-name">Isha</h3>
+              <span class="home-hero-prayer-label">Begins</span>
               <p class="home-hero-prayer-begins" id="isha-begins">--</p>
+              <span class="home-hero-prayer-label">Iqamah</span>
               <p class="home-hero-prayer-iqamah" id="isha-iqamah">--</p>
             </div>
           </div>
@@ -308,15 +320,17 @@
           <p>The database will help us provide timely updates of salah
             timetable, madrasa news and masjid announcements to the community.
           </p>
-          <button type="submit" class="btn btn-warning btn-lg btn-block"
+          <button type="submit"
+            class="btn btn-kicc btn-kicc-lg btn-kicc-primary btn-block"
             onclick="window.open('https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u','_blank')">Register
             Now</button>
-          </br>
-          <div class="d-flex justify-content-center">
-            <p id="sub-btn-registered" type="submit"
-              class="btn btn-outline-dark btn-sm mr-2">Already registered</p>
-            <p id="sub-btn-tomorrow" type="submit"
-              class="btn btn-outline-dark btn-sm">Remind me tomorrow</p>
+          <div class="d-flex justify-content-center mt-2">
+            <button id="sub-btn-registered" type="button"
+              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary mr-2">Already
+              registered</button>
+            <button id="sub-btn-tomorrow" type="button"
+              class="btn btn-kicc btn-kicc-sm btn-kicc-secondary">Remind me
+              tomorrow</button>
           </div>
         </div>
       </div>
@@ -511,7 +525,7 @@
   <!-- NEWS AND EVENTS END -->
 
   <!-- MASJID NOTICES START -->
-  <section class="campaign-section blog-home2 grid-gallery" id="notice-board">
+  <section class="campaign-section notice-board-section grid-gallery" id="notice-board">
     <div class="container">
       <div class="campaign-section-title">
         <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
@@ -629,7 +643,7 @@
               Centre. Every contribution is Lillah — charity that continues to
               benefit you, in sha Allah.</p>
           </div>
-          <div class="home-donate-actions kicc-btn-row mt-4">
+          <div class="home-donate-actions action-btn-row mt-4">
             <a href="https://kicc.page.link/gfm"
               class="btn btn-kicc btn-kicc-lg btn-kicc-donate mb-2"
               target="_blank" rel="noopener noreferrer">
@@ -668,125 +682,94 @@
   </section>
   <!-- DONATE END -->
 
-  <!-- RANDOM HADITH START -->
-  <blockquote class="quote-card blue-card">
-    <div class="container">
-      <span id="hadith-body">
-        <p>Abu Hurairah (May Allah be pleased with him) reported: The Messenger
-          of Allah (ﷺ) said, "Shall I not tell you something by which Allah
-          effaces the sins and elevates the ranks (in Jannah)." The Companions
-          said: "Yes (please tell us), O Messenger of Allah." He said,
-          "Performing the Wudu' properly in spite of difficult circumstances,
-          walking with more paces to the mosque, and waiting for the next Salat
-          (prayer) after a observing Salat; and that is Ar-Ribat, and that is
-          Ar-Ribat."<br /><br /><b>[Muslim]</b>.<br /><br /></p>
-      </span>
-      <a id="hadith-link" href="https://sunnah.com/riyadussalihin:1059"
-        target="_blank"><cite> <span id="hadith-cite">Riyad as-Salihin
-            189:1059</span></cite></a>
-    </div>
-  </blockquote>
-  <!-- RANDOM HADITH END -->
-
   <!-- PILLARS OF FAITH START -->
-  <section class="iq-features d-none d-md-block py-5">
+  <section class="campaign-section" id="pillars-faith">
     <div class="container">
-      <div class="row">
-        <div class="section-title">
-          <img src="assets/images/bsml-txt-black.png" alt="bsml-txt.png"
-            style="transition-delay: 0ms;  width: 210px; padding-top: 20px;">
-          <h2>Pillars of Faith</h2>
-        </div>
+      <div class="campaign-section-title">
+        <img src="assets/images/bsml-txt-black.png" alt="Bismillah">
+        <h2>Pillars of Faith</h2>
+        <p>The six articles of faith that form the foundation of belief in Islam.</p>
       </div>
-      <div class="row align-items-center">
-        <div class="col-lg-3 col-md-12"></div>
-        <div class="col-lg-6 col-md-12">
-          <div class="holderCircle">
-            <div class="round"></div>
-            <div class="dotCircle">
-              <span class="itemDot active itemDot1" data-tab="1">
-                <i class="fas fa-hand-point-up"></i>
-                <span class="forActive"></span>
-              </span>
-              <span class="itemDot itemDot2" data-tab="2">
-                <i class="fas fa-dove"></i>
-                <span class="forActive"></span>
-              </span>
-              <span class="itemDot itemDot3" data-tab="3">
-                <i class="fas fa-book-open"></i>
-                <span class="forActive"></span>
-              </span>
-              <span class="itemDot itemDot4" data-tab="4">
-                <i class="fas fa-hands-helping"></i>
-                <span class="forActive"></span>
-              </span>
-              <span class="itemDot itemDot5" data-tab="5">
-                <i class="fas fa-balance-scale"></i>
-                <span class="forActive"></span>
-              </span>
-              <span class="itemDot itemDot6" data-tab="6">
-                <i class="fas fa-heart"></i>
-                <span class="forActive"></span>
-              </span>
+      <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-hand-point-up" aria-hidden="true"></i>
             </div>
-            <div class="contentCircle">
-              <div class="CirItem title-box active CirItem1">
-                <h2 class="title"><span>Oneness of God</span></h2>
-                <p>We believe that God exists and that He is the Master and Lord
-                  of the universe and the only One
-                  deserving of worship, devotion and ultimate obedience. “There
-                  is no true God worthy of worship but God
-                  and Muhammad is the last and final Messenger of God.”
-                </p>
-                <i class="fas fa-hand-point-up"></i>
-              </div>
-              <div class="CirItem title-box CirItem2">
-                <h2 class="title"><span>Angels</span></h2>
-                <p>We believe that angels exist, believe in the names we are
-                  informed of and of their descriptions in
-                  authentic reports. They are created by God and have no share
-                  in divinity. Their purpose is to serve
-                  God and to carry out His commands in the universe.</p>
-                <i class="fas fa-dove"></i>
-              </div>
-              <div class="CirItem title-box CirItem3">
-                <h2 class="title"><span>Revealed Books</span></h2>
-                <p>We believe that God sent revelations and communicated with
-                  His chosen messengers. We believe in the
-                  names of the original scriptures and believe in the truth
-                  contained therein which is confirmed by the
-                  Quran.</p>
-                <i class="fas fa-book-open"></i>
-              </div>
-              <div class="CirItem title-box CirItem4">
-                <h2 class="title"><span>Prophets</span></h2>
-                <p>We believe that God sent human Messengers to remind people to
-                  worship God alone on His terms and to
-                  obey His commandments and messengers. They promised reward for
-                  those who comply and do good and warned
-                  of a punishment for those who do evil. </p>
-                <i class="fas fa-hands-helping"></i>
-              </div>
-              <div class="CirItem title-box CirItem5">
-                <h2 class="title"><span>Day of Judgement</span></h2>
-                <p>We believe that we will be brought back to life after death
-                  to be Judged by God. Paradise and Hell
-                  are the eternal destination of people based on how they lived
-                  their lives and the choices they made.
-                </p>
-                <i class="fas fa-balance-scale"></i>
-              </div>
-              <div class="CirItem title-box CirItem6">
-                <h2 class="title"><span>Divine Decree</span></h2>
-                <p>We believe that God knows everything that is to come and He
-                  recorded everything in a preserved tablet
-                  before the creation came into existence. </p>
-                <i class="fas fa-heart"></i>
-              </div>
+            <div class="home-faith-pillar-body">
+              <h3>Oneness of God</h3>
+              <p>We believe that God exists and that He is the Master and Lord of the universe
+                and the only One deserving of worship, devotion and ultimate obedience. “There is
+                no true God worthy of worship but God and Muhammad is the last and final Messenger
+                of God.”</p>
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-md-12"></div>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-dove" aria-hidden="true"></i>
+            </div>
+            <div class="home-faith-pillar-body">
+              <h3>Angels</h3>
+              <p>We believe that angels exist, believe in the names we are informed of and of their
+                descriptions in authentic reports. They are created by God and have no share in
+                divinity. Their purpose is to serve God and to carry out His commands in the
+                universe.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-book-open" aria-hidden="true"></i>
+            </div>
+            <div class="home-faith-pillar-body">
+              <h3>Revealed Books</h3>
+              <p>We believe that God sent revelations and communicated with His chosen messengers.
+                We believe in the names of the original scriptures and believe in the truth
+                contained therein which is confirmed by the Quran.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-hands-helping" aria-hidden="true"></i>
+            </div>
+            <div class="home-faith-pillar-body">
+              <h3>Prophets</h3>
+              <p>We believe that God sent human Messengers to remind people to worship God alone
+                on His terms and to obey His commandments and messengers. They promised reward for
+                those who comply and do good and warned of a punishment for those who do evil.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-balance-scale" aria-hidden="true"></i>
+            </div>
+            <div class="home-faith-pillar-body">
+              <h3>Day of Judgement</h3>
+              <p>We believe that we will be brought back to life after death to be Judged by God.
+                Paradise and Hell are the eternal destination of people based on how they lived
+                their lives and the choices they made.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="home-faith-pillar h-100">
+            <div class="home-faith-pillar-cap">
+              <i class="fas fa-heart" aria-hidden="true"></i>
+            </div>
+            <div class="home-faith-pillar-body">
+              <h3>Divine Decree</h3>
+              <p>We believe that God knows everything that is to come and He recorded everything
+                in a preserved tablet before the creation came into existence.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -847,6 +830,39 @@
     </div>
   </section>
   <!-- QUR'AN QUOTE END -->
+  </main>
+
+  <!-- RANDOM HADITH START -->
+  <section class="hadith-section" aria-label="Hadith of the day">
+    <div class="container">
+      <article class="hadith-card">
+        <header class="hadith-card-header">
+          <i class="fas fa-book-quran hadith-card-icon" aria-hidden="true"></i>
+          <p class="hadith-card-label">Daily Hadith</p>
+        </header>
+        <blockquote class="hadith-card-quote">
+          <div id="hadith-body">
+            <p>Abu Hurairah (May Allah be pleased with him) reported: Messenger
+              of Allah (ﷺ) said, &ldquo;The five (daily) Salat (prayers), and from
+              one Jumu&rsquo;ah prayer to the (next) Jumu&rsquo;ah prayer, and from
+              Ramadan to Ramadan are expiations for the (sins) committed in
+              between (their intervals); provided the major sins are not
+              committed&rdquo;.<br /><br /><b>[Muslim]</b>.</p>
+          </div>
+        </blockquote>
+        <footer class="hadith-card-footer">
+          <a id="hadith-link" class="hadith-card-source"
+            href="https://sunnah.com/riyadussalihin:1059"
+            target="_blank" rel="noopener noreferrer">
+            <cite><span id="hadith-cite">Riyad as-Salihin 189:1059</span></cite>
+            <i class="fas fa-external-link-alt hadith-card-source-icon"
+              aria-hidden="true"></i>
+          </a>
+        </footer>
+      </article>
+    </div>
+  </section>
+  <!-- RANDOM HADITH END -->
 
   <!-- COOKIE POLICY START -->
   <div id="cookie-bar"
@@ -862,7 +878,7 @@
   <!-- COOKIE POLICY END -->
 
   <!-- FOOTER START -->
-  <footer class="page-footer font-small mdb-color pt-4 bg-secondary">
+  <footer class="site-footer page-footer pt-4 bg-secondary">
     <!-- Footer Links -->
     <div class="container text-center text-md-left">
       <!-- Footer links -->
@@ -950,8 +966,8 @@
           <!--Copyright-->
           <p class="text-center text-md-left">© <span
               id="footer-year">2019</span> KICC | CHY Number 14981 ~ Made with
-            <i class="fas fa-heart" style="color:red"></i>
-            & <i class="fas fa-mug-hot" style="color: brown"></i> by <a
+            <i class="fas fa-heart" ></i>
+            & <i class="fas fa-mug-hot" ></i> by <a
               href="//nalam.me" rel="external" target="_blank">
               <strong> Nazmul Alam</strong>
             </a>

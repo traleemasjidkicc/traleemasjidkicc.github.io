@@ -148,7 +148,7 @@ flowchart LR
 | Event | Runs on all pages | Homepage only | activities.html | projects.html |
 |-------|-------------------|---------------|-----------------|---------------|
 | `DOMContentLoaded` | footer year, cookie bar, WhatsApp | notices fetch | — | — |
-| `window.onload` | salah URL, iqamah times, hadith | pillars, modal, announcements, Mixlr events | events, programmes | BaguetteBox gallery |
+| `window.onload` | salah URL, iqamah times, hadith | modal, announcements, Mixlr events | events, programmes | BaguetteBox gallery |
 
 ---
 
