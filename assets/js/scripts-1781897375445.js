@@ -148,8 +148,8 @@
         // Live / Off Air badge
         const isLive = !!mixlrData.is_live;
         liveNowEl.innerHTML = isLive
-          ? '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #B80000">LIVE NOW</span>'
-          : '<span style="border-style: solid; font-size: 0.8em; padding: 5px; color: #808080">Off Air</span>';
+          ? '<span class="programmes-live-badge is-live"><span aria-hidden="true">●</span> Live now</span>'
+          : '<span class="programmes-live-badge is-offline">Off air</span>';
 
         const allEvents = Array.isArray(mixlrData.events)
           ? mixlrData.events
@@ -885,49 +885,750 @@
     getNotices();
   };
 
-  const renderProgrammeTable = (programmes) => {
-    var tbody = document.getElementById("weekly-programmes-tbody");
-    if (!tbody) return;
+  const WEEKDAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const WEEKDAY_LABELS = {
+    Mon: "Monday",
+    Tue: "Tuesday",
+    Wed: "Wednesday",
+    Thu: "Thursday",
+    Fri: "Friday",
+    Sat: "Saturday",
+    Sun: "Sunday",
+  };
 
-    // clear existing dynamic rows
-    tbody.innerHTML = "";
+  const programmeSlug = (name) => {
+    if (!name) return "";
+    return name
+      .toLowerCase()
+      .replace(/['']/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
 
-    // fallback rows if nothing from API
-    if (!Array.isArray(programmes) || programmes.length === 0) {
-      var fallback = [
-        {
-          name: "Children's Youth Programme",
-          time: "Check Events or Masjid Notice Board",
-        },
-        {
-          name: "Adult's Monthly Programme",
-          time: "Check Events or Masjid Notice Board",
-        },
-      ];
-      fallback.forEach(function (p) {
-        var tr = document.createElement("tr");
-        var tdName = document.createElement("td");
-        tdName.textContent = p.name;
-        var tdTime = document.createElement("td");
-        tdTime.textContent = p.time;
-        tr.appendChild(tdName);
-        tr.appendChild(tdTime);
-        tbody.appendChild(tr);
-      });
+  const normalizeWeekday = (day) => {
+    if (!day || typeof day !== "string") return null;
+    var map = {
+      mon: "Mon",
+      tue: "Tue",
+      wed: "Wed",
+      thu: "Thu",
+      fri: "Fri",
+      sat: "Sat",
+      sun: "Sun",
+    };
+    var key = day.trim().slice(0, 3).toLowerCase();
+    return map[key] || null;
+  };
+
+  const MONTH_NAME_TO_INDEX = {
+    january: 0,
+    jan: 0,
+    february: 1,
+    feb: 1,
+    march: 2,
+    mar: 2,
+    april: 3,
+    apr: 3,
+    may: 4,
+    june: 5,
+    jun: 5,
+    july: 6,
+    jul: 6,
+    august: 7,
+    aug: 7,
+    september: 8,
+    sep: 8,
+    sept: 8,
+    october: 9,
+    oct: 9,
+    november: 10,
+    nov: 10,
+    december: 11,
+    dec: 11,
+  };
+
+  const getProgrammeTimeLabel = (p) => {
+    return p.timeDescription || (p.clockTime ? "At " + p.clockTime : "");
+  };
+
+  const hasProgrammePrayerName = (p) => {
+    return p.prayerName != null && String(p.prayerName).trim() !== "";
+  };
+
+  const getProgrammeScheduleTime = (p) => {
+    if (hasProgrammePrayerName(p)) {
+      return String(p.prayerName).trim();
+    }
+    if (p.clockTime) {
+      return p.clockTime;
+    }
+    return "—";
+  };
+
+  const getProgrammeChipTime = (p) => {
+    if (hasProgrammePrayerName(p)) {
+      return "After " + String(p.prayerName).trim();
+    }
+    return getProgrammeTimeLabel(p);
+  };
+
+  const isRecurringWeeklyProgramme = (p) => {
+    var desc = (p.timeDescription || "").trim();
+    return /^Every(day|\s)/i.test(desc);
+  };
+
+  const applyClockTimeToDate = (date, clockTime) => {
+    if (!clockTime || typeof clockTime !== "string") return date;
+    var parts = clockTime.split(":");
+    if (parts.length < 2) return date;
+    date.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0);
+    return date;
+  };
+
+  const getProgrammeEventDate = (p) => {
+    if (isRecurringWeeklyProgramme(p)) return null;
+
+    var desc = p.timeDescription || "";
+
+    if (/today at/i.test(desc)) {
+      var today = new Date();
+      return applyClockTimeToDate(today, p.clockTime);
+    }
+
+    var match = desc.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+    if (match) {
+      var day = parseInt(match[1], 10);
+      var month = MONTH_NAME_TO_INDEX[match[2].toLowerCase()];
+      var year = parseInt(match[3], 10);
+      if (month !== undefined) {
+        var eventDate = new Date(year, month, day);
+        return applyClockTimeToDate(eventDate, p.clockTime);
+      }
+    }
+
+    if (p.createdAt) {
+      return new Date(p.createdAt);
+    }
+
+    return null;
+  };
+
+  const getThisWeekRange = (refDate) => {
+    var d = refDate ? new Date(refDate) : new Date();
+    d.setHours(0, 0, 0, 0);
+    var dow = d.getDay();
+    var mondayOffset = dow === 0 ? -6 : 1 - dow;
+    var start = new Date(d);
+    start.setDate(d.getDate() + mondayOffset);
+    var end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return { start: start, end: end };
+  };
+
+  const isDateInRange = (date, start, end) => {
+    return date >= start && date <= end;
+  };
+
+  const isSameCalendarDay = (a, b) => {
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  };
+
+  const formatProgrammeEventDate = (date) => {
+    return date.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const programmeMatchesDay = (p, dayKey) => {
+    var days = Array.isArray(p.weekdays) ? p.weekdays : [];
+    return days.map(normalizeWeekday).filter(Boolean).indexOf(dayKey) >= 0;
+  };
+
+  const isProgrammeToday = (p, today, todayKey) => {
+    if (isRecurringWeeklyProgramme(p)) {
+      return programmeMatchesDay(p, todayKey);
+    }
+
+    var eventDate = getProgrammeEventDate(p);
+    return eventDate ? isSameCalendarDay(eventDate, today) : false;
+  };
+
+  const programmeIdentity = (p) => {
+    return (p.id || "") + "|" + (p.name || "");
+  };
+
+  const getProgrammeAnchorId = (p) => {
+    var name = (p && p.name) || "";
+    if (/women/i.test(name)) return "women-class";
+    if (/adult/i.test(name)) return "adult-classes";
+    return programmeSlug(name);
+  };
+
+  const createScheduleItem = (p) => {
+    var item = document.createElement("li");
+    item.className = "programmes-schedule-item";
+
+    var time = document.createElement("span");
+    time.className = "programmes-schedule-item-time";
+    if (hasProgrammePrayerName(p)) {
+      time.classList.add("is-prayer");
+    }
+    time.textContent = getProgrammeScheduleTime(p);
+
+    var name = document.createElement("span");
+    name.className = "programmes-schedule-item-name";
+    name.textContent = p.name || "";
+
+    item.appendChild(time);
+    item.appendChild(name);
+
+    if (p.speaker) {
+      var speaker = document.createElement("span");
+      speaker.className = "programmes-schedule-item-speaker";
+      speaker.textContent = p.speaker;
+      item.appendChild(speaker);
+    }
+
+    return item;
+  };
+
+  const renderUpcomingEvents = (events) => {
+    var container = document.getElementById("programmes-upcoming-events");
+    if (!container) return;
+
+    if (!Array.isArray(events) || events.length === 0) {
+      container.hidden = true;
+      container.innerHTML = "";
       return;
     }
 
-    programmes.forEach(function (p) {
-      var tr = document.createElement("tr");
-      var tdName = document.createElement("td");
-      tdName.textContent = p.name || "";
-      var tdTime = document.createElement("td");
-      tdTime.textContent =
-        p.timeDescription || (p.clockTime ? "At " + p.clockTime : "");
-      tr.appendChild(tdName);
-      tr.appendChild(tdTime);
-      tbody.appendChild(tr);
+    container.hidden = false;
+    container.innerHTML = "";
+
+    var sorted = events.slice().sort(function (a, b) {
+      var dateA = getProgrammeEventDate(a);
+      var dateB = getProgrammeEventDate(b);
+      if (!dateA || !dateB) return 0;
+      return dateA.getTime() - dateB.getTime();
     });
+
+    var title = document.createElement("h3");
+    title.id = "upcoming-events-heading";
+    title.className = "programmes-upcoming-title";
+    title.textContent = "Upcoming events";
+
+    var list = document.createElement("ul");
+    list.className = "programmes-upcoming-list list-unstyled mb-0";
+
+    sorted.forEach(function (p) {
+      var eventDate = getProgrammeEventDate(p);
+      var li = document.createElement("li");
+      li.className = "programmes-upcoming-item";
+
+      var dateEl = document.createElement("span");
+      dateEl.className = "programmes-upcoming-date";
+      dateEl.textContent = eventDate ? formatProgrammeEventDate(eventDate) : "";
+
+      var body = document.createElement("div");
+      body.className = "programmes-upcoming-body";
+
+      var name = document.createElement("strong");
+      name.className = "programmes-upcoming-name";
+      name.textContent = p.name || "";
+
+      var meta = document.createElement("span");
+      meta.className = "programmes-upcoming-meta";
+      meta.textContent = hasProgrammePrayerName(p)
+        ? "After " + String(p.prayerName).trim()
+        : getProgrammeTimeLabel(p);
+
+      body.appendChild(name);
+      body.appendChild(meta);
+
+      if (p.location) {
+        var location = document.createElement("span");
+        location.className = "programmes-upcoming-location";
+        location.textContent = p.location;
+        body.appendChild(location);
+      }
+
+      li.appendChild(dateEl);
+      li.appendChild(body);
+
+      if (p.listenUrl) {
+        var link = document.createElement("a");
+        link.href = p.listenUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "programmes-link-more programmes-upcoming-link";
+        link.innerHTML =
+          'Details <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+        li.appendChild(link);
+      }
+
+      list.appendChild(li);
+    });
+
+    container.appendChild(title);
+    container.appendChild(list);
+  };
+
+  const renderProgrammeSchedule = (programmes) => {
+    var container = document.getElementById("programmes-weekly-schedule");
+    var todayBanner = document.getElementById("programmes-today-banner");
+    if (!container) return;
+
+    container.innerHTML = "";
+    renderUpcomingEvents([]);
+
+    if (todayBanner) {
+      todayBanner.hidden = true;
+      todayBanner.innerHTML = "";
+    }
+
+    var fallback = [
+      {
+        name: "Children's Youth Programme",
+        timeDescription: "Check Events or Masjid Notice Board",
+      },
+      {
+        name: "Adult's Monthly Programme",
+        timeDescription: "Check Events or Masjid Notice Board",
+      },
+    ];
+
+    var list =
+      Array.isArray(programmes) && programmes.length ? programmes : fallback;
+
+    var byDay = {};
+    var unscheduled = [];
+    var upcomingEvents = [];
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var todayKey = today.toLocaleDateString("en-GB", { weekday: "short" });
+    var weekRange = getThisWeekRange(today);
+    var todayProgrammes = [];
+    var seenToday = {};
+
+    WEEKDAY_ORDER.forEach(function (day) {
+      byDay[day] = [];
+    });
+
+    list.forEach(function (p) {
+      var days = Array.isArray(p.weekdays) ? p.weekdays : [];
+      var normalized = days.map(normalizeWeekday).filter(Boolean);
+
+      if (normalized.length === 0) {
+        unscheduled.push(p);
+        return;
+      }
+
+      if (isRecurringWeeklyProgramme(p)) {
+        normalized.forEach(function (day) {
+          if (!byDay[day]) return;
+          var alreadyListed = byDay[day].some(function (existing) {
+            return programmeIdentity(existing) === programmeIdentity(p);
+          });
+          if (!alreadyListed) {
+            byDay[day].push(p);
+          }
+        });
+
+        if (isProgrammeToday(p, today, todayKey)) {
+          var todayId = programmeIdentity(p);
+          if (!seenToday[todayId]) {
+            seenToday[todayId] = true;
+            todayProgrammes.push(p);
+          }
+        }
+        return;
+      }
+
+      var eventDate = getProgrammeEventDate(p);
+      if (!eventDate) {
+        unscheduled.push(p);
+        return;
+      }
+
+      if (!isDateInRange(eventDate, weekRange.start, weekRange.end)) {
+        upcomingEvents.push(p);
+        return;
+      }
+
+      var eventDay = eventDate.toLocaleDateString("en-GB", { weekday: "short" });
+      if (byDay[eventDay]) {
+        byDay[eventDay].push(p);
+      }
+
+      if (isProgrammeToday(p, today, todayKey)) {
+        var oneOffId = programmeIdentity(p);
+        if (!seenToday[oneOffId]) {
+          seenToday[oneOffId] = true;
+          todayProgrammes.push(p);
+        }
+      }
+    });
+
+    if (todayBanner && todayProgrammes.length > 0) {
+      todayBanner.hidden = false;
+
+      var bannerLabel = document.createElement("p");
+      bannerLabel.className = "programmes-today-banner-label";
+      bannerLabel.innerHTML =
+        '<i class="fas fa-sun" aria-hidden="true"></i> Today &mdash; ' +
+        (WEEKDAY_LABELS[todayKey] || todayKey);
+
+      var bannerList = document.createElement("div");
+      bannerList.className = "programmes-today-banner-chips";
+
+      todayProgrammes.forEach(function (p) {
+        var chip = document.createElement("article");
+        chip.className = "programmes-today-chip";
+
+        var time = document.createElement("span");
+        time.className = "programmes-today-chip-time";
+        time.textContent = hasProgrammePrayerName(p)
+          ? "After " + String(p.prayerName).trim()
+          : getProgrammeTimeLabel(p);
+
+        var name = document.createElement("strong");
+        name.className = "programmes-today-chip-name";
+        name.textContent = p.name || "";
+
+        chip.appendChild(time);
+        chip.appendChild(name);
+        bannerList.appendChild(chip);
+      });
+
+      todayBanner.appendChild(bannerLabel);
+      todayBanner.appendChild(bannerList);
+    }
+
+    var columns = document.createElement("div");
+    columns.className = "programmes-day-columns";
+
+    WEEKDAY_ORDER.forEach(function (day) {
+      var col = document.createElement("div");
+      col.className = "programmes-day-col";
+      if (day === todayKey) {
+        col.classList.add("is-today");
+      }
+
+      var heading = document.createElement("h3");
+      heading.className = "programmes-day-label";
+
+      var abbr = document.createElement("span");
+      abbr.className = "programmes-day-abbr";
+      abbr.textContent = day;
+
+      var full = document.createElement("span");
+      full.className = "programmes-day-full";
+      full.textContent = WEEKDAY_LABELS[day] || day;
+
+      heading.appendChild(abbr);
+      heading.appendChild(full);
+      col.appendChild(heading);
+
+      var dayProgrammes = byDay[day] || [];
+      var listEl = document.createElement("ul");
+      listEl.className = "programmes-day-list list-unstyled mb-0";
+
+      if (dayProgrammes.length === 0) {
+        var empty = document.createElement("li");
+        empty.className = "programmes-day-empty";
+        empty.textContent = "—";
+        listEl.appendChild(empty);
+      } else {
+        dayProgrammes.forEach(function (p) {
+          listEl.appendChild(createScheduleItem(p));
+        });
+      }
+
+      col.appendChild(listEl);
+      columns.appendChild(col);
+    });
+
+    container.appendChild(columns);
+
+    if (unscheduled.length > 0) {
+      var ongoing = document.createElement("div");
+      ongoing.className = "programmes-unscheduled";
+
+      var ongoingTitle = document.createElement("h3");
+      ongoingTitle.className = "programmes-unscheduled-title";
+      ongoingTitle.textContent = "Ongoing programmes";
+
+      var ongoingList = document.createElement("ul");
+      ongoingList.className = "programmes-unscheduled-list list-unstyled mb-0";
+
+      unscheduled.forEach(function (p) {
+        var li = document.createElement("li");
+        li.className = "programmes-unscheduled-item";
+
+        var anchorId = getProgrammeAnchorId(p);
+        if (anchorId) {
+          li.id = anchorId;
+        }
+
+        var name = document.createElement("strong");
+        name.textContent = p.name || "";
+
+        var time = document.createElement("span");
+        time.textContent = getProgrammeTimeLabel(p);
+
+        li.appendChild(name);
+        li.appendChild(time);
+        ongoingList.appendChild(li);
+      });
+
+      ongoing.appendChild(ongoingTitle);
+      ongoing.appendChild(ongoingList);
+      container.appendChild(ongoing);
+    }
+
+    renderUpcomingEvents(upcomingEvents);
+  };
+
+  const renderProgrammeTable = (programmes) => {
+    renderProgrammeSchedule(programmes);
+  };
+
+  const isDirectStreamUrl = (url) => {
+    if (!url || typeof url !== "string") return false;
+    return (
+      /mixlr-recordings-production/i.test(url) ||
+      /response-content-type=application%2Fmp3/i.test(url) ||
+      /\.(aac|mp3|m4a)(\?|$)/i.test(url)
+    );
+  };
+
+  const getRecordingDateLabel = (recording) => {
+    if (recording.timeDescription) {
+      return recording.timeDescription;
+    }
+    if (recording.createdAt) {
+      return formatProgrammeEventDate(new Date(recording.createdAt));
+    }
+    return "";
+  };
+
+  const getRecordingSortTime = (recording) => {
+    var eventDate = getProgrammeEventDate(recording);
+    if (eventDate) return eventDate.getTime();
+    if (recording.createdAt) return Number(recording.createdAt);
+    return 0;
+  };
+
+  var activeRecordingButton = null;
+
+  const setActiveRecordingItem = (buttonEl) => {
+    if (activeRecordingButton) {
+      activeRecordingButton.classList.remove("is-playing");
+      activeRecordingButton.setAttribute("aria-pressed", "false");
+      var oldIcon = activeRecordingButton.querySelector(
+        ".programmes-recording-play-icon i",
+      );
+      if (oldIcon) {
+        oldIcon.className = "fas fa-play";
+      }
+    }
+    activeRecordingButton = buttonEl || null;
+    if (activeRecordingButton) {
+      activeRecordingButton.classList.add("is-playing");
+      activeRecordingButton.setAttribute("aria-pressed", "true");
+      var newIcon = activeRecordingButton.querySelector(
+        ".programmes-recording-play-icon i",
+      );
+      if (newIcon) {
+        newIcon.className = "fas fa-pause";
+      }
+    }
+  };
+
+  const playRecording = (recording, buttonEl) => {
+    var playerWrap = document.getElementById("programmes-recording-player");
+    var audio = document.getElementById("programmes-recording-audio");
+    var titleEl = document.getElementById("programmes-recording-now-title");
+    var dateEl = document.getElementById("programmes-recording-now-date");
+    var artEl = document.getElementById("programmes-recording-art");
+
+    if (!playerWrap || !audio || !recording || !recording.listenUrl) return;
+
+    if (!isDirectStreamUrl(recording.listenUrl)) {
+      window.open(recording.listenUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    setActiveRecordingItem(buttonEl);
+
+    if (titleEl) {
+      titleEl.textContent = recording.name || "Recording";
+    }
+    if (dateEl) {
+      dateEl.textContent = getRecordingDateLabel(recording);
+    }
+
+    if (artEl) {
+      if (recording.imageUrl) {
+        artEl.src = recording.imageUrl;
+        artEl.alt = recording.name || "Recording artwork";
+        artEl.hidden = false;
+      } else {
+        artEl.removeAttribute("src");
+        artEl.alt = "";
+        artEl.hidden = true;
+      }
+    }
+
+    playerWrap.hidden = false;
+
+    if (audio.src !== recording.listenUrl) {
+      audio.src = recording.listenUrl;
+    }
+
+    audio.play().catch(function (err) {
+      console.error("Failed to play recording", err);
+    });
+
+    playerWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+
+  const renderRecordings = (recordings) => {
+    var wrap = document.getElementById("programmes-recordings-wrap");
+    var list = document.getElementById("programmes-recordings-list");
+    var audio = document.getElementById("programmes-recording-audio");
+    var playerWrap = document.getElementById("programmes-recording-player");
+
+    if (!wrap || !list) return;
+
+    var playable = Array.isArray(recordings)
+      ? recordings.filter(function (r) {
+          return r && typeof r.listenUrl === "string" && r.listenUrl.trim() !== "";
+        })
+      : [];
+
+    if (playable.length === 0) {
+      wrap.hidden = true;
+      list.innerHTML = "";
+      if (audio) {
+        audio.pause();
+        audio.removeAttribute("src");
+      }
+      if (playerWrap) {
+        playerWrap.hidden = true;
+      }
+      setActiveRecordingItem(null);
+      return;
+    }
+
+    wrap.hidden = false;
+    list.innerHTML = "";
+    setActiveRecordingItem(null);
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+    }
+    if (playerWrap) {
+      playerWrap.hidden = true;
+    }
+
+    playable
+      .slice()
+      .sort(function (a, b) {
+        return getRecordingSortTime(b) - getRecordingSortTime(a);
+      })
+      .forEach(function (recording) {
+        var item = document.createElement("li");
+        item.className = "programmes-recording-item";
+
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "programmes-recording-button";
+        button.setAttribute("aria-pressed", "false");
+
+        if (recording.imageUrl) {
+          var thumb = document.createElement("img");
+          thumb.className = "programmes-recording-thumb";
+          thumb.src = recording.imageUrl;
+          thumb.alt = "";
+          thumb.width = 56;
+          thumb.height = 56;
+          thumb.loading = "lazy";
+          button.appendChild(thumb);
+        } else {
+          var iconWrap = document.createElement("span");
+          iconWrap.className = "programmes-recording-thumb programmes-recording-thumb-fallback";
+          iconWrap.innerHTML = '<i class="fas fa-headphones" aria-hidden="true"></i>';
+          button.appendChild(iconWrap);
+        }
+
+        var body = document.createElement("span");
+        body.className = "programmes-recording-body";
+
+        var name = document.createElement("span");
+        name.className = "programmes-recording-name";
+        name.textContent = recording.name || "Recording";
+
+        var date = document.createElement("span");
+        date.className = "programmes-recording-date";
+        date.textContent = getRecordingDateLabel(recording);
+
+        body.appendChild(name);
+        body.appendChild(date);
+        button.appendChild(body);
+
+        var playIcon = document.createElement("span");
+        playIcon.className = "programmes-recording-play-icon";
+        playIcon.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+        button.appendChild(playIcon);
+
+        button.addEventListener("click", function () {
+          playRecording(recording, button);
+        });
+
+        item.appendChild(button);
+        list.appendChild(item);
+      });
+
+    if (audio && !audio.dataset.bound) {
+      audio.dataset.bound = "true";
+      audio.addEventListener("play", function () {
+        if (activeRecordingButton) {
+          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
+          if (icon) {
+            icon.className = "fas fa-pause";
+          }
+        }
+      });
+      audio.addEventListener("pause", function () {
+        if (activeRecordingButton) {
+          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
+          if (icon) {
+            icon.className = "fas fa-play";
+          }
+        }
+        if (audio.ended) {
+          setActiveRecordingItem(null);
+        }
+      });
+      audio.addEventListener("ended", function () {
+        if (activeRecordingButton) {
+          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
+          if (icon) {
+            icon.className = "fas fa-play";
+          }
+        }
+        setActiveRecordingItem(null);
+      });
+    }
   };
 
   const renderWeeklyProgrammes = (programmes) => {
@@ -952,18 +1653,14 @@
     section.style.display = "";
     container.innerHTML = "";
 
-    var row = document.createElement("div");
-    // g-4 adds gaps between rows and columns (Bootstrap 5)
-    row.className = "row g-4";
-
     withImages.forEach(function (p) {
-      var col = document.createElement("div");
-      // mb-4 ensures extra vertical spacing between rows even if not using g-*
-      col.className = "col-md-4 mb-4";
-
       var card = document.createElement("article");
-      card.className =
-        "weekly-programme-card shadow-sm h-100 border-0 rounded-3 overflow-hidden";
+      card.className = "weekly-programme-card";
+
+      var anchorId = getProgrammeAnchorId(p);
+      if (anchorId) {
+        card.id = anchorId;
+      }
 
       var imgWrapper = document.createElement("div");
       imgWrapper.className = "weekly-programme-image-wrapper";
@@ -972,6 +1669,7 @@
       img.src = p.imageUrl;
       img.alt = p.name || "Masjid programme";
       img.className = "weekly-programme-image";
+      img.loading = "lazy";
       imgWrapper.appendChild(img);
       card.appendChild(imgWrapper);
 
@@ -985,43 +1683,52 @@
         body.appendChild(title);
       }
 
-      var metaText =
-        p.timeDescription || (p.clockTime ? "At " + p.clockTime : "");
+      var chips = document.createElement("div");
+      chips.className = "weekly-programme-chips";
+
+      var metaText = getProgrammeChipTime(p);
       if (metaText) {
-        var meta = document.createElement("p");
-        meta.className = "weekly-programme-meta";
-        meta.textContent = metaText;
-        body.appendChild(meta);
+        var timeChip = document.createElement("span");
+        timeChip.className = "weekly-programme-chip";
+        timeChip.innerHTML =
+          '<i class="far fa-clock" aria-hidden="true"></i> ' + metaText;
+        chips.appendChild(timeChip);
       }
 
-      // SUMMARY / DESCRIPTION: allow HTML from Firestore (e.g. blockquote)
+      if (p.location) {
+        var locChip = document.createElement("span");
+        locChip.className = "weekly-programme-chip";
+        locChip.innerHTML =
+          '<i class="fas fa-mosque" aria-hidden="true"></i> ' + p.location;
+        chips.appendChild(locChip);
+      }
+
+      if (chips.childNodes.length > 0) {
+        body.appendChild(chips);
+      }
+
       if (p.description) {
         var desc = document.createElement("div");
         desc.className = "weekly-programme-description";
-        desc.innerHTML = p.description; // renders HTML tags
+        desc.innerHTML = p.description;
         body.appendChild(desc);
       }
 
-      // FOOTER: everything after summary (topic, speaker, location etc.)
       var footer = document.createElement("div");
       footer.className = "weekly-programme-footer";
 
       if (p.topic) {
         var topic = document.createElement("p");
+        topic.className = "weekly-programme-detail";
         topic.innerHTML = "<strong>Topic:</strong> " + p.topic;
         footer.appendChild(topic);
       }
 
       if (p.speaker) {
         var speaker = document.createElement("p");
+        speaker.className = "weekly-programme-detail";
         speaker.innerHTML = "<strong>Speaker:</strong> " + p.speaker;
         footer.appendChild(speaker);
-      }
-
-      if (p.location) {
-        var loc = document.createElement("p");
-        loc.innerHTML = "<strong>Location:</strong> " + p.location;
-        footer.appendChild(loc);
       }
 
       if (p.listenUrl) {
@@ -1029,8 +1736,9 @@
         link.href = p.listenUrl;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.className = "weekly-programme-link";
-        link.textContent = "Listen / Watch live";
+        link.className = "weekly-programme-link btn btn-kicc btn-kicc-sm";
+        link.innerHTML =
+          'Listen / Watch live <i class="fas fa-external-link-alt" aria-hidden="true"></i>';
         footer.appendChild(link);
       }
 
@@ -1039,15 +1747,23 @@
       }
 
       card.appendChild(body);
-      col.appendChild(card);
-      row.appendChild(col);
+      container.appendChild(card);
     });
+  };
 
-    container.appendChild(row);
+  const applyProgrammesResponse = (data) => {
+    var programmes =
+      data && Array.isArray(data.programmes) ? data.programmes : [];
+    var recordings =
+      data && Array.isArray(data.recordings) ? data.recordings : [];
+
+    renderProgrammeTable(programmes);
+    renderWeeklyProgrammes(programmes);
+    renderRecordings(recordings);
   };
 
   const loadProgrammes = () => {
-    // NEW: Weekly Programmes (programmes with images) on activities page
+    // Weekly Programmes + recordings on activities page
     const PROGRAMMES_API_URL =
       "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true";
     const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v1";
@@ -1055,23 +1771,14 @@
     if (cachedJson) {
       try {
         var cached = JSON.parse(cachedJson);
-        console.log("Cached programmes:", cached); // log cached
-        if (cached && Array.isArray(cached.programmes)) {
-          renderProgrammeTable(cached.programmes);
-          renderWeeklyProgrammes(cached.programmes);
-        } else {
-          renderProgrammeTable([]);
-          renderWeeklyProgrammes([]);
-        }
+        console.log("Cached programmes:", cached);
+        applyProgrammesResponse(cached);
       } catch (e) {
         console.error("Failed to parse cached programmes", e);
-        renderProgrammeTable([]);
-        renderWeeklyProgrammes([]);
+        applyProgrammesResponse(null);
       }
     } else {
-      // if no cache at all, show fallback in table, hide card initially
-      renderProgrammeTable([]);
-      renderWeeklyProgrammes([]);
+      applyProgrammesResponse(null);
     }
 
     fetch(PROGRAMMES_API_URL, {
@@ -1085,14 +1792,12 @@
         return resp.json();
       })
       .then(function (data) {
-        console.log("Programmes API response:", data); // log response
-        if (data && Array.isArray(data.programmes)) {
+        console.log("Programmes API response:", data);
+        if (data) {
           localStorage.setItem(PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
-          renderProgrammeTable(data.programmes);
-          renderWeeklyProgrammes(data.programmes);
+          applyProgrammesResponse(data);
         } else {
-          renderProgrammeTable([]);
-          renderWeeklyProgrammes([]);
+          applyProgrammesResponse(null);
         }
       })
       .catch(function (err) {

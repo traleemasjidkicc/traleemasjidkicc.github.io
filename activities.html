@@ -27,7 +27,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-    <link rel="stylesheet" href="assets/css/main-1781891437381.css">
+    <link rel="stylesheet" href="assets/css/main-1781897375578.css">
   
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -59,7 +59,7 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781891437243.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781897375445.js"></script>
 </head>
 
 <body class="page-activities">
@@ -173,141 +173,178 @@
 
   <!-- NEWS AND EVENTS START -->
   <main id="main-content">
-  <section class="page-intro-hero" aria-labelledby="programmes-heading">
+  <section class="page-intro-hero programmes-hero" aria-labelledby="programmes-heading">
     <div class="container">
       <span class="campaign-eyebrow">Kerry Islamic Cultural Centre</span>
       <h1 id="programmes-heading">Masjid Programmes</h1>
-      <p class="lead">Weekly talks, Jumu&rsquo;ah schedule, and regular classes
-        at Tralee Masjid.</p>
+      <p class="lead">Stream talks live, see what&rsquo;s on today, and explore every regular
+        class at Tralee Masjid.</p>
+      <nav class="programmes-quick-nav" aria-label="Jump to page sections">
+        <a href="#listen" class="programmes-quick-nav-link">
+          <i class="fas fa-broadcast-tower" aria-hidden="true"></i>
+          <span>Listen</span>
+        </a>
+        <a href="#schedule" class="programmes-quick-nav-link">
+          <i class="fas fa-calendar-week" aria-hidden="true"></i>
+          <span>Schedule</span>
+        </a>
+        <a href="#weekly-programmes-section" class="programmes-quick-nav-link">
+          <i class="fas fa-book-open" aria-hidden="true"></i>
+          <span>Programmes</span>
+        </a>
+      </nav>
     </div>
   </section>
 
-  <section class="page-content-section">
-  <div class="container home-tabs-wrap">
-    <ul
-      class="nav nav-tabs nav-pills flex-column flex-sm-row text-center with-arrow home-tabs-nav"
-      id="nav-tab" role="tablist">
-      <li class="nav-item flex-sm-fill">
-        <a id="nav-events-tab" data-toggle="tab" href="#nav-events" role="tab"
-          aria-controls="events" aria-selected="false"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border">Weekly
-          Talks</a>
-      </li>
-      <li class="nav-item flex-sm-fill">
-        <a id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab"
-          aria-controls="news" aria-selected="true"
-          class="nav-link text-uppercase font-weight-bold mr-sm-3 rounded-0 border active">Programmes
-          Schedule</a>
-      </li>
-    </ul>
-    <div class="tab-content" id="nav-tabContent">
-      <!-- LIVE STREAMING EVENTS START -->
-      <div class="tab-pane fade px-1 pt-4" id="nav-events" role="tabpanel"
-        aria-labelledby="nav-events">
-        <div class="row">
-          <!-- EVENTS START -->
-          <div class="col-md-12 col-lg-6 mb-3">
-            <div class="card h-100 home-tabs-card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between mb-3">
-                  <p class="h4 card-title">Next Up&hellip;</p>
-                  <p class="h6"><a
-                      href="https://mixlr.com/tralee-masjid/events/"
-                      target="_blank" class="text-primary">more</a></p>
-                </div>
-                <div class="border p-3 mb-0">
-                  <div class="row">
-                    <div class="col-sm-4 border-right-lg border-right-md-0">
-                      <div
-                        class="d-flex justify-content-center align-items-center">
-                        <p class="h1 mb-0 mr-2 text-primary font-weight-normal">
-                          <span class="badge badge-success"
-                            id="event-date">01</span>
-                        </p>
-                        <div>
-                          <p class="font-weight-bold mb-0 text-dark"><span
-                              class="text-uppercase" id="event-month">Jan</span>
-                          </p>
-                          <p class="mb-0"><span id="event-year">2020</span></p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-8 pl-3">
-                      <p class="text-dark font-weight-bold mb-0"><span
-                          id="event-name">Loading...</span></p>
-                      <p class="mb-0">
-                        <i class="far fa-calendar-alt"></i>&nbsp;<span
-                          id="event-day">Fri</span>
-                        <i class="far fa-clock"></i>&nbsp;<span
-                          id="starts-at">00:00</span>
-                      <p>
-                    </div>
+  <!-- Weekly talks & live stream -->
+  <section id="listen" class="page-content-section programmes-live-section"
+    aria-labelledby="weekly-talks-heading">
+    <div class="container">
+      <header class="programmes-section-header programmes-section-header-left">
+        <span class="programmes-section-eyebrow">Listen live</span>
+        <h2 id="weekly-talks-heading">Weekly Talks</h2>
+        <p class="programmes-section-lead">Catch the next broadcast or replay a recent talk
+          without leaving the page.</p>
+      </header>
+
+      <div class="programmes-live-hub">
+        <div class="row programmes-live-grid">
+          <div class="col-lg-5 mb-4 mb-lg-0">
+            <article class="programmes-next-event programmes-feature-card"
+              aria-labelledby="next-event-label">
+              <div class="programmes-feature-badge">Next up</div>
+              <div class="programmes-next-event-body">
+                <div class="programmes-event-date">
+                  <span class="programmes-event-date-day" id="event-date">01</span>
+                  <div class="programmes-event-date-meta">
+                    <span class="programmes-event-date-month" id="event-month">Jan</span>
+                    <span class="programmes-event-date-year" id="event-year">2020</span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <!-- EVENTS END -->
-          <!-- MIXLR PLAY START -->
-          <div class="col-md-12 col-lg-6 mb-3">
-            <div class="card h-100 home-tabs-card">
-              <div class="card-body">
-                <div class="d-flex justify-content-between mb-0">
-                  <p class="card-title"><i
-                      class="h4 fas fa-broadcast-tower"></i>&nbsp;&nbsp;<span
-                      class="h6" id="live-now"></span>
-                  </p>
-                  <p class="h6"><a
-                      href="https://mixlr.com/tralee-masjid/showreel/"
-                      target="_blank" class="text-primary">previous
-                      talks</a></p>
-                </div>
-                <div class="p-md-2 mt-md-4 p-lg-0 mt-lg-0">
-                  <div class="row">
-                    <iframe
-                      src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0D5E10"
-                      width="100%" height="150px" scrolling="no"
-                      frameborder="no" marginheight="0"
-                      marginwidth="0"></iframe>
-                  </div>
+                <div class="programmes-event-details">
+                  <h3 id="next-event-label" class="programmes-event-name">
+                    <span id="event-name">Loading&hellip;</span>
+                  </h3>
+                  <ul class="programmes-event-meta list-unstyled mb-0">
+                    <li>
+                      <i class="far fa-calendar-alt" aria-hidden="true"></i>
+                      <span id="event-day">Fri</span>
+                    </li>
+                    <li>
+                      <i class="far fa-clock" aria-hidden="true"></i>
+                      <span id="starts-at">00:00</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
+              <footer class="programmes-next-event-footer">
+                <a href="https://mixlr.com/tralee-masjid/events/" target="_blank"
+                  rel="noopener noreferrer" class="programmes-link-more">
+                  View all events <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+              </footer>
+            </article>
+          </div>
+          <div class="col-lg-7">
+            <article class="programmes-stream-card programmes-feature-card"
+              aria-labelledby="stream-label">
+              <div class="programmes-stream-header">
+                <h3 id="stream-label" class="programmes-stream-title">
+                  <i class="fas fa-broadcast-tower" aria-hidden="true"></i>
+                  Live stream
+                </h3>
+                <span id="live-now"></span>
+              </div>
+              <div class="programmes-stream-body">
+                <iframe
+                  title="Tralee Masjid live audio stream"
+                  src="https://mixlr.com/tralee-masjid/embed?autoplay=true&color=#0a8a8e"
+                  width="100%" height="150" scrolling="no"
+                  frameborder="0" marginheight="0"
+                  marginwidth="0"></iframe>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div id="programmes-recordings-wrap" class="programmes-recordings-wrap" hidden>
+          <header class="programmes-recordings-header">
+            <div>
+              <h3 id="recordings-heading" class="programmes-recordings-heading">Previous recordings</h3>
+              <p class="programmes-recordings-sublead">Tap a talk to play it here</p>
             </div>
-            <!-- MIXLR PLAY END -->
+            <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank"
+              rel="noopener noreferrer" class="programmes-link-more programmes-link-more-subtle">
+              Mixlr archive <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+            </a>
+          </header>
+          <div id="programmes-recording-player" class="programmes-recording-player" hidden
+            aria-live="polite">
+            <p class="programmes-recording-player-label">
+              <i class="fas fa-circle programmes-recording-pulse" aria-hidden="true"></i>
+              Now playing
+            </p>
+            <div class="programmes-recording-now-playing">
+              <img id="programmes-recording-art" class="programmes-recording-art" alt=""
+                width="72" height="72" hidden>
+              <div class="programmes-recording-now-meta">
+                <p id="programmes-recording-now-title" class="programmes-recording-now-title"></p>
+                <p id="programmes-recording-now-date" class="programmes-recording-now-date"></p>
+              </div>
+            </div>
+            <audio id="programmes-recording-audio" class="programmes-recording-audio" controls
+              preload="none"></audio>
           </div>
-          <!-- MIXLR PLAY END -->
+          <ul id="programmes-recordings-list" class="programmes-recordings-list list-unstyled mb-0"
+            aria-labelledby="recordings-heading">
+            <!-- inserted by renderRecordings -->
+          </ul>
         </div>
       </div>
-      <!-- LIVE STREAMING EVENTS END -->
-      <!-- PROGRAMMES TAB START -->
-      <div class="tab-pane fade px-1 pt-4 show active" id="nav-news"
-        role="tabpanel" aria-labelledby="nav-news-tab">
-        <div class="row">
-          <div class="col-md-12" id="daily">
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col">Programme Name</th>
-                  <th scope="col">Time</th>
-                </tr>
-              </thead>
-              <tbody id="weekly-programmes-tbody">
-                <!-- rows inserted dynamically by renderProgrammeTable -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <!-- End -->
-        <!-- HADEETH TAB END -->
-      </div>
-      <!-- PROGRAMMES TAB END -->
-  </div>
+    </div>
   </section>
 
-  <section class="container py-4 page-content-section" id="weekly-programmes-section">
-    <h2 class="py-3">Weekly Programme Cards</h2>
-    <div id="weekly-programmes">
-      <!-- cards inserted dynamically by renderWeeklyProgrammes -->
+  <!-- Weekly schedule -->
+  <section id="schedule" class="page-content-section programmes-schedule-section"
+    aria-labelledby="schedule-heading">
+    <div class="container">
+      <header class="programmes-section-header programmes-section-header-left">
+        <span class="programmes-section-eyebrow">At a glance</span>
+        <h2 id="schedule-heading">Weekly Schedule</h2>
+        <p class="programmes-section-lead">Regular classes and gatherings throughout the week.
+          Today is highlighted in gold.</p>
+      </header>
+
+      <div class="programmes-schedule-panel">
+        <div id="programmes-today-banner" class="programmes-today-banner" hidden
+          aria-live="polite"></div>
+        <div class="programmes-week-scroll-wrap">
+          <div id="programmes-weekly-schedule" class="programmes-weekly-schedule"
+            aria-label="Programmes grouped by day of week">
+            <!-- day columns inserted by renderProgrammeSchedule -->
+          </div>
+        </div>
+        <div id="programmes-upcoming-events" class="programmes-upcoming" hidden
+          aria-labelledby="upcoming-events-heading">
+          <!-- one-off events outside this week -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Programme detail cards -->
+  <section id="weekly-programmes-section" class="page-content-section programmes-cards-section"
+    aria-labelledby="programmes-detail-heading">
+    <div class="container">
+      <header class="programmes-section-header programmes-section-header-left">
+        <span class="programmes-section-eyebrow">Learn more</span>
+        <h2 id="programmes-detail-heading">Programme Details</h2>
+        <p class="programmes-section-lead">Full descriptions, speakers, and topics for each
+          regular programme.</p>
+      </header>
+      <div id="weekly-programmes" class="programmes-cards-grid">
+        <!-- cards inserted dynamically by renderWeeklyProgrammes -->
+      </div>
     </div>
   </section>
   </main>
