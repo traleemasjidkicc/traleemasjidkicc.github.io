@@ -45,10 +45,12 @@ GoFundMe widgets use iframes with class `gfm-stream-goal-bar` or `gfm-embed` div
 
 ## Images
 
-- Store under `assets/images/` in existing subfolders:
-  - `backgrounds/` — hero backgrounds
-  - `bp/` — building progress photos and 3D renders
-  - `masjid/`, `posters/`, `team/`
+- Store under `assets/images/` in role-based subfolders:
+  - `brand/` — logo, Bismillah text, decorative quotes
+  - `backgrounds/` — CSS hero and section backgrounds
+  - `photos/` — site and building photography
+  - `blueprints/` — 3D renders, site plans, construction updates
+  - `posters/`, `team/`, `ui/`
 - Use descriptive `alt` text for accessibility
 - Optimise file size before adding large images
 

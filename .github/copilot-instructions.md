@@ -41,11 +41,13 @@ assets/
   │   ├── main-*.css      # Versioned core styling, campaign components
   │   └── animations.css  # Animations & transitions
   ├── images/
-  │   ├── backgrounds/    # Hero & section backgrounds
-  │   ├── bp/             # Building progress photos and renders
-  │   ├── masjid/         # Building photos
+  │   ├── brand/          # Logo, Bismillah text, decorative quotes
+  │   ├── backgrounds/    # CSS hero and section backgrounds
+  │   ├── photos/         # Site and building photography
+  │   ├── blueprints/     # 3D renders, site plans, construction updates
   │   ├── posters/        # Event/announcement posters
-  │   └── team/           # Staff/volunteer photos
+  │   ├── team/           # Staff/volunteer photos
+  │   └── ui/             # UI elements (e.g. newsletter signup)
   └── js/
       └── scripts-*.js    # Versioned main app logic (~1200 lines)
 

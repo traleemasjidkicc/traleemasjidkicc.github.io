@@ -111,11 +111,13 @@ traleemasjidkicc.github.io/
 │   ├── js/
 │   │   └── scripts-*.js    # All client logic (~1200 lines, versioned filename)
 │   └── images/
-│       ├── backgrounds/    # Hero and section backgrounds
-│       ├── bp/             # Building progress photos and renders
-│       ├── masjid/         # Building photos
+│       ├── brand/          # Logo, Bismillah text, decorative quotes
+│       ├── backgrounds/    # CSS hero and section backgrounds
+│       ├── photos/         # Site and building photography
+│       ├── blueprints/     # 3D renders, site plans, construction updates
 │       ├── posters/        # Event/announcement posters
-│       └── team/           # Staff/volunteer photos
+│       ├── team/           # Staff/volunteer photos
+│       └── ui/             # UI elements (e.g. newsletter signup)
 ├── gulpfile.js             # Dev server + JS cache-busting
 ├── package.json
 ├── pre-commit / post-commit

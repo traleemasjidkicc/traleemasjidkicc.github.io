@@ -72,7 +72,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 - **HTML:** Bootstrap 4 grid, shared nav/footer patterns across pages, SRI on CDN assets, `lang="en-GB"`
 - **CSS:** `main-{timestamp}.css` for layout/theme/campaign components; `animations.css` for motion (not versioned)
 - **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage cache-then-fetch; defensive fetch error handling
-- **Images:** under `assets/images/` (`backgrounds/`, `bp/`, `masjid/`, `posters/`, `team/`)
+- **Images:** under `assets/images/` (`brand/`, `backgrounds/`, `photos/`, `blueprints/`, `posters/`, `team/`, `ui/`)
 - **Deployment:** `main` branch → GitHub Pages; custom domain via `CNAME` (`traleemasjidkicc.ie`)
 
 ## When editing

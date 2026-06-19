@@ -64,29 +64,35 @@ test.describe("New Masjid campaign page", () => {
     );
   });
 
-  test("shows masjid folder photos in progress section", async ({ page }) => {
+  test("shows site photos in progress section", async ({ page }) => {
     const progress = page.locator("#campaign-progress");
-    await expect(progress.locator('img[src*="masjid/masjid-wide"]')).toBeVisible();
+    await expect(progress.locator('img[src*="photos/site-wide"]')).toBeVisible();
     await expect(
-      progress.locator('img[src*="masjid/masjid-outside"]'),
+      progress.locator('img[src*="photos/community-centre-exterior"]'),
     ).toBeVisible();
-    await expect(progress.locator('img[src*="masjid/IMG_1970"]')).toBeVisible();
+    await expect(
+      progress.locator('img[src*="photos/building-entrance"]'),
+    ).toBeVisible();
   });
 
-  test("shows bp vision renders and site layouts", async ({ page }) => {
+  test("shows blueprint vision renders and site layouts", async ({ page }) => {
     const vision = page.locator("#campaign-vision");
-    await expect(vision.locator('img[src*="bp/mosqcomm3d1"]')).toBeVisible();
-    await expect(vision.locator('img[src*="bp/mosqsitlayt1"]')).toBeVisible();
+    await expect(
+      vision.locator('img[src*="blueprints/render-front-elevation"]'),
+    ).toBeVisible();
+    await expect(
+      vision.locator('img[src*="blueprints/site-layout.png"]'),
+    ).toBeVisible();
     await expect(vision.locator(".campaign-gallery-caption")).toHaveCount(6);
   });
 
   test("shows construction update photos", async ({ page }) => {
     const updates = page.locator("#campaign-updates");
     await expect(
-      updates.locator('img[src*="masjid-update-1-mar24"]'),
+      updates.locator('img[src*="construction-update-2024-03-site"]'),
     ).toBeVisible();
     await expect(
-      updates.locator('img[src*="masjid-update-2-mar24"]'),
+      updates.locator('img[src*="construction-update-2024-03-building"]'),
     ).toBeVisible();
     await expect(updates).toContainText("March 2024");
   });
@@ -115,6 +121,7 @@ test.describe("New Masjid campaign page", () => {
 
     for (let i = 0; i < count; i++) {
       const img = images.nth(i);
+      await img.scrollIntoViewIfNeeded();
       await expect(img).toHaveAttribute("src", /.+/);
       const naturalWidth = await img.evaluate(
         (el) => /** @type {HTMLImageElement} */ (el).naturalWidth,
@@ -123,7 +130,9 @@ test.describe("New Masjid campaign page", () => {
     }
   });
 
-  test("sticky donate FAB is present", async ({ page }) => {
+  test("sticky donate FAB is present on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/projects.html");
     await expect(page.locator(".campaign-donate-fab")).toBeVisible();
     await expect(page.locator(".campaign-donate-fab")).toContainText("Donate");
   });

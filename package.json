@@ -1,6 +1,6 @@
 {
   "name": "kicc-tralee-masjid",
-  "version": "1.1.116",
+  "version": "1.1.117",
   "type": "module",
   "description": "Kerry Islamic Cultural Centre website.",
   "main": "index.html",
@@ -14,7 +14,7 @@
   },
   "packageManager": "yarn@4.17.0",
   "devDependencies": {
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "1.60.0",
     "browser-sync": "2.29.1",
     "gulp": "4.0.2",
     "gulp-replace": "1.1.4"
@@ -28,6 +28,9 @@
     "postci": "yarn start",
     "precommit": "gulp precommit",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:headed": "PW_HEADED=1 playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "pretest:e2e": "node -e \"fetch('http://127.0.0.1:3000/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>{console.error('Start the dev server first: yarn start');process.exit(1)})\""
   }
 }
