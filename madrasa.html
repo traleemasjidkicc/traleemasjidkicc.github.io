@@ -21,7 +21,7 @@
     href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/main-1781917436504.css">
+  <link rel="stylesheet" href="assets/css/main-1781919804984.css">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
@@ -48,20 +48,25 @@
     integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-  <!-- Google tag (gtag.js) -->
-  <script async
-    src="https://www.googletagmanager.com/gtag/js?id=G-3H9CDDS71D"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-3H9CDDS71D');
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781917436358.js"></script>
+  <!-- Google Analytics loads only after Analytics consent (see scripts) -->
+  <script defer type="text/javascript" src="assets/js/scripts-1781919804846.js"></script>
   <script>
     (function () {
-      if (!/(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie)) {
+      var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
+        || /(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie);
+      if (!hasConsent) {
         document.documentElement.classList.add("cookie-consent-pending");
       }
     })();
@@ -597,23 +602,173 @@
   <!-- COOKIE POLICY START -->
   <div id="cookie-consent" class="cookie-consent" aria-hidden="true">
     <div class="cookie-consent-backdrop" aria-hidden="true"></div>
-    <div class="cookie-consent-dialog" role="dialog" aria-modal="true"
+    <div class="cookie-consent-dialog cookie-consent-dialog-granular" role="dialog" aria-modal="true"
       aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-desc">
-      <div class="cookie-consent-card">
-        <div class="cookie-consent-shine" aria-hidden="true"></div>
-        <div class="cookie-consent-icon-wrap" aria-hidden="true">
-          <span class="cookie-consent-icon-ring"></span>
-          <i class="fas fa-cookie-bite cookie-consent-icon"></i>
-        </div>
+      <div class="cookie-consent-card cookie-consent-card-granular">
         <h2 id="cookie-consent-title" class="cookie-consent-title">Cookies &amp; your privacy</h2>
-        <p id="cookie-consent-desc" class="cookie-consent-text">We use cookies to remember your
-          preferences &mdash; such as dismissing reminders and saving prayer times &mdash; so the
-          site works smoothly for you.</p>
-        <p class="cookie-consent-note">Please accept to continue browsing Tralee Masjid.</p>
-        <button type="button" id="cookie-accept" class="cookie-consent-accept">
-          <span class="cookie-consent-accept-label">Accept &amp; continue</span>
-          <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <p id="cookie-consent-desc" class="cookie-consent-text">Choose which cookies and storage we may use. Strictly necessary items are always on. Everything else is optional.</p>
+        <div class="cookie-consent-categories">
+          <div class="cookie-category cookie-category-locked">
+            <div class="cookie-category-row">
+              <div>
+                <p class="cookie-category-title">Strictly necessary</p>
+                <p class="cookie-category-desc">Stores your privacy choices. Always active.</p>
+              </div>
+              <span class="cookie-category-badge">Always on</span>
+            </div>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-banner-toggle-functional">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Functional &amp; storage</span>
+                <span class="cookie-category-desc">Caches prayer times, notices, programmes, and remembers UI preferences.</span>
+              </span>
+              <input type="checkbox" id="cookie-banner-toggle-functional" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-banner-toggle-analytics">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Analytics</span>
+                <span class="cookie-category-desc">Google Analytics usage statistics to help improve the site.</span>
+              </span>
+              <input type="checkbox" id="cookie-banner-toggle-analytics" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-banner-toggle-thirdParty">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Third-party embeds</span>
+                <span class="cookie-category-desc">Mixlr live stream and Google Maps. These services may set their own cookies.</span>
+              </span>
+              <input type="checkbox" id="cookie-banner-toggle-thirdParty" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <p class="cookie-consent-note">Please choose your preferences to continue browsing Tralee Masjid.</p>
+        <div class="cookie-consent-actions cookie-consent-actions-granular">
+          <button type="button" id="cookie-necessary" class="cookie-consent-essential">Necessary only</button>
+          <button type="button" id="cookie-save" class="cookie-consent-save">Save choices</button>
+          <button type="button" id="cookie-accept" class="cookie-consent-accept">Accept all</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function lockSiteForConsent() {
+        var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
+          || /(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie);
+        if (hasConsent) return;
+        document.documentElement.classList.add("cookie-consent-pending");
+        document.body.classList.add("cookie-consent-active");
+        var el = document.getElementById("cookie-consent");
+        if (el) {
+          el.classList.add("is-visible");
+          el.setAttribute("aria-hidden", "false");
+        }
+        Array.prototype.forEach.call(document.body.children, function (node) {
+          if (node.id !== "cookie-consent") node.setAttribute("inert", "");
+        });
+        document.cookie.split(";").forEach(function (part) {
+          var name = part.split("=")[0].trim();
+          if (/^(_ga|_gid|_gat|_ga_)/.test(name)) {
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax";
+          }
+        });
+        if (typeof window.gtag === "function") {
+          window.gtag("consent", "update", {
+            analytics_storage: "denied",
+            ad_storage: "denied",
+            ad_user_data: "denied",
+            ad_personalization: "denied"
+          });
+        }
+      }
+      if (document.body) lockSiteForConsent();
+      else document.addEventListener("DOMContentLoaded", lockSiteForConsent);
+    })();
+  </script>
+
+  <div id="cookie-preferences" class="cookie-preferences" aria-hidden="true">
+    <div class="cookie-preferences-backdrop" data-cookie-prefs-dismiss aria-hidden="true"></div>
+    <div class="cookie-preferences-dialog" role="dialog" aria-modal="true"
+      aria-labelledby="cookie-prefs-title">
+      <div class="cookie-preferences-card">
+        <button type="button" class="cookie-preferences-close" data-cookie-prefs-dismiss
+          aria-label="Close privacy settings">
+          <i class="fas fa-times" aria-hidden="true"></i>
         </button>
+        <h2 id="cookie-prefs-title" class="cookie-preferences-title">Privacy &amp; cookies</h2>
+        <p class="cookie-preferences-lead">Review or update your cookie choices, see what is stored, and clear optional data. Available after you have made your initial choice on first visit.</p>
+        <p id="cookie-prefs-status" class="cookie-preferences-status" aria-live="polite"></p>
+        <div class="cookie-consent-categories cookie-consent-categories-modal">
+          <div class="cookie-category cookie-category-locked">
+            <div class="cookie-category-row">
+              <div>
+                <p class="cookie-category-title">Strictly necessary</p>
+                <p class="cookie-category-desc">Stores your privacy choices. Always active.</p>
+              </div>
+              <span class="cookie-category-badge">Always on</span>
+            </div>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-prefs-toggle-functional">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Functional &amp; storage</span>
+                <span class="cookie-category-desc">Caches prayer times, notices, programmes, and remembers UI preferences.</span>
+              </span>
+              <input type="checkbox" id="cookie-prefs-toggle-functional" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-prefs-toggle-analytics">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Analytics</span>
+                <span class="cookie-category-desc">Google Analytics usage statistics to help improve the site.</span>
+              </span>
+              <input type="checkbox" id="cookie-prefs-toggle-analytics" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="cookie-category">
+            <label class="cookie-category-toggle" for="cookie-prefs-toggle-thirdParty">
+              <span class="cookie-category-copy">
+                <span class="cookie-category-title">Third-party embeds</span>
+                <span class="cookie-category-desc">Mixlr live stream and Google Maps. These services may set their own cookies.</span>
+              </span>
+              <input type="checkbox" id="cookie-prefs-toggle-thirdParty" class="cookie-category-input" />
+              <span class="cookie-toggle-ui" aria-hidden="true"></span>
+            </label>
+          </div>
+        </div>
+        <div id="cookie-prefs-registry" class="cookie-preferences-registry"></div>
+        <h3 class="cookie-preferences-subheading">Third-party privacy policies</h3>
+        <ul class="cookie-preferences-third-party list-unstyled mb-0">
+          <li><strong>Google Analytics</strong> &mdash;
+            <a href="https://policies.google.com/privacy" target="_blank"
+              rel="noopener noreferrer">Google Privacy Policy</a></li>
+          <li><strong>Mixlr</strong> &mdash;
+            <a href="https://mixlr.com/privacy" target="_blank"
+              rel="noopener noreferrer">Mixlr Privacy Policy</a></li>
+          <li><strong>Google Maps</strong> &mdash;
+            <a href="https://policies.google.com/privacy" target="_blank"
+              rel="noopener noreferrer">Google Privacy Policy</a></li>
+        </ul>
+        <div class="cookie-preferences-clear">
+          <p class="cookie-preferences-clear-lead">Remove optional cookies and stored data from this browser.</p>
+          <button type="button" id="cookie-prefs-clear" class="cookie-consent-clear">Clear optional stored data</button>
+        </div>
+        <div class="cookie-preferences-actions cookie-preferences-actions-granular">
+          <button type="button" id="cookie-prefs-necessary" class="cookie-consent-essential">Necessary only</button>
+          <button type="button" id="cookie-prefs-save" class="cookie-consent-save">Save preferences</button>
+          <button type="button" id="cookie-prefs-accept" class="cookie-consent-accept">Accept all</button>
+        </div>
       </div>
     </div>
   </div>
@@ -738,6 +893,9 @@
       <div class="site-footer-bottom">
         <p class="site-footer-copy mb-0">
           © <span id="footer-year">2019</span> Kerry Islamic Cultural Centre
+          <span class="site-footer-legal">
+            <a href="#" class="site-footer-legal-link" id="cookie-prefs-open">Privacy &amp; cookies</a>
+          </span>
           <span class="site-footer-credit">Made with
             <i class="fas fa-heart" aria-hidden="true"></i> &amp;
             <i class="fas fa-mug-hot" aria-hidden="true"></i> by

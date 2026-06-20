@@ -84,13 +84,113 @@
     setElHtml("footer-year", String(getToday().getFullYear()));
   };
 
+  const COOKIE_CONSENT_KEY = "kicc-cookie-consent";
+  const COOKIE_CONSENT_LEGACY_KEY = "kicc-accept-cookie";
+  const GA_MEASUREMENT_ID = "G-3H9CDDS71D";
+  const CONSENT_DEFAULTS = {
+    necessary: true,
+    functional: false,
+    analytics: false,
+    thirdParty: false,
+  };
+  const CONSENT_ALL_ON = {
+    necessary: true,
+    functional: true,
+    analytics: true,
+    thirdParty: true,
+  };
+  const FUNCTIONAL_COOKIE_NAMES = ["kicc-modal-tmw", "kicc-modal-registered"];
+  const FUNCTIONAL_STORAGE_KEYS = [
+    "salahTimesAssetUrl",
+    "iqamah-today",
+    "iqamah-tomorrow",
+    "kicc-announcements",
+    "notices",
+    "kicc-random-hadith",
+    "masjidProgrammes_programme_active_true_v1",
+    "kicc-campaign-progress",
+  ];
+  const FUNCTIONAL_SESSION_KEYS = ["kicc-notices-spotlight-dismissed"];
+  const BREAKING_DISMISS_PREFIX = "kicc-breaking-dismiss-";
+
+  const parseConsentCookie = () => {
+    try {
+      if (typeof Cookies === "undefined") return null;
+      const raw = Cookies.get(COOKIE_CONSENT_KEY);
+      if (raw) {
+        if (raw === "all") return Object.assign({}, CONSENT_ALL_ON);
+        if (raw === "essential") return Object.assign({}, CONSENT_DEFAULTS);
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") {
+          return {
+            necessary: true,
+            functional: !!parsed.functional,
+            analytics: !!parsed.analytics,
+            thirdParty: !!parsed.thirdParty,
+          };
+        }
+      }
+      const legacy = Cookies.get(COOKIE_CONSENT_LEGACY_KEY);
+      if (legacy !== undefined && legacy !== "false") {
+        return {
+          necessary: true,
+          functional: true,
+          analytics: false,
+          thirdParty: false,
+        };
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  };
+
+  const hasConsentChoice = () => parseConsentCookie() !== null;
+
+  const getConsentPrefs = () => {
+    const parsed = parseConsentCookie();
+    return parsed || Object.assign({}, CONSENT_DEFAULTS);
+  };
+
+  const canUseFunctionalStorage = () => getConsentPrefs().functional;
+
+  const canUseAnalytics = () => getConsentPrefs().analytics;
+
+  const canUseThirdPartyEmbeds = () => getConsentPrefs().thirdParty;
+
+  const kiccStorageGet = (storage, key) => {
+    if (storage === localStorage && !canUseFunctionalStorage()) return null;
+    if (storage === sessionStorage && !canUseFunctionalStorage()) return null;
+    try {
+      return storage.getItem(key);
+    } catch {
+      return null;
+    }
+  };
+
+  const kiccStorageSet = (storage, key, value) => {
+    if (storage === localStorage && !canUseFunctionalStorage()) return false;
+    if (storage === sessionStorage && !canUseFunctionalStorage()) return false;
+    try {
+      storage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const setFunctionalCookie = (name, value, options) => {
+    if (!canUseFunctionalStorage() || typeof Cookies === "undefined") return;
+    Cookies.set(name, value, options);
+  };
+
   const setSalahTimeUrl = () => {
     const SALAH_TIMES_KEY = "salahTimesAssetUrl";
     const baseUrl = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
 
     // 1) Try to use cached URL first (non-blocking)
     try {
-      const cached = localStorage.getItem(SALAH_TIMES_KEY);
+      const cached = kiccStorageGet(localStorage, SALAH_TIMES_KEY);
       if (cached) {
         console.log("Using cached salah times URL:", cached);
         applySalahTimesUrl(cached);
@@ -139,7 +239,7 @@
 
         // Update localStorage
         try {
-          localStorage.setItem(SALAH_TIMES_KEY, asset);
+          kiccStorageSet(localStorage, SALAH_TIMES_KEY, asset);
         } catch (e) {
           console.warn("Unable to write localStorage", e);
         }
@@ -957,7 +1057,7 @@
   };
 
   const fetchIqamahForDate = (dateParts, storageKey) => {
-    const cached = localStorage.getItem(storageKey);
+    const cached = kiccStorageGet(localStorage, storageKey);
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
@@ -986,7 +1086,7 @@
           throw new Error("No iqamah data");
         }
         try {
-          localStorage.setItem(storageKey, JSON.stringify(json));
+          kiccStorageSet(localStorage, storageKey, JSON.stringify(json));
         } catch (e) {
           console.warn("Unable to cache iqamah", storageKey, e);
         }
@@ -1107,30 +1207,482 @@
       });
   };
 
-  const COOKIE_CONSENT_KEY = "kicc-accept-cookie";
+  const COOKIE_REGISTRY = [
+    {
+      category: "necessary",
+      type: "Cookie",
+      name: "kicc-cookie-consent",
+      duration: "10 days",
+      purpose: "Stores your privacy choices (always required).",
+    },
+    {
+      category: "functional",
+      type: "Cookie",
+      name: "kicc-modal-tmw",
+      duration: "1 day",
+      purpose: "Hides the community registration reminder until tomorrow.",
+    },
+    {
+      category: "functional",
+      type: "Cookie",
+      name: "kicc-modal-registered",
+      duration: "10 days",
+      purpose: "Remembers that you have already registered for programmes.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "salahTimesAssetUrl",
+      duration: "Until cleared",
+      purpose: "Caches the link to the monthly prayer timetable.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "iqamah-today / iqamah-tomorrow",
+      duration: "Until cleared",
+      purpose: "Caches today\u2019s and tomorrow\u2019s iqamah times.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "kicc-announcements",
+      duration: "Until cleared",
+      purpose: "Caches homepage announcements.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "notices",
+      duration: "Until cleared",
+      purpose: "Caches the notice board.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "kicc-random-hadith",
+      duration: "Until cleared",
+      purpose: "Caches the daily hadith.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_programme_active_true_v1",
+      duration: "Until cleared",
+      purpose: "Caches weekly programme listings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "kicc-campaign-progress",
+      duration: "Until cleared",
+      purpose: "Caches New Masjid fundraiser totals.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "kicc-breaking-dismiss-*",
+      duration: "Until cleared",
+      purpose: "Remembers dismissed urgent announcements.",
+    },
+    {
+      category: "functional",
+      type: "sessionStorage",
+      name: "kicc-notices-spotlight-dismissed",
+      duration: "Browser session",
+      purpose: "Hides the notice spotlight for this visit.",
+    },
+    {
+      category: "analytics",
+      type: "Cookie",
+      name: "_ga, _gid, _gat",
+      duration: "Up to 2 years",
+      purpose: "Google Analytics \u2014 anonymous usage statistics.",
+    },
+    {
+      category: "thirdParty",
+      type: "Third-party",
+      name: "Mixlr embed",
+      duration: "Varies",
+      purpose: "Live audio stream player (Mixlr may set its own cookies).",
+    },
+    {
+      category: "thirdParty",
+      type: "Third-party",
+      name: "Google Maps embed",
+      duration: "Varies",
+      purpose: "Interactive map on the Contact page (Google may set its own cookies).",
+    },
+  ];
+  const CONSENT_CATEGORIES = [
+    {
+      id: "necessary",
+      label: "Strictly necessary",
+      locked: true,
+      description:
+        "Required to remember your privacy choices. This cannot be turned off.",
+    },
+    {
+      id: "functional",
+      label: "Functional & storage",
+      locked: false,
+      description:
+        "Preference cookies and browser storage that cache prayer times, notices, programmes, and similar masjid content.",
+    },
+    {
+      id: "analytics",
+      label: "Analytics",
+      locked: false,
+      description:
+        "Google Analytics helps us understand how visitors use the site so we can improve it.",
+    },
+    {
+      id: "thirdParty",
+      label: "Third-party embeds",
+      locked: false,
+      description:
+        "Embedded Mixlr live stream and Google Maps on the Contact page. These services may set their own cookies.",
+    },
+  ];
   const ANNOUNCEMENTS_API_URL =
     "https://getannouncements-rds3nxm6za-ew.a.run.app";
-  const BREAKING_DISMISS_PREFIX = "kicc-breaking-dismiss-";
   let postCookieConsentDone = false;
   let pendingBreakingAnnouncement = null;
   let siteAnnouncementsBound = false;
   let lastShownBreakingIdentity = "";
+  let cookieRegistryRendered = false;
 
-  const hasCookieConsent = () => {
+  const hasCookieConsent = () => hasConsentChoice();
+
+  const saveConsentPrefs = (prefs) => {
+    const previous = getConsentPrefs();
+    const next = {
+      necessary: true,
+      functional: !!prefs.functional,
+      analytics: !!prefs.analytics,
+      thirdParty: !!prefs.thirdParty,
+    };
+
+    if (previous.functional && !next.functional) clearFunctionalData();
+    if (previous.analytics && !next.analytics) clearAnalyticsData();
+    if (previous.thirdParty && !next.thirdParty) removeConsentEmbeds();
+
+    Cookies.set(COOKIE_CONSENT_KEY, JSON.stringify({
+      functional: next.functional,
+      analytics: next.analytics,
+      thirdParty: next.thirdParty,
+    }), { expires: 10 });
+
+    applyConsentSideEffects(next);
+    syncConsentToggles(next);
+    updateCookiePrefsStatus();
+  };
+
+  const readConsentToggles = (prefix) => {
+    const prefs = Object.assign({}, CONSENT_DEFAULTS);
+    CONSENT_CATEGORIES.forEach(function (cat) {
+      if (cat.locked) return;
+      const input = document.getElementById(prefix + "-toggle-" + cat.id);
+      if (input) prefs[cat.id] = !!input.checked;
+    });
+    return prefs;
+  };
+
+  const syncConsentToggles = (prefs) => {
+    ["cookie-banner", "cookie-prefs"].forEach(function (prefix) {
+      CONSENT_CATEGORIES.forEach(function (cat) {
+        const input = document.getElementById(prefix + "-toggle-" + cat.id);
+        if (!input || cat.locked) return;
+        input.checked = !!prefs[cat.id];
+      });
+    });
+  };
+
+  const expireCookie = (name) => {
+    const hostname = window.location.hostname;
+    const domains = [hostname, "." + hostname.replace(/^www\./, "")];
+    const paths = ["/", ""];
+    domains.forEach(function (domain) {
+      paths.forEach(function (path) {
+        document.cookie =
+          name +
+          "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" +
+          (path || "/") +
+          "; domain=" +
+          domain +
+          "; SameSite=Lax";
+      });
+    });
+    if (typeof Cookies !== "undefined") Cookies.remove(name);
+  };
+
+  const clearBreakingDismissKeys = () => {
     try {
-      if (typeof Cookies === "undefined") return false;
-      const val = Cookies.get(COOKIE_CONSENT_KEY);
-      return val !== undefined && val !== "false";
+      for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+        const key = localStorage.key(i);
+        if (key && key.indexOf(BREAKING_DISMISS_PREFIX) === 0) {
+          localStorage.removeItem(key);
+        }
+      }
     } catch {
-      return false;
+      // ignore storage errors
     }
+  };
+
+  const clearFunctionalData = () => {
+    FUNCTIONAL_COOKIE_NAMES.forEach(function (name) {
+      expireCookie(name);
+    });
+    FUNCTIONAL_STORAGE_KEYS.forEach(function (key) {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
+    });
+    FUNCTIONAL_SESSION_KEYS.forEach(function (key) {
+      try {
+        sessionStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
+    });
+    clearBreakingDismissKeys();
+  };
+
+  const clearAnalyticsData = () => {
+    const names = [];
+    document.cookie.split(";").forEach(function (part) {
+      const name = part.split("=")[0].trim();
+      if (/^(_ga|_gid|_gat|_ga_)/.test(name)) names.push(name);
+    });
+    names.forEach(expireCookie);
+    window.__kiccGaLoaded = false;
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+      });
+    }
+  };
+
+  const loadGoogleAnalytics = () => {
+    if (!hasConsentChoice() || !canUseAnalytics() || window.__kiccGaLoaded) return;
+    if (typeof window.gtag !== "function") return;
+
+    window.__kiccGaLoaded = true;
+    window.gtag("consent", "update", {
+      analytics_storage: "granted",
+    });
+
+    if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
+      const script = document.createElement("script");
+      script.async = true;
+      script.src =
+        "https://www.googletagmanager.com/gtag/js?id=" + GA_MEASUREMENT_ID;
+      document.head.appendChild(script);
+    }
+
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID);
+  };
+
+  const injectConsentEmbed = (container) => {
+    if (!canUseThirdPartyEmbeds()) return;
+    if (!container || container.dataset.embedLoaded === "true") return;
+    const src = container.getAttribute("data-embed-src");
+    if (!src) return;
+
+    const title = container.getAttribute("data-embed-title") || "";
+    const height = container.getAttribute("data-embed-height") || "150";
+    const iframe = document.createElement("iframe");
+    iframe.src = src;
+    iframe.title = title;
+    iframe.width = "100%";
+    iframe.height = height;
+    iframe.setAttribute("scrolling", "no");
+    iframe.setAttribute("frameborder", "0");
+    iframe.loading = "lazy";
+
+    if (container.classList.contains("consent-embed-map")) {
+      iframe.className = "contact-map-iframe";
+      iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+      iframe.setAttribute("allowfullscreen", "");
+    }
+
+    const placeholder = container.querySelector(".consent-embed-placeholder");
+    if (placeholder) placeholder.hidden = true;
+    container.appendChild(iframe);
+    container.dataset.embedLoaded = "true";
+  };
+
+  const showEmbedPlaceholder = (container) => {
+    if (container.dataset.embedLoaded === "true") return;
+    const placeholder = container.querySelector(".consent-embed-placeholder");
+    if (placeholder) placeholder.hidden = false;
+  };
+
+  const removeConsentEmbeds = () => {
+    document.querySelectorAll("[data-consent-embed]").forEach(function (container) {
+      const iframe = container.querySelector("iframe");
+      if (iframe) iframe.remove();
+      container.dataset.embedLoaded = "false";
+      showEmbedPlaceholder(container);
+    });
+  };
+
+  const loadConsentEmbeds = () => {
+    if (!canUseThirdPartyEmbeds()) return;
+    document.querySelectorAll("[data-consent-embed]").forEach(injectConsentEmbed);
+  };
+
+  const initConsentEmbeds = () => {
+    document.querySelectorAll("[data-consent-embed]").forEach(function (container) {
+      if (container.dataset.embedBound === "true") return;
+      container.dataset.embedBound = "true";
+
+      if (canUseThirdPartyEmbeds()) {
+        injectConsentEmbed(container);
+        return;
+      }
+
+      showEmbedPlaceholder(container);
+    });
+  };
+
+  const applyConsentSideEffects = (prefs) => {
+    if (!hasConsentChoice()) {
+      clearAnalyticsData();
+      removeConsentEmbeds();
+      return;
+    }
+    const state = prefs || getConsentPrefs();
+    if (state.analytics) loadGoogleAnalytics();
+    else clearAnalyticsData();
+    if (state.thirdParty) loadConsentEmbeds();
+    else removeConsentEmbeds();
+  };
+
+  const renderCookieRegistry = () => {
+    const el = document.getElementById("cookie-prefs-registry");
+    if (!el || cookieRegistryRendered) return;
+    cookieRegistryRendered = true;
+
+    const headings = {
+      necessary: "Strictly necessary (always on)",
+      functional: "Functional & storage",
+      analytics: "Analytics",
+      thirdParty: "Third-party embeds",
+    };
+
+    const buildTable = (heading, items) => {
+      if (!items.length) return "";
+      const rows = items
+        .map(function (item) {
+          return (
+            "<tr><th scope=\"row\">" +
+            item.name +
+            "</th><td>" +
+            item.type +
+            "</td><td>" +
+            item.duration +
+            "</td><td>" +
+            item.purpose +
+            "</td></tr>"
+          );
+        })
+        .join("");
+      return (
+        "<h3 class=\"cookie-preferences-subheading\">" +
+        heading +
+        "</h3>" +
+        "<div class=\"cookie-preferences-table-wrap\">" +
+        "<table class=\"cookie-preferences-table\">" +
+        "<thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Type</th>" +
+        "<th scope=\"col\">Duration</th><th scope=\"col\">Purpose</th></tr></thead>" +
+        "<tbody>" +
+        rows +
+        "</tbody></table></div>"
+      );
+    };
+
+    el.innerHTML = Object.keys(headings)
+      .map(function (category) {
+        const items = COOKIE_REGISTRY.filter(function (item) {
+          return item.category === category;
+        });
+        return buildTable(headings[category], items);
+      })
+      .join("");
+  };
+
+  const describeConsentPrefs = (prefs) => {
+    const enabled = [];
+    if (prefs.functional) enabled.push("functional & storage");
+    if (prefs.analytics) enabled.push("analytics");
+    if (prefs.thirdParty) enabled.push("third-party embeds");
+    if (!enabled.length) return "Your current choice: strictly necessary only";
+    return "Your current choice: " + enabled.join(", ");
+  };
+
+  const updateCookiePrefsStatus = () => {
+    const el = document.getElementById("cookie-prefs-status");
+    if (!el) return;
+    if (!hasConsentChoice()) {
+      el.textContent = "You have not chosen yet.";
+      return;
+    }
+    el.textContent = describeConsentPrefs(getConsentPrefs());
+  };
+
+  const hideCookiePreferences = (animate) => {
+    if (!hasConsentChoice()) return;
+
+    const el = document.getElementById("cookie-preferences");
+    if (!el) return;
+
+    const finish = () => {
+      el.classList.remove("is-visible", "is-leaving");
+      el.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("cookie-preferences-active");
+    };
+
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
+
+    el.classList.add("is-leaving");
+    el.classList.remove("is-visible");
+    window.setTimeout(finish, 420);
+  };
+
+  const showCookiePreferences = () => {
+    if (!hasConsentChoice()) {
+      showCookieConsent();
+      return;
+    }
+
+    const el = document.getElementById("cookie-preferences");
+    if (!el) return;
+
+    renderCookieRegistry();
+    syncConsentToggles(getConsentPrefs());
+    updateCookiePrefsStatus();
+    el.setAttribute("aria-hidden", "false");
+    document.body.classList.add("cookie-preferences-active");
+
+    requestAnimationFrame(function () {
+      el.classList.add("is-visible");
+    });
   };
 
   const runPostCookieConsent = () => {
     if (!hasCookieConsent() || postCookieConsentDone) return;
     postCookieConsentDone = true;
-    document.documentElement.classList.remove("cookie-consent-pending");
-    document.body.classList.remove("cookie-consent-active");
+    setCookieConsentBlocking(false);
     if (isHomePage()) {
       const modalScheduled = showSignUpModal();
       if (!modalScheduled) {
@@ -1160,23 +1712,60 @@
     window.setTimeout(finish, 420);
   };
 
-  const showCookieConsent = () => {
-    const el = document.getElementById("cookie-consent");
-    if (!el) return;
-
-    el.setAttribute("aria-hidden", "false");
-    document.body.classList.add("cookie-consent-active");
-    document.documentElement.classList.add("cookie-consent-pending");
-
-    requestAnimationFrame(function () {
-      el.classList.add("is-visible");
+  const setCookieConsentBlocking = (active) => {
+    if (active) {
+      document.documentElement.classList.add("cookie-consent-pending");
+      document.body.classList.add("cookie-consent-active");
+      Array.from(document.body.children).forEach(function (node) {
+        if (node.id !== "cookie-consent") node.setAttribute("inert", "");
+      });
+      return;
+    }
+    document.documentElement.classList.remove("cookie-consent-pending");
+    document.body.classList.remove("cookie-consent-active");
+    Array.from(document.body.children).forEach(function (node) {
+      if (node.id !== "cookie-consent") node.removeAttribute("inert");
     });
   };
 
-  const acceptCookiePolicy = () => {
-    Cookies.set(COOKIE_CONSENT_KEY, true, { expires: 10 });
+  const activateCookieConsentGate = () => {
+    const el = document.getElementById("cookie-consent");
+    if (!el) return;
+
+    clearAnalyticsData();
+    syncConsentToggles(CONSENT_DEFAULTS);
+    setCookieConsentBlocking(true);
+    el.setAttribute("aria-hidden", "false");
+    el.classList.add("is-visible");
+  };
+
+  const showCookieConsent = () => {
+    activateCookieConsentGate();
+  };
+
+  const finalizeConsentChoice = (prefs) => {
+    saveConsentPrefs(prefs);
     hideCookieConsent(true);
+    hideCookiePreferences(true);
     runPostCookieConsent();
+  };
+
+  const acceptAllConsent = () => finalizeConsentChoice(CONSENT_ALL_ON);
+
+  const acceptNecessaryOnlyConsent = () =>
+    finalizeConsentChoice(Object.assign({}, CONSENT_DEFAULTS));
+
+  const saveBannerConsent = () =>
+    finalizeConsentChoice(readConsentToggles("cookie-banner"));
+
+  const savePreferencesConsent = () =>
+    finalizeConsentChoice(readConsentToggles("cookie-prefs"));
+
+  const clearOptionalStoredData = () => {
+    clearFunctionalData();
+    clearAnalyticsData();
+    removeConsentEmbeds();
+    saveConsentPrefs(Object.assign({}, CONSENT_DEFAULTS));
   };
 
   const initSignUpModal = () => {
@@ -1195,11 +1784,11 @@
     }
 
     $("#sub-btn-tomorrow").on("click", function () {
-      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
+      setFunctionalCookie("kicc-modal-tmw", true, { expires: 1 });
       $("#myModal").modal("hide");
     });
     $("#sub-btn-registered").on("click", function () {
-      Cookies.set("kicc-modal-registered", true, { expires: 10 });
+      setFunctionalCookie("kicc-modal-registered", true, { expires: 10 });
       $("#myModal").modal("hide");
     });
 
@@ -1229,12 +1818,61 @@
     return false;
   };
 
-  const showCookiePolicy = () => {
-    const btn = document.getElementById("cookie-accept");
-    if (btn && !btn.dataset.bound) {
-      btn.dataset.bound = "true";
-      btn.addEventListener("click", acceptCookiePolicy);
+  const bindCookieButton = (id, handler) => {
+    const btn = document.getElementById(id);
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", handler);
+  };
+
+  const initCookiePreferences = () => {
+    bindCookieButton("cookie-accept", acceptAllConsent);
+    bindCookieButton("cookie-necessary", acceptNecessaryOnlyConsent);
+    bindCookieButton("cookie-save", saveBannerConsent);
+    bindCookieButton("cookie-prefs-accept", acceptAllConsent);
+    bindCookieButton("cookie-prefs-necessary", acceptNecessaryOnlyConsent);
+    bindCookieButton("cookie-prefs-save", savePreferencesConsent);
+    bindCookieButton("cookie-prefs-clear", clearOptionalStoredData);
+
+    const openLink = document.getElementById("cookie-prefs-open");
+    if (openLink && !openLink.dataset.bound) {
+      openLink.dataset.bound = "true";
+      openLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showCookiePreferences();
+      });
     }
+
+    document.querySelectorAll("[data-cookie-prefs-dismiss]").forEach((el) => {
+      if (el.dataset.bound) return;
+      el.dataset.bound = "true";
+      el.addEventListener("click", function () {
+        if (!hasConsentChoice()) return;
+        hideCookiePreferences(true);
+      });
+    });
+
+    document.querySelectorAll(".cookie-prefs-inline-open").forEach(function (link) {
+      if (link.dataset.bound) return;
+      link.dataset.bound = "true";
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        showCookiePreferences();
+      });
+    });
+
+    if (!document.documentElement.dataset.cookiePrefsEscapeBound) {
+      document.documentElement.dataset.cookiePrefsEscapeBound = "true";
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        if (!hasConsentChoice()) return;
+        hideCookiePreferences(true);
+      });
+    }
+  };
+
+  const showCookiePolicy = () => {
+    initCookiePreferences();
 
     if (typeof $ !== "undefined") {
       $(document).on("show.bs.modal", function (e) {
@@ -1246,15 +1884,18 @@
 
     if (hasCookieConsent()) {
       hideCookieConsent(false);
+      setCookieConsentBlocking(false);
+      syncConsentToggles(getConsentPrefs());
+      applyConsentSideEffects(getConsentPrefs());
       runPostCookieConsent();
     } else {
-      showCookieConsent();
+      activateCookieConsentGate();
     }
   };
 
   const setSignUpCookies = () => {
     if (Cookies.get("kicc-modal-registered")) {
-      Cookies.set("kicc-modal-tmw", true, { expires: 1 });
+      setFunctionalCookie("kicc-modal-tmw", true, { expires: 1 });
     }
   };
 
@@ -1298,7 +1939,7 @@
 
     const loadFromCache = () => {
       try {
-        const raw = localStorage.getItem(HADITH_KEY);
+        const raw = kiccStorageGet(localStorage, HADITH_KEY);
         if (!raw) return null;
         return JSON.parse(raw);
       } catch {
@@ -1309,7 +1950,7 @@
     const saveToCache = (randomHadith) => {
       try {
         if (!randomHadith) return;
-        localStorage.setItem(HADITH_KEY, JSON.stringify(randomHadith));
+        kiccStorageSet(localStorage, HADITH_KEY, JSON.stringify(randomHadith));
       } catch {
         // ignore storage errors
       }
@@ -1410,7 +2051,7 @@
   const getPrayerDayData = () => {
     if (cachedPrayerDayData) return cachedPrayerDayData;
     try {
-      const cached = localStorage.getItem("iqamah-today");
+      const cached = kiccStorageGet(localStorage, "iqamah-today");
       if (!cached) return null;
       const parsed = JSON.parse(cached);
       return parsed.data && parsed.data[0] ? parsed.data[0] : null;
@@ -1655,7 +2296,7 @@
     const key = getAnnouncementDismissKey(announcement);
     if (!key || !announcement) return false;
     try {
-      const stored = localStorage.getItem(key);
+      const stored = kiccStorageGet(localStorage, key);
       if (stored === null || stored === "") return false;
       if (stored === "1") return false;
       const dismissedTs = Number(stored);
@@ -1671,7 +2312,7 @@
     if (!key || !announcement) return;
     try {
       const ts = getBreakingAnnouncementTimestamp(announcement) || Date.now();
-      localStorage.setItem(key, String(ts));
+      kiccStorageSet(localStorage, key, String(ts));
     } catch {
       // ignore storage errors
     }
@@ -2003,7 +2644,7 @@
   const loadAnnouncementsFromCache = () => {
     const ANNOUNCEMENTS_KEY = "kicc-announcements";
     try {
-      const raw = localStorage.getItem(ANNOUNCEMENTS_KEY);
+      const raw = kiccStorageGet(localStorage, ANNOUNCEMENTS_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : null;
@@ -2016,7 +2657,7 @@
     const ANNOUNCEMENTS_KEY = "kicc-announcements";
     try {
       if (!Array.isArray(announcements)) return;
-      localStorage.setItem(ANNOUNCEMENTS_KEY, JSON.stringify(announcements));
+      kiccStorageSet(localStorage, ANNOUNCEMENTS_KEY, JSON.stringify(announcements));
     } catch {
       // ignore storage errors
     }
@@ -2025,7 +2666,7 @@
   const loadNoticesFromCache = () => {
     const NOTICES_KEY = "notices";
     try {
-      const raw = localStorage.getItem(NOTICES_KEY);
+      const raw = kiccStorageGet(localStorage, NOTICES_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : null;
@@ -2038,7 +2679,7 @@
     const NOTICES_KEY = "notices";
     try {
       if (!Array.isArray(notices)) return;
-      localStorage.setItem(NOTICES_KEY, JSON.stringify(notices));
+      kiccStorageSet(localStorage, NOTICES_KEY, JSON.stringify(notices));
     } catch {
       // ignore storage errors
     }
@@ -2074,7 +2715,10 @@
 
   const isNoticeSpotlightDismissed = (notices) => {
     try {
-      const dismissed = sessionStorage.getItem("kicc-notices-spotlight-dismissed");
+      const dismissed = kiccStorageGet(
+        sessionStorage,
+        "kicc-notices-spotlight-dismissed",
+      );
       if (!dismissed) return false;
       return dismissed === getNoticeSpotlightDismissKey(notices);
     } catch {
@@ -2089,7 +2733,8 @@
 
     const finishDismiss = () => {
       try {
-        sessionStorage.setItem(
+        kiccStorageSet(
+          sessionStorage,
           "kicc-notices-spotlight-dismissed",
           getNoticeSpotlightDismissKey(cached),
         );
@@ -3234,7 +3879,7 @@
     const PROGRAMMES_API_URL =
       "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true";
     const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v1";
-    var cachedJson = localStorage.getItem(PROGRAMMES_STORAGE_KEY);
+    var cachedJson = kiccStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
     if (cachedJson) {
       try {
         var cached = JSON.parse(cachedJson);
@@ -3261,7 +3906,7 @@
       .then(function (data) {
         console.log("Programmes API response:", data);
         if (data) {
-          localStorage.setItem(PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
+          kiccStorageSet(localStorage, PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
           applyProgrammesResponse(data);
         } else {
           applyProgrammesResponse(null);
@@ -4066,7 +4711,7 @@
     if (!widgets.length) return;
 
     try {
-      const cached = localStorage.getItem(CAMPAIGN_PROGRESS_KEY);
+      const cached = kiccStorageGet(localStorage, CAMPAIGN_PROGRESS_KEY);
       if (cached) {
         applyFundraiserProgress(JSON.parse(cached));
       }
@@ -4083,7 +4728,7 @@
         const fundraiser = json && json.data && json.data.fundraiser;
         if (!fundraiser) throw new Error("No fundraiser data");
         try {
-          localStorage.setItem(CAMPAIGN_PROGRESS_KEY, JSON.stringify(fundraiser));
+          kiccStorageSet(localStorage, CAMPAIGN_PROGRESS_KEY, JSON.stringify(fundraiser));
         } catch (e) {
           console.warn("Unable to cache campaign progress", e);
         }
@@ -4415,6 +5060,7 @@
     addBackToTopButton();
     setFooterYear();
     showCookiePolicy();
+    initConsentEmbeds();
   });
 
   window.onload = () => {
