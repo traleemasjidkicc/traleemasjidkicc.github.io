@@ -1544,6 +1544,7 @@
     const slot = jummahTimes[0];
     const speech = formatTimeToAmPm(slot.speech) || "—";
     const khutbah = formatTimeToAmPm(slot.khutbah) || "—";
+    const badge = getJumuahBannerBadge();
     const isEnhanced = !!zohrRow.classList.contains("kicc-nav-salah-row");
 
     let row = existing;
@@ -1560,8 +1561,9 @@
       row.innerHTML =
         '<div class="kicc-nav-salah-row-name">' +
         '<span class="kicc-nav-salah-row-label">Jumu\'ah</span>' +
-        '<span class="kicc-nav-salah-row-badge" aria-hidden="true"></span>' +
-        "</div>" +
+        '<span class="kicc-nav-jumuah-day-badge">' +
+        badge +
+        "</span></div>" +
         '<div class="kicc-nav-salah-row-times kicc-nav-jumuah-times">' +
         '<div class="kicc-nav-salah-time">' +
         '<span class="kicc-nav-salah-time-label">Speech</span>' +
@@ -1569,7 +1571,7 @@
         speech +
         "</span></div>" +
         '<div class="kicc-nav-salah-time kicc-nav-salah-time-iqamah">' +
-        '<span class="kicc-nav-salah-time-label">Khutbah</span>' +
+        '<span class="kicc-nav-salah-time-label">Khutbah &amp; salah</span>' +
         '<span class="kicc-nav-salah-time-value">' +
         khutbah +
         "</span></div></div>";
@@ -1577,25 +1579,27 @@
     }
 
     row.innerHTML =
-      "<th scope=\"row\">Jumu'ah</th>" +
+      "<th scope=\"row\">Jumu'ah <span class=\"kicc-nav-jumuah-day-badge\">" +
+      badge +
+      "</span></th>" +
       '<td><span class="nav-jumuah-time">' +
       speech +
       '</span> <span class="nav-jumuah-hint">speech</span></td>' +
       '<td><span class="nav-jumuah-time">' +
       khutbah +
-      '</span> <span class="nav-jumuah-hint">khutbah</span></td>';
+      '</span> <span class="nav-jumuah-hint">khutbah &amp; salah</span></td>';
   };
 
   const renderJumuahFridayBanner = (announcements) => {
     const banners = document.querySelectorAll(".jumuah-friday-banner");
     const jummahTimes = getJumuahTimes(announcements);
-    const showFeatureBanner = isJumuahDisplayWindow() && jummahTimes;
+    const showJumuah = isJumuahDisplayWindow() && jummahTimes;
 
-    renderNavJumuahRow(jummahTimes);
+    renderNavJumuahRow(showJumuah ? jummahTimes : null);
 
     if (banners.length) {
       banners.forEach(function (banner) {
-        if (!showFeatureBanner) {
+        if (!showJumuah) {
           banner.hidden = true;
           banner.innerHTML = "";
           return;
@@ -3282,71 +3286,22 @@
     }
   };
 
-  const SITE_PAGE_NAV = {
-    activities: [
-      { href: "#listen", icon: "fas fa-broadcast-tower", label: "Listen" },
-      { href: "#schedule", icon: "fas fa-calendar-week", label: "Schedule" },
-      {
-        href: "#weekly-programmes-section",
-        icon: "fas fa-book-open",
-        label: "Programmes",
-      },
-      { href: "/", icon: "fas fa-clock", label: "Salah" },
-      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
-    ],
-    madrasa: [
-      { href: "#madrasa-schedule", icon: "fas fa-calendar-alt", label: "Schedule" },
-      { href: "#madrasa-register", icon: "fas fa-user-plus", label: "Register" },
-      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
-      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
-    ],
-    projects: [
-      { href: "#campaign-hero", icon: "fas fa-mosque", label: "Campaign" },
-      { href: "#campaign-progress", icon: "fas fa-hard-hat", label: "Progress" },
-      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
-    ],
-    about: [
-      { href: "#intro", icon: "fas fa-info-circle", label: "About" },
-      { href: "#our-story", icon: "fas fa-book", label: "Story" },
-      { href: "#community-today", icon: "fas fa-users", label: "Community" },
-      { href: "#our-team", icon: "fas fa-user-friends", label: "Team" },
-      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
-    ],
-    contact: [
-      { href: "#contact-heading", icon: "fas fa-envelope", label: "Contact" },
-      { href: "#contact-map", icon: "fas fa-map-marker-alt", label: "Map" },
-      { href: "/", icon: "fas fa-clock", label: "Salah" },
-      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
-    ],
-  };
+  const PAGE_SECTION_NAV_SELECTOR =
+    ".madrasa-section-nav, .about-section-nav, .campaign-section-nav, .programmes-section-nav, .contact-section-nav";
 
-  const buildSitePageNavLink = (item, index) => {
-    const li = document.createElement("li");
-    li.className = "site-page-nav-item";
-    li.style.setProperty("--nav-i", index);
+  const syncPageSectionNavMetrics = () => {
+    const nav = document.querySelector(
+      ".page-section-nav-dock.page-section-nav-dock--ready",
+    );
+    if (!nav) return;
 
-    const a = document.createElement("a");
-    a.className =
-      "site-page-nav-link" + (item.accent ? " site-page-nav-link-accent" : "");
-    a.href = item.href;
-    if (item.external) {
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
+    const height = Math.ceil(nav.getBoundingClientRect().height);
+    if (height > 0) {
+      document.documentElement.style.setProperty(
+        "--page-section-nav-height",
+        height + "px",
+      );
     }
-
-    const icon = document.createElement("span");
-    icon.className = "site-page-nav-icon";
-    icon.setAttribute("aria-hidden", "true");
-    icon.innerHTML = '<i class="' + item.icon + '"></i>';
-
-    const label = document.createElement("span");
-    label.className = "site-page-nav-label";
-    label.textContent = item.label;
-
-    a.appendChild(icon);
-    a.appendChild(label);
-    li.appendChild(a);
-    return li;
   };
 
   let stickyNavOffsetTick = false;
@@ -3404,46 +3359,6 @@
     });
   };
 
-  const initSitePageNav = () => {
-    if (isHomePage()) return;
-
-    const pageKey = getPageKey();
-    const items = pageKey ? SITE_PAGE_NAV[pageKey] : null;
-    if (!items || items.length === 0) return;
-
-    document.querySelector(".home-quick-nav-section")?.remove();
-    document.querySelector(".programmes-quick-nav")?.remove();
-
-    if (document.querySelector(".site-page-nav-section")) return;
-
-    const mainNav = document.querySelector(".kicc-nav-v2");
-    if (!mainNav) return;
-
-    const section = document.createElement("nav");
-    section.className = "site-page-nav-section site-page-nav-section--ready";
-    section.setAttribute("aria-label", "Page quick links");
-
-    const container = document.createElement("div");
-    container.className = "container";
-
-    const list = document.createElement("ul");
-    list.className = "site-page-nav list-unstyled mb-0";
-
-    items.forEach(function (item, index) {
-      list.appendChild(buildSitePageNavLink(item, index));
-    });
-
-    container.appendChild(list);
-    section.appendChild(container);
-    const insertAfter =
-      document.getElementById("site-announcement-ribbon") || mainNav;
-    insertAfter.insertAdjacentElement("afterend", section);
-    queueStickyNavOffsetSync();
-  };
-
-  const PAGE_SECTION_NAV_SELECTOR =
-    ".madrasa-section-nav, .about-section-nav, .campaign-section-nav";
-
   const initPageSectionNavDock = () => {
     const nav = document.querySelector(PAGE_SECTION_NAV_SELECTOR);
     if (!nav || nav.classList.contains("page-section-nav-dock--ready")) return;
@@ -3454,7 +3369,7 @@
 
     const tracks = [];
     nav.querySelectorAll(
-      ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list"
+      ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list, .programmes-section-nav-list, .contact-section-nav-list"
     ).forEach(function (list) {
       list.classList.add("page-section-nav-track");
 
@@ -3470,8 +3385,8 @@
       tracks.push({ list: list, indicator: indicator });
     });
 
-    requestAnimationFrame(function () {
-      nav.classList.add("is-visible");
+    window.addEventListener("resize", syncPageSectionNavMetrics, {
+      passive: true,
     });
 
     const links = nav.querySelectorAll('a[href^="#"]');
@@ -3515,6 +3430,18 @@
       track.indicator.style.left = metrics.contentLeft + "px";
     };
 
+    const markIndicatorsPositioned = () => {
+      tracks.forEach(function (track) {
+        track.indicator.classList.add("is-positioned");
+      });
+    };
+
+    const layoutIndicator = () => {
+      if (!activeItem) return;
+      updateIndicator(activeItem.link);
+      markIndicatorsPositioned();
+    };
+
     const scrollActiveIntoView = (link, forceCenter) => {
       const track = getTrackForLink(link);
       if (!track) return;
@@ -3550,12 +3477,10 @@
       if (!nextItem) return;
 
       const changed = activeItem !== nextItem;
-      if (changed) {
-        activeItem = nextItem;
-        sections.forEach(function (item) {
-          item.link.classList.toggle("is-active", item === nextItem);
-        });
-      }
+      activeItem = nextItem;
+      sections.forEach(function (item) {
+        item.link.classList.toggle("is-active", item === nextItem);
+      });
 
       updateIndicator(nextItem.link);
 
@@ -3564,6 +3489,11 @@
       } else if (fromScroll) {
         scrollActiveIntoView(nextItem.link, false);
       }
+    };
+
+    const scheduleIndicatorLayout = () => {
+      layoutIndicator();
+      requestAnimationFrame(layoutIndicator);
     };
 
     const resolveActiveSection = () => {
@@ -3631,9 +3561,24 @@
     });
 
     onScrollSpy();
+
     requestAnimationFrame(function () {
-      updateIndicator(activeItem.link);
+      nav.classList.add("is-visible");
+      syncPageSectionNavMetrics();
+      setActiveLink(resolveActiveSection(), false);
+      scheduleIndicatorLayout();
     });
+
+    /* Pill entrance animation runs up to ~0.7s after is-visible — re-measure then */
+    window.setTimeout(scheduleIndicatorLayout, 720);
+
+    nav.addEventListener(
+      "transitionend",
+      function (event) {
+        if (event.propertyName === "transform") scheduleIndicatorLayout();
+      },
+      { once: true }
+    );
   };
 
   const initSiteActionDock = () => {
@@ -3860,6 +3805,139 @@
     widget.dispatchEvent(
       new CustomEvent("gfm-progress-ready", { bubbles: true })
     );
+  };
+
+  const initAboutPageMotion = () => {
+    if (!isAboutPage()) return;
+
+    const hero = document.querySelector(".about-hero-enter");
+    if (hero) {
+      requestAnimationFrame(function () {
+        hero.classList.add("is-visible");
+      });
+    }
+
+    const statsSection = document.querySelector(".about-stats-enter");
+    if (statsSection) {
+      const revealStats = () => {
+        statsSection.classList.add("is-visible");
+        statsSection.querySelectorAll("[data-count]").forEach(function (el) {
+          if (el.dataset.counted) return;
+          el.dataset.counted = "true";
+          const target = parseInt(el.dataset.count, 10);
+          const suffix = el.dataset.countSuffix || "";
+          const col = el.closest(".about-stat-reveal");
+          if (!target || isNaN(target)) return;
+
+          const duration = 1400;
+          const start = performance.now();
+          const tick = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.round(target * eased) + suffix;
+            if (progress < 1) {
+              requestAnimationFrame(tick);
+            } else if (col) {
+              col.classList.add("is-counted");
+            }
+          };
+          requestAnimationFrame(tick);
+        });
+      };
+
+      if (!("IntersectionObserver" in window)) {
+        revealStats();
+      } else {
+        const statsObserver = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                revealStats();
+                statsObserver.disconnect();
+              }
+            });
+          },
+          { threshold: 0.3 }
+        );
+        statsObserver.observe(statsSection);
+      }
+    }
+
+    const quoteSection = document.querySelector(".about-quote-enter");
+    if (quoteSection) {
+      const revealQuote = () => quoteSection.classList.add("is-visible");
+      if (!("IntersectionObserver" in window)) {
+        revealQuote();
+      } else {
+        const quoteObserver = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                revealQuote();
+                quoteObserver.disconnect();
+              }
+            });
+          },
+          { threshold: 0.25 }
+        );
+        quoteObserver.observe(quoteSection);
+      }
+    }
+
+    const milestones = document.querySelector(".about-milestones-animate");
+    if (milestones) {
+      const revealMilestones = () => milestones.classList.add("is-visible");
+      if (!("IntersectionObserver" in window)) {
+        revealMilestones();
+      } else {
+        const milestoneObserver = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                revealMilestones();
+                milestoneObserver.disconnect();
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+        milestoneObserver.observe(milestones);
+      }
+    }
+
+    const revealSelectors = [
+      ".about-reveal",
+      ".about-service-reveal",
+      ".about-team-reveal",
+      ".about-visit-reveal",
+    ].join(",");
+
+    document.querySelectorAll(revealSelectors).forEach(function (el) {
+      el.classList.add("about-motion-target");
+    });
+
+    if (!("IntersectionObserver" in window)) {
+      document.querySelectorAll(".about-motion-target").forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    document.querySelectorAll(".about-motion-target").forEach(function (el) {
+      revealObserver.observe(el);
+    });
   };
 
   const initCampaignPageMotion = () => {
@@ -4325,13 +4403,13 @@
     initNavSalahPanel();
     initEnhancedFundraiserWidgets();
     initCampaignPageMotion();
+    initAboutPageMotion();
     initHomeDonateMotion();
     initMobileNav();
     syncStickyNavOffset();
     window.addEventListener("resize", queueStickyNavOffsetSync, {
       passive: true,
     });
-    initSitePageNav();
     initPageSectionNavDock();
     addWhatsAppButton();
     addBackToTopButton();

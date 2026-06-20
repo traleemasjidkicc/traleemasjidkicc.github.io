@@ -256,12 +256,20 @@ gulp.task('serve', function () {
     bs.init({
         server: {
             baseDir: "./"
-        }
+        },
+        middleware: [
+            (req, res, next) => {
+                if (/\.(js|css)$/.test(req.url)) {
+                    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+                }
+                next();
+            },
+        ],
     });
 
-    // Watch HTML and CSS files for changes
-    gulp.watch(["*.html", "assets/css/*.css", "assets/js/*.js"]).on("change", bs.reload);
+    gulp.watch(['*.html', 'assets/css/*.css', 'assets/js/*.js'])
+        .on('all', () => bs.reload());
 });
 
-// Default task that runs both the rename-js task once and then starts the server
-gulp.task('default', gulp.series('serve'));
+// Sync HTML asset refs, then start the dev server
+gulp.task('default', gulp.series('update-html', 'serve'));

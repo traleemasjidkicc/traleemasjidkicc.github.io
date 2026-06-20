@@ -27,7 +27,8 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" />
 
-  <link rel="stylesheet" href="assets/css/main-1781915012927.css">
+  <link rel="stylesheet" href="assets/css/main-1781917436504.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -59,7 +60,7 @@
 
     gtag('config', 'G-3H9CDDS71D');
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1781915012786.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781917436358.js"></script>
   <script>
     (function () {
       if (!/(?:^|;\s*)kicc-accept-cookie=/.test(document.cookie)) {
@@ -224,8 +225,10 @@
 
   <main class="about-main" id="main-content">
     <!-- HERO -->
-    <section class="about-hero hero-cover-campaign text-white"
+    <section class="about-hero hero-cover-campaign text-white about-hero-enter"
       aria-labelledby="about-heading">
+      <div class="about-hero-pattern" aria-hidden="true"></div>
+      <div class="about-hero-glow" aria-hidden="true"></div>
       <div class="container py-5">
         <div class="row justify-content-center py-4 py-lg-5">
           <div class="col-lg-10 col-xl-9 text-center">
@@ -244,34 +247,39 @@
     </section>
 
     <!-- STATS -->
-    <section class="about-stats" aria-label="Key facts about KICC">
+    <section class="about-stats about-stats-enter" aria-label="Key facts about KICC">
       <div class="container">
         <div class="row about-stats-grid text-center">
-          <div class="col-6 col-md-3 about-stat-col">
+          <div class="col-6 col-md-3 about-stat-col about-stat-reveal"
+            style="--stat-i: 0">
             <div class="about-stat">
               <span class="about-stat-icon" aria-hidden="true"><i
                   class="fas fa-seedling"></i></span>
-              <span class="about-stat-value">1988</span>
+              <span class="about-stat-value" data-count="1988">1988</span>
               <span class="about-stat-label">Community roots in Kerry</span>
             </div>
           </div>
-          <div class="col-6 col-md-3 about-stat-col">
+          <div class="col-6 col-md-3 about-stat-col about-stat-reveal"
+            style="--stat-i: 1">
             <div class="about-stat">
               <span class="about-stat-icon" aria-hidden="true"><i
                   class="fas fa-hand-holding-heart"></i></span>
-              <span class="about-stat-value">2001</span>
+              <span class="about-stat-value" data-count="2001">2001</span>
               <span class="about-stat-label">Registered charity</span>
             </div>
           </div>
-          <div class="col-6 col-md-3 about-stat-col">
+          <div class="col-6 col-md-3 about-stat-col about-stat-reveal"
+            style="--stat-i: 2">
             <div class="about-stat">
               <span class="about-stat-icon" aria-hidden="true"><i
                   class="fas fa-book-quran"></i></span>
-              <span class="about-stat-value">140+</span>
+              <span class="about-stat-value" data-count="140"
+                data-count-suffix="+">140+</span>
               <span class="about-stat-label">Madrasah students</span>
             </div>
           </div>
-          <div class="col-6 col-md-3 about-stat-col">
+          <div class="col-6 col-md-3 about-stat-col about-stat-reveal"
+            style="--stat-i: 3">
             <div class="about-stat">
               <span class="about-stat-icon" aria-hidden="true"><i
                   class="fas fa-certificate"></i></span>
@@ -299,9 +307,9 @@
     <section class="campaign-section campaign-section-warm home-welcome-section"
       id="intro">
       <div class="container">
-        <div class="campaign-section-title home-welcome-header">
+        <div class="campaign-section-title home-welcome-header about-reveal">
           <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah"
-            class="home-welcome-bismillah">
+            class="home-welcome-bismillah about-bismillah-reveal">
           <p class="about-section-eyebrow">Assalamu Alaikum</p>
           <h2>Who We Are</h2>
           <p class="home-welcome-intro">A Muslim community organisation serving
@@ -309,13 +317,17 @@
             Tralee and beyond.</p>
         </div>
         <div class="home-welcome-visual">
-          <img src="assets/images/photos/building-entrance.png" class="home-welcome-image"
-            alt="Entrance to Kerry Islamic Cultural Centre, Tralee">
+          <div class="about-image-reveal about-reveal--scale">
+            <img src="assets/images/photos/building-entrance.png" class="home-welcome-image"
+              alt="Entrance to Kerry Islamic Cultural Centre, Tralee">
+          </div>
           <div class="row home-welcome-cards no-gutters">
             <div class="col-md-6 pr-md-2 mb-4 mb-md-0">
-              <div class="home-vision-card h-100 about-vision-card">
+              <div class="home-vision-card h-100 about-vision-card about-reveal about-reveal--left"
+                style="--reveal-i: 0">
                 <span class="about-vision-icon" aria-hidden="true"><i
                     class="fas fa-eye"></i></span>
+                <span class="about-vision-card-glow" aria-hidden="true"></span>
                 <span class="home-vision-label">Vision</span>
                 <p>Our aim is to provide for the religious, cultural and social
                   needs of Muslims in Kerry, alongside our neighbours in Tralee
@@ -323,9 +335,11 @@
               </div>
             </div>
             <div class="col-md-6 pl-md-2">
-              <div class="home-vision-card h-100 about-vision-card">
+              <div class="home-vision-card h-100 about-vision-card about-reveal about-reveal--right"
+                style="--reveal-i: 1">
                 <span class="about-vision-icon" aria-hidden="true"><i
                     class="fas fa-hand-holding-heart"></i></span>
+                <span class="about-vision-card-glow" aria-hidden="true"></span>
                 <span class="home-vision-label">Mission</span>
                 <p>We promote the teachings of Islam, encourage praying together,
                   and support the spiritual and social well-being of our members
@@ -340,13 +354,13 @@
     <!-- OUR STORY -->
     <section class="campaign-section" id="our-story">
       <div class="container">
-        <div class="campaign-section-title">
+        <div class="campaign-section-title about-reveal">
           <h2>Our Story</h2>
           <p>A journey of faith, patience, and community in Tralee</p>
         </div>
         <div class="row align-items-center">
           <div class="col-lg-6 mb-4 mb-lg-0">
-            <div class="about-story-image-wrap">
+            <div class="about-story-image-wrap about-image-reveal about-reveal--left">
               <img src="assets/images/photos/site-wide.jpg"
                 alt="Kerry Islamic Cultural Centre, Tralee"
                 class="about-story-image">
@@ -355,7 +369,7 @@
             </div>
           </div>
           <div class="col-lg-6">
-            <div class="campaign-narrative">
+            <div class="campaign-narrative about-reveal about-reveal--right">
               <p>Alhamdulillah, with immense gratitude to Allah (سبحانہ وتعالی),
                 the journey of our beloved Muslim community in Tralee is a
                 powerful story of steadfast faith, patience, and unwavering
@@ -390,18 +404,21 @@
     </section>
 
     <!-- QUOTE BREAK -->
-    <section class="about-quote-break" aria-label="Quranic reminder">
-      <div class="parallax-section">
-        <div class="container">
-          <div class="right-box">
-            <img src="assets/images/brand/parallax-quote.png" alt="">
-            <strong class="title">Then which of the favours of your Lord will
-              ye deny?</strong>
-            <a target="_blank" rel="noopener noreferrer"
-              href="https://quran.com/55/13?translations=22">&mdash; [Qur&rsquo;an
-              55:13]</a>
-          </div>
-        </div>
+    <section class="home-quran-verse-section about-quote-enter about-quote-break"
+      aria-label="Quranic reminder">
+      <div class="container">
+        <blockquote class="home-quran-verse about-quran-verse">
+          <p class="home-quran-verse-arabic" lang="ar" dir="rtl">فَبِأَىِّ ءَالَآءِ رَبِّكُمَا تُكَذِّبَانِ</p>
+          <p class="home-quran-verse-translation">Then which of the favours of your Lord will you deny?</p>
+          <footer class="home-quran-verse-cite">
+            <a href="https://quran.com/55/13?translations=22" target="_blank"
+              rel="noopener noreferrer">
+              Surah Ar-Rahman <span aria-hidden="true">&middot;</span> 55:13
+              <i class="fas fa-external-link-alt home-quran-verse-link-icon"
+                aria-hidden="true"></i>
+            </a>
+          </footer>
+        </blockquote>
       </div>
     </section>
 
@@ -410,10 +427,10 @@
       <div class="container">
         <div class="row align-items-center mb-5">
           <div class="col-lg-7 order-2 order-lg-1">
-            <div class="campaign-section-title text-left mb-4">
+            <div class="campaign-section-title text-left mb-4 about-reveal">
               <h2>How We Evolved</h2>
             </div>
-            <div class="campaign-narrative">
+            <div class="campaign-narrative about-reveal about-reveal--right">
               <p>By the grace, guidance, and infinite mercy of Allah (سبحانہ
                 وتعالی), the Kerry Islamic Cultural Centre was formally
                 established as a charity in 2001. With sincere hearts and
@@ -443,7 +460,7 @@
             </div>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 mb-4 mb-lg-0">
-            <div class="about-story-image-wrap">
+            <div class="about-story-image-wrap about-image-reveal about-reveal--left">
               <img src="assets/images/photos/building-entrance.png"
                 alt="Inside Kerry Islamic Cultural Centre"
                 class="about-story-image">
@@ -454,7 +471,7 @@
 
         <div class="row align-items-start">
           <div class="col-lg-5 mb-4 mb-lg-0">
-            <div class="about-story-image-wrap">
+            <div class="about-story-image-wrap about-image-reveal about-reveal--left">
               <img src="assets/images/photos/community-centre-exterior.jpg"
                 alt="Front of Tralee Masjid"
                 class="about-story-image">
@@ -462,12 +479,12 @@
             </div>
           </div>
           <div class="col-lg-7">
-            <div class="campaign-section-title text-left mb-4">
+            <div class="campaign-section-title text-left mb-4 about-reveal">
               <h2>Community Involvement</h2>
               <p class="text-left mx-0">Built by the community, for the
                 community</p>
             </div>
-            <div class="campaign-narrative mb-0">
+            <div class="campaign-narrative mb-0 about-reveal about-reveal--right">
               <p>Allah (سبحانہ وتعالی) has blessed us abundantly through your
                 generous donations, sincere du&rsquo;as, and tireless voluntary
                 efforts. Our new masjid and madrasah now stand as a sanctuary
@@ -483,31 +500,36 @@
           </div>
         </div>
 
-        <div class="about-milestones-wrap">
+        <div class="about-milestones-wrap about-reveal">
           <h3 class="about-milestones-heading">Our Journey at a Glance</h3>
-          <div class="about-milestones" role="list">
-            <article class="about-milestone" role="listitem">
+          <div class="about-milestones about-milestones-animate" role="list">
+            <span class="about-milestones-progress" aria-hidden="true"></span>
+            <article class="about-milestone about-milestone-reveal" role="listitem"
+              style="--milestone-i: 0">
               <span class="about-milestone-year">1988</span>
               <p class="about-milestone-text">Prayers began at Kerry General
                 Hospital (UHK)</p>
             </article>
-            <article class="about-milestone" role="listitem">
+            <article class="about-milestone about-milestone-reveal" role="listitem"
+              style="--milestone-i: 1">
               <span class="about-milestone-year">2000</span>
               <p class="about-milestone-text">Rented premises for prayer and
                 outreach</p>
             </article>
-            <article class="about-milestone" role="listitem">
+            <article class="about-milestone about-milestone-reveal" role="listitem"
+              style="--milestone-i: 2">
               <span class="about-milestone-year">2007</span>
               <p class="about-milestone-text">First dedicated masjid purchased
               </p>
             </article>
-            <article class="about-milestone" role="listitem">
+            <article class="about-milestone about-milestone-reveal" role="listitem"
+              style="--milestone-i: 3">
               <span class="about-milestone-year">2016</span>
               <p class="about-milestone-text">Land acquired for purpose-built
                 masjid</p>
             </article>
-            <article class="about-milestone about-milestone-current"
-              role="listitem">
+            <article class="about-milestone about-milestone-current about-milestone-reveal"
+              role="listitem" style="--milestone-i: 4">
               <span class="about-milestone-year">2025</span>
               <p class="about-milestone-text">Moved into our new masjid,
                 Alhamdulillah</p>
@@ -520,14 +542,16 @@
     <!-- COMMUNITY TODAY -->
     <section class="campaign-section" id="community-today">
       <div class="container">
-        <div class="campaign-section-title">
+        <div class="campaign-section-title about-reveal">
           <h2>Community Life Today</h2>
           <p>Programmes and services at the heart of our masjid</p>
         </div>
         <div class="row">
-          <div class="col-md-6 col-lg-3 mb-4">
+          <div class="col-md-6 col-lg-3 mb-4 about-service-reveal"
+            style="--service-i: 0">
             <a href="/" class="about-service-link">
               <div class="campaign-facility-card about-service-card">
+                <span class="about-service-card-glow" aria-hidden="true"></span>
                 <i class="fas fa-mosque" aria-hidden="true"></i>
                 <h3>Daily Prayers</h3>
                 <p>Five daily salah and Jumu&rsquo;ah congregations</p>
@@ -535,9 +559,11 @@
               </div>
             </a>
           </div>
-          <div class="col-md-6 col-lg-3 mb-4">
+          <div class="col-md-6 col-lg-3 mb-4 about-service-reveal"
+            style="--service-i: 1">
             <a href="madrasa.html" class="about-service-link">
               <div class="campaign-facility-card about-service-card">
+                <span class="about-service-card-glow" aria-hidden="true"></span>
                 <i class="fas fa-book-quran" aria-hidden="true"></i>
                 <h3>Madrasah &amp; Hifz</h3>
                 <p>Islamic education for 140+ children</p>
@@ -545,9 +571,11 @@
               </div>
             </a>
           </div>
-          <div class="col-md-6 col-lg-3 mb-4">
+          <div class="col-md-6 col-lg-3 mb-4 about-service-reveal"
+            style="--service-i: 2">
             <a href="activities.html" class="about-service-link">
               <div class="campaign-facility-card about-service-card">
+                <span class="about-service-card-glow" aria-hidden="true"></span>
                 <i class="fas fa-microphone-alt" aria-hidden="true"></i>
                 <h3>Weekly Tafseer</h3>
                 <p>Regular Qur&rsquo;an study and Taraweeh in Ramadan</p>
@@ -555,9 +583,11 @@
               </div>
             </a>
           </div>
-          <div class="col-md-6 col-lg-3 mb-4">
+          <div class="col-md-6 col-lg-3 mb-4 about-service-reveal"
+            style="--service-i: 3">
             <a href="contact.html" class="about-service-link">
               <div class="campaign-facility-card about-service-card">
+                <span class="about-service-card-glow" aria-hidden="true"></span>
                 <i class="fas fa-users" aria-hidden="true"></i>
                 <h3>Outreach &amp; Circles</h3>
                 <p>Youth activities, women&rsquo;s learning, and community
@@ -573,18 +603,18 @@
     <!-- OUR TEAM -->
     <section class="campaign-section campaign-section-warm" id="our-team">
       <div class="container">
-        <div class="campaign-section-title">
+        <div class="campaign-section-title about-reveal">
           <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah"
-            class="home-welcome-bismillah">
+            class="home-welcome-bismillah about-bismillah-reveal">
           <h2>Our Team</h2>
           <p class="about-team-quote">&ldquo;Faithful believers are to each
             other as the bricks of a wall, supporting and reinforcing each
             other.&rdquo; &mdash; Al-Bukhari</p>
         </div>
 
-        <p class="about-team-group-label">Imams</p>
+        <p class="about-team-group-label about-reveal">Imams</p>
         <div class="row text-center mb-4">
-          <div class="col-md-6 mb-4">
+          <div class="col-md-6 mb-4 about-team-reveal" style="--team-i: 0">
             <div class="about-team-card about-team-card-featured about-team-card-imam">
               <img src="assets/images/team/imam.png"
                 alt="Mustafa Patel, Imam" width="112" height="112"
@@ -605,7 +635,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-6 mb-4">
+          <div class="col-md-6 mb-4 about-team-reveal" style="--team-i: 1">
             <div class="about-team-card about-team-card-featured about-team-card-imam">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Moulana Salman, Imam" width="112" height="112"
@@ -621,9 +651,9 @@
           </div>
         </div>
 
-        <p class="about-team-group-label">Leadership</p>
+        <p class="about-team-group-label about-reveal">Leadership</p>
         <div class="row text-center mb-2 justify-content-center">
-          <div class="col-md-6 col-lg-4 mb-4">
+          <div class="col-md-6 col-lg-4 mb-4 about-team-reveal" style="--team-i: 2">
             <div class="about-team-card about-team-card-featured">
               <img src="assets/images/team/scholar-female.jpg"
                 alt="Apa, Scholar" width="112" height="112"
@@ -638,7 +668,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-6 col-lg-4 mb-4">
+          <div class="col-md-6 col-lg-4 mb-4 about-team-reveal" style="--team-i: 3">
             <div class="about-team-card about-team-card-featured">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Dr Altaf Memon, Trustee" width="112" height="112"
@@ -661,9 +691,10 @@
           </div>
         </div>
 
-        <p class="about-team-group-label">Committee &amp; Volunteers</p>
+        <p class="about-team-group-label about-reveal">Committee &amp; Volunteers</p>
         <div class="row text-center justify-content-center">
-          <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <div class="col-6 col-md-4 col-lg-3 mb-4 about-team-reveal"
+            style="--team-i: 4">
             <div class="about-team-card">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Mohsin Rana, Treasurer" width="88" height="88"
@@ -672,7 +703,8 @@
               <span class="about-team-role">Treasurer</span>
             </div>
           </div>
-          <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <div class="col-6 col-md-4 col-lg-3 mb-4 about-team-reveal"
+            style="--team-i: 5">
             <div class="about-team-card">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Rana Mahbub, Member" width="88" height="88"
@@ -681,7 +713,8 @@
               <span class="about-team-role">Member</span>
             </div>
           </div>
-          <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <div class="col-6 col-md-4 col-lg-3 mb-4 about-team-reveal"
+            style="--team-i: 6">
             <div class="about-team-card">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Shahid Jamil, Member" width="88" height="88"
@@ -690,7 +723,8 @@
               <span class="about-team-role">Member</span>
             </div>
           </div>
-          <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <div class="col-6 col-md-4 col-lg-3 mb-4 about-team-reveal"
+            style="--team-i: 7">
             <div class="about-team-card">
               <img src="assets/images/team/placeholder.jpeg"
                 alt="Abid Ghane, Member" width="88" height="88"
@@ -706,7 +740,7 @@
     <!-- TECHNICAL -->
     <section class="campaign-section campaign-section-warm" id="technical-team">
       <div class="container">
-        <div class="about-tech-banner">
+        <div class="about-tech-banner about-reveal">
           <img src="//nalam.me/img/profile.png"
             alt="Nazmul Alam, Technical Specialist" width="96" height="96"
             class="about-tech-photo">
@@ -734,12 +768,12 @@
     <!-- VISIT & CONNECT -->
     <section class="campaign-section" id="visit-us">
       <div class="container">
-        <div class="campaign-section-title">
+        <div class="campaign-section-title about-reveal">
           <h2>Visit &amp; Connect</h2>
           <p>We welcome visitors, enquiries, and new families in Kerry</p>
         </div>
         <div class="row">
-          <div class="col-md-4 mb-4 mb-md-0">
+          <div class="col-md-4 mb-4 mb-md-0 about-visit-reveal" style="--visit-i: 0">
             <a href="//goo.gl/maps/itDbxNWHt4bcUb4A9" target="_blank"
               rel="noopener noreferrer" class="about-visit-card">
               <span class="about-visit-icon" aria-hidden="true"><i
@@ -749,7 +783,7 @@
               <span class="about-visit-cta">Open in Maps</span>
             </a>
           </div>
-          <div class="col-md-4 mb-4 mb-md-0">
+          <div class="col-md-4 mb-4 mb-md-0 about-visit-reveal" style="--visit-i: 1">
             <a href="contact.html" class="about-visit-card">
               <span class="about-visit-icon" aria-hidden="true"><i
                   class="fas fa-envelope"></i></span>
@@ -758,7 +792,7 @@
               <span class="about-visit-cta">Contact us</span>
             </a>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 about-visit-reveal" style="--visit-i: 2">
             <a href="activities.html" class="about-visit-card">
               <span class="about-visit-icon" aria-hidden="true"><i
                   class="fas fa-calendar-alt"></i></span>
@@ -774,7 +808,7 @@
     <!-- SUPPORT CTA -->
     <section class="campaign-section campaign-closing" id="support">
       <div class="container">
-        <div class="campaign-closing-card">
+        <div class="campaign-closing-card about-reveal">
           <div class="campaign-section-title">
             <h2>Support Our Masjid</h2>
             <p>Help us complete the final stage of this noble project and build

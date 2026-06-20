@@ -1113,6 +1113,26 @@ img {
 	grid-template-columns: 1fr 1fr;
 }
 
+.kicc-nav-jumuah-day-badge {
+	display: inline-block;
+	margin-left: 0.35rem;
+	padding: 0.15rem 0.5rem;
+	font-size: 0.62rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--kicc-teal-deep);
+	background: var(--kicc-gold-bright);
+	border-radius: 999px;
+	vertical-align: middle;
+}
+
+.kicc-nav-jumuah-row th .kicc-nav-jumuah-day-badge {
+	display: block;
+	margin: 0.25rem 0 0;
+	width: fit-content;
+}
+
 .kicc-nav-salah-footer {
 	margin-top: 0.85rem;
 	padding-top: 0.75rem;
@@ -3191,7 +3211,7 @@ html.cookie-consent-pending .cookie-consent,
 .page-activities #weekly-programmes-section,
 .page-activities .weekly-programme-card[id],
 .page-activities .programmes-unscheduled-item[id] {
-	scroll-margin-top: 5.5rem;
+	scroll-margin-top: calc(var(--kicc-sticky-nav-top, 4.25rem) + 1rem);
 }
 
 .page-activities .programmes-hero {
@@ -3257,6 +3277,11 @@ html.cookie-consent-pending .cookie-consent,
 	color: var(--kicc-teal-deep);
 	text-decoration: none;
 	outline: none;
+}
+
+.page-activities .programmes-section-nav {
+	background: transparent;
+	border-bottom: none;
 }
 
 /* Shared section headers */
@@ -4955,44 +4980,6 @@ html.cookie-consent-pending .cookie-consent,
 
 .page-about .about-stat-icon {
 	color: var(--kicc-gold);
-}
-
-/*===========================================================================*/
-/*Parallax Section*/
-/*===========================================================================*/
-.parallax-section {
-	float: left;
-	width: 100%;
-	background: url(../images/backgrounds/parallax.jpg) no-repeat left top/cover;
-	padding: 50px 0;
-}
-
-.parallax-section .right-box {
-	float: right;
-	width: 770px;
-}
-
-.parallax-section .right-box img {
-	float: right;
-	margin: 0 0 20px 0;
-}
-
-.parallax-section .right-box strong.title {
-	display: block;
-	font-family: var(--kicc-font-display);
-	font-size: 1.5rem;
-	font-weight: 700;
-	color: var(--kicc-text-on-dark);
-	clear: both;
-	padding: 0 0 15px 0;
-}
-
-.parallax-section .right-box a {
-	color: var(--kicc-gold-bright);
-	display: inline-block;
-	font-family: var(--kicc-font-display);
-	font-size: 0.875rem;
-	text-decoration: none;
 }
 
 /* ==========================================================================
@@ -9183,117 +9170,6 @@ body.site-breaking-alert-open {
 	}
 }
 
-/* Site page nav — sticky quick links (all pages) */
-.site-page-nav-section {
-	background: var(--kicc-bg-white);
-	border-top: 3px solid var(--kicc-gold);
-	border-bottom: 1px solid rgba(10, 138, 142, 0.1);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-	position: sticky;
-	top: var(--kicc-sticky-nav-top, 4.25rem);
-	z-index: 1020;
-	isolation: isolate;
-}
-
-.site-page-nav {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: stretch;
-	gap: 0.5rem;
-	padding: 0.75rem 0;
-	margin: 0 auto;
-	max-width: 54rem;
-}
-
-.site-page-nav-item {
-	flex: 0 1 auto;
-	opacity: 0;
-	transform: translateY(12px);
-}
-
-.site-page-nav-section--ready .site-page-nav-item {
-	animation: sitePageNavIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-	animation-delay: calc(var(--nav-i, 0) * 0.06s + 0.05s);
-}
-
-@keyframes sitePageNavIn {
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-.site-page-nav-link {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	min-width: 4.75rem;
-	min-height: 4.25rem;
-	padding: 0.45rem 0.55rem;
-	border-radius: var(--kicc-radius-lg);
-	text-decoration: none;
-	color: var(--kicc-teal-deep);
-	background: var(--kicc-surface-muted);
-	border: 1px solid rgba(10, 138, 142, 0.08);
-	transition:
-		background 0.25s ease,
-		border-color 0.25s ease,
-		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-		box-shadow 0.25s ease;
-}
-
-.site-page-nav-link:hover,
-.site-page-nav-link:focus {
-	text-decoration: none;
-	color: var(--kicc-teal-deep);
-	background: var(--kicc-teal-soft);
-	border-color: rgba(10, 138, 142, 0.2);
-	transform: translateY(-3px);
-	box-shadow: 0 8px 20px rgba(13, 91, 94, 0.12);
-}
-
-.site-page-nav-link-accent {
-	background: rgba(212, 168, 67, 0.14);
-	border-color: rgba(212, 168, 67, 0.25);
-}
-
-.site-page-nav-link-accent:hover,
-.site-page-nav-link-accent:focus {
-	background: rgba(212, 168, 67, 0.24);
-}
-
-.site-page-nav-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 2.1rem;
-	height: 2.1rem;
-	font-size: 1.05rem;
-	color: var(--kicc-teal);
-	margin-bottom: 0.25rem;
-	transition: transform 0.25s ease;
-}
-
-.site-page-nav-link:hover .site-page-nav-icon,
-.site-page-nav-link:focus .site-page-nav-icon {
-	transform: scale(1.08);
-}
-
-.site-page-nav-link-accent .site-page-nav-icon {
-	color: #a8842e;
-}
-
-.site-page-nav-label {
-	font-size: 0.68rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	line-height: 1.2;
-	text-align: center;
-}
-
 /* Site action dock — WhatsApp, Donate, Back to top */
 .site-action-dock {
 	position: fixed;
@@ -9449,28 +9325,6 @@ body.site-breaking-alert-open {
 }
 
 @media (max-width: 767.98px) {
-	.site-page-nav {
-		gap: 0.4rem;
-		padding: 0.55rem 0.35rem;
-		max-width: 100%;
-	}
-
-	.site-page-nav-link {
-		min-width: 4.25rem;
-		min-height: 3.85rem;
-		padding: 0.35rem 0.4rem;
-	}
-
-	.site-page-nav-icon {
-		font-size: 0.95rem;
-		margin-bottom: 0.15rem;
-	}
-
-	.site-page-nav-label {
-		font-size: 0.58rem;
-		letter-spacing: 0.03em;
-	}
-
 	.site-action-dock {
 		right: 0.75rem;
 		bottom: 0.75rem;
@@ -9478,13 +9332,6 @@ body.site-breaking-alert-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.site-page-nav-item,
-	.site-page-nav-section--ready .site-page-nav-item {
-		opacity: 1;
-		transform: none;
-		animation: none;
-	}
-
 	.site-action-btn,
 	.site-action-dock.is-visible .site-action-btn,
 	.site-action-dock.is-visible .site-action-btn--donate {
@@ -9499,7 +9346,7 @@ body.site-breaking-alert-open {
 	}
 }
 
-/* Page section nav — floating bottom bar (madrasa, about, projects) */
+/* Page section nav — floating bottom bar (long-form inner pages) */
 .page-section-nav-dock {
 	position: fixed;
 	left: 0;
@@ -9531,11 +9378,17 @@ html.cookie-consent-pending .page-section-nav-dock {
 }
 
 body.has-page-section-nav {
-	padding-bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+	--page-section-nav-height: 3.75rem;
+	padding-bottom: calc(
+		var(--page-section-nav-height, 3.75rem) + env(safe-area-inset-bottom, 0px)
+	);
 }
 
 body.has-page-section-nav .site-action-dock {
-	bottom: calc(4.35rem + env(safe-area-inset-bottom, 0px));
+	bottom: calc(
+		var(--page-section-nav-height, 3.75rem) + 0.75rem +
+			env(safe-area-inset-bottom, 0px)
+	);
 }
 
 .page-section-nav-dock .container {
@@ -9558,7 +9411,7 @@ body.has-page-section-nav .site-action-dock {
 	gap: 0.5rem;
 	list-style: none;
 	margin: 0;
-	padding: 0.65rem 1.25rem;
+	padding: 0.65rem 4.75rem 0.65rem 1.25rem;
 }
 
 .page-section-nav-dock .page-section-nav-track::before,
@@ -9581,11 +9434,15 @@ body.has-page-section-nav .site-action-dock {
 	background: var(--kicc-teal);
 	box-shadow: 0 4px 14px rgba(10, 138, 142, 0.35);
 	transform: translateY(-50%);
+	transition: none;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.page-section-nav-indicator.is-positioned {
 	transition:
 		left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
 		width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-	z-index: 0;
-	pointer-events: none;
 }
 
 .page-about .page-section-nav-indicator {
@@ -9600,29 +9457,70 @@ body.has-page-section-nav .site-action-dock {
 
 .page-section-nav-dock .madrasa-section-nav-list,
 .page-section-nav-dock .about-section-nav-list,
-.page-section-nav-dock .campaign-section-nav-list {
+.page-section-nav-dock .campaign-section-nav-list,
+.page-section-nav-dock .programmes-section-nav-list,
+.page-section-nav-dock .contact-section-nav-list {
 	padding: 0;
 }
 
 .page-section-nav-dock .madrasa-section-nav-list a,
 .page-section-nav-dock .about-section-nav-list a,
-.page-section-nav-dock .campaign-section-nav-list a {
+.page-section-nav-dock .campaign-section-nav-list a,
+.page-section-nav-dock .programmes-section-nav-list a,
+.page-section-nav-dock .contact-section-nav-list a {
+	display: block;
+	padding: 0.45rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--kicc-teal);
+	background: var(--kicc-teal-soft);
+	border-radius: var(--kicc-radius-pill);
+	text-decoration: none;
+	white-space: nowrap;
 	position: relative;
 	z-index: 1;
-	background: var(--kicc-teal-soft);
 	transition:
-		color 0.3s ease,
+		background 0.15s ease,
+		color 0.15s ease,
 		transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.page-section-nav-dock .madrasa-section-nav-list a:hover,
+.page-section-nav-dock .madrasa-section-nav-list a:focus,
+.page-section-nav-dock .campaign-section-nav-list a:hover,
+.page-section-nav-dock .campaign-section-nav-list a:focus,
+.page-section-nav-dock .programmes-section-nav-list a:hover,
+.page-section-nav-dock .programmes-section-nav-list a:focus,
+.page-section-nav-dock .contact-section-nav-list a:hover,
+.page-section-nav-dock .contact-section-nav-list a:focus {
+	background: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
+	text-decoration: none;
+	outline: none;
+}
+
 .page-section-nav-dock .about-section-nav-list a {
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+	color: #555;
 	background: #f9f0e7;
 	border: 1px solid rgba(13, 91, 94, 0.12);
 }
 
+.page-section-nav-dock .about-section-nav-list a:hover,
+.page-section-nav-dock .about-section-nav-list a:focus {
+	background: #0d5b5e;
+	border-color: #0d5b5e;
+	color: #fff;
+}
+
 .page-section-nav-dock .madrasa-section-nav-list a.is-active,
 .page-section-nav-dock .about-section-nav-list a.is-active,
-.page-section-nav-dock .campaign-section-nav-list a.is-active {
+.page-section-nav-dock .campaign-section-nav-list a.is-active,
+.page-section-nav-dock .programmes-section-nav-list a.is-active,
+.page-section-nav-dock .contact-section-nav-list a.is-active {
 	background: transparent;
 	color: var(--kicc-text-on-dark);
 	box-shadow: none;
@@ -9653,12 +9551,23 @@ body.has-page-section-nav .site-action-dock {
 }
 
 body.has-page-section-nav [id] {
-	scroll-margin-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+	scroll-margin-bottom: calc(
+		var(--page-section-nav-height, 3.75rem) + 1rem +
+			env(safe-area-inset-bottom, 0px)
+	);
+}
+
+@media (min-width: 992px) {
+	.page-section-nav-dock .page-section-nav-track {
+		justify-content: center;
+		flex-wrap: wrap;
+		overflow-x: visible;
+		padding: 0.65rem 1.25rem;
+	}
 }
 
 @media (max-width: 767.98px) {
 	body.has-page-section-nav .site-action-dock {
-		bottom: calc(4.1rem + env(safe-area-inset-bottom, 0px));
 		right: 0.65rem;
 	}
 }
@@ -9933,7 +9842,7 @@ body.has-page-section-nav [id] {
 	padding-top: 3.5rem;
 }
 
-/* Qur'an verse — replaces homepage parallax */
+/* Qur'an verse section (homepage & about page) */
 .home-quran-verse-section {
 	padding: 3.25rem 0;
 	background: linear-gradient(
@@ -9960,14 +9869,6 @@ body.has-page-section-nav [id] {
 	color: #fff;
 	margin-bottom: 1.15rem;
 	text-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
-}
-
-.home-quran-verse-ayah {
-	display: inline-block;
-	margin-right: 0.35rem;
-	font-size: 0.92em;
-	color: var(--kicc-gold-bright);
-	font-weight: 700;
 }
 
 .home-quran-verse-translation {
@@ -10099,10 +10000,6 @@ body.has-page-section-nav [id] {
 }
 
 @media (min-width: 768px) {
-	.site-page-nav-link {
-		min-width: 5.5rem;
-	}
-
 	.page-section-nav-dock .page-section-nav-track {
 		justify-content: center;
 		overflow-x: visible;
@@ -10440,14 +10337,6 @@ body.has-page-section-nav [id] {
 
 /* col-sm-* - 576px */
 @media only screen and (min-width:300px) and (max-width:599px) {
-	.parallax-section .right-box {
-		width: 100%;
-	}
-
-	.parallax-section .right-box img {
-		width: 100%;
-	}
-
 	.gallery-block.grid-gallery .scale-on-hover:hover {
 		transform: scale(1.05);
 		box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.15) !important;
@@ -10463,25 +10352,6 @@ body.has-page-section-nav [id] {
 		top: -50%;
 		transform: rotate(-90deg);
 		display: block;
-	}
-}
-
-/* col-md-* - 768px */
-@media only screen and (min-width:600px) and (max-width:767px) {
-	.parallax-section .right-box {
-		width: 100%;
-	}
-
-	.parallax-section .right-box img {
-		width: 100%;
-	}
-
-}
-
-/* col-lg-* - 992px */
-@media only screen and (min-width:768px) and (max-width:991px) {
-	.parallax-section .right-box {
-		width: 100%;
 	}
 }
 
@@ -10956,10 +10826,6 @@ body.has-page-section-nav [id] {
 	padding-bottom: 4.5rem;
 }
 
-.page-about .about-quote-break .parallax-section {
-	margin-bottom: 0;
-}
-
 .page-about .about-stats-grid {
 	background: #fff;
 	border-radius: 12px;
@@ -11427,6 +11293,404 @@ body.has-page-section-nav [id] {
 		border-bottom: 1px solid rgba(13, 91, 94, 0.08);
 		padding-bottom: 0.75rem;
 		margin-bottom: 0.75rem;
+	}
+}
+
+/* About page — motion & scroll reveals */
+.page-about .about-hero {
+	overflow: hidden;
+}
+
+.page-about .about-hero-pattern {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	opacity: 0.14;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23fff' stroke-width='0.6'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Ccircle cx='40' cy='40' r='12'/%3E%3C/g%3E%3C/svg%3E");
+	background-size: 80px 80px;
+	pointer-events: none;
+	animation: aboutPatternDrift 40s linear infinite;
+}
+
+.page-about .about-hero-glow {
+	position: absolute;
+	bottom: -20%;
+	left: 50%;
+	width: min(90vw, 640px);
+	height: 280px;
+	transform: translateX(-50%);
+	background: radial-gradient(ellipse, rgba(201, 168, 76, 0.35) 0%, transparent 70%);
+	z-index: 2;
+	pointer-events: none;
+	animation: aboutHeroGlow 6s ease-in-out infinite alternate;
+}
+
+@keyframes aboutPatternDrift {
+	to { background-position: 80px 80px; }
+}
+
+@keyframes aboutHeroGlow {
+	from { opacity: 0.5; transform: translateX(-50%) scale(0.95); }
+	to { opacity: 1; transform: translateX(-50%) scale(1.05); }
+}
+
+.page-about .about-hero-enter .container > .row > div > * {
+	opacity: 0;
+}
+
+.page-about .about-hero-enter.is-visible .container > .row > div > .campaign-eyebrow {
+	animation: uxFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+
+.page-about .about-hero-enter.is-visible .container > .row > div > .about-hero-title {
+	animation: uxFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s forwards;
+}
+
+.page-about .about-hero-enter.is-visible .container > .row > div > .about-hero-lead {
+	animation: uxFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+
+.page-about .about-hero-enter.is-visible .container > .row > div > .about-scroll-cue {
+	animation: uxFadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.32s forwards,
+		about-scroll-bob 2s ease-in-out 0.9s infinite;
+}
+
+.page-about .about-stat-reveal {
+	opacity: 0;
+	transform: translateY(24px) scale(0.96);
+}
+
+.page-about .about-stats-enter.is-visible .about-stat-reveal {
+	animation: aboutStatPop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--stat-i, 0) * 0.1s + 0.15s);
+}
+
+@keyframes aboutStatPop {
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.page-about .about-stat-reveal.is-counted .about-stat-icon {
+	animation: aboutIconPulse 0.5s ease 0.1s;
+}
+
+@keyframes aboutIconPulse {
+	0%, 100% { transform: scale(1); }
+	50% { transform: scale(1.15); }
+}
+
+.page-about .about-reveal {
+	opacity: 0;
+	transform: translateY(28px);
+}
+
+.page-about .about-reveal--left {
+	transform: translateX(-32px);
+}
+
+.page-about .about-reveal--right {
+	transform: translateX(32px);
+}
+
+.page-about .about-reveal--scale {
+	transform: scale(0.94);
+}
+
+.page-about .about-reveal.is-visible {
+	animation: uxFadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--reveal-i, 0) * 0.08s);
+}
+
+.page-about .about-reveal--left.is-visible {
+	animation-name: aboutRevealLeft;
+}
+
+.page-about .about-reveal--right.is-visible {
+	animation-name: aboutRevealRight;
+}
+
+.page-about .about-reveal--scale.is-visible {
+	animation-name: aboutRevealScale;
+}
+
+@keyframes aboutRevealLeft {
+	from { opacity: 0; transform: translateX(-32px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes aboutRevealRight {
+	from { opacity: 0; transform: translateX(32px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes aboutRevealScale {
+	from { opacity: 0; transform: scale(0.94); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+.page-about .about-bismillah-reveal {
+	opacity: 0;
+	transform: scale(0.85);
+}
+
+.page-about .about-reveal.is-visible .about-bismillah-reveal {
+	animation: aboutBismillahIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes aboutBismillahIn {
+	to { opacity: 1; transform: scale(1); }
+}
+
+.page-about .about-image-reveal {
+	overflow: hidden;
+	border-radius: 12px;
+}
+
+.page-about .about-image-reveal .about-story-image,
+.page-about .about-image-reveal .home-welcome-image {
+	transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-about .about-image-reveal.is-visible .about-story-image,
+.page-about .about-image-reveal.is-visible .home-welcome-image {
+	animation: aboutImageKenBurns 8s ease-out forwards;
+}
+
+@keyframes aboutImageKenBurns {
+	from { transform: scale(1.08); }
+	to { transform: scale(1); }
+}
+
+.page-about .about-vision-card {
+	overflow: hidden;
+}
+
+.page-about .about-vision-card-glow {
+	position: absolute;
+	inset: -50%;
+	background: conic-gradient(
+		from 0deg,
+		transparent,
+		rgba(13, 91, 94, 0.06),
+		transparent,
+		rgba(201, 168, 76, 0.1),
+		transparent
+	);
+	opacity: 0;
+	transition: opacity 0.4s ease;
+	animation: aboutVisionGlowSpin 10s linear infinite;
+	pointer-events: none;
+}
+
+.page-about .about-vision-card:hover .about-vision-card-glow {
+	opacity: 1;
+}
+
+@keyframes aboutVisionGlowSpin {
+	to { transform: rotate(360deg); }
+}
+
+.page-about .about-vision-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 14px 40px rgba(13, 91, 94, 0.14);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page-about .about-quran-verse {
+	opacity: 0;
+	transform: translateY(20px);
+}
+
+.page-about .about-quote-enter.is-visible .about-quran-verse {
+	animation: uxFadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.page-about .about-milestones-animate .about-milestones-progress {
+	position: absolute;
+	top: 1.15rem;
+	left: 10%;
+	height: 2px;
+	width: 0;
+	background: linear-gradient(to right, #0d5b5e, #c9a84c);
+	z-index: 0;
+	transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-about .about-milestones-animate.is-visible .about-milestones-progress {
+	width: 80%;
+}
+
+.page-about .about-milestone-reveal {
+	opacity: 0;
+	transform: translateY(16px) scale(0.92);
+}
+
+.page-about .about-milestones-animate.is-visible .about-milestone-reveal {
+	animation: aboutMilestoneIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--milestone-i, 0) * 0.12s + 0.3s);
+}
+
+@keyframes aboutMilestoneIn {
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.page-about .about-milestone-current .about-milestone-year {
+	animation: aboutCurrentPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes aboutCurrentPulse {
+	0%, 100% { box-shadow: 0 4px 16px rgba(13, 91, 94, 0.28); }
+	50% { box-shadow: 0 6px 24px rgba(201, 168, 76, 0.45); }
+}
+
+.page-about .about-service-reveal {
+	opacity: 0;
+	transform: translateY(28px);
+}
+
+.page-about .about-service-reveal.is-visible {
+	animation: uxFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--service-i, 0) * 0.1s);
+}
+
+.page-about .about-service-card {
+	position: relative;
+	overflow: hidden;
+}
+
+.page-about .about-service-card-glow {
+	position: absolute;
+	inset: -50%;
+	background: conic-gradient(
+		from 0deg,
+		transparent,
+		rgba(13, 91, 94, 0.07),
+		transparent,
+		rgba(212, 168, 83, 0.1),
+		transparent
+	);
+	opacity: 0;
+	transition: opacity 0.35s ease;
+	animation: aboutServiceGlowSpin 9s linear infinite;
+	pointer-events: none;
+}
+
+.page-about .about-service-link:hover .about-service-card-glow {
+	opacity: 1;
+}
+
+@keyframes aboutServiceGlowSpin {
+	to { transform: rotate(360deg); }
+}
+
+.page-about .about-service-link:hover .about-service-card i {
+	transform: scale(1.12);
+	color: #0d5b5e;
+}
+
+.page-about .about-service-card i {
+	transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.page-about .about-team-reveal {
+	opacity: 0;
+	transform: translateY(24px);
+}
+
+.page-about .about-team-reveal.is-visible {
+	animation: aboutTeamCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--team-i, 0) * 0.08s);
+}
+
+@keyframes aboutTeamCardIn {
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.page-about .about-team-reveal.is-visible .about-team-photo {
+	animation: aboutPhotoRing 0.5s ease 0.2s;
+}
+
+@keyframes aboutPhotoRing {
+	0% { box-shadow: 0 0 0 0 rgba(13, 91, 94, 0.4); }
+	70% { box-shadow: 0 0 0 8px rgba(13, 91, 94, 0); }
+	100% { box-shadow: 0 0 0 0 rgba(13, 91, 94, 0); }
+}
+
+.page-about .about-team-card:hover .about-team-photo {
+	transform: scale(1.05);
+	transition: transform 0.3s ease;
+}
+
+.page-about .about-visit-reveal {
+	opacity: 0;
+	transform: translateY(24px);
+}
+
+.page-about .about-visit-reveal.is-visible {
+	animation: uxFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+	animation-delay: calc(var(--visit-i, 0) * 0.12s);
+}
+
+.page-about .about-visit-card:hover .about-visit-icon {
+	transform: scale(1.1) rotate(-3deg);
+	background: rgba(13, 91, 94, 0.15);
+}
+
+.page-about .about-visit-icon {
+	transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.page-about .about-tech-banner {
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page-about .about-tech-banner:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 12px 36px rgba(13, 91, 94, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-about .about-hero-pattern,
+	.page-about .about-hero-glow,
+	.page-about .about-hero-enter.is-visible .container > .row > div > .about-scroll-cue,
+	.page-about .about-milestone-current .about-milestone-year,
+	.page-about .about-vision-card-glow,
+	.page-about .about-service-card-glow {
+		animation: none;
+	}
+
+	.page-about .about-hero-enter .container > .row > div > *,
+	.page-about .about-hero-enter.is-visible .container > .row > div > *,
+	.page-about .about-stat-reveal,
+	.page-about .about-stats-enter.is-visible .about-stat-reveal,
+	.page-about .about-reveal,
+	.page-about .about-reveal.is-visible,
+	.page-about .about-milestone-reveal,
+	.page-about .about-milestones-animate.is-visible .about-milestone-reveal,
+	.page-about .about-service-reveal,
+	.page-about .about-service-reveal.is-visible,
+	.page-about .about-team-reveal,
+	.page-about .about-team-reveal.is-visible,
+	.page-about .about-visit-reveal,
+	.page-about .about-visit-reveal.is-visible,
+	.page-about .about-quran-verse,
+	.page-about .about-quote-enter.is-visible .about-quran-verse {
+		opacity: 1;
+		transform: none;
+		animation: none;
+	}
+
+	.page-about .about-milestones-animate .about-milestones-progress {
+		width: 80%;
+		transition: none;
+	}
+
+	.page-about .about-image-reveal.is-visible .about-story-image,
+	.page-about .about-image-reveal.is-visible .home-welcome-image {
+		animation: none;
+		transform: none;
 	}
 }
 /* ABOUT PAGE END */
