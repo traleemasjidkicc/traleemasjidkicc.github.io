@@ -435,6 +435,39 @@
   let cachedTomorrowPrayerDayData = null;
   let prayerHighlightTimer = null;
 
+  const shouldAutoScrollPrayerStrip = () => {
+    if (!window.matchMedia("(max-width: 767.98px)").matches) return false;
+    if (!isHomePage()) return false;
+
+    var panel = document.querySelector(".home-hero-salah-panel");
+    if (!panel) return false;
+
+    var rect = panel.getBoundingClientRect();
+    return rect.top < window.innerHeight * 0.55 && rect.bottom > 48;
+  };
+
+  const centerPrayerCardInStrip = (cardWrap, behavior) => {
+    if (!cardWrap) return;
+
+    var strip = cardWrap.closest(".home-hero-prayer-scroll");
+    if (!strip || strip.scrollWidth <= strip.clientWidth + 2) return;
+
+    var stripRect = strip.getBoundingClientRect();
+    var cardRect = cardWrap.getBoundingClientRect();
+    var targetScroll =
+      strip.scrollLeft +
+      (cardRect.left - stripRect.left) -
+      strip.clientWidth / 2 +
+      cardRect.width / 2;
+    var maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
+    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+    strip.scrollTo({
+      left: targetScroll,
+      behavior: behavior || "auto",
+    });
+  };
+
   const getDublinDate = () => {
     return new Date(
       new Date().toLocaleString("en-US", { timeZone: "Europe/Dublin" }),
@@ -609,16 +642,12 @@
 
       statusEl.hidden = false;
 
-      if (window.matchMedia("(max-width: 767.98px)").matches) {
+      if (shouldAutoScrollPrayerStrip()) {
         var activeCard = document.querySelector(
           ".home-hero-prayer-card-wrap.is-current-prayer, .home-hero-prayer-card-wrap.is-next-prayer",
         );
         if (activeCard) {
-          activeCard.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "center",
-          });
+          centerPrayerCardInStrip(activeCard, "smooth");
         }
       }
     }
@@ -1313,6 +1342,22 @@
       duration: "Varies",
       purpose: "Interactive map on the Contact page (Google may set its own cookies).",
     },
+    {
+      category: "thirdParty",
+      type: "Third-party",
+      name: "SumUp payment widget (gateway.sumup.com)",
+      duration: "Varies",
+      purpose:
+        "Secure card checkout on the homepage. Loads only when you start a donation. SumUp may set cookies and use local storage for fraud prevention, checkout sessions, and performance.",
+    },
+    {
+      category: "thirdParty",
+      type: "Cookie",
+      name: "SumUp cookies (sumup.com)",
+      duration: "Session to 2 years",
+      purpose:
+        "Set by SumUp when you use the card payment form (security, checkout functionality, and analytics). We cannot remove these from your browser; see SumUp\u2019s cookie policy.",
+    },
   ];
   const CONSENT_CATEGORIES = [
     {
@@ -1341,9 +1386,10 @@
       label: "Third-party embeds",
       locked: false,
       description:
-        "Embedded Mixlr live stream and Google Maps on the Contact page. These services may set their own cookies.",
+        "Embedded Mixlr live stream, Google Maps on Contact, and SumUp card payments on the homepage. These services may set their own cookies.",
     },
   ];
+  const kiccSumUpConsentHandlers = { teardown: null, refresh: null };
   const ANNOUNCEMENTS_API_URL =
     "https://getannouncements-rds3nxm6za-ew.a.run.app";
   let postCookieConsentDone = false;
@@ -1351,6 +1397,7 @@
   let siteAnnouncementsBound = false;
   let lastShownBreakingIdentity = "";
   let cookieRegistryRendered = false;
+  let cookiePrefsSavedTimer = null;
 
   const hasCookieConsent = () => hasConsentChoice();
 
@@ -1364,8 +1411,6 @@
     };
 
     if (previous.functional && !next.functional) clearFunctionalData();
-    if (previous.analytics && !next.analytics) clearAnalyticsData();
-    if (previous.thirdParty && !next.thirdParty) removeConsentEmbeds();
 
     Cookies.set(COOKIE_CONSENT_KEY, JSON.stringify({
       functional: next.functional,
@@ -1533,6 +1578,13 @@
     });
   };
 
+  const clearThirdPartyData = () => {
+    removeConsentEmbeds();
+    if (typeof kiccSumUpConsentHandlers.teardown === "function") {
+      kiccSumUpConsentHandlers.teardown();
+    }
+  };
+
   const loadConsentEmbeds = () => {
     if (!canUseThirdPartyEmbeds()) return;
     document.querySelectorAll("[data-consent-embed]").forEach(injectConsentEmbed);
@@ -1555,14 +1607,20 @@
   const applyConsentSideEffects = (prefs) => {
     if (!hasConsentChoice()) {
       clearAnalyticsData();
-      removeConsentEmbeds();
+      clearThirdPartyData();
       return;
     }
     const state = prefs || getConsentPrefs();
     if (state.analytics) loadGoogleAnalytics();
     else clearAnalyticsData();
-    if (state.thirdParty) loadConsentEmbeds();
-    else removeConsentEmbeds();
+    if (state.thirdParty) {
+      loadConsentEmbeds();
+      if (typeof kiccSumUpConsentHandlers.refresh === "function") {
+        kiccSumUpConsentHandlers.refresh();
+      }
+    } else {
+      clearThirdPartyData();
+    }
   };
 
   const renderCookieRegistry = () => {
@@ -1635,6 +1693,27 @@
       return;
     }
     el.textContent = describeConsentPrefs(getConsentPrefs());
+  };
+
+  const showCookiePrefsSavedFeedback = () => {
+    const el = document.getElementById("cookie-prefs-status");
+    if (!el || !hasConsentChoice()) return;
+    el.textContent = describeConsentPrefs(getConsentPrefs()) + " \u00b7 Saved";
+    if (cookiePrefsSavedTimer) window.clearTimeout(cookiePrefsSavedTimer);
+    cookiePrefsSavedTimer = window.setTimeout(function () {
+      cookiePrefsSavedTimer = null;
+      updateCookiePrefsStatus();
+    }, 2200);
+  };
+
+  const handleConsentToggleAutoSave = () => {
+    const prefs = readConsentToggles("cookie-prefs");
+    if (!hasConsentChoice()) {
+      finalizeConsentChoice(prefs);
+      return;
+    }
+    saveConsentPrefs(prefs);
+    showCookiePrefsSavedFeedback();
   };
 
   const isConsentGateActive = () =>
@@ -1782,14 +1861,22 @@
   const acceptNecessaryOnlyConsent = () =>
     finalizeConsentChoice(Object.assign({}, CONSENT_DEFAULTS));
 
-  const savePreferencesConsent = () =>
-    finalizeConsentChoice(readConsentToggles("cookie-prefs"));
-
   const clearOptionalStoredData = () => {
     clearFunctionalData();
     clearAnalyticsData();
-    removeConsentEmbeds();
+    clearThirdPartyData();
     saveConsentPrefs(Object.assign({}, CONSENT_DEFAULTS));
+    showCookiePrefsSavedFeedback();
+  };
+
+  const bindConsentToggleAutoSave = () => {
+    CONSENT_CATEGORIES.forEach(function (cat) {
+      if (cat.locked) return;
+      const input = document.getElementById("cookie-prefs-toggle-" + cat.id);
+      if (!input || input.dataset.boundAutoSave) return;
+      input.dataset.boundAutoSave = "true";
+      input.addEventListener("change", handleConsentToggleAutoSave);
+    });
   };
 
   const initSignUpModal = () => {
@@ -1855,8 +1942,8 @@
     bindCookieButton("cookie-banner-settings", showCookiePreferences);
     bindCookieButton("cookie-prefs-accept", acceptAllConsent);
     bindCookieButton("cookie-prefs-necessary", acceptNecessaryOnlyConsent);
-    bindCookieButton("cookie-prefs-save", savePreferencesConsent);
     bindCookieButton("cookie-prefs-clear", clearOptionalStoredData);
+    bindConsentToggleAutoSave();
 
     const openLink = document.getElementById("cookie-prefs-open");
     if (openLink && !openLink.dataset.bound) {
@@ -3011,6 +3098,213 @@
     Sun: "Sunday",
   };
 
+  const getTomorrowWeekdayKey = (todayKey) => {
+    var index = WEEKDAY_ORDER.indexOf(todayKey);
+    if (index < 0) return null;
+    return WEEKDAY_ORDER[(index + 1) % WEEKDAY_ORDER.length];
+  };
+
+  const PROGRAMME_WEEK_REPEAT_COUNT = 5;
+  const PROGRAMME_WEEK_PRIMARY_REPEAT = 2;
+
+  var programmeWeekScrollCentered = false;
+  var programmeWeekScrollResizeTimer = null;
+  var programmeWeekScrollJumping = false;
+  var programmeWeekScrollNormalizeTimer = null;
+
+  const getProgrammeWeekScrollWrap = () => {
+    return document.querySelector("[data-programmes-week-scroll]");
+  };
+
+  const getProgrammeDayColumn = (dayKey, weekRepeat) => {
+    var wrap = getProgrammeWeekScrollWrap();
+    if (!wrap || !dayKey) return null;
+    var repeat =
+      weekRepeat != null ? weekRepeat : PROGRAMME_WEEK_PRIMARY_REPEAT;
+    return wrap.querySelector(
+      '.programmes-day-col[data-day="' +
+        dayKey +
+        '"][data-week-repeat="' +
+        repeat +
+        '"]',
+    );
+  };
+
+  const getProgrammeWeekLoopWidth = () => {
+    var wrap = getProgrammeWeekScrollWrap();
+    if (!wrap) return 0;
+
+    var first = wrap.querySelector(
+      '.programmes-day-col[data-week-repeat="0"][data-day="Mon"]',
+    );
+    var second = wrap.querySelector(
+      '.programmes-day-col[data-week-repeat="1"][data-day="Mon"]',
+    );
+    if (!first || !second) return 0;
+    return second.offsetLeft - first.offsetLeft;
+  };
+
+  const getVisibleProgrammeDayInfo = () => {
+    var wrap = getProgrammeWeekScrollWrap();
+    if (!wrap) return null;
+
+    var columns = wrap.querySelectorAll(".programmes-day-col");
+    if (!columns.length) return null;
+
+    var wrapCenter = wrap.scrollLeft + wrap.clientWidth / 2;
+    var closestCol = null;
+    var closestDistance = Infinity;
+
+    columns.forEach(function (col) {
+      var colCenter = col.offsetLeft + col.offsetWidth / 2;
+      var distance = Math.abs(colCenter - wrapCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestCol = col;
+      }
+    });
+
+    if (!closestCol) return null;
+
+    return {
+      day: closestCol.getAttribute("data-day"),
+      repeat: Number(closestCol.getAttribute("data-week-repeat")),
+    };
+  };
+
+  const scheduleProgrammeWeekNormalize = () => {
+    if (programmeWeekScrollNormalizeTimer) {
+      clearTimeout(programmeWeekScrollNormalizeTimer);
+    }
+    programmeWeekScrollNormalizeTimer = setTimeout(
+      normalizeProgrammeWeekScroll,
+      90,
+    );
+  };
+
+  const normalizeProgrammeWeekScroll = () => {
+    if (programmeWeekScrollJumping) return;
+
+    var wrap = getProgrammeWeekScrollWrap();
+    var loopWidth = getProgrammeWeekLoopWidth();
+    var info = getVisibleProgrammeDayInfo();
+    if (!wrap || !loopWidth || !info || Number.isNaN(info.repeat)) return;
+
+    var jumpBy = 0;
+    if (info.repeat <= 0) {
+      jumpBy = loopWidth * 2;
+    } else if (info.repeat >= PROGRAMME_WEEK_REPEAT_COUNT - 1) {
+      jumpBy = -loopWidth * 2;
+    }
+
+    if (!jumpBy) return;
+
+    programmeWeekScrollJumping = true;
+    wrap.scrollLeft += jumpBy;
+    requestAnimationFrame(function () {
+      programmeWeekScrollJumping = false;
+    });
+  };
+
+  const centerProgrammeWeekOnDay = (dayKey, behavior) => {
+    var wrap = getProgrammeWeekScrollWrap();
+    var col = getProgrammeDayColumn(dayKey);
+    if (!wrap || !col) return;
+
+    var targetScroll =
+      col.offsetLeft - wrap.clientWidth / 2 + col.offsetWidth / 2;
+    var maxScroll = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+    wrap.scrollTo({
+      left: targetScroll,
+      behavior: behavior || "smooth",
+    });
+  };
+
+  const getVisibleProgrammeDayKey = () => {
+    var info = getVisibleProgrammeDayInfo();
+    return info ? info.day : null;
+  };
+
+  const scrollProgrammeWeekBy = (direction) => {
+    var currentKey = getVisibleProgrammeDayKey();
+    if (!currentKey) return;
+
+    var index = WEEKDAY_ORDER.indexOf(currentKey);
+    if (index < 0) return;
+
+    var nextIndex =
+      direction < 0
+        ? (index - 1 + WEEKDAY_ORDER.length) % WEEKDAY_ORDER.length
+        : (index + 1) % WEEKDAY_ORDER.length;
+
+    centerProgrammeWeekOnDay(WEEKDAY_ORDER[nextIndex], "smooth");
+  };
+
+  const initProgrammeWeekScroll = (todayKey) => {
+    var wrap = getProgrammeWeekScrollWrap();
+    var toolbar = document.querySelector("[data-programmes-week-toolbar]");
+    if (!wrap || !todayKey) return;
+
+    if (toolbar) {
+      toolbar.hidden = false;
+    }
+
+    var centerToday = function (behavior) {
+      centerProgrammeWeekOnDay(todayKey, behavior);
+    };
+
+    if (!programmeWeekScrollCentered) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          centerToday("auto");
+          normalizeProgrammeWeekScroll();
+        });
+      });
+      programmeWeekScrollCentered = true;
+    } else {
+      centerToday("auto");
+      normalizeProgrammeWeekScroll();
+    }
+
+    if (wrap.dataset.programmesScrollInit === "true") return;
+    wrap.dataset.programmesScrollInit = "true";
+
+    var todayBtn = document.querySelector("[data-programmes-scroll-today]");
+    var prevBtn = document.querySelector("[data-programmes-scroll-prev]");
+    var nextBtn = document.querySelector("[data-programmes-scroll-next]");
+
+    if (todayBtn) {
+      todayBtn.addEventListener("click", function () {
+        centerToday("smooth");
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        scrollProgrammeWeekBy(-1);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        scrollProgrammeWeekBy(1);
+      });
+    }
+
+    wrap.addEventListener("scroll", scheduleProgrammeWeekNormalize, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", function () {
+      if (programmeWeekScrollResizeTimer) {
+        clearTimeout(programmeWeekScrollResizeTimer);
+      }
+      programmeWeekScrollResizeTimer = setTimeout(function () {
+        centerToday("auto");
+      }, 150);
+    });
+  };
+
   const programmeSlug = (name) => {
     if (!name) return "";
     return name
@@ -3187,9 +3481,12 @@
     return programmeSlug(name);
   };
 
-  const createScheduleItem = (p) => {
+  const createScheduleItem = (p, animationDelay) => {
     var item = document.createElement("li");
-    item.className = "programmes-schedule-item";
+    item.className = "programmes-schedule-item programmes-schedule-item-animate";
+    if (typeof animationDelay === "number") {
+      item.style.animationDelay = animationDelay + "s";
+    }
 
     var time = document.createElement("span");
     time.className = "programmes-schedule-item-time";
@@ -3213,6 +3510,73 @@
     }
 
     return item;
+  };
+
+  const renderOngoingProgrammes = (programmes) => {
+    var container = document.getElementById("programmes-ongoing");
+    if (!container) return;
+
+    container.innerHTML = "";
+    container.hidden = true;
+    container.classList.remove("programmes-ongoing-block-animate");
+
+    if (!Array.isArray(programmes) || programmes.length === 0) return;
+
+    container.hidden = false;
+    container.classList.add("programmes-ongoing-block-animate");
+
+    var header = document.createElement("header");
+    header.className = "programmes-ongoing-header";
+
+    var title = document.createElement("h3");
+    title.id = "programmes-ongoing-heading";
+    title.className = "programmes-ongoing-title";
+    title.innerHTML =
+      '<i class="fas fa-infinity" aria-hidden="true"></i> Ongoing programmes';
+
+    var lead = document.createElement("p");
+    lead.className = "programmes-ongoing-lead";
+    lead.textContent =
+      "Regular activities without a fixed weekly slot — check the notice board or ask at reception.";
+
+    header.appendChild(title);
+    header.appendChild(lead);
+
+    var grid = document.createElement("div");
+    grid.className = "programmes-ongoing-grid";
+
+    programmes.forEach(function (p, index) {
+      var card = document.createElement("article");
+      card.className = "programmes-ongoing-card programmes-ongoing-card-animate";
+      card.style.animationDelay = 0.08 + index * 0.07 + "s";
+
+      var anchorId = getProgrammeAnchorId(p);
+
+      var name = document.createElement("h4");
+      name.className = "programmes-ongoing-card-name";
+      name.textContent = p.name || "";
+
+      var time = document.createElement("p");
+      time.className = "programmes-ongoing-card-time";
+      time.textContent = getProgrammeTimeLabel(p);
+
+      card.appendChild(name);
+      card.appendChild(time);
+
+      if (anchorId) {
+        var link = document.createElement("a");
+        link.href = "#" + anchorId;
+        link.className = "programmes-ongoing-card-link";
+        link.innerHTML =
+          'Programme details <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+        card.appendChild(link);
+      }
+
+      grid.appendChild(card);
+    });
+
+    container.appendChild(header);
+    container.appendChild(grid);
   };
 
   const renderUpcomingEvents = (events) => {
@@ -3296,6 +3660,90 @@
     container.appendChild(list);
   };
 
+  const appendProgrammeDayColumn = (
+    parent,
+    day,
+    dayIndex,
+    weekRepeat,
+    options,
+  ) => {
+    var todayKey = options.todayKey;
+    var tomorrowKey = options.tomorrowKey;
+    var byDay = options.byDay;
+    var isPrimary = weekRepeat === PROGRAMME_WEEK_PRIMARY_REPEAT;
+
+    var col = document.createElement("div");
+    col.className = "programmes-day-col";
+    col.setAttribute("data-day", day);
+    col.setAttribute("data-week-repeat", String(weekRepeat));
+
+    if (isPrimary) {
+      col.classList.add("programmes-day-col-animate");
+      col.style.animationDelay = dayIndex * 0.05 + "s";
+
+      if (day === todayKey) {
+        col.classList.add("is-today");
+      } else if (day === tomorrowKey) {
+        col.classList.add("is-tomorrow");
+      }
+
+      if (day === todayKey) {
+        var todayBadge = document.createElement("span");
+        todayBadge.className = "programmes-day-badge programmes-day-badge-today";
+        todayBadge.textContent = "Today";
+        col.appendChild(todayBadge);
+      } else if (day === tomorrowKey) {
+        var tomorrowBadge = document.createElement("span");
+        tomorrowBadge.className =
+          "programmes-day-badge programmes-day-badge-tomorrow";
+        tomorrowBadge.textContent = "Tomorrow";
+        col.appendChild(tomorrowBadge);
+      }
+    } else {
+      col.classList.add("programmes-day-col-clone");
+    }
+
+    var heading = document.createElement("h3");
+    heading.className = "programmes-day-label";
+
+    var abbr = document.createElement("span");
+    abbr.className = "programmes-day-abbr";
+    abbr.textContent = day;
+
+    var full = document.createElement("span");
+    full.className = "programmes-day-full";
+    full.textContent = WEEKDAY_LABELS[day] || day;
+
+    heading.appendChild(abbr);
+    heading.appendChild(full);
+    col.appendChild(heading);
+
+    var dayProgrammes = byDay[day] || [];
+    var listEl = document.createElement("ul");
+    listEl.className = "programmes-day-list list-unstyled mb-0";
+
+    if (dayProgrammes.length === 0) {
+      var empty = document.createElement("li");
+      empty.className = "programmes-day-empty";
+      empty.textContent = "—";
+      listEl.appendChild(empty);
+    } else {
+      dayProgrammes.forEach(function (p, itemIndex) {
+        if (isPrimary) {
+          listEl.appendChild(
+            createScheduleItem(p, dayIndex * 0.04 + itemIndex * 0.06 + 0.15),
+          );
+        } else {
+          listEl.appendChild(createScheduleItem(p));
+        }
+      });
+    }
+
+    col.appendChild(listEl);
+    parent.appendChild(col);
+    return col;
+  };
+
   const renderProgrammeSchedule = (programmes) => {
     var container = document.getElementById("programmes-weekly-schedule");
     var todayBanner = document.getElementById("programmes-today-banner");
@@ -3303,10 +3751,12 @@
 
     container.innerHTML = "";
     renderUpcomingEvents([]);
+    renderOngoingProgrammes([]);
 
     if (todayBanner) {
       todayBanner.hidden = true;
       todayBanner.innerHTML = "";
+      todayBanner.classList.remove("programmes-today-banner-animate");
     }
 
     var fallback = [
@@ -3394,6 +3844,7 @@
 
     if (todayBanner && todayProgrammes.length > 0) {
       todayBanner.hidden = false;
+      todayBanner.classList.add("programmes-today-banner-animate");
 
       var bannerLabel = document.createElement("div");
       bannerLabel.className = "programmes-today-banner-label";
@@ -3404,9 +3855,10 @@
       var bannerList = document.createElement("div");
       bannerList.className = "programmes-today-banner-chips";
 
-      todayProgrammes.forEach(function (p) {
+      todayProgrammes.forEach(function (p, chipIndex) {
         var chip = document.createElement("article");
-        chip.className = "programmes-today-chip";
+        chip.className = "programmes-today-chip programmes-today-chip-animate";
+        chip.style.animationDelay = 0.12 + chipIndex * 0.08 + "s";
 
         var time = document.createElement("span");
         time.className = "programmes-today-chip-time";
@@ -3427,87 +3879,33 @@
       todayBanner.appendChild(bannerList);
     }
 
+    var tomorrowKey = getTomorrowWeekdayKey(todayKey);
+
     var columns = document.createElement("div");
     columns.className = "programmes-day-columns";
 
-    WEEKDAY_ORDER.forEach(function (day) {
-      var col = document.createElement("div");
-      col.className = "programmes-day-col";
-      if (day === todayKey) {
-        col.classList.add("is-today");
-      }
+    var columnOptions = {
+      todayKey: todayKey,
+      tomorrowKey: tomorrowKey,
+      byDay: byDay,
+    };
 
-      var heading = document.createElement("h3");
-      heading.className = "programmes-day-label";
-
-      var abbr = document.createElement("span");
-      abbr.className = "programmes-day-abbr";
-      abbr.textContent = day;
-
-      var full = document.createElement("span");
-      full.className = "programmes-day-full";
-      full.textContent = WEEKDAY_LABELS[day] || day;
-
-      heading.appendChild(abbr);
-      heading.appendChild(full);
-      col.appendChild(heading);
-
-      var dayProgrammes = byDay[day] || [];
-      var listEl = document.createElement("ul");
-      listEl.className = "programmes-day-list list-unstyled mb-0";
-
-      if (dayProgrammes.length === 0) {
-        var empty = document.createElement("li");
-        empty.className = "programmes-day-empty";
-        empty.textContent = "—";
-        listEl.appendChild(empty);
-      } else {
-        dayProgrammes.forEach(function (p) {
-          listEl.appendChild(createScheduleItem(p));
-        });
-      }
-
-      col.appendChild(listEl);
-      columns.appendChild(col);
-    });
+    for (var weekRepeat = 0; weekRepeat < PROGRAMME_WEEK_REPEAT_COUNT; weekRepeat++) {
+      WEEKDAY_ORDER.forEach(function (day, dayIndex) {
+        appendProgrammeDayColumn(
+          columns,
+          day,
+          dayIndex,
+          weekRepeat,
+          columnOptions,
+        );
+      });
+    }
 
     container.appendChild(columns);
 
-    if (unscheduled.length > 0) {
-      var ongoing = document.createElement("div");
-      ongoing.className = "programmes-unscheduled";
-
-      var ongoingTitle = document.createElement("h3");
-      ongoingTitle.className = "programmes-unscheduled-title";
-      ongoingTitle.textContent = "Ongoing programmes";
-
-      var ongoingList = document.createElement("ul");
-      ongoingList.className = "programmes-unscheduled-list list-unstyled mb-0";
-
-      unscheduled.forEach(function (p) {
-        var li = document.createElement("li");
-        li.className = "programmes-unscheduled-item";
-
-        var anchorId = getProgrammeAnchorId(p);
-        if (anchorId) {
-          li.id = anchorId;
-        }
-
-        var name = document.createElement("strong");
-        name.textContent = p.name || "";
-
-        var time = document.createElement("span");
-        time.textContent = getProgrammeTimeLabel(p);
-
-        li.appendChild(name);
-        li.appendChild(time);
-        ongoingList.appendChild(li);
-      });
-
-      ongoing.appendChild(ongoingTitle);
-      ongoing.appendChild(ongoingList);
-      container.appendChild(ongoing);
-    }
+    renderOngoingProgrammes(unscheduled);
+    initProgrammeWeekScroll(todayKey);
 
     renderUpcomingEvents(upcomingEvents);
   };
@@ -4273,7 +4671,7 @@
       '<span class="site-action-btn-label">WhatsApp</span>';
 
     const donateLink = document.createElement("a");
-    donateLink.href = "https://kicc.page.link/gfm";
+    donateLink.href = GOFUNDME_DONATE_URL;
     donateLink.target = "_blank";
     donateLink.rel = "noopener noreferrer";
     donateLink.className = "site-action-btn site-action-btn--donate";
@@ -4313,6 +4711,9 @@
     });
   };
 
+  const GOFUNDME_DONATE_URL =
+    "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
+  const SUMUP_DEVELOPER_WHATSAPP = "353833114171";
   const CAMPAIGNS_API_URL =
     "https://getcampaigns-rds3nxm6za-ew.a.run.app";
   const SUMUP_CHECKOUT_API_URL =
@@ -4322,7 +4723,7 @@
   const SUMUP_MIN_AMOUNT = 1;
   const SUMUP_MAX_AMOUNT = 5000;
   const SUMUP_SANDBOX_MODE = true;
-  const SUMUP_SUCCESS_RESET_MS = 15000;
+  const SUMUP_SUCCESS_RESET_MS = 60000;
   const SUMUP_WIDGET_CURRENCIES = [
     { code: "EUR", label: "Euro", locale: "en-IE", country: "IE" },
     { code: "GBP", label: "British pound", locale: "en-GB", country: "GB" },
@@ -4499,6 +4900,177 @@
     );
   };
 
+  const CONTACT_MASJID_PLUS_CODE = "7866+QX Tralee, County Kerry";
+  const CONTACT_DIRECTIONS_URL =
+    "https://www.google.com/maps/dir/?api=1&destination=" +
+    encodeURIComponent(CONTACT_MASJID_PLUS_CODE) +
+    "&travelmode=driving";
+
+  const initContactPageMotion = () => {
+    if (!isContactPage()) return;
+
+    const hero = document.querySelector(".contact-hero-enter");
+    if (hero) {
+      requestAnimationFrame(function () {
+        hero.classList.add("is-visible");
+      });
+    }
+
+    const revealNodes = document.querySelectorAll(".contact-reveal");
+    if (!revealNodes.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      revealNodes.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -5% 0px" }
+    );
+
+    revealNodes.forEach(function (el) {
+      revealObserver.observe(el);
+    });
+  };
+
+  const initContactDirections = () => {
+    if (!isContactPage()) return;
+
+    document.querySelectorAll("[data-contact-directions]").forEach(function (btn) {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", function () {
+        window.open(CONTACT_DIRECTIONS_URL, "_blank", "noopener,noreferrer");
+      });
+    });
+  };
+
+  const CONTACT_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  const isValidContactEmail = (value) => {
+    if (!value || value.length > 254) return false;
+    const at = value.indexOf("@");
+    if (at <= 0 || at !== value.lastIndexOf("@")) return false;
+    if (value.slice(0, at).length > 64) return false;
+    return CONTACT_EMAIL_PATTERN.test(value);
+  };
+
+  const initContactFormEnhancements = () => {
+    if (!isContactPage()) return;
+
+    const form = document.getElementById("contact-form-el");
+    if (!form || form.dataset.bound) return;
+    form.dataset.bound = "true";
+
+    const nameInput = document.getElementById("contact-name");
+    const emailInput = document.getElementById("contact-email");
+    const messageInput = document.getElementById("contact-message");
+    const messageCount = document.getElementById("contact-message-count");
+
+    const fields = [
+      {
+        input: nameInput,
+        errorEl: document.getElementById("contact-name-error"),
+        validate: function () {
+          const value = (nameInput.value || "").trim();
+          if (!value) return "Please enter your name.";
+          if (value.length < 3) {
+            return "Name must be at least 3 characters.";
+          }
+          return "";
+        },
+      },
+      {
+        input: emailInput,
+        errorEl: document.getElementById("contact-email-error"),
+        validate: function () {
+          const value = (emailInput.value || "").trim();
+          if (!value) return "Please enter your email address.";
+          if (!isValidContactEmail(value)) {
+            return "Please enter a valid email address (for example name@example.com).";
+          }
+          return "";
+        },
+      },
+      {
+        input: messageInput,
+        errorEl: document.getElementById("contact-message-error"),
+        validate: function () {
+          const value = (messageInput.value || "").trim();
+          if (!value) return "Please enter your message.";
+          if (value.length < 20) {
+            return "Message must be at least 20 characters (" +
+              value.length + " so far).";
+          }
+          return "";
+        },
+      },
+    ];
+
+    const setFieldState = (field, message) => {
+      if (!field.input) return false;
+      const hasError = !!message;
+      field.input.classList.toggle("is-invalid", hasError);
+      field.input.classList.toggle("is-valid", !hasError && field.input.value.trim());
+      if (field.errorEl) {
+        field.errorEl.textContent = message;
+        field.errorEl.classList.toggle("is-visible", hasError);
+      }
+      return !hasError;
+    };
+
+    const validateField = (field) => setFieldState(field, field.validate());
+
+    fields.forEach(function (field) {
+      if (!field.input) return;
+      field.input.addEventListener("blur", function () {
+        validateField(field);
+      });
+      field.input.addEventListener("input", function () {
+        if (field.input.classList.contains("is-invalid")) {
+          validateField(field);
+        }
+      });
+    });
+
+    const updateMessageCount = () => {
+      if (!messageInput || !messageCount) return;
+      const length = messageInput.value.length;
+      messageCount.textContent = length + " / 2000";
+    };
+
+    if (messageInput) {
+      messageInput.addEventListener("input", updateMessageCount);
+      updateMessageCount();
+    }
+
+    form.addEventListener("submit", function (e) {
+      let valid = true;
+      fields.forEach(function (field) {
+        if (!validateField(field)) valid = false;
+      });
+      if (!valid) {
+        e.preventDefault();
+        const firstInvalid = form.querySelector(".is-invalid");
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
+      if (emailInput) {
+        emailInput.value = emailInput.value.trim();
+      }
+    });
+  };
+
   const initAboutPageMotion = () => {
     if (!isAboutPage()) return;
 
@@ -4632,6 +5204,33 @@
     });
   };
 
+  const initCampaignBankDetails = () => {
+    if (!isProjectsPage()) return;
+
+    const toggle = document.getElementById("bank-details-toggle");
+    const panel = document.getElementById("bank-details");
+    if (!toggle || !panel || toggle.dataset.bound) return;
+    toggle.dataset.bound = "true";
+
+    const setOpen = (open) => {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? "Hide Bank Details" : "View Bank Details";
+    };
+
+    toggle.addEventListener("click", function () {
+      const willOpen = panel.hidden;
+      setOpen(willOpen);
+      if (willOpen) {
+        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+
+    if (window.location.hash === "#bank-details") {
+      setOpen(true);
+    }
+  };
+
   const initCampaignPageMotion = () => {
     if (!isProjectsPage()) return;
 
@@ -4719,20 +5318,33 @@
 
   const initSumUpDonate = () => {
     const panel = document.querySelector("[data-sumup-donate]");
-    if (!panel || !isHomePage()) return;
+    if (!panel || (!isHomePage() && !isProjectsPage())) return;
 
     const mountEl = panel.querySelector("[data-sumup-card-mount]");
     const statusEl = panel.querySelector("[data-sumup-status]");
     const customWrap = panel.querySelector("[data-sumup-custom-wrap]");
-    const customInput = panel.querySelector("#sumup-custom-amount");
+    const customInput = panel.querySelector("[data-sumup-custom-input]");
     const sandboxRibbon = panel.querySelector("[data-sumup-sandbox-ribbon]");
     const successEl = panel.querySelector("[data-sumup-success]");
     const successAmountEl = panel.querySelector("[data-sumup-success-amount]");
     const successResetEl = panel.querySelector("[data-sumup-success-reset]");
     const donateAgainBtn = panel.querySelector("[data-sumup-donate-again]");
+    const errorEl = panel.querySelector("[data-sumup-error]");
+    const errorTitleEl = panel.querySelector("[data-sumup-error-title]");
+    const errorLeadEl = panel.querySelector("[data-sumup-error-lead]");
+    const errorReferenceWrapEl = panel.querySelector("[data-sumup-error-reference-wrap]");
+    const errorReferenceLabelEl = panel.querySelector("[data-sumup-error-reference-label]");
+    const errorReferenceEl = panel.querySelector("[data-sumup-error-reference]");
+    const errorReferenceNoteEl = panel.querySelector("[data-sumup-error-reference-note]");
+    const errorStatusEl = panel.querySelector("[data-sumup-error-status]");
+    const errorDetailEl = panel.querySelector("[data-sumup-error-detail]");
+    const errorWhatsappEl = panel.querySelector("[data-sumup-error-whatsapp]");
+    const errorRetryBtn = panel.querySelector("[data-sumup-error-retry]");
+    const errorCopyBtn = panel.querySelector("[data-sumup-error-copy]");
     const startDonateBtn = panel.querySelector("[data-sumup-start-donate]");
     const currencySelect = panel.querySelector("[data-sumup-currency]");
     const customLabelEl = panel.querySelector("[data-sumup-custom-label]");
+    const consentNoticeEl = panel.querySelector("[data-sumup-consent-notice]");
     const amountButtons = panel.querySelectorAll("[data-sumup-amount]");
     let sumupWidget = null;
     let activeAmount = 10;
@@ -4742,6 +5354,186 @@
     let successCountdownTimer = null;
     let successResetDeadline = 0;
     let checkoutOpen = false;
+    let activeCheckoutId = null;
+    let lastCheckoutPayload = null;
+
+    const SUMUP_TRANSACTION_CODE_RE = /^T[A-Z0-9]{6,14}$/;
+
+    const extractSumUpSupportInfo = (body, checkoutId) => {
+      const info = {
+        transactionCode: "",
+        checkoutId: checkoutId ? String(checkoutId) : "",
+        status: "",
+        message: "",
+      };
+      const codeCandidates = [];
+
+      const collectCode = (value) => {
+        if (value === null || value === undefined) return;
+        const text = String(value).trim();
+        if (text) codeCandidates.push(text);
+      };
+
+      if (body && typeof body === "object") {
+        collectCode(body.transaction_code);
+        collectCode(body.transactionCode);
+
+        if (Array.isArray(body.transactions)) {
+          body.transactions.forEach(function (tx) {
+            if (!tx || typeof tx !== "object") return;
+            collectCode(tx.transaction_code);
+            collectCode(tx.transactionCode);
+          });
+        }
+
+        if (body.status) info.status = String(body.status);
+        if (body.message) info.message = String(body.message);
+        if (body.id) info.checkoutId = String(body.id);
+      }
+
+      for (let i = 0; i < codeCandidates.length; i++) {
+        if (SUMUP_TRANSACTION_CODE_RE.test(codeCandidates[i])) {
+          info.transactionCode = codeCandidates[i];
+          break;
+        }
+      }
+      if (!info.transactionCode) {
+        for (let j = 0; j < codeCandidates.length; j++) {
+          if (!codeCandidates[j].startsWith("kicc-")) {
+            info.transactionCode = codeCandidates[j];
+            break;
+          }
+        }
+      }
+
+      return info;
+    };
+
+    const buildSumUpSupportWhatsAppUrl = (support, amount, currencyCode) => {
+      const parts = [
+        "As-salamu alaikum.",
+        "My SumUp card donation on traleemasjidkicc.ie did not go through.",
+      ];
+      if (support && support.transactionCode) {
+        parts.push("Transaction code: " + support.transactionCode + ".");
+      }
+      if (support && support.checkoutId) {
+        parts.push("Checkout ID: " + support.checkoutId + ".");
+      }
+      if (amount !== null && amount !== undefined && currencyCode) {
+        parts.push(
+          "Amount attempted: " +
+            formatDonationAmount(amount, currencyCode) +
+            "."
+        );
+      }
+      parts.push("Please can you help investigate?");
+      return (
+        "https://wa.me/" +
+        SUMUP_DEVELOPER_WHATSAPP +
+        "?text=" +
+        encodeURIComponent(parts.join(" "))
+      );
+    };
+
+    const hideErrorState = () => {
+      if (errorEl) errorEl.setAttribute("hidden", "");
+      panel.classList.remove("is-error");
+    };
+
+    const showErrorState = (options) => {
+      const opts = options || {};
+      const support =
+        opts.support ||
+        extractSumUpSupportInfo(opts.body, opts.checkoutId || activeCheckoutId);
+      if (!support.transactionCode && lastCheckoutPayload) {
+        const fromCreate = extractSumUpSupportInfo(
+          lastCheckoutPayload.checkout || lastCheckoutPayload,
+          activeCheckoutId
+        );
+        if (fromCreate.transactionCode) {
+          support.transactionCode = fromCreate.transactionCode;
+        }
+        if (!support.status && fromCreate.status) {
+          support.status = fromCreate.status;
+        }
+      }
+      const amount = opts.amount;
+      const currencyCode = opts.currency || getSelectedCurrency();
+      const title = opts.title || "Payment not completed";
+      const lead =
+        opts.lead ||
+        "Your card donation did not go through. No confirmation was received from SumUp.";
+      const detail = opts.detail || support.message || "";
+      const displayCode = support.transactionCode || support.checkoutId || "";
+      const usingCheckoutId = !support.transactionCode && !!support.checkoutId;
+
+      unmountWidget();
+      closeCheckout();
+      setStatus("");
+      clearSuccessResetTimers();
+      if (successEl) successEl.setAttribute("hidden", "");
+      panel.classList.remove("is-success");
+
+      if (errorTitleEl) errorTitleEl.textContent = title;
+      if (errorLeadEl) errorLeadEl.textContent = lead;
+
+      if (errorReferenceLabelEl) {
+        errorReferenceLabelEl.textContent = support.transactionCode
+          ? "Transaction code"
+          : "Checkout ID";
+      }
+
+      if (errorStatusEl) {
+        if (support.status) {
+          errorStatusEl.textContent = support.status;
+          errorStatusEl.hidden = false;
+        } else {
+          errorStatusEl.textContent = "";
+          errorStatusEl.hidden = true;
+        }
+      }
+
+      if (errorReferenceWrapEl && errorReferenceEl) {
+        if (displayCode) {
+          errorReferenceEl.textContent = displayCode;
+          errorReferenceWrapEl.hidden = false;
+        } else {
+          errorReferenceEl.textContent = "";
+          errorReferenceWrapEl.hidden = true;
+        }
+      }
+
+      if (errorReferenceNoteEl) {
+        errorReferenceNoteEl.hidden = !usingCheckoutId;
+      }
+
+      if (errorDetailEl) {
+        const detailText =
+          detail && detail.indexOf("Payment status:") !== 0 ? detail : "";
+        if (detailText) {
+          errorDetailEl.textContent = detailText;
+          errorDetailEl.hidden = false;
+        } else {
+          errorDetailEl.textContent = "";
+          errorDetailEl.hidden = true;
+        }
+      }
+
+      if (errorWhatsappEl) {
+        errorWhatsappEl.href = buildSumUpSupportWhatsAppUrl(
+          support,
+          amount,
+          currencyCode
+        );
+      }
+
+      if (errorEl) {
+        errorEl.removeAttribute("hidden");
+        panel.classList.add("is-error");
+        errorEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    };
 
     const getSelectedCurrency = () => {
       const code =
@@ -4824,7 +5616,9 @@
       clearSuccessResetTimers();
       if (successResetEl) successResetEl.textContent = "";
       if (successEl) successEl.setAttribute("hidden", "");
+      hideErrorState();
       panel.classList.remove("is-success");
+      lastCheckoutPayload = null;
       closeCheckout();
       setStatus("");
     };
@@ -4840,7 +5634,7 @@
         return;
       }
       successResetEl.textContent =
-        "New donation options in " + secondsLeft + "s";
+        "Returning to donation options in " + secondsLeft + "s";
     };
 
     const startSuccessResetTimer = () => {
@@ -4858,6 +5652,7 @@
 
     const showSuccessState = (amount) => {
       unmountWidget();
+      hideErrorState();
       setStatus("");
       if (successAmountEl) {
         successAmountEl.textContent = formatDonationAmount(
@@ -4884,7 +5679,10 @@
         btn.disabled = isLoading;
       });
       if (customInput) customInput.disabled = isLoading;
-      if (startDonateBtn) startDonateBtn.disabled = isLoading;
+      if (startDonateBtn) {
+        startDonateBtn.disabled =
+          isLoading || (hasConsentChoice() && !canUseThirdPartyEmbeds());
+      }
       if (currencySelect) currencySelect.disabled = isLoading;
     };
 
@@ -4902,7 +5700,33 @@
       return activeAmount;
     };
 
+    const removeSumUpSdk = () => {
+      document
+        .querySelectorAll('script[src*="gateway.sumup.com"]')
+        .forEach(function (script) {
+          script.remove();
+        });
+      sdkLoadPromise = null;
+      try {
+        delete window.SumUpCard;
+      } catch {
+        window.SumUpCard = undefined;
+      }
+    };
+
+    const updateSumUpConsentUi = () => {
+      const needsConsent =
+        hasConsentChoice() && !canUseThirdPartyEmbeds();
+      if (consentNoticeEl) consentNoticeEl.hidden = !needsConsent;
+      if (startDonateBtn) startDonateBtn.disabled = needsConsent;
+    };
+
     const loadSumUpSdk = () => {
+      if (!canUseThirdPartyEmbeds()) {
+        return Promise.reject(
+          new Error("Enable third-party embeds in Privacy & cookies to use card payments.")
+        );
+      }
       if (window.SumUpCard) return Promise.resolve(window.SumUpCard);
       if (sdkLoadPromise) return sdkLoadPromise;
 
@@ -4946,7 +5770,9 @@
         body: JSON.stringify({
           amount: amount,
           currency: currency,
-          returnUrl: window.location.origin + "/#home-donate",
+          returnUrl: isProjectsPage()
+            ? window.location.origin + "/projects.html#donate"
+            : window.location.origin + "/#home-donate",
         }),
       }).then(function (resp) {
         if (!resp.ok) {
@@ -4978,6 +5804,7 @@
     const mountWidget = (checkoutId) => {
       if (!mountEl || !window.SumUpCard) return;
 
+      activeCheckoutId = checkoutId;
       const currencyConfig = getCurrencyConfig();
       unmountWidget();
       mountEl.hidden = false;
@@ -4991,31 +5818,52 @@
         country: currencyConfig.country,
         showEmail: false,
         onResponse: function (type, body) {
+          const support = extractSumUpSupportInfo(body, activeCheckoutId);
+          const amount = getSelectedAmount();
+          const currency = getSelectedCurrency();
+
           if (type === "success") {
             if (body && body.status === "FAILED") {
-              setStatus(
-                "Payment was not completed. Please try again or use GoFundMe.",
-                "error"
-              );
+              showErrorState({
+                body: body,
+                checkoutId: activeCheckoutId,
+                amount: amount,
+                currency: currency,
+                title: "Payment not completed",
+                lead:
+                  "SumUp could not complete this donation. Your card should not have been charged.",
+              });
               return;
             }
-            showSuccessState(getSelectedAmount());
+            showSuccessState(amount);
             return;
           }
           if (type === "fail") {
-            setStatus(
-              "Payment was not completed. Please try again or use GoFundMe.",
-              "error"
-            );
+            showErrorState({
+              body: body,
+              checkoutId: activeCheckoutId,
+              amount: amount,
+              currency: currency,
+              title: "Payment not completed",
+              lead:
+                "The payment was cancelled or the session ended before your donation went through.",
+              detail:
+                body && body.message
+                  ? body.message
+                  : "If you closed the form by mistake, you can try again below.",
+            });
             return;
           }
           if (type === "error") {
-            const detail =
-              body && body.message ? " " + body.message : "";
-            setStatus(
-              "Something went wrong with the payment form." + detail,
-              "error"
-            );
+            showErrorState({
+              body: body,
+              checkoutId: activeCheckoutId,
+              amount: amount,
+              currency: currency,
+              title: "Payment could not be processed",
+              lead: "SumUp reported an error while processing your card details.",
+              detail: body && body.message ? body.message : "",
+            });
           }
         },
       });
@@ -5043,19 +5891,27 @@
           if (!checkoutId) {
             throw new Error("Checkout response was incomplete.");
           }
+          activeCheckoutId = checkoutId;
+          lastCheckoutPayload = payload;
           mountWidget(checkoutId);
           setStatus("");
         })
         .catch(function (err) {
           if (requestId !== checkoutRequestId) return;
           console.error("SumUp checkout error", err);
-          closeCheckout();
-          setStatus(
-            err && err.message
-              ? err.message
-              : "Unable to load the card payment form right now.",
-            "error"
-          );
+          showErrorState({
+            body: null,
+            checkoutId: activeCheckoutId,
+            amount: getSelectedAmount(),
+            currency: getSelectedCurrency(),
+            title: "Could not open card payment",
+            lead:
+              err && err.message
+                ? err.message
+                : "Unable to load the secure payment form right now.",
+            detail:
+              "Please try again in a moment, use GoFundMe, or contact website support.",
+          });
         })
         .finally(function () {
           if (requestId === checkoutRequestId) {
@@ -5065,6 +5921,15 @@
     };
 
     const openCheckout = () => {
+      if (!canUseThirdPartyEmbeds()) {
+        setStatus(
+          "Enable Third-party embeds in Privacy & cookies to use SumUp card payments.",
+          "error"
+        );
+        updateSumUpConsentUi();
+        return;
+      }
+
       const amount = getSelectedAmount();
       if (amount === null) {
         setStatus(getAmountRangeMessage(), "error");
@@ -5115,6 +5980,28 @@
       });
     }
 
+    if (errorRetryBtn) {
+      errorRetryBtn.addEventListener("click", function () {
+        resetToCheckout();
+      });
+    }
+
+    if (errorCopyBtn && errorReferenceEl) {
+      errorCopyBtn.addEventListener("click", function () {
+        const text = (errorReferenceEl.textContent || "").trim();
+        if (!text || !navigator.clipboard) return;
+        navigator.clipboard.writeText(text).then(function () {
+          const original = errorCopyBtn.innerHTML;
+          errorCopyBtn.textContent = "Copied";
+          window.setTimeout(function () {
+            errorCopyBtn.innerHTML = original;
+          }, 2000);
+        }).catch(function () {
+          /* clipboard unavailable */
+        });
+      });
+    }
+
     if (customInput) {
       customInput.addEventListener("change", function () {
         if (checkoutOpen) {
@@ -5138,6 +6025,15 @@
       panel.classList.add("is-sandbox-mode");
       if (sandboxRibbon) sandboxRibbon.hidden = false;
     }
+
+    kiccSumUpConsentHandlers.teardown = function () {
+      closeCheckout();
+      resetToCheckout();
+      removeSumUpSdk();
+      updateSumUpConsentUi();
+    };
+    kiccSumUpConsentHandlers.refresh = updateSumUpConsentUi;
+    updateSumUpConsentUi();
 
     updateAmountPickerLabels();
   };
@@ -5225,30 +6121,93 @@
     if (!isHomePage()) return;
 
     const layout = document.querySelector(".pillars-faith-layout");
+    const panelsWrap = document.querySelector(".pillars-faith-panels");
+    const tabsEl = document.querySelector(".pillars-faith-tabs");
+
+    const syncFaithTabIndicator = () => {
+      const indicator = document.querySelector(".pillars-faith-tab-indicator");
+      if (!tabsEl || !indicator) return;
+
+      const active = tabsEl.querySelector(".pillars-faith-tab.is-active");
+      if (!active) return;
+
+      indicator.style.top = active.offsetTop + "px";
+      indicator.style.left = active.offsetLeft + "px";
+      indicator.style.width = active.offsetWidth + "px";
+      indicator.style.height = active.offsetHeight + "px";
+    };
+
+    const setFaithAccent = (id) => {
+      if (panelsWrap) panelsWrap.setAttribute("data-active-faith", id);
+      if (tabsEl) tabsEl.setAttribute("data-active-faith", id);
+    };
+
+    const activateFaithTab = (tab, tabs, panels) => {
+      const id = tab.getAttribute("data-faith-tab");
+      tabs.forEach(function (t) {
+        const active = t === tab;
+        t.classList.toggle("is-active", active);
+        t.setAttribute("aria-selected", active ? "true" : "false");
+        t.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach(function (panel) {
+        const active = panel.getAttribute("data-faith-panel") === id;
+        panel.classList.toggle("is-active", active);
+        panel.hidden = !active;
+        if (active) {
+          panel.classList.remove("is-entering");
+          void panel.offsetWidth;
+          panel.classList.add("is-entering");
+        }
+      });
+      setFaithAccent(id);
+      requestAnimationFrame(syncFaithTabIndicator);
+    };
+
     if (layout) {
       const tabs = layout.querySelectorAll('[role="tab"]');
       const panels = layout.querySelectorAll('[role="tabpanel"]');
 
       tabs.forEach(function (tab) {
         tab.addEventListener("click", function () {
-          const id = tab.getAttribute("data-faith-tab");
-          tabs.forEach(function (t) {
-            const active = t === tab;
-            t.classList.toggle("is-active", active);
-            t.setAttribute("aria-selected", active ? "true" : "false");
-            t.tabIndex = active ? 0 : -1;
-          });
-          panels.forEach(function (panel) {
-            const active = panel.getAttribute("data-faith-panel") === id;
-            panel.classList.toggle("is-active", active);
-            panel.hidden = !active;
-          });
+          activateFaithTab(tab, tabs, panels);
+          if (window.matchMedia("(max-width: 991px)").matches) {
+            tab.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
+            });
+          }
         });
       });
+
+      const activeTab = tabsEl && tabsEl.querySelector(".pillars-faith-tab.is-active");
+      if (activeTab) {
+        setFaithAccent(activeTab.getAttribute("data-faith-tab") || "tawheed");
+      }
+
+      window.addEventListener("resize", syncFaithTabIndicator, { passive: true });
+      requestAnimationFrame(syncFaithTabIndicator);
     }
 
+    const islamPillars = document.querySelectorAll(".pillars-islam-pillar");
     const islamTriggers = document.querySelectorAll(".pillars-islam-pillar-trigger");
     const islamMobileQuery = window.matchMedia("(max-width: 767px)");
+
+    const setIslamHighlight = (target) => {
+      islamPillars.forEach(function (p) {
+        p.classList.toggle("is-highlighted", target ? p === target : false);
+      });
+    };
+
+    islamPillars.forEach(function (pillar) {
+      pillar.addEventListener("mouseenter", function () {
+        if (!islamMobileQuery.matches) setIslamHighlight(pillar);
+      });
+      pillar.addEventListener("mouseleave", function () {
+        if (!islamMobileQuery.matches) setIslamHighlight(null);
+      });
+    });
 
     islamTriggers.forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -5259,12 +6218,13 @@
         if (islamMobileQuery.matches) {
           document.querySelectorAll(".pillars-islam-pillar.is-expanded").forEach(function (p) {
             if (p !== pillar) {
-              p.classList.remove("is-expanded");
+              p.classList.remove("is-expanded", "is-highlighted");
               const otherBtn = p.querySelector(".pillars-islam-pillar-trigger");
               if (otherBtn) otherBtn.setAttribute("aria-expanded", "false");
             }
           });
         }
+        setIslamHighlight(expanded ? pillar : null);
       });
     });
 
@@ -5521,7 +6481,11 @@
     initEnhancedFundraiserWidgets();
     initSumUpDonate();
     initCampaignPageMotion();
+    initCampaignBankDetails();
     initAboutPageMotion();
+    initContactPageMotion();
+    initContactDirections();
+    initContactFormEnhancements();
     initHomeDonateMotion();
     initMobileNav();
     syncStickyNavOffset();

@@ -108,8 +108,20 @@ test.describe("New Masjid campaign page", () => {
     await expect(costs).toContainText("€150k");
   });
 
+  test("donate section includes SumUp card payment", async ({ page }) => {
+    const sumup = page.locator("#donate [data-sumup-donate]");
+    await sumup.scrollIntoViewIfNeeded();
+    await expect(sumup).toBeVisible();
+    await expect(
+      page.locator("#donate [data-sumup-start-donate]"),
+    ).toContainText("Donate with SumUp");
+  });
+
+  const GOFUNDME_DONATE_URL =
+    "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
+
   test("donate buttons link to GoFundMe", async ({ page }) => {
-    const donateLinks = page.locator('a[href*="kicc.page.link/gfm"]');
+    const donateLinks = page.locator('a[href*="gofundme.com"][href*="/donate"]');
     await expect(donateLinks.first()).toBeVisible();
     expect(await donateLinks.count()).toBeGreaterThanOrEqual(3);
   });
@@ -136,7 +148,7 @@ test.describe("New Masjid campaign page", () => {
     await expect(page.locator(".site-action-btn--donate")).toBeVisible();
     await expect(page.locator(".site-action-btn--donate")).toHaveAttribute(
       "href",
-      "https://kicc.page.link/gfm",
+      GOFUNDME_DONATE_URL,
     );
   });
 });

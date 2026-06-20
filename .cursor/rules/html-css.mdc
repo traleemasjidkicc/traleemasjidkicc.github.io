@@ -54,6 +54,25 @@ GoFundMe widgets use iframes with class `gfm-stream-goal-bar` or `gfm-embed` div
 - Use descriptive `alt` text for accessibility
 - Optimise file size before adding large images
 
+## Text wrapping (headings & readable copy)
+
+Never break words mid-character on small screens.
+
+- **Do not use** Bootstrap `text-break` on headings, leads, or marketing copy — it sets aggressive `word-break` and causes orphan letters (e.g. `FOUNDATIO` / `N`).
+- **Do use** the project utility class `text-wrap-safe` on hero titles, section headings, and paragraph blocks that must stay readable on mobile.
+- Headings (`h1`–`h6`) already default to `overflow-wrap: normal` and `word-break: normal` in `main.css`.
+- Prefer **responsive font size** (`clamp()`) over forced breaks when a title is too wide.
+- Intentional line breaks: use `<br>` at word boundaries, or rephrase — not `text-break` / `word-break: break-all`.
+- `word-break: break-all` is only for monospace codes, hashes, or URLs in dedicated UI (e.g. transaction codes) — never for prose or display headings.
+
+```html
+<!-- BAD -->
+<h1 class="display-4 text-break">Give Your Child a Strong Islamic Foundation</h1>
+
+<!-- GOOD -->
+<h1 class="madrasa-hero-title text-wrap-safe">Give Your Child a Strong Islamic Foundation</h1>
+```
+
 ## Accessibility
 
 - Semantic headings (`h1` once per page; campaign hero may use `sr-only` h1 with visible blockquote)
