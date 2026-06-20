@@ -8098,6 +8098,406 @@ body.cookie-preferences-active {
 	width: 100%;
 	overflow: visible;
 	box-shadow: none;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+/* SumUp donation panel (home) */
+.sumup-donate-panel {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(
+		145deg,
+		rgba(255, 255, 255, 0.18) 0%,
+		rgba(255, 255, 255, 0.08) 100%
+	);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 18px;
+	padding: 1.35rem 1.25rem 1.25rem;
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	box-shadow:
+		0 16px 48px rgba(0, 0, 0, 0.22),
+		inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.sumup-donate-panel.is-sandbox-mode {
+	padding-top: 0;
+	border-color: rgba(201, 168, 76, 0.55);
+}
+
+.sumup-sandbox-ribbon {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.2rem;
+	margin: 0 -1.25rem 1.1rem;
+	padding: 0.65rem 1rem 0.7rem;
+	background: linear-gradient(
+		135deg,
+		#c9a84c 0%,
+		#b8923f 45%,
+		#a67c2e 100%
+	);
+	border-radius: 18px 18px 0 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+	box-shadow:
+		0 4px 14px rgba(0, 0, 0, 0.18),
+		inset 0 1px 0 rgba(255, 255, 255, 0.35);
+	text-align: center;
+}
+
+.sumup-sandbox-ribbon-fold {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 0 0 18px 18px;
+	border-color: transparent transparent rgba(0, 0, 0, 0.18) transparent;
+}
+
+.sumup-sandbox-ribbon-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	font-size: 0.72rem;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #1a1205;
+}
+
+.sumup-sandbox-ribbon-text {
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 600;
+	line-height: 1.35;
+	color: rgba(26, 18, 5, 0.88);
+}
+
+.sumup-donate-panel-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 0.75rem;
+	margin-bottom: 1rem;
+}
+
+.sumup-donate-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.28rem 0.65rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.14);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.95);
+}
+
+.sumup-donate-note {
+	margin: 0;
+	width: 100%;
+	font-size: 0.88rem;
+	color: rgba(255, 255, 255, 0.82);
+}
+
+.sumup-currency-field {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.65rem 0.85rem;
+	margin-bottom: 1rem;
+}
+
+.sumup-currency-field label {
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.88);
+}
+
+.sumup-currency-select {
+	min-width: 11rem;
+	max-width: 100%;
+	padding: 0.5rem 2rem 0.5rem 0.75rem;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.95)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23055a5e' d='M6 8 0 0h12z'/%3E%3C/svg%3E")
+		no-repeat right 0.75rem center;
+	color: var(--kicc-teal-deep);
+	font-size: 0.92rem;
+	font-weight: 600;
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: pointer;
+}
+
+.sumup-currency-select:focus {
+	outline: none;
+	border-color: #c9a84c;
+	box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.35);
+}
+
+.sumup-currency-select:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.sumup-amount-picker {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0 0 1rem;
+	padding: 0;
+	border: 0;
+}
+
+.sumup-amount-btn {
+	flex: 1 1 calc(33.333% - 0.5rem);
+	min-width: 4.5rem;
+	padding: 0.55rem 0.65rem;
+	border-radius: 999px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	font-size: 0.92rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.15s ease;
+}
+
+.sumup-amount-btn:hover,
+.sumup-amount-btn:focus {
+	background: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.55);
+	outline: none;
+}
+
+.sumup-amount-btn.is-active {
+	background: rgba(201, 168, 76, 0.35);
+	border-color: #c9a84c;
+	box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.35);
+}
+
+.sumup-amount-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.sumup-amount-custom {
+	margin-bottom: 1rem;
+}
+
+.sumup-amount-custom label {
+	display: block;
+	margin-bottom: 0.35rem;
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.88);
+}
+
+.sumup-amount-custom-input {
+	width: 100%;
+	max-width: 12rem;
+	padding: 0.55rem 0.75rem;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.95);
+	color: var(--kicc-teal-deep);
+	font-size: 1rem;
+}
+
+.sumup-amount-custom-input:focus {
+	outline: none;
+	border-color: #c9a84c;
+	box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.35);
+}
+
+.sumup-donate-actions {
+	margin: 0 0 0.75rem;
+}
+
+.sumup-start-donate-btn {
+	width: 100%;
+}
+
+.sumup-donate-panel.is-widget-open .sumup-start-donate-btn {
+	display: none;
+}
+
+.sumup-donate-status {
+	min-height: 0;
+	margin: 0 0 0.75rem;
+	font-size: 0.88rem;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.sumup-donate-panel.is-widget-open .sumup-donate-status:not(:empty),
+.sumup-donate-panel.is-loading .sumup-donate-status {
+	min-height: 1.25rem;
+}
+
+.sumup-donate-status.is-error {
+	color: #ffd4d4;
+}
+
+.sumup-donate-status.is-success {
+	color: #d4ffd9;
+}
+
+.sumup-donate-panel.is-loading .sumup-card-mount {
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+.sumup-card-mount {
+	min-height: 0;
+}
+
+.sumup-card-mount:not([hidden]) {
+	min-height: 12rem;
+}
+
+.sumup-donate-panel.is-success .sumup-donate-checkout {
+	display: none;
+}
+
+.sumup-donate-success {
+	position: relative;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 0.5rem 0.35rem 0.25rem;
+	overflow: hidden;
+}
+
+.sumup-donate-success:not([hidden]) {
+	display: flex;
+	animation: sumupSuccessIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sumup-donate-panel.is-success .sumup-donate-success:not([hidden]) {
+	display: flex;
+}
+
+.sumup-donate-success-glow {
+	position: absolute;
+	inset: -30% -10% auto;
+	height: 70%;
+	background: radial-gradient(
+		ellipse at 50% 0%,
+		rgba(201, 168, 76, 0.28) 0%,
+		transparent 68%
+	);
+	pointer-events: none;
+}
+
+.sumup-donate-success-bismillah {
+	position: relative;
+	width: 5.5rem;
+	max-width: 44%;
+	margin-bottom: 0.85rem;
+	opacity: 0.92;
+}
+
+.sumup-donate-success-icon {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 3.25rem;
+	height: 3.25rem;
+	margin-bottom: 0.75rem;
+	border-radius: 50%;
+	background: rgba(26, 158, 34, 0.22);
+	border: 1px solid rgba(255, 255, 255, 0.28);
+	color: #d4ffd9;
+	font-size: 1.35rem;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.sumup-donate-success-title {
+	position: relative;
+	margin: 0 0 0.35rem;
+	font-family: "Cinzel Decorative", serif;
+	font-size: 1.45rem;
+	font-weight: 700;
+	color: #fff;
+	line-height: 1.25;
+}
+
+.sumup-donate-success-label {
+	position: relative;
+	margin: 0;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.72);
+}
+
+.sumup-donate-success-amount {
+	position: relative;
+	margin: 0.15rem 0 0.85rem;
+	font-family: "Cinzel Decorative", serif;
+	font-size: clamp(2rem, 5vw, 2.55rem);
+	font-weight: 700;
+	line-height: 1.1;
+	color: #f0df9a;
+	text-shadow: 0 2px 18px rgba(0, 0, 0, 0.22);
+}
+
+.sumup-donate-success-message {
+	position: relative;
+	max-width: 26rem;
+	margin: 0 0 1.15rem;
+	font-size: 0.92rem;
+	line-height: 1.55;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.sumup-donate-again-btn {
+	position: relative;
+	min-width: 10.5rem;
+	margin-bottom: 0.65rem;
+}
+
+.sumup-donate-success-reset {
+	position: relative;
+	margin: 0;
+	min-height: 1.1rem;
+	font-size: 0.78rem;
+	color: rgba(255, 255, 255, 0.62);
+}
+
+@keyframes sumupSuccessIn {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sumup-donate-success {
+		animation: none;
+	}
 }
 
 /* Enhanced live fundraiser widget (home + campaign) */

@@ -33,7 +33,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1781922266174.css">
+  <link rel="stylesheet" href="assets/css/main-1781927752952.css">
   <link rel="stylesheet" href="assets/css/animations.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -75,7 +75,7 @@
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781921813445.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781927752811.js"></script>
 
   <script>
     (function () {
@@ -1116,6 +1116,107 @@
         </div>
         <div class="col-lg-7">
           <div class="home-donate-widget">
+            <div class="sumup-donate-panel" id="sumup-donate-panel"
+              data-sumup-donate aria-live="polite">
+              <div class="sumup-sandbox-ribbon" data-sumup-sandbox-ribbon hidden
+                role="note">
+                <span class="sumup-sandbox-ribbon-fold" aria-hidden="true"></span>
+                <span class="sumup-sandbox-ribbon-label">
+                  <i class="fas fa-flask" aria-hidden="true"></i>
+                  Sandbox only
+                </span>
+                <p class="sumup-sandbox-ribbon-text">
+                  Test checkout &mdash; no real payment will be taken yet.
+                </p>
+              </div>
+              <div class="sumup-donate-success" data-sumup-success hidden
+                role="status">
+                <div class="sumup-donate-success-glow" aria-hidden="true"></div>
+                <img src="assets/images/brand/bismillah-light.png" alt=""
+                  class="sumup-donate-success-bismillah" aria-hidden="true">
+                <div class="sumup-donate-success-icon" aria-hidden="true">
+                  <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <h3 class="sumup-donate-success-title">JazakAllah khair</h3>
+                <p class="sumup-donate-success-label">Your Lillah gift</p>
+                <p class="sumup-donate-success-amount" data-sumup-success-amount>
+                  &mdash;
+                </p>
+                <p class="sumup-donate-success-message">
+                  BarakAllahu feek &mdash; your sadaqah helps build the house of
+                  Allah. May He accept it from you and make it a lasting reward,
+                  in sha Allah.
+                </p>
+                <button type="button"
+                  class="btn btn-kicc btn-kicc-secondary sumup-donate-again-btn"
+                  data-sumup-donate-again>
+                  <i class="fas fa-heart mr-1" aria-hidden="true"></i>
+                  Give again
+                </button>
+                <p class="sumup-donate-success-reset" data-sumup-success-reset
+                  aria-live="polite"></p>
+              </div>
+              <div class="sumup-donate-checkout" data-sumup-checkout-form>
+                <div class="sumup-donate-panel-head">
+                  <span class="sumup-donate-badge">
+                    <i class="fas fa-lock" aria-hidden="true"></i>
+                    Secure card payment
+                  </span>
+                  <p class="sumup-donate-note">Lillah only &mdash; Kerry Islamic
+                    Cultural Centre</p>
+                </div>
+                <div class="sumup-currency-field">
+                  <label for="sumup-currency">Currency</label>
+                  <select id="sumup-currency" class="sumup-currency-select"
+                    data-sumup-currency aria-label="Donation currency">
+                    <option value="EUR" selected>Euro (EUR)</option>
+                    <option value="GBP">British pound (GBP)</option>
+                    <option value="USD">US dollar (USD)</option>
+                    <option value="CHF">Swiss franc (CHF)</option>
+                    <option value="DKK">Danish krone (DKK)</option>
+                    <option value="NOK">Norwegian krone (NOK)</option>
+                    <option value="SEK">Swedish krona (SEK)</option>
+                    <option value="PLN">Polish zloty (PLN)</option>
+                    <option value="CZK">Czech koruna (CZK)</option>
+                    <option value="HUF">Hungarian forint (HUF)</option>
+                    <option value="BGN">Bulgarian lev (BGN)</option>
+                    <option value="BRL">Brazilian real (BRL)</option>
+                  </select>
+                </div>
+                <fieldset class="sumup-amount-picker">
+                  <legend class="sr-only">Choose a donation amount</legend>
+                  <button type="button" class="sumup-amount-btn is-active"
+                    data-sumup-amount="10" aria-pressed="true">10</button>
+                  <button type="button" class="sumup-amount-btn"
+                    data-sumup-amount="25" aria-pressed="false">25</button>
+                  <button type="button" class="sumup-amount-btn"
+                    data-sumup-amount="50" aria-pressed="false">50</button>
+                  <button type="button" class="sumup-amount-btn"
+                    data-sumup-amount="100" aria-pressed="false">100</button>
+                  <button type="button" class="sumup-amount-btn"
+                    data-sumup-amount="custom" aria-pressed="false">Other</button>
+                </fieldset>
+                <div class="sumup-amount-custom" data-sumup-custom-wrap hidden>
+                  <label for="sumup-custom-amount" data-sumup-custom-label>
+                    Custom amount
+                  </label>
+                  <input type="number" id="sumup-custom-amount"
+                    class="sumup-amount-custom-input" min="1" max="5000"
+                    step="0.01" inputmode="decimal" placeholder="25.00">
+                </div>
+                <div class="sumup-donate-actions">
+                  <button type="button"
+                    class="btn btn-kicc btn-kicc-lg btn-kicc-donate sumup-start-donate-btn"
+                    data-sumup-start-donate>
+                    <i class="fas fa-credit-card mr-1" aria-hidden="true"></i>
+                    Donate with SumUp
+                  </button>
+                </div>
+                <p class="sumup-donate-status" data-sumup-status role="status"></p>
+                <div id="sumup-card" class="sumup-card-mount"
+                  data-sumup-card-mount hidden></div>
+              </div>
+            </div>
             <div class="gfm-progress gfm-progress-light gfm-progress-enhanced gfm-progress-home gfm-progress-loading"
               data-gfm-progress aria-live="polite">
               <div class="gfm-progress-enhanced-head">

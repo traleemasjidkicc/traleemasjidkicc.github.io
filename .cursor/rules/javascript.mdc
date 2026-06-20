@@ -31,6 +31,7 @@ alwaysApply: false
 | Function | Endpoint |
 |----------|----------|
 | `setEvent` | `https://api.mixlr.com/users/7752720?source=embed` |
+| `initSumUpDonate` | `https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` (Firebase, homepage only) |
 
 ## localStorage keys
 

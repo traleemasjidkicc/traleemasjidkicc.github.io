@@ -4315,6 +4315,28 @@
 
   const CAMPAIGNS_API_URL =
     "https://getcampaigns-rds3nxm6za-ew.a.run.app";
+  const SUMUP_CHECKOUT_API_URL =
+    "https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout";
+  const SUMUP_SDK_URL =
+    "https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js";
+  const SUMUP_MIN_AMOUNT = 1;
+  const SUMUP_MAX_AMOUNT = 5000;
+  const SUMUP_SANDBOX_MODE = true;
+  const SUMUP_SUCCESS_RESET_MS = 15000;
+  const SUMUP_WIDGET_CURRENCIES = [
+    { code: "EUR", label: "Euro", locale: "en-IE", country: "IE" },
+    { code: "GBP", label: "British pound", locale: "en-GB", country: "GB" },
+    { code: "USD", label: "US dollar", locale: "en-US", country: "US" },
+    { code: "CHF", label: "Swiss franc", locale: "de-CH", country: "CH" },
+    { code: "DKK", label: "Danish krone", locale: "da-DK", country: "DK" },
+    { code: "NOK", label: "Norwegian krone", locale: "nb-NO", country: "NO" },
+    { code: "SEK", label: "Swedish krona", locale: "sv-SE", country: "SE" },
+    { code: "PLN", label: "Polish zloty", locale: "pl-PL", country: "PL" },
+    { code: "CZK", label: "Czech koruna", locale: "cs-CZ", country: "CZ" },
+    { code: "HUF", label: "Hungarian forint", locale: "hu-HU", country: "HU" },
+    { code: "BGN", label: "Bulgarian lev", locale: "en-GB", country: "BG" },
+    { code: "BRL", label: "Brazilian real", locale: "pt-BR", country: "BR" },
+  ];
   const CAMPAIGN_PROGRESS_KEY = "kicc-campaign-progress";
 
   const formatFundraiserAmount = (amount, currencyCode) => {
@@ -4695,6 +4717,431 @@
     donateReadyFallback();
   };
 
+  const initSumUpDonate = () => {
+    const panel = document.querySelector("[data-sumup-donate]");
+    if (!panel || !isHomePage()) return;
+
+    const mountEl = panel.querySelector("[data-sumup-card-mount]");
+    const statusEl = panel.querySelector("[data-sumup-status]");
+    const customWrap = panel.querySelector("[data-sumup-custom-wrap]");
+    const customInput = panel.querySelector("#sumup-custom-amount");
+    const sandboxRibbon = panel.querySelector("[data-sumup-sandbox-ribbon]");
+    const successEl = panel.querySelector("[data-sumup-success]");
+    const successAmountEl = panel.querySelector("[data-sumup-success-amount]");
+    const successResetEl = panel.querySelector("[data-sumup-success-reset]");
+    const donateAgainBtn = panel.querySelector("[data-sumup-donate-again]");
+    const startDonateBtn = panel.querySelector("[data-sumup-start-donate]");
+    const currencySelect = panel.querySelector("[data-sumup-currency]");
+    const customLabelEl = panel.querySelector("[data-sumup-custom-label]");
+    const amountButtons = panel.querySelectorAll("[data-sumup-amount]");
+    let sumupWidget = null;
+    let activeAmount = 10;
+    let checkoutRequestId = 0;
+    let sdkLoadPromise = null;
+    let successResetTimer = null;
+    let successCountdownTimer = null;
+    let successResetDeadline = 0;
+    let checkoutOpen = false;
+
+    const getSelectedCurrency = () => {
+      const code =
+        currencySelect && currencySelect.value
+          ? currencySelect.value.toUpperCase()
+          : "EUR";
+      const match = SUMUP_WIDGET_CURRENCIES.find(function (item) {
+        return item.code === code;
+      });
+      return match ? match.code : "EUR";
+    };
+
+    const getCurrencyConfig = (currencyCode) => {
+      const code = currencyCode || getSelectedCurrency();
+      return (
+        SUMUP_WIDGET_CURRENCIES.find(function (item) {
+          return item.code === code;
+        }) || SUMUP_WIDGET_CURRENCIES[0]
+      );
+    };
+
+    const formatDonationAmount = (amount, currencyCode, compact) => {
+      const value = Number(amount);
+      if (!Number.isFinite(value)) return "";
+      const config = getCurrencyConfig(currencyCode);
+      const hasFraction = Math.round(value * 100) % 100 !== 0;
+      return new Intl.NumberFormat(config.locale, {
+        style: "currency",
+        currency: config.code,
+        minimumFractionDigits: compact && !hasFraction ? 0 : hasFraction ? 2 : 0,
+        maximumFractionDigits: 2,
+      }).format(value);
+    };
+
+    const getAmountRangeMessage = () => {
+      const currency = getSelectedCurrency();
+      return (
+        "Enter an amount between " +
+        formatDonationAmount(SUMUP_MIN_AMOUNT, currency, true) +
+        " and " +
+        formatDonationAmount(SUMUP_MAX_AMOUNT, currency, true) +
+        "."
+      );
+    };
+
+    const updateAmountPickerLabels = () => {
+      const currency = getSelectedCurrency();
+      amountButtons.forEach(function (btn) {
+        const value = btn.getAttribute("data-sumup-amount");
+        if (value === "custom") return;
+        btn.textContent = formatDonationAmount(Number(value), currency, true);
+      });
+      if (customLabelEl) {
+        customLabelEl.textContent =
+          "Custom amount (" + getSelectedCurrency() + ")";
+      }
+    };
+
+    const clearSuccessResetTimers = () => {
+      if (successResetTimer) {
+        window.clearTimeout(successResetTimer);
+        successResetTimer = null;
+      }
+      if (successCountdownTimer) {
+        window.clearInterval(successCountdownTimer);
+        successCountdownTimer = null;
+      }
+      successResetDeadline = 0;
+    };
+
+    const closeCheckout = () => {
+      checkoutOpen = false;
+      checkoutRequestId += 1;
+      panel.classList.remove("is-widget-open");
+      unmountWidget();
+      setLoading(false);
+    };
+
+    const resetToCheckout = () => {
+      clearSuccessResetTimers();
+      if (successResetEl) successResetEl.textContent = "";
+      if (successEl) successEl.setAttribute("hidden", "");
+      panel.classList.remove("is-success");
+      closeCheckout();
+      setStatus("");
+    };
+
+    const updateSuccessResetMessage = () => {
+      if (!successResetEl || !successResetDeadline) return;
+      const secondsLeft = Math.max(
+        0,
+        Math.ceil((successResetDeadline - Date.now()) / 1000)
+      );
+      if (secondsLeft <= 0) {
+        successResetEl.textContent = "";
+        return;
+      }
+      successResetEl.textContent =
+        "New donation options in " + secondsLeft + "s";
+    };
+
+    const startSuccessResetTimer = () => {
+      clearSuccessResetTimers();
+      successResetDeadline = Date.now() + SUMUP_SUCCESS_RESET_MS;
+      updateSuccessResetMessage();
+      successCountdownTimer = window.setInterval(
+        updateSuccessResetMessage,
+        1000
+      );
+      successResetTimer = window.setTimeout(function () {
+        resetToCheckout();
+      }, SUMUP_SUCCESS_RESET_MS);
+    };
+
+    const showSuccessState = (amount) => {
+      unmountWidget();
+      setStatus("");
+      if (successAmountEl) {
+        successAmountEl.textContent = formatDonationAmount(
+          amount,
+          getSelectedCurrency()
+        );
+      }
+      if (successEl) successEl.removeAttribute("hidden");
+      panel.classList.add("is-success");
+      startSuccessResetTimer();
+    };
+
+    const setStatus = (message, type) => {
+      if (!statusEl) return;
+      statusEl.textContent = message || "";
+      statusEl.classList.remove("is-error", "is-success");
+      if (type === "error") statusEl.classList.add("is-error");
+      if (type === "success") statusEl.classList.add("is-success");
+    };
+
+    const setLoading = (isLoading) => {
+      panel.classList.toggle("is-loading", isLoading);
+      amountButtons.forEach(function (btn) {
+        btn.disabled = isLoading;
+      });
+      if (customInput) customInput.disabled = isLoading;
+      if (startDonateBtn) startDonateBtn.disabled = isLoading;
+      if (currencySelect) currencySelect.disabled = isLoading;
+    };
+
+    const parseAmount = (value) => {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return null;
+      if (amount < SUMUP_MIN_AMOUNT || amount > SUMUP_MAX_AMOUNT) return null;
+      return Math.round(amount * 100) / 100;
+    };
+
+    const getSelectedAmount = () => {
+      if (activeAmount === "custom") {
+        return customInput ? parseAmount(customInput.value) : null;
+      }
+      return activeAmount;
+    };
+
+    const loadSumUpSdk = () => {
+      if (window.SumUpCard) return Promise.resolve(window.SumUpCard);
+      if (sdkLoadPromise) return sdkLoadPromise;
+
+      sdkLoadPromise = new Promise(function (resolve, reject) {
+        const script = document.createElement("script");
+        script.src = SUMUP_SDK_URL;
+        script.async = true;
+        script.onload = function () {
+          if (window.SumUpCard) {
+            resolve(window.SumUpCard);
+            return;
+          }
+          reject(new Error("SumUp SDK loaded without SumUpCard"));
+        };
+        script.onerror = function () {
+          reject(new Error("SumUp SDK failed to load"));
+        };
+        document.head.appendChild(script);
+      });
+
+      return sdkLoadPromise;
+    };
+
+    const getCheckoutId = (payload) => {
+      if (!payload || typeof payload !== "object") return null;
+      if (typeof payload.checkoutId === "string") return payload.checkoutId;
+      if (
+        payload.checkout &&
+        typeof payload.checkout.id === "string"
+      ) {
+        return payload.checkout.id;
+      }
+      return null;
+    };
+
+    const createCheckout = (amount) => {
+      const currency = getSelectedCurrency();
+      return fetch(SUMUP_CHECKOUT_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: amount,
+          currency: currency,
+          returnUrl: window.location.origin + "/#home-donate",
+        }),
+      }).then(function (resp) {
+        if (!resp.ok) {
+          return resp.json().catch(function () {
+            return {};
+          }).then(function (body) {
+            const message =
+              body && body.error
+                ? body.error
+                : "Unable to start secure checkout.";
+            throw new Error(message);
+          });
+        }
+        return resp.json();
+      });
+    };
+
+    const unmountWidget = () => {
+      if (sumupWidget && typeof sumupWidget.unmount === "function") {
+        sumupWidget.unmount();
+      }
+      sumupWidget = null;
+      if (mountEl) {
+        mountEl.innerHTML = "";
+        mountEl.hidden = true;
+      }
+    };
+
+    const mountWidget = (checkoutId) => {
+      if (!mountEl || !window.SumUpCard) return;
+
+      const currencyConfig = getCurrencyConfig();
+      unmountWidget();
+      mountEl.hidden = false;
+
+      sumupWidget = window.SumUpCard.mount({
+        id: mountEl.id,
+        checkoutId: checkoutId,
+        donateSubmitButton: true,
+        locale: currencyConfig.locale,
+        currency: currencyConfig.code,
+        country: currencyConfig.country,
+        showEmail: false,
+        onResponse: function (type, body) {
+          if (type === "success") {
+            if (body && body.status === "FAILED") {
+              setStatus(
+                "Payment was not completed. Please try again or use GoFundMe.",
+                "error"
+              );
+              return;
+            }
+            showSuccessState(getSelectedAmount());
+            return;
+          }
+          if (type === "fail") {
+            setStatus(
+              "Payment was not completed. Please try again or use GoFundMe.",
+              "error"
+            );
+            return;
+          }
+          if (type === "error") {
+            const detail =
+              body && body.message ? " " + body.message : "";
+            setStatus(
+              "Something went wrong with the payment form." + detail,
+              "error"
+            );
+          }
+        },
+      });
+    };
+
+    const refreshCheckout = () => {
+      const amount = getSelectedAmount();
+      if (amount === null) {
+        setStatus(getAmountRangeMessage(), "error");
+        closeCheckout();
+        return;
+      }
+
+      const requestId = ++checkoutRequestId;
+      setLoading(true);
+      setStatus("Preparing secure checkout\u2026");
+
+      return loadSumUpSdk()
+        .then(function () {
+          return createCheckout(amount);
+        })
+        .then(function (payload) {
+          if (requestId !== checkoutRequestId || !checkoutOpen) return;
+          const checkoutId = getCheckoutId(payload);
+          if (!checkoutId) {
+            throw new Error("Checkout response was incomplete.");
+          }
+          mountWidget(checkoutId);
+          setStatus("");
+        })
+        .catch(function (err) {
+          if (requestId !== checkoutRequestId) return;
+          console.error("SumUp checkout error", err);
+          closeCheckout();
+          setStatus(
+            err && err.message
+              ? err.message
+              : "Unable to load the card payment form right now.",
+            "error"
+          );
+        })
+        .finally(function () {
+          if (requestId === checkoutRequestId) {
+            setLoading(false);
+          }
+        });
+    };
+
+    const openCheckout = () => {
+      const amount = getSelectedAmount();
+      if (amount === null) {
+        setStatus(getAmountRangeMessage(), "error");
+        return;
+      }
+
+      setStatus("");
+      checkoutOpen = true;
+      panel.classList.add("is-widget-open");
+      refreshCheckout();
+    };
+
+    amountButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const value = btn.getAttribute("data-sumup-amount");
+        activeAmount = value === "custom" ? "custom" : Number(value);
+
+        amountButtons.forEach(function (item) {
+          const isActive = item === btn;
+          item.classList.toggle("is-active", isActive);
+          item.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+
+        if (customWrap) {
+          customWrap.hidden = value !== "custom";
+        }
+
+        if (checkoutOpen) {
+          closeCheckout();
+          setStatus("");
+        }
+
+        if (value === "custom" && customInput) {
+          customInput.focus();
+        }
+      });
+    });
+
+    if (startDonateBtn) {
+      startDonateBtn.addEventListener("click", function () {
+        openCheckout();
+      });
+    }
+
+    if (donateAgainBtn) {
+      donateAgainBtn.addEventListener("click", function () {
+        resetToCheckout();
+      });
+    }
+
+    if (customInput) {
+      customInput.addEventListener("change", function () {
+        if (checkoutOpen) {
+          closeCheckout();
+          setStatus("");
+        }
+      });
+    }
+
+    if (currencySelect) {
+      currencySelect.addEventListener("change", function () {
+        updateAmountPickerLabels();
+        if (checkoutOpen) {
+          closeCheckout();
+          setStatus("");
+        }
+      });
+    }
+
+    if (SUMUP_SANDBOX_MODE) {
+      panel.classList.add("is-sandbox-mode");
+      if (sandboxRibbon) sandboxRibbon.hidden = false;
+    }
+
+    updateAmountPickerLabels();
+  };
+
   const initEnhancedFundraiserWidgets = () => {
     document.querySelectorAll(".gfm-progress-enhanced[data-gfm-progress]").forEach(
       function (widget) {
@@ -5072,6 +5519,7 @@
     initSiteAnnouncements();
     initNavSalahPanel();
     initEnhancedFundraiserWidgets();
+    initSumUpDonate();
     initCampaignPageMotion();
     initAboutPageMotion();
     initHomeDonateMotion();
