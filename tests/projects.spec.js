@@ -130,10 +130,13 @@ test.describe("New Masjid campaign page", () => {
     }
   });
 
-  test("sticky donate FAB is present on mobile", async ({ page }) => {
+  test("sticky donate action is present on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/projects.html");
-    await expect(page.locator(".campaign-donate-fab")).toBeVisible();
-    await expect(page.locator(".campaign-donate-fab")).toContainText("Donate");
+    await expect(page.locator(".site-action-btn--donate")).toBeVisible();
+    await expect(page.locator(".site-action-btn--donate")).toHaveAttribute(
+      "href",
+      "https://kicc.page.link/gfm",
+    );
   });
 });

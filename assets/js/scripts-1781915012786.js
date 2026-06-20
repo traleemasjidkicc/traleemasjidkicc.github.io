@@ -261,20 +261,37 @@
       });
   };
 
-  const getTodayInIreland = () => {
-    // Europe/Dublin handles Irish TZ including DST
-    const now = new Date();
+  const IQAMAH_API_URL = "https://getiqamahtimes-rds3nxm6za-ew.a.run.app";
+  let navSalahActiveTab = "today";
+
+  const getIrelandDateParts = (date) => {
     const parts = new Intl.DateTimeFormat("en-IE", {
       timeZone: "Europe/Dublin",
       year: "numeric",
       month: "long",
       day: "numeric",
-    }).formatToParts(now);
-    const day = Number(parts.find((p) => p.type === "day").value);
-    const monthName = parts.find((p) => p.type === "month").value; // e.g. "December"
-    const year = Number(parts.find((p) => p.type === "year").value);
-    return { year, monthName, day, date: now };
+    }).formatToParts(date);
+    return {
+      day: Number(parts.find((p) => p.type === "day").value),
+      monthName: parts.find((p) => p.type === "month").value,
+      year: Number(parts.find((p) => p.type === "year").value),
+    };
   };
+
+  const getTodayInIreland = () => {
+    const now = new Date();
+    return Object.assign({ date: now }, getIrelandDateParts(now));
+  };
+
+  const getTomorrowInIreland = () => {
+    const dublin = getDublinDate();
+    dublin.setDate(dublin.getDate() + 1);
+    return getIrelandDateParts(dublin);
+  };
+
+  const buildIqamahUrl = (dateParts) =>
+    IQAMAH_API_URL +
+    `?year=${dateParts.year}&month=${encodeURIComponent(dateParts.monthName)}&day=${dateParts.day}`;
 
   const PRAYER_SLOTS = [
     {
@@ -315,6 +332,7 @@
   ];
 
   let cachedPrayerDayData = null;
+  let cachedTomorrowPrayerDayData = null;
   let prayerHighlightTimer = null;
 
   const getDublinDate = () => {
@@ -430,9 +448,11 @@
       .forEach(function (el) {
         el.classList.remove("is-current-prayer", "is-next-prayer");
       });
-    document.querySelectorAll(".kicc-nav-prayer-row").forEach(function (el) {
-      el.classList.remove("is-current-prayer", "is-next-prayer");
-    });
+    document
+      .querySelectorAll(".kicc-nav-prayer-row, .kicc-nav-salah-row")
+      .forEach(function (el) {
+        el.classList.remove("is-current-prayer", "is-next-prayer");
+      });
   };
 
   const highlightPrayerSlot = (slot, className) => {
@@ -445,7 +465,7 @@
     }
     var navBegins = document.getElementById("nav-" + slot.navKey + "-begins");
     if (navBegins) {
-      var navRow = navBegins.closest("tr");
+      var navRow = navBegins.closest(".kicc-nav-salah-row, tr");
       if (navRow) {
         navRow.classList.add("kicc-nav-prayer-row", className);
       }
@@ -502,6 +522,8 @@
         }
       }
     }
+
+    updateNavSalahStatus();
   };
 
   const schedulePrayerHighlights = (d) => {
@@ -559,12 +581,361 @@
     }
   };
 
-  const applyToNav = (d) => {
-    const lower = (s) => s.toLowerCase();
-    setElHtml(
-      "nav-hijri",
-      `${d.hijriDay} ${d.hijriMonthName} ${d.hijriYear}`,
+  const buildNavSalahRowHtml = (slot, options) => {
+    options = options || {};
+    const idPrefix = options.idPrefix || "nav-";
+    const beginsId = idPrefix + slot.navKey + "-begins";
+    const jamaatId = idPrefix + slot.navKey + "-jamaat";
+    const sunriseId = options.sunriseId || "nav-sunrise";
+    const rowClass =
+      slot.id === "fajr" ? " kicc-nav-salah-row-fajr" : "";
+
+    const timesHtml =
+      '<div class="kicc-nav-salah-row-times">' +
+      '<div class="kicc-nav-salah-time">' +
+      '<span class="kicc-nav-salah-time-label">Adhan</span>' +
+      '<span class="kicc-nav-salah-time-value" id="' +
+      beginsId +
+      '" data-field="begins">—</span>' +
+      "</div>" +
+      '<div class="kicc-nav-salah-time kicc-nav-salah-time-iqamah">' +
+      '<span class="kicc-nav-salah-time-label">Iqamah</span>' +
+      '<span class="kicc-nav-salah-time-value" id="' +
+      jamaatId +
+      '" data-field="iqamah">—</span>' +
+      "</div></div>";
+
+    const sunriseHtml =
+      slot.id === "fajr"
+        ? '<p class="kicc-nav-salah-sunrise-inline">' +
+          '<span class="kicc-nav-salah-time-label">Sunrise</span>' +
+          '<span class="kicc-nav-salah-time-value" id="' +
+          sunriseId +
+          '" data-field="sunrise">—</span></p>'
+        : "";
+
+    return (
+      '<div class="kicc-nav-salah-row' +
+      rowClass +
+      '" data-prayer="' +
+      slot.id +
+      '" data-nav-key="' +
+      slot.navKey +
+      '">' +
+      '<div class="kicc-nav-salah-row-name">' +
+      '<span class="kicc-nav-salah-row-label">' +
+      slot.label +
+      "</span>" +
+      '<span class="kicc-nav-salah-row-badge" aria-hidden="true"></span>' +
+      "</div>" +
+      '<div class="kicc-nav-salah-row-body">' +
+      timesHtml +
+      sunriseHtml +
+      "</div></div>"
     );
+  };
+
+  const updateNavSalahTabIndicator = () => {
+    const tabs = document.querySelector(".kicc-nav-salah-tabs");
+    const activeTab = document.getElementById(
+      navSalahActiveTab === "today"
+        ? "nav-salah-tab-today"
+        : "nav-salah-tab-tomorrow",
+    );
+    const indicator = document.querySelector(".kicc-nav-salah-tab-indicator");
+    if (!tabs || !activeTab || !indicator) return;
+
+    const tabsRect = tabs.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    indicator.style.width = tabRect.width + "px";
+    indicator.style.transform =
+      "translateX(" + (tabRect.left - tabsRect.left) + "px)";
+  };
+
+  const updateNavSalahHeaderForTab = () => {
+    const hijriEl = document.getElementById("nav-hijri");
+    const d =
+      navSalahActiveTab === "tomorrow"
+        ? cachedTomorrowPrayerDayData
+        : cachedPrayerDayData;
+
+    if (!d || !hijriEl) return;
+
+    hijriEl.textContent =
+      d.hijriDay + " " + d.hijriMonthName + " " + d.hijriYear;
+  };
+
+  const updateNavSalahDateLabel = () => {
+    const label = document.getElementById("nav-salah-date-label");
+    if (!label) return;
+
+    if (navSalahActiveTab === "today") {
+      const todayDate = document.getElementById("nav-salah-date-today");
+      label.textContent = todayDate ? todayDate.textContent : "Today";
+      return;
+    }
+
+    const tomorrowDate = document.getElementById("nav-salah-date-tomorrow");
+    label.textContent = tomorrowDate ? tomorrowDate.textContent : "Tomorrow";
+  };
+
+  const updateNavSalahStatus = () => {
+    const statusEl = document.getElementById("nav-salah-status");
+    if (!statusEl || !cachedPrayerDayData || navSalahActiveTab !== "today") {
+      if (statusEl) statusEl.hidden = true;
+      return;
+    }
+
+    const state = getPrayerState(cachedPrayerDayData);
+    if (!state) {
+      statusEl.hidden = true;
+      return;
+    }
+
+    const countdown = formatCountdown(state.countdownTarget);
+    const countdownLabel =
+      state.countdownKind === "iqamah"
+        ? state.current.label + " iqamah"
+        : state.next.label;
+
+    statusEl.innerHTML =
+      '<div class="kicc-nav-salah-status-chip kicc-nav-salah-status-chip-current">' +
+      '<span class="kicc-nav-salah-status-label">Now</span>' +
+      '<strong>' +
+      state.current.label +
+      "</strong></div>" +
+      '<div class="kicc-nav-salah-status-chip kicc-nav-salah-status-chip-next">' +
+      '<span class="kicc-nav-salah-status-label">Next · ' +
+      countdownLabel +
+      "</span>" +
+      '<strong class="kicc-nav-salah-countdown">' +
+      countdown +
+      "</strong></div>";
+    statusEl.hidden = false;
+  };
+
+  const setNavSalahTab = (tab) => {
+    if (tab !== "today" && tab !== "tomorrow") return;
+    navSalahActiveTab = tab;
+
+    const todayTab = document.getElementById("nav-salah-tab-today");
+    const tomorrowTab = document.getElementById("nav-salah-tab-tomorrow");
+    const todayPanel = document.getElementById("nav-salah-panel-today");
+    const tomorrowPanel = document.getElementById("nav-salah-panel-tomorrow");
+    const menu = document.querySelector(".kicc-nav-salah-menu");
+
+    if (todayTab) {
+      todayTab.classList.toggle("is-active", tab === "today");
+      todayTab.setAttribute("aria-selected", tab === "today" ? "true" : "false");
+    }
+    if (tomorrowTab) {
+      tomorrowTab.classList.toggle("is-active", tab === "tomorrow");
+      tomorrowTab.setAttribute(
+        "aria-selected",
+        tab === "tomorrow" ? "true" : "false",
+      );
+    }
+
+    if (todayPanel) {
+      todayPanel.classList.toggle("is-active", tab === "today");
+      todayPanel.hidden = tab !== "today";
+    }
+    if (tomorrowPanel) {
+      tomorrowPanel.classList.toggle("is-active", tab === "tomorrow");
+      tomorrowPanel.hidden = tab !== "tomorrow";
+      if (tab === "tomorrow") {
+        tomorrowPanel.classList.remove("is-entering");
+        requestAnimationFrame(function () {
+          tomorrowPanel.classList.add("is-entering");
+        });
+      }
+    }
+
+    if (menu) {
+      menu.classList.toggle("kicc-nav-salah-menu--tomorrow", tab === "tomorrow");
+    }
+
+    updateNavSalahDateLabel();
+    updateNavSalahHeaderForTab();
+    updateNavSalahStatus();
+    updateNavSalahTabIndicator();
+  };
+
+  const onNavSalahTabClick = (event, tab) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setNavSalahTab(tab);
+  };
+
+  const initNavSalahPanel = () => {
+    const menu = document.querySelector(".kicc-nav-salah-menu");
+    if (!menu || menu.dataset.salahEnhanced) return;
+
+    const timetableLink = menu.querySelector("#salah-times, .btn-kicc-salah");
+    const timetableHref = timetableLink ? timetableLink.getAttribute("href") : "#";
+    const monthLabelEl = menu.querySelector("#nav-cur-month");
+    const monthLabel = monthLabelEl
+      ? monthLabelEl.textContent.trim()
+      : "Month";
+
+    const todayRows = PRAYER_SLOTS.map(function (slot) {
+      return buildNavSalahRowHtml(slot, { sunriseId: "nav-sunrise" });
+    }).join("");
+    const tomorrowRows = PRAYER_SLOTS.map(function (slot) {
+      return buildNavSalahRowHtml(slot, {
+        idPrefix: "nav-tomorrow-",
+        sunriseId: "nav-tomorrow-sunrise",
+      });
+    }).join("");
+
+    menu.dataset.salahEnhanced = "true";
+    menu.classList.add("kicc-nav-salah-menu--enhanced");
+    menu.innerHTML =
+      '<div class="kicc-nav-salah-panel">' +
+      '<header class="kicc-nav-salah-header">' +
+      '<p class="kicc-nav-salah-date" id="nav-salah-date-label">Today</p>' +
+      '<p class="kicc-nav-salah-hijri" id="nav-hijri">—</p>' +
+      '<span id="nav-salah-date-today" class="sr-only">Today</span>' +
+      '<span id="nav-salah-date-tomorrow" class="sr-only">Tomorrow</span>' +
+      '<span id="nav-hijri-tomorrow" class="sr-only"></span>' +
+      "</header>" +
+      '<div class="kicc-nav-salah-tabs" role="tablist" aria-label="Salah day">' +
+      '<button type="button" class="kicc-nav-salah-tab is-active" id="nav-salah-tab-today" role="tab" aria-selected="true" aria-controls="nav-salah-panel-today">Today</button>' +
+      '<button type="button" class="kicc-nav-salah-tab" id="nav-salah-tab-tomorrow" role="tab" aria-selected="false" aria-controls="nav-salah-panel-tomorrow">Tomorrow</button>' +
+      '<a class="kicc-nav-salah-tab kicc-nav-salah-tab-month" id="salah-times" href="' +
+      timetableHref +
+      '" target="_blank" rel="noopener noreferrer" title="Download monthly timetable PDF">' +
+      '<i class="far fa-calendar-alt" aria-hidden="true"></i>' +
+      '<span id="nav-cur-month">' +
+      monthLabel +
+      "</span></a>" +
+      '<span class="kicc-nav-salah-tab-indicator" aria-hidden="true"></span>' +
+      "</div>" +
+      '<div class="kicc-nav-salah-status" id="nav-salah-status" hidden></div>' +
+      '<div class="kicc-nav-salah-panels">' +
+      '<div class="kicc-nav-salah-day-panel is-active" id="nav-salah-panel-today" role="tabpanel" aria-labelledby="nav-salah-tab-today">' +
+      todayRows +
+      "</div>" +
+      '<div class="kicc-nav-salah-day-panel" id="nav-salah-panel-tomorrow" role="tabpanel" aria-labelledby="nav-salah-tab-tomorrow" hidden>' +
+      tomorrowRows +
+      "</div></div></div>";
+
+    menu.addEventListener("click", function (event) {
+      if (event.target.closest(".kicc-nav-salah-tab-month")) {
+        return;
+      }
+      if (event.target.closest(".kicc-nav-salah-panel")) {
+        event.stopPropagation();
+      }
+    });
+
+    document
+      .getElementById("nav-salah-tab-today")
+      ?.addEventListener("click", function (event) {
+        onNavSalahTabClick(event, "today");
+      });
+    document
+      .getElementById("nav-salah-tab-tomorrow")
+      ?.addEventListener("click", function (event) {
+        onNavSalahTabClick(event, "tomorrow");
+      });
+
+    const dropdown = menu.closest(".kicc-nav-salah-dropdown");
+    if (dropdown && typeof $ !== "undefined") {
+      $(dropdown).on("hide.bs.dropdown", function (event) {
+        const clickTarget = event.clickEvent && event.clickEvent.target;
+        if (
+          clickTarget &&
+          clickTarget.closest &&
+          clickTarget.closest(".kicc-nav-salah-tab-month")
+        ) {
+          return;
+        }
+        if (
+          clickTarget &&
+          clickTarget.closest &&
+          clickTarget.closest(".kicc-nav-salah-panel")
+        ) {
+          event.preventDefault();
+        }
+      });
+
+      $(dropdown).on("shown.bs.dropdown", function () {
+        menu.classList.add("is-open");
+        updateNavSalahTabIndicator();
+        updateNavSalahStatus();
+      });
+      $(dropdown).on("hidden.bs.dropdown", function () {
+        menu.classList.remove("is-open");
+        setNavSalahTab("today");
+      });
+    }
+
+    window.addEventListener("resize", updateNavSalahTabIndicator, {
+      passive: true,
+    });
+    updateNavSalahTabIndicator();
+  };
+
+  const applyNavSalahDay = (panelId, d, dayKey) => {
+    const panel = document.getElementById(panelId);
+    if (!panel || !d) return;
+
+    const lower = (s) => (s ? String(s).toLowerCase() : "—");
+
+    PRAYER_SLOTS.forEach(function (slot) {
+      const row = panel.querySelector(
+        '.kicc-nav-salah-row[data-prayer="' + slot.id + '"]',
+      );
+      if (!row) return;
+      const beginsEl = row.querySelector('[data-field="begins"]');
+      const iqamahEl = row.querySelector('[data-field="iqamah"]');
+      const beginsVal = lower(d[slot.beginsKey]);
+      const iqamahVal = lower(d[slot.iqamahKey]);
+      if (beginsEl) beginsEl.textContent = beginsVal;
+      if (iqamahEl) iqamahEl.textContent = iqamahVal;
+
+      if (dayKey === "today") {
+        setElHtml("nav-" + slot.navKey + "-begins", beginsVal);
+        setElHtml("nav-" + slot.navKey + "-jamaat", iqamahVal);
+      }
+    });
+
+    const sunriseVal = lower(d.sunriseTime);
+    const sunriseInPanel = panel.querySelector('[data-field="sunrise"]');
+    if (sunriseInPanel) sunriseInPanel.textContent = sunriseVal;
+    if (dayKey === "today") {
+      setElHtml("nav-sunrise", sunriseVal);
+    }
+
+    const hijriText =
+      d.hijriDay + " " + d.hijriMonthName + " " + d.hijriYear;
+    if (dayKey === "today") {
+      setElHtml("nav-hijri", hijriText);
+      const todayDateEl = document.getElementById("nav-salah-date-today");
+      if (todayDateEl) {
+        todayDateEl.textContent = d.gregorianDateString || "Today";
+      }
+    } else {
+      const hijriTomorrow = document.getElementById("nav-hijri-tomorrow");
+      if (hijriTomorrow) hijriTomorrow.textContent = hijriText;
+      const tomorrowDateEl = document.getElementById("nav-salah-date-tomorrow");
+      if (tomorrowDateEl) {
+        tomorrowDateEl.textContent = d.gregorianDateString || "Tomorrow";
+      }
+    }
+
+    if (dayKey === "today") {
+      panel.classList.remove("is-loaded");
+      requestAnimationFrame(function () {
+        panel.classList.add("is-loaded");
+      });
+    } else {
+      panel.classList.add("is-loaded");
+    }
+  };
+
+  const applyToNav = (d) => {
     const today = new Date();
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
     const monthName = isRamadan()
@@ -572,17 +943,55 @@
       : addedDays.toLocaleString("default", { month: "long" });
     setElHtml("nav-cur-month", monthName);
     setElHtml("footer-cur-month", monthName);
-    setElHtml("nav-fajr-begins", lower(d.fajarTime));
-    setElHtml("nav-fajr-jamaat", lower(d.fajarJamahTime));
-    setElHtml("nav-sunrise", lower(d.sunriseTime));
-    setElHtml("nav-zohr-begins", lower(d.dhuharTime));
-    setElHtml("nav-zohr-jamaat", lower(d.zohrJamahTime));
-    setElHtml("nav-asar-begins", lower(d.asrTime));
-    setElHtml("nav-asar-jamaat", lower(d.asarJamahTime));
-    setElHtml("nav-magrib-begins", lower(d.maghribTime));
-    setElHtml("nav-magrib-jamaat", lower(d.maghribJamahTime));
-    setElHtml("nav-isha-begins", lower(d.ishaTime));
-    setElHtml("nav-isha-jamaat", lower(d.ishaJamahTime));
+    applyNavSalahDay("nav-salah-panel-today", d, "today");
+    updateNavSalahDateLabel();
+  };
+
+  const applyTomorrowToNav = (d) => {
+    cachedTomorrowPrayerDayData = d;
+    applyNavSalahDay("nav-salah-panel-tomorrow", d, "tomorrow");
+    updateNavSalahDateLabel();
+    if (navSalahActiveTab === "tomorrow") {
+      updateNavSalahHeaderForTab();
+    }
+  };
+
+  const fetchIqamahForDate = (dateParts, storageKey) => {
+    const cached = localStorage.getItem(storageKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (
+          parsed &&
+          parsed.year === dateParts.year &&
+          parsed.month === dateParts.monthName &&
+          parsed.day === dateParts.day &&
+          parsed.data &&
+          parsed.data[0]
+        ) {
+          return Promise.resolve(parsed.data[0]);
+        }
+      } catch (e) {
+        console.warn("Failed to parse cached iqamah", storageKey, e);
+      }
+    }
+
+    return fetch(buildIqamahUrl(dateParts))
+      .then(function (resp) {
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        return resp.json();
+      })
+      .then(function (json) {
+        if (!json || !json.data || !json.data[0]) {
+          throw new Error("No iqamah data");
+        }
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(json));
+        } catch (e) {
+          console.warn("Unable to cache iqamah", storageKey, e);
+        }
+        return json.data[0];
+      });
   };
 
   const setDynamicCelebrationToBanner = (date) => {
@@ -675,68 +1084,37 @@
   };
 
   const setSalahTimes = () => {
-    const STORAGE_KEY = "iqamah-today";
-    const { year, monthName, day } = getTodayInIreland();
-    const cacheKey = STORAGE_KEY;
+    const todayParts = getTodayInIreland();
+    const tomorrowParts = getTomorrowInIreland();
 
-    // 1. Try localStorage first
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        console.log("Loaded iqamah from localStorage", JSON.stringify(parsed));
-        const d = parsed.data && parsed.data[0];
-        if (d) {
-          applyToHomePage(d);
-          applyToNav(d);
-          schedulePrayerHighlights(d);
-          setDynamicCelebrationToBanner(d);
-        }
-      } catch (e) {
-        console.warn("Failed to parse cached iqamah", e);
-      }
-    }
-
-    // 2. Always fetch latest data and update UI + cache
-    const url =
-      "https://getiqamahtimes-rds3nxm6za-ew.a.run.app" +
-      `?year=${year}&month=${encodeURIComponent(monthName)}&day=${day}`;
-
-    return fetch(url)
-      .then(function (resp) {
-        if (!resp.ok) {
-          console.error(
-            "Error fetching iqamah times",
-            resp.status,
-            resp.statusText,
-          );
-          return null;
-        }
-        return resp.json();
-      })
-      .then(function (json) {
-        if (!json) {
-          return;
-        }
-        console.log("Fetched iqamah from API", json);
-        const d = json.data && json.data[0];
-        if (!d) {
-          console.warn("No data for today in API response");
-          return;
-        }
-        localStorage.setItem(cacheKey, JSON.stringify(json));
+    fetchIqamahForDate(todayParts, "iqamah-today")
+      .then(function (d) {
         applyToHomePage(d);
         applyToNav(d);
         schedulePrayerHighlights(d);
         setDynamicCelebrationToBanner(d);
       })
       .catch(function (err) {
-        console.error("Failed to fetch iqamah times", err);
+        console.error("Failed to load today's iqamah times", err);
+      });
+
+    fetchIqamahForDate(tomorrowParts, "iqamah-tomorrow")
+      .then(function (d) {
+        applyTomorrowToNav(d);
+      })
+      .catch(function (err) {
+        console.warn("Failed to load tomorrow's iqamah times", err);
       });
   };
 
   const COOKIE_CONSENT_KEY = "kicc-accept-cookie";
+  const ANNOUNCEMENTS_API_URL =
+    "https://getannouncements-rds3nxm6za-ew.a.run.app";
+  const BREAKING_DISMISS_PREFIX = "kicc-breaking-dismiss-";
   let postCookieConsentDone = false;
+  let pendingBreakingAnnouncement = null;
+  let siteAnnouncementsBound = false;
+  let lastShownBreakingIdentity = "";
 
   const hasCookieConsent = () => {
     try {
@@ -754,8 +1132,13 @@
     document.documentElement.classList.remove("cookie-consent-pending");
     document.body.classList.remove("cookie-consent-active");
     if (isHomePage()) {
-      showSignUpModal();
+      const modalScheduled = showSignUpModal();
+      if (!modalScheduled) {
+        tryShowBreakingAlert();
+      }
+      return;
     }
+    tryShowBreakingAlert();
   };
 
   const hideCookieConsent = (animate) => {
@@ -807,6 +1190,7 @@
       });
       $(modal).on("hidden.bs.modal", function () {
         modal.classList.remove("is-content-visible");
+        tryShowBreakingAlert();
       });
     }
 
@@ -829,7 +1213,7 @@
   };
 
   const showSignUpModal = () => {
-    if (!hasCookieConsent()) return;
+    if (!hasCookieConsent()) return false;
     setSignUpCookies();
     initSignUpModal();
 
@@ -840,7 +1224,9 @@
           $("#myModal").modal("hide");
         }, 30000);
       }, 2500);
+      return true;
     }
+    return false;
   };
 
   const showCookiePolicy = () => {
@@ -1056,6 +1442,8 @@
     return false;
   };
 
+  const isFridayInDublin = () => getDublinDate().getDay() === 5;
+
   const getJumuahBannerBadge = () =>
     getDublinDate().getDay() === 5 ? "Today" : "This Friday";
 
@@ -1063,8 +1451,6 @@
     const cached = loadAnnouncementsFromCache();
     renderJumuahFridayBanner(cached || []);
   };
-
-  const isFridayInDublin = () => getDublinDate().getDay() === 5;
 
   const getJumuahTimes = (announcements) => {
     if (!Array.isArray(announcements)) return null;
@@ -1077,6 +1463,12 @@
       return null;
     }
     return jumuah.jummahTimes;
+  };
+
+  const isJumuahFeatureBannerVisible = (jummahTimes) => {
+    if (!jummahTimes || jummahTimes.length === 0) return false;
+    if (!isJumuahDisplayWindow()) return false;
+    return isHomePage() || isActivitiesPage();
   };
 
   const buildJumuahTimesHtml = (jummahTimes) => {
@@ -1137,10 +1529,12 @@
 
   const renderNavJumuahRow = (jummahTimes) => {
     const zohrBegins = document.getElementById("nav-zohr-begins");
-    const zohrRow = zohrBegins ? zohrBegins.closest("tr") : null;
+    const zohrRow = zohrBegins
+      ? zohrBegins.closest(".kicc-nav-salah-row, tr")
+      : null;
     const existing = document.getElementById("nav-jumuah-row");
 
-    if (!isJumuahDisplayWindow() || !jummahTimes || jummahTimes.length === 0) {
+    if (!jummahTimes || jummahTimes.length === 0) {
       if (existing) existing.remove();
       return;
     }
@@ -1150,13 +1544,36 @@
     const slot = jummahTimes[0];
     const speech = formatTimeToAmPm(slot.speech) || "—";
     const khutbah = formatTimeToAmPm(slot.khutbah) || "—";
+    const isEnhanced = !!zohrRow.classList.contains("kicc-nav-salah-row");
 
     let row = existing;
     if (!row) {
-      row = document.createElement("tr");
+      row = document.createElement(isEnhanced ? "div" : "tr");
       row.id = "nav-jumuah-row";
-      row.className = "kicc-nav-jumuah-row kicc-nav-prayer-row";
+      row.className = isEnhanced
+        ? "kicc-nav-salah-row kicc-nav-jumuah-row kicc-nav-prayer-row"
+        : "kicc-nav-jumuah-row kicc-nav-prayer-row";
       zohrRow.insertAdjacentElement("afterend", row);
+    }
+
+    if (isEnhanced) {
+      row.innerHTML =
+        '<div class="kicc-nav-salah-row-name">' +
+        '<span class="kicc-nav-salah-row-label">Jumu\'ah</span>' +
+        '<span class="kicc-nav-salah-row-badge" aria-hidden="true"></span>' +
+        "</div>" +
+        '<div class="kicc-nav-salah-row-times kicc-nav-jumuah-times">' +
+        '<div class="kicc-nav-salah-time">' +
+        '<span class="kicc-nav-salah-time-label">Speech</span>' +
+        '<span class="kicc-nav-salah-time-value">' +
+        speech +
+        "</span></div>" +
+        '<div class="kicc-nav-salah-time kicc-nav-salah-time-iqamah">' +
+        '<span class="kicc-nav-salah-time-label">Khutbah</span>' +
+        '<span class="kicc-nav-salah-time-value">' +
+        khutbah +
+        "</span></div></div>";
+      return;
     }
 
     row.innerHTML =
@@ -1172,11 +1589,13 @@
   const renderJumuahFridayBanner = (announcements) => {
     const banners = document.querySelectorAll(".jumuah-friday-banner");
     const jummahTimes = getJumuahTimes(announcements);
-    const show = isJumuahDisplayWindow() && jummahTimes;
+    const showFeatureBanner = isJumuahDisplayWindow() && jummahTimes;
+
+    renderNavJumuahRow(jummahTimes);
 
     if (banners.length) {
       banners.forEach(function (banner) {
-        if (!show) {
+        if (!showFeatureBanner) {
           banner.hidden = true;
           banner.innerHTML = "";
           return;
@@ -1195,65 +1614,386 @@
         banner.hidden = false;
       });
     }
-
-    renderNavJumuahRow(show ? jummahTimes : null);
   };
 
-  const loadJumuahFridayTimes = () => {
-    const cached = loadAnnouncementsFromCache();
-    if (cached) {
-      renderJumuahFridayBanner(cached);
-    }
+  const pickAnnouncementByType = (announcements, type) => {
+    if (!Array.isArray(announcements)) return null;
+    const matches = announcements.filter((a) => a.type === type);
+    if (!matches.length) return null;
+    const active = matches.filter((a) => a.active);
+    const pool = active.length ? active : matches;
+    return pool.sort(
+      (a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0),
+    )[0];
+  };
 
-    const isHome = isHomePage();
-    if (isHome && document.getElementById("announcement")) {
+  const parseAnnouncementsByType = (announcements) => {
+    if (!Array.isArray(announcements)) {
+      return { breaking: null, general: null, jumuah: null };
+    }
+    return {
+      breaking: pickAnnouncementByType(announcements, "breaking"),
+      general: pickAnnouncementByType(announcements, "general"),
+      jumuah: pickAnnouncementByType(announcements, "jumuah"),
+    };
+  };
+
+  const getBreakingAnnouncementTimestamp = (announcement) =>
+    Number(announcement && announcement.timestamp) || 0;
+
+  const getAnnouncementDismissKey = (announcement) => {
+    if (!announcement) return "";
+    if (announcement.id) return BREAKING_DISMISS_PREFIX + announcement.id;
+    return BREAKING_DISMISS_PREFIX + String(announcement.timestamp || "legacy");
+  };
+
+  const isBreakingDismissed = (announcement) => {
+    const key = getAnnouncementDismissKey(announcement);
+    if (!key || !announcement) return false;
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored === null || stored === "") return false;
+      if (stored === "1") return false;
+      const dismissedTs = Number(stored);
+      if (!Number.isFinite(dismissedTs)) return false;
+      return getBreakingAnnouncementTimestamp(announcement) <= dismissedTs;
+    } catch {
+      return false;
+    }
+  };
+
+  const dismissBreakingAnnouncement = (announcement) => {
+    const key = getAnnouncementDismissKey(announcement);
+    if (!key || !announcement) return;
+    try {
+      const ts = getBreakingAnnouncementTimestamp(announcement) || Date.now();
+      localStorage.setItem(key, String(ts));
+    } catch {
+      // ignore storage errors
+    }
+  };
+
+  const getBreakingIdentity = (breaking) => {
+    if (!breaking) return "";
+    return String(breaking.id || "legacy") + ":" + getBreakingAnnouncementTimestamp(breaking);
+  };
+
+  const selectRibbonAnnouncement = (announcements, options) => {
+    options = options || {};
+    const suppressJumuah = !!options.suppressJumuah;
+    const { breaking, general, jumuah } = parseAnnouncementsByType(announcements);
+    const showJumuahMessage =
+      !suppressJumuah &&
+      isFridayInDublin() &&
+      jumuah &&
+      jumuah.active &&
+      jumuah.message;
+
+    if (breaking && breaking.active && breaking.message) {
+      return { announcement: breaking, variant: "breaking" };
+    }
+    if (showJumuahMessage) {
+      return { announcement: jumuah, variant: "jumuah" };
+    }
+    if (general && general.active && general.message) {
+      return { announcement: general, variant: "general" };
+    }
+    return null;
+  };
+
+  const getRibbonVariantLabel = (variant) => {
+    if (variant === "breaking") return "Important";
+    if (variant === "jumuah") return "Jumu'ah";
+    return "Announcement";
+  };
+
+  const buildJumuahRibbonScheduleHtml = (jummahTimes) => {
+    if (!Array.isArray(jummahTimes) || jummahTimes.length === 0) return "";
+
+    const slot = jummahTimes[0];
+    const speech = formatTimeToAmPm(slot.speech);
+    const khutbah = formatTimeToAmPm(slot.khutbah);
+    const parts = [];
+
+    if (speech) {
+      parts.push('Speech <strong>' + speech + "</strong>");
+    }
+    if (khutbah) {
+      parts.push("Khutbah &amp; salah <strong>" + khutbah + "</strong>");
+    }
+    if (!parts.length) return "";
+
+    return (
+      '<p class="site-announcement-ribbon-schedule">' +
+      '<i class="fas fa-mosque" aria-hidden="true"></i> ' +
+      '<span class="site-announcement-ribbon-schedule-label">Jumu\'ah</span> ' +
+      parts.join(" · ") +
+      "</p>"
+    );
+  };
+
+  const isBlockingOverlayVisible = () => {
+    if (document.documentElement.classList.contains("cookie-consent-pending")) {
+      return true;
+    }
+    if (document.body.classList.contains("cookie-consent-active")) {
+      return true;
+    }
+    const modal = document.getElementById("myModal");
+    if (modal && modal.classList.contains("show")) {
+      return true;
+    }
+    return false;
+  };
+
+  const hideBreakingAlert = (animate) => {
+    const alertEl = document.getElementById("site-breaking-alert");
+    if (!alertEl) return;
+
+    const finish = () => {
+      alertEl.hidden = true;
+      alertEl.classList.remove("is-visible", "is-leaving");
+      alertEl.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("site-breaking-alert-open");
+    };
+
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
       return;
     }
 
-    fetch("https://getannouncements-rds3nxm6za-ew.a.run.app")
+    alertEl.classList.add("is-leaving");
+    alertEl.classList.remove("is-visible");
+    window.setTimeout(finish, 320);
+  };
+
+  const showBreakingAlert = (breaking) => {
+    const alertEl = document.getElementById("site-breaking-alert");
+    const messageEl = document.getElementById("site-breaking-alert-message");
+    if (!alertEl || !messageEl || !breaking || !breaking.message) return;
+
+    messageEl.innerHTML = breaking.message;
+    alertEl.hidden = false;
+    alertEl.setAttribute("aria-hidden", "false");
+    document.body.classList.add("site-breaking-alert-open");
+    lastShownBreakingIdentity = getBreakingIdentity(breaking);
+
+    requestAnimationFrame(function () {
+      alertEl.classList.add("is-visible");
+    });
+  };
+
+  const tryShowBreakingAlert = () => {
+    if (!pendingBreakingAnnouncement) return;
+    if (isBlockingOverlayVisible()) return;
+    if (isBreakingDismissed(pendingBreakingAnnouncement)) {
+      return;
+    }
+
+    const identity = getBreakingIdentity(pendingBreakingAnnouncement);
+    const alertEl = document.getElementById("site-breaking-alert");
+    const isOpen =
+      alertEl &&
+      !alertEl.hidden &&
+      alertEl.classList.contains("is-visible") &&
+      lastShownBreakingIdentity === identity;
+
+    if (isOpen) return;
+
+    showBreakingAlert(pendingBreakingAnnouncement);
+  };
+
+  const queueBreakingAlert = (breaking) => {
+    if (!breaking || !breaking.active || !breaking.message) {
+      pendingBreakingAnnouncement = null;
+      lastShownBreakingIdentity = "";
+      hideBreakingAlert(false);
+      return;
+    }
+    if (isBreakingDismissed(breaking)) {
+      pendingBreakingAnnouncement = null;
+      return;
+    }
+
+    const identity = getBreakingIdentity(breaking);
+    const identityChanged = identity !== lastShownBreakingIdentity;
+
+    pendingBreakingAnnouncement = breaking;
+
+    if (identityChanged) {
+      hideBreakingAlert(false);
+    }
+
+    tryShowBreakingAlert();
+  };
+
+  const ensureSiteAnnouncementShell = () => {
+    if (document.getElementById("site-announcement-ribbon")) return;
+
+    const mainNav = document.querySelector(".kicc-nav-v2");
+    if (!mainNav) return;
+
+    const legacyBar = document.getElementById("announcement-bar");
+    if (legacyBar) legacyBar.remove();
+
+    const ribbon = document.createElement("aside");
+    ribbon.id = "site-announcement-ribbon";
+    ribbon.className = "site-announcement-ribbon";
+    ribbon.hidden = true;
+    ribbon.setAttribute("aria-live", "polite");
+    ribbon.innerHTML =
+      '<div class="site-announcement-ribbon-inner">' +
+      '<div class="site-announcement-ribbon-main">' +
+      '<span class="site-announcement-ribbon-badge" id="site-announcement-ribbon-badge"></span>' +
+      '<div class="site-announcement-ribbon-message" id="site-announcement-ribbon-message"></div>' +
+      "</div>" +
+      '<div class="site-announcement-ribbon-schedule-wrap" id="site-announcement-ribbon-schedule" hidden></div>' +
+      "</div>";
+
+    const alertEl = document.createElement("div");
+    alertEl.id = "site-breaking-alert";
+    alertEl.className = "site-breaking-alert";
+    alertEl.hidden = true;
+    alertEl.setAttribute("role", "alertdialog");
+    alertEl.setAttribute("aria-modal", "true");
+    alertEl.setAttribute("aria-labelledby", "site-breaking-alert-title");
+    alertEl.setAttribute("aria-describedby", "site-breaking-alert-message");
+    alertEl.setAttribute("aria-hidden", "true");
+    alertEl.innerHTML =
+      '<div class="site-breaking-alert-backdrop" aria-hidden="true"></div>' +
+      '<div class="site-breaking-alert-dialog">' +
+      '<div class="site-breaking-alert-card">' +
+      '<span class="site-breaking-alert-icon" aria-hidden="true">' +
+      '<i class="fas fa-bullhorn"></i></span>' +
+      '<h2 id="site-breaking-alert-title" class="site-breaking-alert-title">Important announcement</h2>' +
+      '<div id="site-breaking-alert-message" class="site-breaking-alert-message"></div>' +
+      '<p class="site-breaking-alert-note">You can dismiss this alert. A reminder stays visible in the banner across the site.</p>' +
+      '<button type="button" class="site-breaking-alert-dismiss" id="site-breaking-alert-dismiss">' +
+      "Got it — keep banner reminder</button>" +
+      "</div></div>";
+
+    mainNav.insertAdjacentElement("afterend", ribbon);
+    document.body.appendChild(alertEl);
+  };
+
+  const bindSiteAnnouncementEvents = () => {
+    if (siteAnnouncementsBound) return;
+    siteAnnouncementsBound = true;
+
+    const dismissBtn = document.getElementById("site-breaking-alert-dismiss");
+    if (dismissBtn && !dismissBtn.dataset.bound) {
+      dismissBtn.dataset.bound = "true";
+      dismissBtn.addEventListener("click", function () {
+        if (pendingBreakingAnnouncement) {
+          dismissBreakingAnnouncement(pendingBreakingAnnouncement);
+        }
+        hideBreakingAlert(true);
+      });
+    }
+
+    const backdrop = document.querySelector(".site-breaking-alert-backdrop");
+    if (backdrop && !backdrop.dataset.bound) {
+      backdrop.dataset.bound = "true";
+      backdrop.addEventListener("click", function () {
+        dismissBtn?.click();
+      });
+    }
+  };
+
+  const renderSiteAnnouncementRibbon = (announcements) => {
+    ensureSiteAnnouncementShell();
+    bindSiteAnnouncementEvents();
+
+    const ribbon = document.getElementById("site-announcement-ribbon");
+    const badgeEl = document.getElementById("site-announcement-ribbon-badge");
+    const messageEl = document.getElementById("site-announcement-ribbon-message");
+    const scheduleWrap = document.getElementById(
+      "site-announcement-ribbon-schedule",
+    );
+    if (!ribbon || !badgeEl || !messageEl || !scheduleWrap) return;
+
+    const jummahTimes = getJumuahTimes(announcements);
+    const suppressJumuahInRibbon = isJumuahFeatureBannerVisible(jummahTimes);
+    const selected = selectRibbonAnnouncement(announcements, {
+      suppressJumuah: suppressJumuahInRibbon,
+    });
+    const scheduleHtml = buildJumuahRibbonScheduleHtml(jummahTimes);
+    const hasSchedule = !!scheduleHtml && !suppressJumuahInRibbon;
+    const hasMessage = !!(selected && selected.announcement.message);
+
+    ribbon.classList.remove(
+      "site-announcement-ribbon--breaking",
+      "site-announcement-ribbon--jumuah",
+      "site-announcement-ribbon--general",
+      "site-announcement-ribbon--schedule-only",
+    );
+
+    if (!hasMessage && !hasSchedule) {
+      ribbon.hidden = true;
+      messageEl.innerHTML = "";
+      scheduleWrap.innerHTML = "";
+      scheduleWrap.hidden = true;
+      queueStickyNavOffsetSync();
+      return;
+    }
+
+    if (hasMessage) {
+      badgeEl.textContent = getRibbonVariantLabel(selected.variant);
+      messageEl.innerHTML = selected.announcement.message;
+      ribbon.classList.add("site-announcement-ribbon--" + selected.variant);
+      badgeEl.hidden = false;
+      messageEl.hidden = false;
+    } else {
+      badgeEl.hidden = true;
+      messageEl.hidden = true;
+      messageEl.innerHTML = "";
+      ribbon.classList.add("site-announcement-ribbon--schedule-only");
+    }
+
+    if (hasSchedule) {
+      scheduleWrap.innerHTML = scheduleHtml;
+      scheduleWrap.hidden = false;
+    } else {
+      scheduleWrap.innerHTML = "";
+      scheduleWrap.hidden = true;
+    }
+
+    ribbon.hidden = false;
+    queueStickyNavOffsetSync();
+  };
+
+  const applyAnnouncements = (announcements) => {
+    renderSiteAnnouncementRibbon(announcements);
+    renderJumuahFridayBanner(announcements);
+
+    const { breaking } = parseAnnouncementsByType(announcements);
+    queueBreakingAlert(breaking && breaking.active ? breaking : null);
+  };
+
+  const initSiteAnnouncements = () => {
+    ensureSiteAnnouncementShell();
+    bindSiteAnnouncementEvents();
+
+    const cached = loadAnnouncementsFromCache();
+    if (cached) {
+      applyAnnouncements(cached);
+    }
+
+    fetch(ANNOUNCEMENTS_API_URL)
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
       })
       .then(function (announcements) {
         saveAnnouncementsToCache(announcements);
-        renderJumuahFridayBanner(announcements);
+        applyAnnouncements(announcements);
       })
       .catch(function () {
         if (!cached) {
           renderJumuahFridayBanner([]);
+          queueStickyNavOffsetSync();
         }
       });
-  };
-
-  const selectAnnouncement = (announcements) => {
-    if (!Array.isArray(announcements) || announcements.length === 0) {
-      return null;
-    }
-
-    const jumuah = announcements.find((a) => a.type === "jumuah") || null;
-    const breaking = announcements.find((a) => a.type === "breaking") || null;
-    const general = announcements.find((a) => a.type === "general") || null;
-
-    const breakingActive = !!(breaking && breaking.active);
-    if (breakingActive) return breaking;
-
-    const isFriday = isFridayInDublin();
-    const jumuahActive = !!(jumuah && jumuah.active);
-    const generalActive = !!(general && general.active);
-
-    if (isJumuahDisplayWindow() && jumuahActive) return jumuah;
-
-    if (!isFriday && generalActive) return general;
-
-    return null;
-  };
-
-  const showDefaultNotice = () => {
-    const announcementEl = document.getElementById("announcement");
-    if (!announcementEl) return;
-    announcementEl.innerHTML =
-      '<p>Please check the masjid <a href="#notice-board">notice board.</a></p>';
   };
 
   const loadAnnouncementsFromCache = () => {
@@ -1276,60 +2016,6 @@
     } catch {
       // ignore storage errors
     }
-  };
-
-  const getAnnouncement = () => {
-    const announcementEl = document.getElementById("announcement");
-    const bar = document.getElementById("announcement-bar");
-    if (!announcementEl) return;
-
-    const applySelectionToDom = (selected) => {
-      if (!selected) {
-        if (bar) {
-          bar.classList.add("d-none");
-          bar.classList.remove("bigEntrance", "stretchLeft");
-        }
-        announcementEl.innerHTML = "";
-        return;
-      }
-
-      announcementEl.innerHTML = selected.message || "";
-
-      if (selected.active && bar) {
-        bar.classList.add("bigEntrance", "stretchLeft");
-        bar.classList.remove("d-none");
-      } else if (bar) {
-        bar.classList.add("d-none");
-        bar.classList.remove("bigEntrance", "stretchLeft");
-      }
-    };
-
-    // 1) Use cached announcements for fast first paint
-    const cached = loadAnnouncementsFromCache();
-    if (cached) {
-      const selectedCached = selectAnnouncement(cached);
-      applySelectionToDom(selectedCached);
-      renderJumuahFridayBanner(cached);
-    }
-
-    // 2) Always fetch latest, update cache + DOM
-    fetch("https://getannouncements-rds3nxm6za-ew.a.run.app")
-      .then((res) => {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.json();
-      })
-      .then((announcements) => {
-        saveAnnouncementsToCache(announcements);
-
-        const selected = selectAnnouncement(announcements);
-        applySelectionToDom(selected);
-        renderJumuahFridayBanner(announcements);
-      })
-      .catch(() => {
-        if (!cached) {
-          showDefaultNotice();
-        }
-      });
   };
 
   const loadNoticesFromCache = () => {
@@ -2597,20 +3283,6 @@
   };
 
   const SITE_PAGE_NAV = {
-    home: [
-      { href: "#home-hero", icon: "fas fa-clock", label: "Salah" },
-      { href: "activities.html", icon: "fas fa-book-open", label: "Programmes" },
-      { href: "madrasa.html", icon: "fas fa-child", label: "Madrasa" },
-      { href: "projects.html", icon: "fas fa-mosque", label: "New Masjid" },
-      { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
-      {
-        href: "https://kicc.page.link/gfm",
-        icon: "fas fa-hand-holding-heart",
-        label: "Donate",
-        accent: true,
-        external: true,
-      },
-    ],
     activities: [
       { href: "#listen", icon: "fas fa-broadcast-tower", label: "Listen" },
       { href: "#schedule", icon: "fas fa-calendar-week", label: "Schedule" },
@@ -2631,13 +3303,6 @@
     projects: [
       { href: "#campaign-hero", icon: "fas fa-mosque", label: "Campaign" },
       { href: "#campaign-progress", icon: "fas fa-hard-hat", label: "Progress" },
-      {
-        href: "https://kicc.page.link/gfm",
-        icon: "fas fa-hand-holding-heart",
-        label: "Donate",
-        accent: true,
-        external: true,
-      },
       { href: "contact.html", icon: "fas fa-map-marker-alt", label: "Visit" },
     ],
     about: [
@@ -2684,7 +3349,64 @@
     return li;
   };
 
+  let stickyNavOffsetTick = false;
+
+  const syncStickyNavOffset = () => {
+    const mainNav = document.querySelector(".kicc-nav-v2");
+    if (!mainNav) return;
+
+    const navHeight = Math.ceil(mainNav.getBoundingClientRect().height);
+    let top = navHeight;
+
+    if (navHeight > 0) {
+      document.documentElement.style.setProperty(
+        "--kicc-nav-height",
+        navHeight + "px",
+      );
+    }
+
+    const ribbon = document.getElementById("site-announcement-ribbon");
+    if (ribbon && !ribbon.hidden) {
+      const ribbonHeight = Math.ceil(ribbon.getBoundingClientRect().height);
+      if (ribbonHeight > 0) {
+        top += ribbonHeight;
+        document.documentElement.style.setProperty(
+          "--kicc-announcement-ribbon-height",
+          ribbonHeight + "px",
+        );
+      } else {
+        document.documentElement.style.setProperty(
+          "--kicc-announcement-ribbon-height",
+          "0px",
+        );
+      }
+    } else {
+      document.documentElement.style.setProperty(
+        "--kicc-announcement-ribbon-height",
+        "0px",
+      );
+    }
+
+    if (top > 0) {
+      document.documentElement.style.setProperty(
+        "--kicc-sticky-nav-top",
+        top + "px",
+      );
+    }
+  };
+
+  const queueStickyNavOffsetSync = () => {
+    if (stickyNavOffsetTick) return;
+    stickyNavOffsetTick = true;
+    requestAnimationFrame(function () {
+      syncStickyNavOffset();
+      stickyNavOffsetTick = false;
+    });
+  };
+
   const initSitePageNav = () => {
+    if (isHomePage()) return;
+
     const pageKey = getPageKey();
     const items = pageKey ? SITE_PAGE_NAV[pageKey] : null;
     if (!items || items.length === 0) return;
@@ -2713,7 +3435,10 @@
 
     container.appendChild(list);
     section.appendChild(container);
-    mainNav.insertAdjacentElement("afterend", section);
+    const insertAfter =
+      document.getElementById("site-announcement-ribbon") || mainNav;
+    insertAfter.insertAdjacentElement("afterend", section);
+    queueStickyNavOffsetSync();
   };
 
   const PAGE_SECTION_NAV_SELECTOR =
@@ -2727,20 +3452,27 @@
     document.body.classList.add("has-page-section-nav");
     document.body.appendChild(nav);
 
-    const lists = nav.querySelectorAll(
+    const tracks = [];
+    nav.querySelectorAll(
       ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list"
-    );
-    lists.forEach(function (list) {
+    ).forEach(function (list) {
+      list.classList.add("page-section-nav-track");
+
+      const indicator = document.createElement("span");
+      indicator.className = "page-section-nav-indicator";
+      indicator.setAttribute("aria-hidden", "true");
+      list.insertBefore(indicator, list.firstChild);
+
       list.querySelectorAll("li").forEach(function (li, index) {
         li.style.setProperty("--pill-i", index);
       });
+
+      tracks.push({ list: list, indicator: indicator });
     });
 
-    const revealDock = () => {
+    requestAnimationFrame(function () {
       nav.classList.add("is-visible");
-    };
-
-    requestAnimationFrame(revealDock);
+    });
 
     const links = nav.querySelectorAll('a[href^="#"]');
     const sections = [];
@@ -2750,37 +3482,157 @@
       if (el) sections.push({ link: link, el: el });
     });
 
-    const setActiveLink = (activeEl) => {
-      sections.forEach(function (item) {
-        item.link.classList.toggle("is-active", item.el === activeEl);
+    if (sections.length === 0) return;
+
+    let activeItem = sections[0];
+    let scrollTicking = false;
+
+    const getTrackForLink = (link) => {
+      return tracks.find(function (track) {
+        return track.list.contains(link);
       });
     };
 
-    if (sections.length && "IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              setActiveLink(entry.target);
-            }
-          });
-        },
-        {
-          rootMargin: "-42% 0px -38% 0px",
-          threshold: 0,
-        }
-      );
+    const getLinkMetrics = (link, list) => {
+      const linkRect = link.getBoundingClientRect();
+      const listRect = list.getBoundingClientRect();
+      return {
+        contentLeft: linkRect.left - listRect.left + list.scrollLeft,
+        width: linkRect.width,
+        viewportLeft: linkRect.left,
+        viewportRight: linkRect.right,
+        listLeft: listRect.left,
+        listRight: listRect.right,
+      };
+    };
+
+    const updateIndicator = (link) => {
+      const track = getTrackForLink(link);
+      if (!track) return;
+
+      const metrics = getLinkMetrics(link, track.list);
+      track.indicator.style.width = metrics.width + "px";
+      track.indicator.style.left = metrics.contentLeft + "px";
+    };
+
+    const scrollActiveIntoView = (link, forceCenter) => {
+      const track = getTrackForLink(link);
+      if (!track) return;
+
+      const list = track.list;
+      if (list.scrollWidth <= list.clientWidth + 2) return;
+
+      if (forceCenter) {
+        link.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+        return;
+      }
+
+      const metrics = getLinkMetrics(link, list);
+      const edgePad = 20;
+      const needsScroll =
+        metrics.viewportRight > metrics.listRight - edgePad ||
+        metrics.viewportLeft < metrics.listLeft + edgePad;
+
+      if (needsScroll) {
+        link.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    };
+
+    const setActiveLink = (nextItem, fromScroll) => {
+      if (!nextItem) return;
+
+      const changed = activeItem !== nextItem;
+      if (changed) {
+        activeItem = nextItem;
+        sections.forEach(function (item) {
+          item.link.classList.toggle("is-active", item === nextItem);
+        });
+      }
+
+      updateIndicator(nextItem.link);
+
+      if (changed) {
+        scrollActiveIntoView(nextItem.link, true);
+      } else if (fromScroll) {
+        scrollActiveIntoView(nextItem.link, false);
+      }
+    };
+
+    const resolveActiveSection = () => {
+      const probeLine = window.scrollY + window.innerHeight * 0.32;
+      let current = sections[0];
+
       sections.forEach(function (item) {
-        observer.observe(item.el);
+        const sectionTop = item.el.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= probeLine + 8) {
+          current = item;
+        }
       });
-    }
+
+      return current;
+    };
+
+    const onScrollSpy = () => {
+      setActiveLink(resolveActiveSection(), true);
+    };
+
+    const queueScrollSpy = () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(function () {
+        onScrollSpy();
+        scrollTicking = false;
+      });
+    };
+
+    window.addEventListener("scroll", queueScrollSpy, { passive: true });
+    window.addEventListener(
+      "resize",
+      function () {
+        updateIndicator(activeItem.link);
+      },
+      { passive: true }
+    );
+
+    tracks.forEach(function (track) {
+      track.list.addEventListener(
+        "scroll",
+        function () {
+          updateIndicator(activeItem.link);
+        },
+        { passive: true }
+      );
+    });
 
     links.forEach(function (link) {
       link.addEventListener("click", function () {
         const id = decodeURIComponent(link.getAttribute("href").slice(1));
         const el = document.getElementById(id);
-        if (el) setActiveLink(el);
+        const item = sections.find(function (entry) {
+          return entry.el === el;
+        });
+        if (item) {
+          sections.forEach(function (entry) {
+            entry.link.classList.toggle("is-active", entry === item);
+          });
+          activeItem = item;
+          updateIndicator(item.link);
+          scrollActiveIntoView(item.link, true);
+        }
       });
+    });
+
+    onScrollSpy();
+    requestAnimationFrame(function () {
+      updateIndicator(activeItem.link);
     });
   };
 
@@ -2876,16 +3728,18 @@
       const pctEl = el.querySelector("[data-gfm-percent]");
       const trackEl = el.querySelector("[data-gfm-track]");
 
+      el.dataset.gfmRaised = String(raised);
+      el.dataset.gfmGoal = String(goal);
+      el.dataset.gfmCurrency = currencyCode;
+      el.dataset.gfmPct = String(pct);
+      el.dataset.gfmPctLabel = pctLabel;
+
       if (nameEl) nameEl.textContent = fundraiser.fundName;
-      if (raisedEl) raisedEl.textContent = formatFundraiserAmount(raised, currencyCode);
       if (goalEl) {
         goalEl.textContent =
           "raised of " + formatFundraiserAmount(goal, currencyCode) + " goal";
       }
-      if (fillEl) fillEl.style.width = pct + "%";
-      if (pctEl) pctEl.textContent = pctLabel;
       if (trackEl) {
-        trackEl.setAttribute("aria-valuenow", pctLabel);
         trackEl.setAttribute("aria-valuemin", "0");
         trackEl.setAttribute("aria-valuemax", "100");
         trackEl.setAttribute(
@@ -2893,8 +3747,240 @@
           "Campaign " + pctLabel + "% funded"
         );
       }
+
+      if (el.classList.contains("gfm-progress-enhanced")) {
+        const remainingEl = el.querySelector("[data-gfm-remaining]");
+        if (remainingEl) {
+          const remaining = Math.max(0, goal - raised);
+          remainingEl.textContent =
+            formatFundraiserAmount(remaining, currencyCode) + " to go";
+          remainingEl.hidden = remaining <= 0;
+        }
+        if (el.classList.contains("gfm-progress-is-visible")) {
+          animateEnhancedFundraiserWidget(el);
+        }
+        return;
+      }
+
+      if (raisedEl) raisedEl.textContent = formatFundraiserAmount(raised, currencyCode);
+      if (fillEl) fillEl.style.width = pct + "%";
+      if (pctEl) pctEl.textContent = pctLabel;
+      if (trackEl) trackEl.setAttribute("aria-valuenow", pctLabel);
       el.classList.remove("gfm-progress-loading");
     });
+  };
+
+  const animateEnhancedFundraiserWidget = (el) => {
+    if (el.dataset.gfmAnimDone === "true") return;
+
+    const raised = Number(el.dataset.gfmRaised);
+    const goal = Number(el.dataset.gfmGoal);
+    const currencyCode = el.dataset.gfmCurrency || "EUR";
+    const pct = Number(el.dataset.gfmPct);
+    const pctLabel = el.dataset.gfmPctLabel || "0";
+    const remaining = Math.max(0, goal - raised);
+
+    const raisedEl = el.querySelector("[data-gfm-raised]");
+    const fillEl = el.querySelector("[data-gfm-fill]");
+    const pctEl = el.querySelector("[data-gfm-percent]");
+    const trackEl = el.querySelector("[data-gfm-track]");
+    const remainingEl = el.querySelector("[data-gfm-remaining]");
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const duration = prefersReducedMotion ? 0 : 1400;
+
+    el.classList.remove("gfm-progress-loading");
+
+    if (duration === 0) {
+      if (raisedEl) raisedEl.textContent = formatFundraiserAmount(raised, currencyCode);
+      if (fillEl) fillEl.style.width = pct + "%";
+      if (pctEl) pctEl.textContent = pctLabel;
+      if (trackEl) trackEl.setAttribute("aria-valuenow", pctLabel);
+      if (remainingEl && remaining > 0) {
+        remainingEl.textContent =
+          formatFundraiserAmount(remaining, currencyCode) + " to go";
+        remainingEl.hidden = false;
+      }
+      el.classList.add("gfm-progress-ready");
+      el.dataset.gfmAnimDone = "true";
+      signalFundraiserDonateReady(el);
+      return;
+    }
+
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const currentRaised = raised * eased;
+      const currentPct = pct * eased;
+
+      if (raisedEl) {
+        raisedEl.textContent = formatFundraiserAmount(currentRaised, currencyCode);
+      }
+      if (fillEl) fillEl.style.width = currentPct + "%";
+      if (pctEl) pctEl.textContent = currentPct.toFixed(1).replace(/\.0$/, "");
+      if (remainingEl && remaining > 0) {
+        remainingEl.hidden = false;
+        remainingEl.textContent =
+          formatFundraiserAmount(Math.max(0, goal - currentRaised), currencyCode) +
+          " to go";
+      }
+      if (trackEl) {
+        trackEl.setAttribute(
+          "aria-valuenow",
+          currentPct.toFixed(1).replace(/\.0$/, "")
+        );
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        if (raisedEl) raisedEl.textContent = formatFundraiserAmount(raised, currencyCode);
+        if (fillEl) fillEl.style.width = pct + "%";
+        if (pctEl) pctEl.textContent = pctLabel;
+        if (trackEl) trackEl.setAttribute("aria-valuenow", pctLabel);
+        el.classList.add("gfm-progress-ready");
+        el.dataset.gfmAnimDone = "true";
+        signalFundraiserDonateReady(el);
+      }
+    };
+
+    requestAnimationFrame(tick);
+  };
+
+  const signalFundraiserDonateReady = (widget) => {
+    const heroPanel = widget.closest(".campaign-hero-enter");
+    if (heroPanel) heroPanel.classList.add("is-donate-ready");
+
+    const homeDonate = widget.closest(".home-donate-enter");
+    if (homeDonate) homeDonate.classList.add("is-donate-ready");
+
+    widget.dispatchEvent(
+      new CustomEvent("gfm-progress-ready", { bubbles: true })
+    );
+  };
+
+  const initCampaignPageMotion = () => {
+    if (!isProjectsPage()) return;
+
+    const hero = document.querySelector(".campaign-hero-enter");
+    if (hero) {
+      requestAnimationFrame(function () {
+        hero.classList.add("is-visible");
+      });
+    }
+
+    document.querySelectorAll("#project-campaign .campaign-section").forEach(
+      function (section, index) {
+        section.classList.add("campaign-reveal");
+        section.style.setProperty("--reveal-i", String(index % 6));
+      }
+    );
+
+    if (!("IntersectionObserver" in window)) {
+      document.querySelectorAll(".campaign-reveal").forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    document.querySelectorAll(".campaign-reveal").forEach(function (el) {
+      revealObserver.observe(el);
+    });
+
+    window.setTimeout(function () {
+      const hero = document.querySelector(".campaign-hero-enter");
+      if (hero && !hero.classList.contains("is-donate-ready")) {
+        hero.classList.add("is-donate-ready");
+      }
+    }, 4500);
+  };
+
+  const initHomeDonateMotion = () => {
+    if (!isHomePage()) return;
+
+    const section = document.querySelector(".home-donate-enter");
+    if (!section) return;
+
+    const reveal = () => section.classList.add("is-visible");
+
+    const donateReadyFallback = () => {
+      window.setTimeout(function () {
+        if (!section.classList.contains("is-donate-ready")) {
+          section.classList.add("is-donate-ready");
+        }
+      }, 4500);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      reveal();
+      donateReadyFallback();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            reveal();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(section);
+    donateReadyFallback();
+  };
+
+  const initEnhancedFundraiserWidgets = () => {
+    document.querySelectorAll(".gfm-progress-enhanced[data-gfm-progress]").forEach(
+      function (widget) {
+        const reveal = () => {
+          widget.classList.add("gfm-progress-is-visible");
+          if (widget.dataset.gfmRaised) {
+            animateEnhancedFundraiserWidget(widget);
+          }
+        };
+
+        if (widget.classList.contains("gfm-progress-campaign")) {
+          reveal();
+          return;
+        }
+
+        if (!("IntersectionObserver" in window)) {
+          reveal();
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                reveal();
+                observer.disconnect();
+              }
+            });
+          },
+          { threshold: 0.3 }
+        );
+        observer.observe(widget);
+      }
+    );
   };
 
   const loadFundraiserProgress = () => {
@@ -2935,6 +4021,7 @@
               "Help Complete Kerry Islamic Cultural Centre this Year!";
           }
           el.classList.remove("gfm-progress-loading");
+          signalFundraiserDonateReady(el);
         });
       });
   };
@@ -3174,15 +4261,17 @@
       .on("shown.bs.collapse", function () {
         backdrop.classList.add("is-visible");
         document.body.classList.add("kicc-nav-open");
+        queueStickyNavOffsetSync();
       })
       .on("hidden.bs.collapse", function () {
         backdrop.classList.remove("is-visible");
         document.body.classList.remove("kicc-nav-open");
         closeOpenDropdowns();
+        queueStickyNavOffsetSync();
       });
 
     nav.querySelectorAll(
-      ".kicc-nav-mega-link, .kicc-nav-main > .nav-item:not(.dropdown) .kicc-nav-link, .kicc-nav-donate-btn, .kicc-nav-salah-menu a",
+      ".kicc-nav-mega-link, .kicc-nav-main > .nav-item:not(.dropdown) .kicc-nav-link, .kicc-nav-donate-btn, .kicc-nav-salah-tab-month",
     ).forEach(function (link) {
       link.addEventListener("click", function () {
         if (mobileQuery.matches) closeNav();
@@ -3212,7 +4301,6 @@
 
   const setLocationSpecific = () => {
     if (isHomePage()) {
-      getAnnouncement();
       setEvent();
       loadProgrammes();
       return;
@@ -3233,7 +4321,16 @@
       initHomeNotices();
       initHomePillars();
     }
+    initSiteAnnouncements();
+    initNavSalahPanel();
+    initEnhancedFundraiserWidgets();
+    initCampaignPageMotion();
+    initHomeDonateMotion();
     initMobileNav();
+    syncStickyNavOffset();
+    window.addEventListener("resize", queueStickyNavOffsetSync, {
+      passive: true,
+    });
     initSitePageNav();
     initPageSectionNavDock();
     addWhatsAppButton();
@@ -3243,11 +4340,11 @@
   });
 
   window.onload = () => {
+    syncStickyNavOffset();
     setSalahTimeUrl();
     setSalahTimes();
     getRandomHadith();
     loadFundraiserProgress();
-    loadJumuahFridayTimes();
     setLocationSpecific();
     scrollToLocationHash();
   };

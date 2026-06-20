@@ -33,7 +33,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1781906542757.css">
+  <link rel="stylesheet" href="assets/css/main-1781915012927.css">
   <link rel="stylesheet" href="assets/css/animations.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -72,7 +72,7 @@
     gtag('config', 'G-3H9CDDS71D');
   </script>
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781906542620.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1781915012786.js"></script>
 
   <script>
     (function () {
@@ -413,20 +413,6 @@
     </div>
   </div>
   <!-- MODAL END -->
-
-  <!-- ANNOUNCEMENT START -->
-  <div
-    class="alert alert-success alert-dismissible fade show text-center d-none"
-    role="alert" id="announcement-bar">
-    <div class="container">
-      <span id="announcement"></span>
-      <button type="button" class="close" data-dismiss="alert"
-        aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  </div>
-  <!-- ANNOUNCEMENT END -->
 
   <!-- Masjid notices spotlight (populated from API) -->
   <aside id="masjid-notice-spotlight" class="notices-spotlight grid-gallery" hidden
@@ -1095,7 +1081,7 @@
   </section>
 
   <!-- DONATE START -->
-  <section class="campaign-section campaign-donate-section home-donate-section"
+  <section class="campaign-section campaign-donate-section home-donate-section home-donate-enter"
     id="home-donate">
     <div class="container">
       <div class="row justify-content-center align-items-center">
@@ -1121,10 +1107,16 @@
         </div>
         <div class="col-lg-7">
           <div class="home-donate-widget">
-            <div class="gfm-progress gfm-progress-light gfm-progress-loading"
+            <div class="gfm-progress gfm-progress-light gfm-progress-enhanced gfm-progress-home gfm-progress-loading"
               data-gfm-progress aria-live="polite">
-              <p class="gfm-progress-name" data-gfm-name>Loading appeal&hellip;
-              </p>
+              <div class="gfm-progress-enhanced-head">
+                <span class="gfm-progress-live-badge">
+                  <span class="gfm-progress-live-dot" aria-hidden="true"></span>
+                  Live appeal
+                </span>
+                <p class="gfm-progress-name" data-gfm-name>Loading appeal&hellip;
+                </p>
+              </div>
               <div class="gfm-progress-amounts">
                 <span class="gfm-progress-raised" data-gfm-raised>&mdash;</span>
                 <span class="gfm-progress-goal" data-gfm-goal>raised of
@@ -1133,11 +1125,16 @@
               <div class="gfm-progress-track" data-gfm-track role="progressbar"
                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
                 aria-label="Campaign progress">
-                <div class="gfm-progress-fill" data-gfm-fill
-                  style="width: 0%"></div>
+                <div class="gfm-progress-fill" data-gfm-fill style="width: 0%">
+                  <span class="gfm-progress-fill-shine" aria-hidden="true"></span>
+                </div>
               </div>
-              <p class="gfm-progress-meta"><span data-gfm-percent>0</span>%
-                funded</p>
+              <p class="gfm-progress-meta">
+                <span class="gfm-progress-percent-badge">
+                  <span data-gfm-percent>0</span>%
+                </span>
+                funded &mdash; every gift helps build our masjid
+              </p>
             </div>
           </div>
         </div>
