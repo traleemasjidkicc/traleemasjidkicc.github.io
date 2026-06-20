@@ -2705,14 +2705,29 @@ html.cookie-consent-pending::before {
 	pointer-events: auto;
 }
 
-html.cookie-consent-pending body > *:not(#cookie-consent) {
+html.cookie-consent-pending body > *:not(#cookie-consent):not(#cookie-preferences) {
 	pointer-events: none;
 	user-select: none;
 	-webkit-user-select: none;
 }
 
+html.cookie-consent-pending #cookie-preferences.is-visible {
+	pointer-events: auto;
+	user-select: auto;
+	-webkit-user-select: auto;
+}
+
+html.cookie-consent-pending.cookie-prefs-gate-open #cookie-consent {
+	visibility: hidden;
+	pointer-events: none;
+}
+
 html.cookie-consent-pending #cookie-preferences {
 	display: none !important;
+}
+
+html.cookie-consent-pending #cookie-preferences.is-visible {
+	display: flex !important;
 }
 
 html.cookie-consent-pending .cookie-consent .cookie-consent-backdrop,
@@ -2777,6 +2792,75 @@ html.cookie-consent-pending .cookie-consent,
 
 .cookie-consent-dialog-granular {
 	max-width: 560px;
+}
+
+.cookie-consent-dialog-promo {
+	max-width: 400px;
+}
+
+.cookie-consent-card-promo {
+	position: relative;
+	text-align: center;
+	padding: 2rem 1.75rem 1.5rem;
+	overflow: hidden;
+}
+
+.cookie-consent-accept-primary {
+	width: 100%;
+	margin-top: 0.35rem;
+	font-size: 1.05rem;
+	padding: 0.95rem 1.5rem;
+}
+
+.cookie-consent-accept-primary i {
+	font-size: 0.9rem;
+}
+
+.cookie-consent-alt-actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 0.35rem 0.45rem;
+	margin: 1rem 0 0;
+}
+
+.cookie-consent-alt-link {
+	border: none;
+	background: none;
+	padding: 0;
+	margin: 0;
+	color: rgba(13, 91, 94, 0.58);
+	font-size: 0.74rem;
+	font-weight: 500;
+	text-decoration: underline;
+	text-underline-offset: 0.14em;
+	cursor: pointer;
+}
+
+.cookie-consent-alt-link:hover,
+.cookie-consent-alt-link:focus {
+	color: var(--kicc-teal);
+	outline: none;
+}
+
+.cookie-consent-alt-link-muted {
+	color: rgba(13, 91, 94, 0.38);
+	font-size: 0.68rem;
+	font-weight: 400;
+	text-decoration: none;
+}
+
+.cookie-consent-alt-link-muted:hover,
+.cookie-consent-alt-link-muted:focus {
+	color: rgba(13, 91, 94, 0.55);
+	text-decoration: underline;
+}
+
+.cookie-consent-alt-sep {
+	color: rgba(13, 91, 94, 0.28);
+	font-size: 0.65rem;
+	user-select: none;
 }
 
 .cookie-consent-card-granular {

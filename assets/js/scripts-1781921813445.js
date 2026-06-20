@@ -1637,9 +1637,13 @@
     el.textContent = describeConsentPrefs(getConsentPrefs());
   };
 
-  const hideCookiePreferences = (animate) => {
-    if (!hasConsentChoice()) return;
+  const isConsentGateActive = () =>
+    document.documentElement.classList.contains("cookie-consent-pending");
 
+  const isConsentUiNode = (node) =>
+    node.id === "cookie-consent" || node.id === "cookie-preferences";
+
+  const hideCookiePreferences = (animate) => {
     const el = document.getElementById("cookie-preferences");
     if (!el) return;
 
@@ -1647,6 +1651,15 @@
       el.classList.remove("is-visible", "is-leaving");
       el.setAttribute("aria-hidden", "true");
       document.body.classList.remove("cookie-preferences-active");
+      if (isConsentGateActive()) {
+        document.documentElement.classList.remove("cookie-prefs-gate-open");
+        el.setAttribute("inert", "");
+        const consentEl = document.getElementById("cookie-consent");
+        if (consentEl) {
+          consentEl.classList.add("is-visible");
+          consentEl.setAttribute("aria-hidden", "false");
+        }
+      }
     };
 
     if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -1660,7 +1673,7 @@
   };
 
   const showCookiePreferences = () => {
-    if (!hasConsentChoice()) {
+    if (!hasConsentChoice() && !isConsentGateActive()) {
       showCookieConsent();
       return;
     }
@@ -1669,10 +1682,21 @@
     if (!el) return;
 
     renderCookieRegistry();
-    syncConsentToggles(getConsentPrefs());
+    syncConsentToggles(
+      hasConsentChoice() ? getConsentPrefs() : CONSENT_ALL_ON,
+    );
     updateCookiePrefsStatus();
     el.setAttribute("aria-hidden", "false");
+    el.removeAttribute("inert");
     document.body.classList.add("cookie-preferences-active");
+    if (isConsentGateActive()) {
+      document.documentElement.classList.add("cookie-prefs-gate-open");
+      const consentEl = document.getElementById("cookie-consent");
+      if (consentEl) {
+        consentEl.classList.remove("is-visible");
+        consentEl.setAttribute("aria-hidden", "true");
+      }
+    }
 
     requestAnimationFrame(function () {
       el.classList.add("is-visible");
@@ -1717,14 +1741,17 @@
       document.documentElement.classList.add("cookie-consent-pending");
       document.body.classList.add("cookie-consent-active");
       Array.from(document.body.children).forEach(function (node) {
-        if (node.id !== "cookie-consent") node.setAttribute("inert", "");
+        if (isConsentUiNode(node)) return;
+        node.setAttribute("inert", "");
       });
       return;
     }
     document.documentElement.classList.remove("cookie-consent-pending");
+    document.documentElement.classList.remove("cookie-prefs-gate-open");
     document.body.classList.remove("cookie-consent-active");
     Array.from(document.body.children).forEach(function (node) {
-      if (node.id !== "cookie-consent") node.removeAttribute("inert");
+      if (isConsentUiNode(node)) return;
+      node.removeAttribute("inert");
     });
   };
 
@@ -1733,7 +1760,7 @@
     if (!el) return;
 
     clearAnalyticsData();
-    syncConsentToggles(CONSENT_DEFAULTS);
+    syncConsentToggles(CONSENT_ALL_ON);
     setCookieConsentBlocking(true);
     el.setAttribute("aria-hidden", "false");
     el.classList.add("is-visible");
@@ -1754,9 +1781,6 @@
 
   const acceptNecessaryOnlyConsent = () =>
     finalizeConsentChoice(Object.assign({}, CONSENT_DEFAULTS));
-
-  const saveBannerConsent = () =>
-    finalizeConsentChoice(readConsentToggles("cookie-banner"));
 
   const savePreferencesConsent = () =>
     finalizeConsentChoice(readConsentToggles("cookie-prefs"));
@@ -1828,7 +1852,7 @@
   const initCookiePreferences = () => {
     bindCookieButton("cookie-accept", acceptAllConsent);
     bindCookieButton("cookie-necessary", acceptNecessaryOnlyConsent);
-    bindCookieButton("cookie-save", saveBannerConsent);
+    bindCookieButton("cookie-banner-settings", showCookiePreferences);
     bindCookieButton("cookie-prefs-accept", acceptAllConsent);
     bindCookieButton("cookie-prefs-necessary", acceptNecessaryOnlyConsent);
     bindCookieButton("cookie-prefs-save", savePreferencesConsent);
@@ -1847,7 +1871,6 @@
       if (el.dataset.bound) return;
       el.dataset.bound = "true";
       el.addEventListener("click", function () {
-        if (!hasConsentChoice()) return;
         hideCookiePreferences(true);
       });
     });
@@ -1865,8 +1888,10 @@
       document.documentElement.dataset.cookiePrefsEscapeBound = "true";
       document.addEventListener("keydown", function (e) {
         if (e.key !== "Escape") return;
-        if (!hasConsentChoice()) return;
-        hideCookiePreferences(true);
+        const prefsEl = document.getElementById("cookie-preferences");
+        if (prefsEl && prefsEl.classList.contains("is-visible")) {
+          hideCookiePreferences(true);
+        }
       });
     }
   };
