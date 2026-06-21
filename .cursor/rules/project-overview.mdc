@@ -9,21 +9,23 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no tra
 
 ## Stack
 
-- HTML pages at repo root (`index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`)
-- CSS: `assets/css/main.css`
-- JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~1200 lines)
+- HTML pages at repo root: `index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`, `prayer-times.html`
+- CSS: single versioned `assets/css/main-{timestamp}.css`
+- JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~8200 lines)
 - CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
-- Embeds: GoFundMe widgets, Mixlr player, Google Analytics (gtag)
-- Gulp + BrowserSync for local dev (`yarn start`)
+- Embeds: GoFundMe widgets, SumUp donate, Mixlr player, Google Analytics (gtag, consent-gated)
+- SEO/PWA: `robots.txt`, `sitemap.xml`, `site.webmanifest`, per-page OG/JSON-LD
+- Gulp + BrowserSync for local dev (`yarn start`); Playwright e2e (`yarn test:e2e`)
 
 ## Pages
 
 | File | Nav label | Notes |
 |------|-----------|-------|
-| `index.html` | Home | Prayer times, announcements, notices, live events, hadith |
-| `activities.html` | Programmes | Weekly programmes from API |
+| `index.html` | Home | Prayer deck, announcements, notices, programmes preview, live events, hadith |
+| `prayer-times.html` | Salah times | Full timetable, print sheet, month switcher |
+| `activities.html` | Programmes | Weekly programmes from API, Mixlr hub |
 | `projects.html` | **New Masjid** | Donation campaign + building progress gallery |
-| `about.html`, `madrasa.html`, `contact.html` | — | Static content |
+| `about.html`, `madrasa.html`, `contact.html` | — | Static / section-nav pages |
 
 ## Package manager
 
@@ -40,4 +42,5 @@ Use **Yarn only**. Run `yarn ci` to install, `yarn start` to develop.
 - Keep changes minimal and page-appropriate
 - Match existing HTML structure, Bootstrap patterns, and JS style
 - Do not add frameworks, bundlers, or TypeScript unless explicitly requested
-- Campaign styling on `projects.html` uses existing `campaign-*` classes in `main.css`
+- Campaign styling on `projects.html` uses `campaign-*` classes; prayer times uses `prayer-times-*`
+- New public pages: update nav, footer, and `sitemap.xml`

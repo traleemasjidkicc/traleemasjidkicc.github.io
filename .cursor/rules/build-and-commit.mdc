@@ -1,6 +1,6 @@
 ---
-description: Gulp tasks, git hooks, and commit workflow
-globs: "{gulpfile.js,package.json,pre-commit,post-commit}"
+description: Gulp tasks, git hooks, commit workflow, and e2e tests
+globs: "{gulpfile.js,package.json,pre-commit,post-commit,playwright.config.js,tests/**}"
 alwaysApply: false
 ---
 
@@ -38,16 +38,27 @@ alwaysApply: false
 | `ci` | `yarn install --immutable` (then `postci` runs `yarn start`) |
 | `verify` | `yarn install --immutable --check-cache` |
 | `precommit` | `gulp precommit` |
+| `test:e2e` | `playwright test` (local: requires `yarn start` on port 3000) |
+| `test:e2e:headed` | Headed Edge run |
+| `test:e2e:ui` | Playwright UI mode |
+| `pretest:e2e` | Fails fast if nothing is listening on http://127.0.0.1:3000 |
 
 **Package manager:** Yarn 4.17 (`packageManager` field). npm blocked via `engine-strict`.
+
+## Playwright
+
+- Config: `playwright.config.js` — Edge channel, `testDir: ./tests`
+- CI: starts BrowserSync on port 3000 via `webServer`
+- Local: run `yarn start` first, then `yarn test:e2e`
+- Current tests: `tests/projects.spec.js` (New Masjid campaign page)
 
 ## Rules for agents
 
 - **Never** manually edit `package.json` version
 - **Never** manually change `scripts-{timestamp}.js` filename or HTML script `src`
 - **Never** manually change `main-{timestamp}.css` filename or HTML stylesheet `href`
-- After JS changes, verify with `yarn start` before committing
-- Use `yarn ci` (`yarn install --immutable`) in CI; `yarn verify` checks install integrity (`--immutable --check-cache`)
+- After JS/CSS changes, verify with `yarn start` before committing
+- Use `yarn ci` (`yarn install --immutable`) in CI; `yarn verify` checks install integrity
 
 ## Adding dependencies
 

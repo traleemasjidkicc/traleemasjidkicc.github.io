@@ -4,7 +4,9 @@
 
 ## Project Overview
 
-Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Mosque). Built with vanilla HTML/CSS/JS, Bootstrap 4.3, and automated asset management via Gulp.
+Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Masjid). Built with vanilla HTML/CSS/JS, Bootstrap 4.3, Gulp + BrowserSync for local dev, automated JS/CSS versioning on commit, and Playwright e2e tests.
+
+**Live site:** https://traleemasjidkicc.ie
 
 ## Architecture & Key Patterns
 
@@ -26,11 +28,14 @@ Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Mosque). B
 ### Build & Development Workflow
 
 ```
-yarn ci          # Clean install with --immutable (Yarn 4 frozen lockfile), then starts dev server
-yarn verify      # Verify install integrity (--immutable --check-cache)
-yarn start       # Serve locally on http://localhost:3000 with live reload (BrowserSync)
-yarn setup-hooks # Install pre-commit / post-commit hooks
-yarn precommit   # Renames changed JS/CSS + bumps version when scripts-*.js or main*.css changed
+yarn ci              # Clean install with --immutable (Yarn 4), then starts dev server
+yarn verify          # Verify install integrity (--immutable --check-cache)
+yarn start           # Serve locally on http://localhost:3000 with live reload (BrowserSync)
+yarn setup-hooks     # Install pre-commit / post-commit hooks
+yarn precommit       # Renames changed JS/CSS + bumps version when scripts-*.js or main*.css changed
+yarn test:e2e        # Playwright tests (requires yarn start running locally)
+yarn test:e2e:headed # Headed browser run
+yarn test:e2e:ui     # Playwright UI mode
 ```
 
 ## Project Structure
@@ -38,64 +43,81 @@ yarn precommit   # Renames changed JS/CSS + bumps version when scripts-*.js or m
 ```
 assets/
   ├── css/
-  │   └── main-*.css      # Versioned core styling, motion, campaign components
+  │   └── main-*.css      # Versioned: layout, theme, motion, campaign, prayer-times, page sections
   ├── images/
-  │   ├── brand/          # Logo, Bismillah text, decorative quotes
-  │   ├── backgrounds/    # CSS hero and section backgrounds
+  │   ├── brand/          # Logo, Bismillah, GoFundMe QR
+  │   ├── backgrounds/    # Hero and section backgrounds
   │   ├── photos/         # Site and building photography
   │   ├── blueprints/     # 3D renders, site plans, construction updates
-  │   ├── posters/        # Event/announcement posters
   │   ├── team/           # Staff/volunteer photos
   │   └── ui/             # UI elements (e.g. newsletter signup)
   └── js/
-      └── scripts-*.js    # Versioned main app logic (~1200 lines)
+      └── scripts-*.js    # Versioned main app logic (~8200 lines)
 
 index.html, about.html, activities.html, madrasa.html,
-projects.html (New Masjid campaign), contact.html
+projects.html, contact.html, prayer-times.html
 
 gulpfile.js             # Gulp task configuration
-package.json            # Dependencies: gulp, browser-sync, gulp-replace
-site.webmanifest        # PWA manifest
+playwright.config.js    # E2E test config (Edge, port 3000)
+tests/projects.spec.js  # Campaign page e2e tests
+robots.txt              # Crawler rules + sitemap reference
+sitemap.xml             # All public pages
+site.webmanifest        # PWA manifest (theme, icons, start_url)
 CNAME                   # GitHub Pages custom domain
+AGENTS.md               # Primary AI agent instructions
+.cursor/rules/          # Cursor IDE scoped rules
 ```
 
 ## Pages
 
 | File | Nav label | Key features |
 |------|-----------|--------------|
-| `index.html` | Home | Prayer times, announcements, notices, Mixlr live events, hadith, GoFundMe |
-| `activities.html` | Programmes | Programmes API, Mixlr events |
-| `projects.html` | New Masjid | Donation campaign, GoFundMe goal bar, building gallery |
-| `about.html` | — | History, team |
-| `madrasa.html` | Madrasa | School info |
-| `contact.html` | Contact | Location, contact |
+| `index.html` | Home | Prayer deck, nav salah dropdown, announcements, notices, programmes preview, Mixlr, hadith, GoFundMe, SumUp |
+| `prayer-times.html` | Salah times | Day/week/month timetable, month tabs, print PDF sheet, visit CTA |
+| `activities.html` | Programmes | Programmes API, Mixlr live hub, weekly schedule |
+| `projects.html` | New Masjid | Donation campaign, GoFundMe goal bar, SumUp, building gallery |
+| `about.html` | — | History, vision, team |
+| `madrasa.html` | Madrasa | Children's madrasa info and registration |
+| `contact.html` | Contact | Imams, management, consent-gated Google Maps embed, directions |
 
 ## Critical JavaScript Functionality
 
 The main script (`assets/js/scripts-*.js`) handles:
 
-1. **Prayer times**: Salah timetable URL + today's iqamah (with Jumuah schedule rendering)
+1. **Prayer times**: Nav salah panel, homepage prayer deck, full `prayer-times.html` page, monthly PDF URL, iqamah + Jumuah
 2. **Ramadan/Eid detection**: `isRamadan()` / `isEid()` for dynamic celebration banner
-3. **Announcements & notices**: Cloud Run APIs with localStorage cache
-4. **Programmes**: Activities page table and weekly programme cards
+3. **Announcements & notices**: Cloud Run APIs with localStorage cache; site-wide ribbon + homepage notice board
+4. **Programmes**: Homepage preview + activities page table and weekly programme cards
 5. **Mixlr events**: Live stream status and upcoming events
 6. **Hadith**: Daily random hadith with fallback content
-7. **Global UI**: Footer year, cookie consent (js-cookie), WhatsApp float button, BaguetteBox gallery
+7. **Donations**: GoFundMe progress widgets, SumUp checkout (Firebase `createCheckout`)
+8. **Global UI**: Mobile nav, section nav dock, cookie/consent management, consent-gated map embeds, WhatsApp float, BaguetteBox gallery, print timetable
 
 **Init timing**:
-- `DOMContentLoaded`: footer year, cookies, WhatsApp, homepage notices
-- `window.onload`: salah/iqamah/hadith fetches, `setLocationSpecific()` page routing
+- `DOMContentLoaded`: shared chrome (nav, cookies, announcements, embeds); page-specific notices/home pillars/prayer-times page
+- `window.onload`: salah/iqamah/hadith/fundraiser fetches, `setLocationSpecific()` page routing
 
 **Key patterns**:
 - IIFE wrapper: `(function() { "use strict"; ... })()` for scope isolation
+- Pathname helpers: `isHomePage()`, `isPrayerTimesPage()`, etc.
 - localStorage cache-then-fetch for all API responses
 - Defensive error handling for external API calls
+
+## SEO
+
+Each HTML page includes unique `title`, `description`, `canonical`, Open Graph, Twitter Card, and JSON-LD structured data. Root assets:
+
+- `robots.txt` → `Sitemap: https://traleemasjidkicc.ie/sitemap.xml`
+- `sitemap.xml` — lists all 7 pages
+- `site.webmanifest` + `theme-color` + Apple home-screen meta tags
+
+When adding a new public page, update navigation, footer, and `sitemap.xml`.
 
 ## Development Conventions
 
 ### Commit & Versioning
 
-- Semantic versioning: Patch increments when JS changes (via `yarn version patch -i` in `gulp precommit`)
+- Patch increments when JS or CSS changes (via `yarn version patch -i` in `gulp precommit`)
 - Version lives in `package.json` and is incremented automatically
 - **Do not manually edit version numbers** — let the hook handle it
 
@@ -106,7 +128,8 @@ The main script (`assets/js/scripts-*.js`) handles:
 - BaguetteBox 1.10.0 for image galleries (`.grid-gallery`)
 - js-cookie 3.0.1 for cookie consent and modal preferences
 - GoFundMe embed script on homepage and campaign page
-- Custom CSS in `assets/css/` extends Bootstrap defaults
+- Custom CSS in versioned `main-*.css` extends Bootstrap defaults
+- Nav link to `projects.html` is labelled **New Masjid** (not "Projects")
 
 ### External Dependencies
 
@@ -117,10 +140,11 @@ The main script (`assets/js/scripts-*.js`) handles:
 
 ### Adding Features
 
-1. **Static content changes** (HTML): Edit directly, commit as usual
-2. **Styling changes** (CSS): Edit `main.css`, test with `yarn start`
+1. **Static content changes** (HTML): Edit directly, commit as usual; keep SEO head tags unique per page
+2. **Styling changes** (CSS): Edit `main-*.css` in place, test with `yarn start`
 3. **JavaScript logic**: Edit `assets/js/scripts-*.js`, test with `yarn start`, commit naturally
 4. **Campaign page**: Use existing `campaign-*` CSS classes; match patterns in `projects.html`
+5. **Prayer times page**: Use `prayer-times-*` and `data-prayer-*` attributes; extend `initPrayerTimesPage()`
 
 ### Dependency Updates
 
@@ -130,23 +154,28 @@ The main script (`assets/js/scripts-*.js`) handles:
 
 ### Testing
 
-- Manual browser testing via `yarn start` (serves on localhost)
+- Manual browser testing via `yarn start` (serves on localhost:3000)
 - BrowserSync auto-reloads on file changes
+- E2E: `yarn start` then `yarn test:e2e` (or CI runs BrowserSync automatically)
 - Check network requests (Cloud Run APIs, Mixlr) in DevTools
 - Hard refresh (Cmd+Shift+R) if JS changes don't appear before commit
 
 ## Common Pitfalls
 
 1. **JS not reloading**: Clear browser cache or hard refresh; commit hook renames file on commit
-2. **Script reference mismatch**: Hooks fix HTML refs — never manually edit script src
+2. **Script/CSS reference mismatch**: Hooks fix HTML refs — never manually edit versioned filenames in HTML
 3. **API failures**: Check localStorage fallback in DevTools Application tab
 4. **Ramadan/Eid dates**: Must be updated annually in `isRamadan()` / `isEid()`
+5. **E2E without server**: `pretest:e2e` fails if port 3000 is not serving the site
 
 ## Key Files to Reference
 
 - [gulpfile.js](gulpfile.js) — Asset versioning, watch/serve logic
 - [package.json](package.json) — Scripts, dependencies, version source
+- [playwright.config.js](playwright.config.js) — E2E configuration
 - [assets/js/scripts-*.js](assets/js/) — Main app logic
+- [assets/css/main-*.css](assets/css/) — All styles
 - [index.html](index.html) — Homepage structure and CDN references
+- [prayer-times.html](prayer-times.html) — Salah timetable page
 - [projects.html](projects.html) — New Masjid donation campaign page
-- [assets/css/main.css](assets/css/main.css) — Campaign and layout styles
+- [sitemap.xml](sitemap.xml) — Search engine page list

@@ -12,6 +12,7 @@ alwaysApply: false
 - Bootstrap 4.3 grid (`container`, `row`, `col-*`)
 - CDN assets must include `integrity` and `crossorigin` where already used
 - Nav links to `projects.html` are labelled **New Masjid** (not "Projects")
+- Salah timetable page: `prayer-times.html` (nav **Salah times**, footer **Salah timetable**)
 - Script tag for app JS (do not change filename manually):
 
 ```html
@@ -24,15 +25,28 @@ alwaysApply: false
 <link rel="stylesheet" href="assets/css/main-{timestamp}.css">
 ```
 
+## SEO head (all public pages)
+
+Each page needs a **unique** set (copy pattern from an existing page and customise):
+
+- `<title>`, `<meta name="description">`, page-specific `<meta name="keywords">`
+- `<link rel="canonical" href="https://traleemasjidkicc.ie/...">`
+- Open Graph + Twitter Card tags (`og:title`, `og:description`, `og:url`, `og:image`, etc.)
+- `<meta name="robots" content="index, follow, max-image-preview:large">`
+- JSON-LD `application/ld+json` (`WebPage`, `BreadcrumbList`, reference to `#organization`)
+- PWA: `site.webmanifest`, `theme-color`, `apple-mobile-web-app-*`, `apple-touch-icon`
+
+When adding a page, also add it to `sitemap.xml` and ensure `robots.txt` references the sitemap.
+
 ## CSS
 
-- `assets/css/main-{timestamp}.css` — layout, typography, components, motion, campaign page styles, responsive rules
+- `assets/css/main-{timestamp}.css` — layout, typography, components, motion, campaign, prayer-times, responsive rules
 - Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
 - Prefer existing colour/spacing variables and class names before adding new ones
 
 ### Campaign page (`projects.html`)
 
-Use existing `campaign-*` namespace in `main.css`:
+Use existing `campaign-*` namespace:
 
 - Layout: `campaign-section`, `campaign-section-warm`, `campaign-section-title`
 - Hero: `campaign-hero-panel`, `campaign-hero-unified`, `campaign-gfm-widget`, `bg-cover-projects`
@@ -40,17 +54,21 @@ Use existing `campaign-*` namespace in `main.css`:
 - Buttons: `btn-campaign`, `btn-campaign-outline`
 - Gallery: `grid-gallery` (BaguetteBox lightbox)
 
-GoFundMe widgets use iframes with class `gfm-stream-goal-bar` or `gfm-embed` divs with `data-url`.
+GoFundMe widgets use iframes with class `gfm-stream-goal-bar` or `gfm-embed` divs with `data-url`. SumUp uses `[data-sumup-donate]`.
+
+### Prayer times page (`prayer-times.html`)
+
+Use `prayer-times-*` classes and `data-prayer-*` hooks. Print layout uses `.prayer-print-layout` (invoked from JS `printPrayerTimetableSheet()`).
 
 ## Images
 
 - Store under `assets/images/` in role-based subfolders:
-  - `brand/` — logo, Bismillah text, decorative quotes
+  - `brand/` — logo, Bismillah text, GoFundMe QR
   - `backgrounds/` — CSS hero and section backgrounds
   - `photos/` — site and building photography
   - `blueprints/` — 3D renders, site plans, construction updates
-  - `posters/`, `team/`, `ui/`
-- Use descriptive `alt` text for accessibility
+  - `team/`, `ui/`
+- Use descriptive `alt` text for accessibility (never leave meaningful images with `alt=""`)
 - Optimise file size before adding large images
 
 ## Text wrapping (headings & readable copy)
@@ -76,5 +94,7 @@ Never break words mid-character on small screens.
 
 - Semantic headings (`h1` once per page; campaign hero may use `sr-only` h1 with visible blockquote)
 - `lang="en-GB"` on `<html>`
+- Skip link: `<a class="skip-link" href="#main-content">` where present
 - Sufficient colour contrast; don't rely on colour alone for meaning
-- External links: `target="_blank"` with `rel="noopener"` where appropriate
+- External links: `target="_blank"` with `rel="noopener noreferrer"` where appropriate
+- Map embeds: consent-gated via `data-embed-src` + `initConsentEmbeds()` — do not load Google Maps until functional cookies accepted

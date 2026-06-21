@@ -8,10 +8,11 @@ alwaysApply: false
 
 ## File structure
 
-- Single app file: `assets/js/scripts-{timestamp}.js` (~1200 lines)
+- Single app file: `assets/js/scripts-{timestamp}.js` (~8200 lines)
 - Wrapped in IIFE: `(function () { "use strict"; ... })()`
 - Use `const` arrow functions for helpers
-- **Two init hooks:** `DOMContentLoaded` (notices, footer, cookies, WhatsApp) and `window.onload` (API fetches, page-specific logic via `setLocationSpecific()`)
+- Pathname helpers: `getPathname()`, `isHomePage()`, `isActivitiesPage()`, `isProjectsPage()`, `isPrayerTimesPage()`, `getPageKey()`
+- **Two init hooks:** `DOMContentLoaded` (shared chrome + page-specific) and `window.onload` (API fetches, `setLocationSpecific()`)
 
 ## External APIs
 
@@ -21,8 +22,8 @@ alwaysApply: false
 |----------|----------|
 | `setSalahTimeUrl` | `getsalahtimes-rds3nxm6za-ew.a.run.app` |
 | `setSalahTimes` | `getiqamahtimes-rds3nxm6za-ew.a.run.app` |
-| `getAnnouncement` | `getannouncements-rds3nxm6za-ew.a.run.app` |
-| `showNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
+| `getAnnouncement` / ribbon | `getannouncements-rds3nxm6za-ew.a.run.app` (via `initSiteAnnouncements`) |
+| `showNotices` / `getNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
 | `loadProgrammes` | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true` |
 | `getRandomHadith` | `randomhadith-rds3nxm6za-ew.a.run.app` |
 
@@ -31,19 +32,42 @@ alwaysApply: false
 | Function | Endpoint |
 |----------|----------|
 | `setEvent` | `https://api.mixlr.com/users/7752720?source=embed` |
-| `initSumUpDonate` | `https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` (Firebase, homepage only) |
+| `initSumUpDonate` | `https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` (Firebase) |
+| `loadFundraiserProgress` | GoFundMe progress API (campaign widgets) |
 
 ## localStorage keys
 
 `salahTimesAssetUrl`, `iqamah-today`, `kicc-announcements`, `kicc-notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`
 
-## Page routing (`setLocationSpecific`)
+## Page routing
 
-| Match | Init |
-|-------|------|
-| `href.endsWith("/")` | `showSignUpModal`, `getAnnouncement`, `setEvent` |
+### `DOMContentLoaded`
+
+| Page | Extra init |
+|------|------------|
+| Home (`/` or `/index.html`) | `showNotices`, `initHomeNotices`, `initHomePillars` |
+| `prayer-times.html` | `initPrayerTimesPage`, `initPrayerTimesPageMotion` |
+
+All pages also run: `initSiteAnnouncements`, `initNavSalahPanel`, `initMobileNav`, `initPageSectionNavDock`, `initConsentEmbeds`, cookie/WhatsApp/footer chrome, page motion helpers (`initAboutPageMotion`, `initContactPageMotion`, `initCampaignPageMotion`, etc.), `initSumUpDonate`.
+
+### `window.onload` → `setLocationSpecific()`
+
+| Page | Init |
+|------|------|
+| Home | `setEvent`, `loadProgrammes` |
 | `activities.html` | `setEvent`, `loadProgrammes` |
 | `projects.html` | `initBaguetteBox` (`.grid-gallery`) |
+| `prayer-times.html` | `initPrayerTimesPage` |
+
+Always on `window.onload`: `setSalahTimeUrl`, `setSalahTimes`, `getRandomHadith`, `loadFundraiserProgress`, `scrollToLocationHash`.
+
+## Prayer times page
+
+- Root hook: `[data-prayer-times-page]`
+- Key functions: `initPrayerTimesPage`, `initPrayerTimesPageMotion`, `printPrayerTimetableSheet`
+- Month switcher: `[data-prayer-month-tabs]` (current + next month only)
+- View tabs: day / week / month via `.prayer-times-view-tab`
+- Uses shared salah data helpers (`loadPrayerDataWindow`, `getMonthsForDayRange`, etc.)
 
 ## Patterns to follow
 
