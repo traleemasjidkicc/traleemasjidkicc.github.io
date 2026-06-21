@@ -38,8 +38,7 @@ yarn precommit   # Renames changed JS/CSS + bumps version when scripts-*.js or m
 ```
 assets/
   ├── css/
-  │   ├── main-*.css      # Versioned core styling, campaign components
-  │   └── animations.css  # Animations & transitions
+  │   └── main-*.css      # Versioned core styling, motion, campaign components
   ├── images/
   │   ├── brand/          # Logo, Bismillah text, decorative quotes
   │   ├── backgrounds/    # CSS hero and section backgrounds
@@ -119,7 +118,7 @@ The main script (`assets/js/scripts-*.js`) handles:
 ### Adding Features
 
 1. **Static content changes** (HTML): Edit directly, commit as usual
-2. **Styling changes** (CSS): Edit `main.css` or `animations.css`, test with `yarn start`
+2. **Styling changes** (CSS): Edit `main.css`, test with `yarn start`
 3. **JavaScript logic**: Edit `assets/js/scripts-*.js`, test with `yarn start`, commit naturally
 4. **Campaign page**: Use existing `campaign-*` CSS classes; match patterns in `projects.html`
 

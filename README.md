@@ -106,8 +106,7 @@ traleemasjidkicc.github.io/
 ├── contact.html
 ├── assets/
 │   ├── css/
-│   │   ├── main.css        # Layout, theme, campaign components
-│   │   └── animations.css  # Transitions and keyframes
+│   │   └── main.css        # Layout, theme, motion, campaign components (versioned on commit)
 │   ├── js/
 │   │   └── scripts-*.js    # All client logic (~1200 lines, versioned filename)
 │   └── images/
@@ -228,7 +227,7 @@ This copies `pre-commit` and `post-commit` into `.git/hooks/` and makes them exe
 ### Editing guide
 
 1. **HTML content** — edit page files directly; preview with `yarn start`
-2. **Styles** — edit `assets/css/main.css` or `animations.css`
+2. **Styles** — edit `assets/css/main.css`
 3. **JavaScript** — edit `assets/js/scripts-*.js` in place; commit normally
 4. **Dependencies** — `yarn upgrade <package>`, test locally, commit `yarn.lock`
 5. **Ramadan/Eid dates** — update hardcoded dates in `isRamadan()` / `isEid()` annually

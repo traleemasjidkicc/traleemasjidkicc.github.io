@@ -26,8 +26,7 @@ alwaysApply: false
 
 ## CSS
 
-- `assets/css/main-{timestamp}.css` — layout, typography, components, campaign page styles, responsive rules
-- `assets/css/animations.css` — transitions and keyframe animations only
+- `assets/css/main-{timestamp}.css` — layout, typography, components, motion, campaign page styles, responsive rules
 - Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
 - Prefer existing colour/spacing variables and class names before adding new ones
 

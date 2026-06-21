@@ -10,7 +10,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no tra
 ## Stack
 
 - HTML pages at repo root (`index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`)
-- CSS: `assets/css/main.css`, `assets/css/animations.css`
+- CSS: `assets/css/main.css`
 - JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~1200 lines)
 - CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 - Embeds: GoFundMe widgets, Mixlr player, Google Analytics (gtag)

@@ -19,7 +19,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Mosque). Vani
 ```
 Browser (GitHub Pages)
   ├── Static HTML pages (root *.html)
-  ├── assets/css/ (main.css, animations.css)
+  ├── assets/css/ (main.css)
   ├── assets/js/scripts-{timestamp}.js (single bundled app script, ~1200 lines)
   └── CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 
@@ -71,7 +71,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 ## Conventions
 
 - **HTML:** Bootstrap 4 grid, shared nav/footer patterns across pages, SRI on CDN assets, `lang="en-GB"`
-- **CSS:** `main-{timestamp}.css` for layout/theme/campaign components; `animations.css` for motion (not versioned)
+- **CSS:** `main-{timestamp}.css` for layout, theme, campaign components, and motion
 - **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage cache-then-fetch; defensive fetch error handling
 - **Images:** under `assets/images/` (`brand/`, `backgrounds/`, `photos/`, `blueprints/`, `posters/`, `team/`, `ui/`)
 - **Deployment:** `main` branch → GitHub Pages; custom domain via `CNAME` (`traleemasjidkicc.ie`)
