@@ -18,6 +18,8 @@
 
   const isContactPage = () => /\/contact\.html$/i.test(getPathname());
 
+  const isPrayerTimesPage = () => /\/prayer-times\.html$/i.test(getPathname());
+
   const getPageKey = () => {
     if (isHomePage()) return "home";
     if (isActivitiesPage()) return "activities";
@@ -25,6 +27,7 @@
     if (isProjectsPage()) return "projects";
     if (isAboutPage()) return "about";
     if (isContactPage()) return "contact";
+    if (isPrayerTimesPage()) return "prayer-times";
     return null;
   };
 
@@ -251,12 +254,12 @@
 
   const applySalahTimesUrl = (asset) => {
     const elMain = document.getElementById("salah-times");
-    const elFooter = document.getElementById("salah-times-footer");
     const elBody = document.getElementById("salah-times-body");
+    const elHeroPdf = document.getElementById("prayer-hero-pdf");
 
     if (elMain) elMain.href = asset;
-    if (elFooter) elFooter.href = asset;
-    if (elBody && isHomePage()) {
+    if (elHeroPdf) elHeroPdf.href = asset;
+    if (elBody && (isHomePage() || isPrayerTimesPage())) {
       elBody.href = asset;
     }
   };
@@ -1461,10 +1464,10 @@
       '<div class="kicc-nav-salah-tabs" role="tablist" aria-label="Salah day">' +
       '<button type="button" class="kicc-nav-salah-tab is-active" id="nav-salah-tab-today" role="tab" aria-selected="true" aria-controls="nav-salah-panel-today">Today</button>' +
       '<button type="button" class="kicc-nav-salah-tab" id="nav-salah-tab-tomorrow" role="tab" aria-selected="false" aria-controls="nav-salah-panel-tomorrow">Tomorrow</button>' +
-      '<a class="kicc-nav-salah-tab kicc-nav-salah-tab-month" id="salah-times" href="' +
+      '<a class="kicc-nav-salah-tab-month" id="salah-times" href="' +
       timetableHref +
       '" target="_blank" rel="noopener noreferrer" title="Download monthly timetable PDF">' +
-      '<i class="far fa-calendar-alt" aria-hidden="true"></i>' +
+      '<i class="far fa-file-pdf" aria-hidden="true"></i>' +
       '<span id="nav-cur-month">' +
       monthLabel +
       "</span></a>" +
@@ -1601,9 +1604,10 @@
       ? "Ramadan"
       : addedDays.toLocaleString("default", { month: "long" });
     setElHtml("nav-cur-month", monthName);
-    setElHtml("footer-cur-month", monthName);
+    setElHtml("prayer-hero-pdf-month", monthName);
     applyNavSalahDay("nav-salah-panel-today", d, "today");
     updateNavSalahDateLabel();
+    updatePrayerTimesHero();
   };
 
   const applyTomorrowToNav = (d) => {
@@ -4920,7 +4924,7 @@
   };
 
   const PAGE_SECTION_NAV_SELECTOR =
-    ".madrasa-section-nav, .about-section-nav, .campaign-section-nav, .programmes-section-nav, .contact-section-nav";
+    ".madrasa-section-nav, .about-section-nav, .campaign-section-nav, .programmes-section-nav, .contact-section-nav, .prayer-times-section-nav";
 
   const syncPageSectionNavMetrics = () => {
     const nav = document.querySelector(
@@ -5002,7 +5006,7 @@
 
     const tracks = [];
     nav.querySelectorAll(
-      ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list, .programmes-section-nav-list, .contact-section-nav-list"
+      ".madrasa-section-nav-list, .about-section-nav-list, .campaign-section-nav-list, .programmes-section-nav-list, .contact-section-nav-list, .prayer-times-section-nav-list"
     ).forEach(function (list) {
       list.classList.add("page-section-nav-track");
 
@@ -7019,6 +7023,1149 @@
     );
   };
 
+  const PRAYER_TIMES_MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const getPrayerTimesAllowedWindow = () => {
+    const dublin = getDublinDate();
+    const currentYear = dublin.getFullYear();
+    const currentMonthIndex = dublin.getMonth();
+    const nextStart = new Date(currentYear, currentMonthIndex + 1, 1);
+    const nextYear = nextStart.getFullYear();
+    const nextMonthIndex = nextStart.getMonth();
+    const rangeStart = new Date(currentYear, currentMonthIndex, 1);
+    rangeStart.setHours(0, 0, 0, 0);
+    const rangeEnd = new Date(currentYear, currentMonthIndex + 2, 0);
+    rangeEnd.setHours(23, 59, 59, 999);
+    return {
+      currentYear: currentYear,
+      currentMonthIndex: currentMonthIndex,
+      currentMonthName: PRAYER_TIMES_MONTH_NAMES[currentMonthIndex],
+      nextYear: nextYear,
+      nextMonthIndex: nextMonthIndex,
+      nextMonthName: PRAYER_TIMES_MONTH_NAMES[nextMonthIndex],
+      rangeStart: rangeStart,
+      rangeEnd: rangeEnd,
+      periods: [
+        {
+          year: currentYear,
+          monthIndex: currentMonthIndex,
+          monthName: PRAYER_TIMES_MONTH_NAMES[currentMonthIndex],
+        },
+        {
+          year: nextYear,
+          monthIndex: nextMonthIndex,
+          monthName: PRAYER_TIMES_MONTH_NAMES[nextMonthIndex],
+        },
+      ],
+    };
+  };
+
+  const prayerTimesPeriodKey = (year, monthIndex) =>
+    year + "-" + monthIndex;
+
+  const parsePrayerTimesPeriodKey = (key) => {
+    const dash = String(key).indexOf("-");
+    return {
+      year: Number(key.slice(0, dash)),
+      monthIndex: Number(key.slice(dash + 1)),
+    };
+  };
+
+  const clampPrayerDateToWindow = (date, window) => {
+    if (date < window.rangeStart) return new Date(window.rangeStart.getTime());
+    if (date > window.rangeEnd) return new Date(window.rangeEnd.getTime());
+    return date;
+  };
+
+  const isPrayerPeriodAllowed = (year, monthIndex, window) =>
+    window.periods.some(function (p) {
+      return p.year === year && p.monthIndex === monthIndex;
+    });
+
+  const HIJRI_MONTH_SHORT = {
+    "Dhul Qadah": "D.Qadah",
+    "Dhul Hijjah": "D.Hijjah",
+    Muharram: "Muharram",
+    Safar: "Safar",
+    "Rabi al-awwal": "Rabi I",
+    "Rabi al-thani": "Rabi II",
+    "Jumada al-awwal": "Jumada I",
+    "Jumada al-thani": "Jumada II",
+    Rajab: "Rajab",
+    Shaban: "Shab.",
+    Ramadan: "Ramadan",
+    Shawwal: "Shawwal",
+  };
+
+  const formatTimetableTime = (raw) => {
+    if (!raw) return "—";
+    const str = String(raw).trim();
+    const match = str.match(/^(\d{1,2})[:.](\d{2})\s*(am|pm)?\b/i);
+    if (match) {
+      const hour = String(Number(match[1]));
+      const mins = match[2];
+      const suffix = match[3];
+      let time = hour + ":" + mins;
+      if (suffix) {
+        time += " " + suffix.toLowerCase();
+      }
+      return time;
+    }
+    return str
+      .replace(/\b0(\d)([:.])/g, "$1$2")
+      .replace(/\s+(am|pm)\b/gi, function (_, ap) {
+        return " " + ap.toLowerCase();
+      });
+  };
+
+  const formatHijriShort = (record) => {
+    if (!record) return "—";
+    const short =
+      HIJRI_MONTH_SHORT[record.hijriMonthName] || record.hijriMonthName || "";
+    return record.hijriDay + " " + short;
+  };
+
+  const buildHijriPeriodLabel = (records) => {
+    if (!records || !records.length) return "";
+    const first = records[0];
+    const last = records[records.length - 1];
+    const monthPart = function (r) {
+      return HIJRI_MONTH_SHORT[r.hijriMonthName] || r.hijriMonthName;
+    };
+    if (first.hijriMonthName === last.hijriMonthName && first.hijriYear === last.hijriYear) {
+      return monthPart(first) + " " + first.hijriYear + " A.H.";
+    }
+    const monthNames = [];
+    records.forEach(function (r) {
+      const m = monthPart(r);
+      if (monthNames.indexOf(m) === -1) monthNames.push(m);
+    });
+    let yearLabel = String(first.hijriYear);
+    if (last.hijriYear !== first.hijriYear) {
+      yearLabel = first.hijriYear + "-" + String(last.hijriYear).slice(-2);
+    }
+    return monthNames.join(" & ") + " " + yearLabel + " A.H.";
+  };
+
+  const getDaysInMonth = (year, monthIndex) =>
+    new Date(year, monthIndex + 1, 0).getDate();
+
+  const getMondayOfWeek = (date) => {
+    const d = new Date(date.getTime());
+    const day = d.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const findRecordForDate = (records, year, monthIndex, day) => {
+    if (!Array.isArray(records)) return null;
+    return (
+      records.find(function (r) {
+        return (
+          r.gregorianYear === year &&
+          r.gregorianMonth === monthIndex &&
+          r.gregorianDay === day
+        );
+      }) || null
+    );
+  };
+
+  const isFridayRecord = (record) =>
+    record &&
+    String(record.dayOfWeek || "")
+      .toLowerCase()
+      .indexOf("fri") === 0;
+
+  const buildTimetableTableHead = (monthName) => {
+    const monthLabel = (monthName || "Month").toUpperCase();
+    return (
+      "<thead>" +
+      '<tr class="prayer-timetable-head-primary">' +
+      '<th colspan="2" scope="colgroup" class="prayer-timetable-month-label">' +
+      monthLabel +
+      "</th>" +
+      '<th rowspan="2" scope="col" class="prayer-timetable-hijri-head">Islamic<br>Hijri</th>' +
+      '<th colspan="6" scope="colgroup" class="prayer-timetable-group-begin">Adhan Times</th>' +
+      '<th colspan="5" scope="colgroup" class="prayer-timetable-group-jamaat">Iqamah Times</th>' +
+      "</tr>" +
+      '<tr class="prayer-timetable-head-secondary">' +
+      '<th scope="col">Date</th><th scope="col">Day</th>' +
+      "<th scope=\"col\">Fajr</th><th scope=\"col\">Sunrise</th><th scope=\"col\">Zohr</th><th scope=\"col\">Asar</th><th scope=\"col\">Magrib</th><th scope=\"col\">Isha</th>" +
+      '<th scope="col" class="prayer-timetable-jamaat-start">Fajr</th><th scope="col">Zohr</th><th scope="col">Asar</th><th scope="col">Magrib</th><th scope="col">Isha</th>' +
+      "</tr></thead>"
+    );
+  };
+
+  const buildTimetableRowHtml = (record, options) => {
+    if (!record) {
+      return (
+        "<tr><td colspan=\"14\">No data</td></tr>"
+      );
+    }
+    const today = getDublinDate();
+    const rowDate = new Date(
+      record.gregorianYear,
+      record.gregorianMonth,
+      record.gregorianDay,
+    );
+    const classes = [];
+    if (isFridayRecord(record)) classes.push("is-friday");
+    if (options && options.highlightToday && isSameCalendarDay(rowDate, today)) {
+      classes.push("is-today");
+    }
+    const classAttr = classes.length ? ' class="' + classes.join(" ") + '"' : "";
+    return (
+      "<tr" +
+      classAttr +
+      ">" +
+      '<th scope="row" class="prayer-timetable-day-num">' +
+      record.gregorianDay +
+      "</th>" +
+      '<td class="prayer-timetable-dow">' +
+      (record.dayOfWeek || "—") +
+      "</td>" +
+      '<td class="prayer-timetable-hijri">' +
+      formatHijriShort(record) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.fajarTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.sunriseTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.dhuharTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.asrTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.maghribTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.ishaTime) +
+      "</td>" +
+      '<td class="prayer-timetable-jamaat-start">' +
+      formatTimetableTime(record.fajarJamahTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.zohrJamahTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.asarJamahTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.maghribJamahTime) +
+      "</td>" +
+      "<td>" +
+      formatTimetableTime(record.ishaJamahTime) +
+      "</td>" +
+      "</tr>"
+    );
+  };
+
+  const buildDailyTimetableHtml = (record) => {
+    if (!record) {
+      return '<p class="mb-0">No timetable data for this date.</p>';
+    }
+    const row = function (label, value) {
+      return (
+        "<tr><th scope=\"row\">" +
+        label +
+        "</th><td>" +
+        formatTimetableTime(value) +
+        "</td></tr>"
+      );
+    };
+    return (
+      '<div class="prayer-timetable-daily">' +
+      '<div class="prayer-timetable-daily-meta">' +
+      "<span><strong>Gregorian:</strong> " +
+      (record.gregorianDateString || "—") +
+      "</span>" +
+      "<span><strong>Islamic:</strong> " +
+      record.hijriDay +
+      " " +
+      (record.hijriMonthName || "") +
+      " " +
+      record.hijriYear +
+      " AH</span>" +
+      "<span><strong>Day:</strong> " +
+      (record.dayOfWeek || "—") +
+      "</span>" +
+      "</div>" +
+      '<div class="prayer-timetable-daily-card">' +
+      "<h3>Adhan Times</h3>" +
+      "<table>" +
+      row("Fajr", record.fajarTime) +
+      row("Sunrise", record.sunriseTime) +
+      row("Zohr", record.dhuharTime) +
+      row("Asar", record.asrTime) +
+      row("Magrib", record.maghribTime) +
+      row("Isha", record.ishaTime) +
+      "</table></div>" +
+      '<div class="prayer-timetable-daily-card">' +
+      "<h3>Iqamah Times</h3>" +
+      "<table>" +
+      row("Fajr", record.fajarJamahTime) +
+      row("Zohr", record.zohrJamahTime) +
+      row("Asar", record.asarJamahTime) +
+      row("Magrib", record.maghribJamahTime) +
+      row("Isha", record.ishaJamahTime) +
+      "</table></div></div>"
+    );
+  };
+
+  let prayerTimesHeroTimer = null;
+
+  const updatePrayerTimesHero = () => {
+    if (!isPrayerTimesPage()) return;
+
+    const gregorianEl = document.getElementById("prayer-hero-gregorian");
+    const hijriEl = document.getElementById("prayer-hero-hijri");
+    const currentEl = document.getElementById("prayer-hero-current");
+    const sunriseEl = document.getElementById("prayer-hero-sunrise");
+    const nextNameEl = document.getElementById("prayer-hero-next-name");
+    const nextLabelEl = document.getElementById("prayer-hero-next-label");
+    const countdownEl = document.getElementById("prayer-hero-countdown");
+    const d = cachedPrayerDayData;
+    const now = getDublinDate();
+
+    if (gregorianEl) {
+      gregorianEl.textContent = now.toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      });
+    }
+
+    if (hijriEl) {
+      hijriEl.textContent = d
+        ? d.hijriDay + " " + d.hijriMonthName + " " + d.hijriYear
+        : "—";
+    }
+
+    const state = getSalahTimelineState();
+
+    if (currentEl) {
+      currentEl.textContent = state.current ? state.current.label : "—";
+    }
+
+    if (sunriseEl) {
+      sunriseEl.textContent =
+        d && d.sunriseTime
+          ? "Sunrise " + formatTimetableTime(d.sunriseTime)
+          : "";
+    }
+
+    if (nextNameEl) {
+      if (state.nextEvent) {
+        nextNameEl.textContent = state.nextEvent.label;
+      } else if (state.nextPrayer) {
+        nextNameEl.textContent = state.nextPrayer.label;
+      } else {
+        nextNameEl.textContent = "—";
+      }
+    }
+
+    if (nextLabelEl && countdownEl) {
+      if (state.nextEvent && state.countdownTarget) {
+        nextLabelEl.textContent = formatEventChipLabel(state.nextEvent) + " in";
+        countdownEl.textContent = formatCountdown(state.countdownTarget);
+      } else {
+        nextLabelEl.textContent = "Next";
+        countdownEl.textContent = "—";
+      }
+    }
+  };
+
+  const updatePrayerTimesViewIndicator = () => {
+    const tabs = document.querySelector("[data-prayer-view-tabs]");
+    if (!tabs) return;
+    const activeTab = tabs.querySelector(".prayer-times-view-tab.is-active");
+    const indicator = tabs.querySelector(".prayer-times-view-indicator");
+    if (!activeTab || !indicator) return;
+
+    const tabsRect = tabs.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    indicator.style.width = tabRect.width + "px";
+    indicator.style.transform =
+      "translateX(" + (tabRect.left - tabsRect.left) + "px)";
+  };
+
+  const initPrayerTimesPageMotion = () => {
+    if (!isPrayerTimesPage()) return;
+    if (document.body.dataset.prayerMotionInit) return;
+    document.body.dataset.prayerMotionInit = "true";
+
+    const heroEnter = document.querySelector(".prayer-times-hero-enter");
+    if (heroEnter) {
+      requestAnimationFrame(function () {
+        heroEnter.classList.add("is-visible");
+      });
+    }
+
+    updatePrayerTimesHero();
+    if (prayerTimesHeroTimer) clearInterval(prayerTimesHeroTimer);
+    prayerTimesHeroTimer = setInterval(updatePrayerTimesHero, 30000);
+
+    const revealNodes = document.querySelectorAll(".prayer-reveal");
+    if ("IntersectionObserver" in window && revealNodes.length) {
+      const revealObserver = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -5% 0px" },
+      );
+      revealNodes.forEach(function (el) {
+        revealObserver.observe(el);
+      });
+    } else {
+      revealNodes.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+    }
+
+    updatePrayerTimesViewIndicator();
+    window.addEventListener("resize", updatePrayerTimesViewIndicator, {
+      passive: true,
+    });
+  };
+
+  const expandPrayerPrintSheetHeight = (sheet, extraPx) => {
+    const rows = sheet.querySelectorAll(".prayer-timetable-table tbody tr");
+    const rowCount = rows.length;
+    if (!rowCount || extraPx <= 0) return;
+
+    const perRow = extraPx / rowCount;
+
+    rows.forEach(function (row) {
+      row.style.height = row.offsetHeight + perRow + "px";
+    });
+  };
+
+  const measurePrayerPrintScale = (clone, page) => {
+    const printableWidth = page.clientWidth;
+    const printableHeight = page.clientHeight;
+    const sheetWidth = clone.offsetWidth;
+    let sheetHeight = clone.scrollHeight;
+
+    if (!sheetWidth || !sheetHeight || !printableWidth || !printableHeight) {
+      return null;
+    }
+
+    let scale = Math.min(
+      printableWidth / sheetWidth,
+      printableHeight / sheetHeight,
+    );
+
+    const widthLimited =
+      printableWidth / sheetWidth <= printableHeight / sheetHeight;
+    if (widthLimited) {
+      const targetUnscaledHeight = printableHeight / scale;
+      const slack = targetUnscaledHeight - sheetHeight;
+      if (slack > 10) {
+        expandPrayerPrintSheetHeight(clone, slack);
+        sheetHeight = clone.scrollHeight;
+        scale = Math.min(
+          printableWidth / sheetWidth,
+          printableHeight / sheetHeight,
+        );
+      }
+    }
+
+    return {
+      scale: scale,
+      sheetWidth: sheetWidth,
+      sheetHeight: sheetHeight,
+      printableWidth: printableWidth,
+      printableHeight: printableHeight,
+    };
+  };
+
+  const printPrayerTimetableSheet = (sheetEl) => {
+    if (!sheetEl) return;
+
+    const cssLink = document.querySelector('link[href*="assets/css/main"]');
+    const cssHref = cssLink
+      ? cssLink.href
+      : new URL("assets/css/main.css", window.location.href).href;
+    const faLink = document.querySelector('link[href*="font-awesome"]');
+    const faHref = faLink
+      ? faLink.href
+      : "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css";
+
+    const layoutWidth = sheetEl.offsetWidth;
+
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("title", "Prayer timetable print preview");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.cssText =
+      "position:fixed;left:-10000px;top:0;width:" +
+      layoutWidth +
+      "px;height:297mm;border:0;visibility:hidden";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument;
+    if (!doc) {
+      iframe.remove();
+      return;
+    }
+
+    doc.open();
+    doc.write(
+      '<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8">' +
+      '<link rel="stylesheet" href="' +
+      cssHref +
+      '">' +
+      '<link rel="stylesheet" href="' +
+      faHref +
+      '" crossorigin="anonymous">' +
+      "<style>" +
+      "@page { size: A4 portrait; margin: 4mm; }" +
+      "html, body { margin: 0; padding: 0; background: #fff; }" +
+      "body.prayer-print-body { margin: 0; padding: 0; background: #fff; }" +
+      "#prayer-print-page { width: 202mm; height: 289mm; overflow: hidden; box-sizing: border-box; position: relative; }" +
+      "#prayer-print-root { transform-origin: top left; }" +
+      ".prayer-timetable-scroll, .prayer-timetable-stage { overflow: visible !important; max-height: none !important; }" +
+      "[data-prayer-sheet] { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }" +
+      ".prayer-reveal { opacity: 1 !important; transform: none !important; }" +
+      "a[href]::after { content: none !important; }" +
+      ".prayer-print-layout .prayer-timetable-footer-cards { grid-template-columns: repeat(4, 1fr) !important; }" +
+      ".prayer-print-layout .prayer-timetable-table tbody tr.is-today td," +
+      ".prayer-print-layout .prayer-timetable-table tbody tr.is-today th { box-shadow: none !important; }" +
+      ".prayer-print-layout .prayer-timetable-table tbody tr.is-friday.is-today td," +
+      ".prayer-print-layout .prayer-timetable-table tbody tr.is-friday.is-today th { background: #b8b8b8 !important; }" +
+      "@media print { html, body { margin: 0; padding: 0; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; } #prayer-print-page { width: 202mm; height: 289mm; margin: 0; padding: 0; } }" +
+      "</style></head><body class=\"prayer-print-body page-prayer-times\">" +
+      '<div id="prayer-print-page"><div id="prayer-print-root"></div></div>' +
+      "</body></html>",
+    );
+    doc.close();
+
+    const root = doc.getElementById("prayer-print-root");
+    const page = doc.getElementById("prayer-print-page");
+    if (!root || !page) {
+      iframe.remove();
+      return;
+    }
+
+    const clone = sheetEl.cloneNode(true);
+    clone.classList.remove("prayer-reveal");
+    clone.classList.add("prayer-print-layout");
+    clone.style.width = layoutWidth + "px";
+    clone.style.maxWidth = "none";
+
+    const imageWaits = [];
+    clone.querySelectorAll("img[src]").forEach(function (img) {
+      const src = img.getAttribute("src");
+      if (src) img.src = new URL(src, window.location.href).href;
+      if (!img.complete) {
+        imageWaits.push(
+          new Promise(function (resolve) {
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+          }),
+        );
+      }
+    });
+    root.appendChild(clone);
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      iframe.remove();
+    };
+
+    const applyScale = (metrics) => {
+      root.style.width = metrics.sheetWidth + "px";
+      root.style.transformOrigin = "top left";
+      page.style.paddingLeft = "0";
+      page.style.paddingTop = "0";
+
+      const view = doc.defaultView;
+      if (view && view.CSS && view.CSS.supports("zoom", "1")) {
+        root.style.zoom = String(metrics.scale);
+        root.style.transform = "none";
+      } else {
+        root.style.zoom = "1";
+        root.style.transform = "scale(" + metrics.scale + ")";
+      }
+    };
+
+    const runPrint = () => {
+      const metrics = measurePrayerPrintScale(clone, page);
+      if (!metrics) {
+        cleanup();
+        return;
+      }
+
+      applyScale(metrics);
+
+      const win = iframe.contentWindow;
+      if (!win) {
+        cleanup();
+        return;
+      }
+
+      win.addEventListener("afterprint", cleanup, { once: true });
+      window.setTimeout(cleanup, 60000);
+
+      win.focus();
+      win.print();
+    };
+
+    const waitForAssets = () => {
+      const fontsReady = doc.fonts && doc.fonts.ready
+        ? doc.fonts.ready
+        : Promise.resolve();
+
+      Promise.all([fontsReady].concat(imageWaits))
+        .catch(function () {
+          return undefined;
+        })
+        .then(function () {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(runPrint);
+          });
+        });
+    };
+
+    iframe.addEventListener("load", waitForAssets, { once: true });
+    if (doc.readyState === "complete") {
+      waitForAssets();
+    }
+  };
+
+  const initPrayerTimesPage = () => {
+    const root = document.querySelector("[data-prayer-times-page]");
+    if (!root || root.dataset.prayerInit) return;
+    root.dataset.prayerInit = "true";
+
+    const viewTabs = root.querySelectorAll("[data-prayer-view]");
+    const yearSelect = root.querySelector("[data-prayer-year]");
+    const monthTabs = root.querySelector("[data-prayer-month-tabs]");
+    const daySelect = root.querySelector("[data-prayer-day]");
+    const dayWrap = root.querySelector("[data-prayer-day-wrap]");
+    const prevBtn = root.querySelector("[data-prayer-prev]");
+    const nextBtn = root.querySelector("[data-prayer-next]");
+    const todayBtn = root.querySelector("[data-prayer-today]");
+    const tableHost = root.querySelector("[data-prayer-table-host]");
+    const tableStage = root.querySelector("[data-prayer-table-stage]");
+    const subtitleEl = root.querySelector("[data-prayer-sheet-subtitle]");
+    const periodLabel = root.querySelector("[data-prayer-period-label]");
+    const statusEl = root.querySelector("[data-prayer-status]");
+    const printBtn = root.querySelector("[data-prayer-print]");
+
+    if (
+      !monthTabs ||
+      !daySelect ||
+      !tableHost ||
+      !subtitleEl
+    ) {
+      return;
+    }
+
+    const dublinNow = getIrelandDateParts(getDublinDate());
+    const state = {
+      view: "month",
+      year: dublinNow.year,
+      month: dublinNow.monthName,
+      monthIndex: PRAYER_TIMES_MONTH_NAMES.indexOf(dublinNow.monthName),
+      day: dublinNow.day,
+      weekStart: getMondayOfWeek(getDublinDate()),
+      monthCache: Object.create(null),
+      loading: false,
+    };
+
+    if (state.monthIndex < 0) state.monthIndex = getDublinDate().getMonth();
+
+    const yearWrap = yearSelect ? yearSelect.closest(".prayer-times-selector") : null;
+    if (yearWrap) yearWrap.hidden = true;
+
+    const selectMonthPeriod = (periodKey) => {
+      const parsed = parsePrayerTimesPeriodKey(periodKey);
+      state.year = parsed.year;
+      state.monthIndex = parsed.monthIndex;
+      state.day = 1;
+      refresh();
+    };
+
+    const populateMonthTabs = () => {
+      const w = getWindow();
+      const sameYear = w.currentYear === w.nextYear;
+      const currentKey = prayerTimesPeriodKey(state.year, state.monthIndex);
+      monthTabs.innerHTML = "";
+      w.periods.forEach(function (period) {
+        const key = prayerTimesPeriodKey(period.year, period.monthIndex);
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "prayer-times-month-tab";
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("data-prayer-period-key", key);
+        tab.setAttribute(
+          "aria-selected",
+          key === currentKey ? "true" : "false",
+        );
+        if (key === currentKey) tab.classList.add("is-active");
+        tab.textContent = sameYear
+          ? period.monthName
+          : period.monthName + " " + period.year;
+        tab.addEventListener("click", function () {
+          if (key === prayerTimesPeriodKey(state.year, state.monthIndex)) {
+            return;
+          }
+          selectMonthPeriod(key);
+        });
+        monthTabs.appendChild(tab);
+      });
+    };
+
+    const clampStateToWindow = () => {
+      const w = getWindow();
+      if (!isPrayerPeriodAllowed(state.year, state.monthIndex, w)) {
+        state.year = w.currentYear;
+        state.monthIndex = w.currentMonthIndex;
+      }
+      const selected = clampPrayerDateToWindow(
+        new Date(state.year, state.monthIndex, state.day),
+        w,
+      );
+      state.year = selected.getFullYear();
+      state.monthIndex = selected.getMonth();
+      state.day = selected.getDate();
+      state.month = PRAYER_TIMES_MONTH_NAMES[state.monthIndex];
+      if (state.view === "week") {
+        state.weekStart = getMondayOfWeek(selected);
+        if (state.weekStart < w.rangeStart) {
+          state.weekStart = new Date(w.rangeStart.getTime());
+        }
+        const weekEnd = new Date(state.weekStart.getTime());
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        if (weekEnd > w.rangeEnd) {
+          state.weekStart = new Date(w.rangeEnd.getTime());
+          state.weekStart.setDate(state.weekStart.getDate() - 6);
+          if (state.weekStart < w.rangeStart) {
+            state.weekStart = new Date(w.rangeStart.getTime());
+          }
+        }
+      }
+    };
+
+    const updateNavButtons = () => {
+      const w = getWindow();
+      let atStart = false;
+      let atEnd = false;
+      if (state.view === "month") {
+        atStart =
+          state.year === w.currentYear &&
+          state.monthIndex === w.currentMonthIndex;
+        atEnd =
+          state.year === w.nextYear && state.monthIndex === w.nextMonthIndex;
+      } else if (state.view === "day") {
+        const selected = new Date(state.year, state.monthIndex, state.day);
+        atStart = selected <= w.rangeStart;
+        atEnd = selected >= w.rangeEnd;
+      } else {
+        const weekEnd = new Date(state.weekStart.getTime());
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        atStart = state.weekStart <= w.rangeStart;
+        atEnd = weekEnd >= w.rangeEnd;
+      }
+      if (prevBtn) prevBtn.disabled = atStart;
+      if (nextBtn) nextBtn.disabled = atEnd;
+    };
+
+    const setStatus = (message, visible) => {
+      if (!statusEl) return;
+      if (!visible) {
+        statusEl.hidden = true;
+        statusEl.textContent = "";
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.textContent = message;
+    };
+
+    const getWindow = () => getPrayerTimesAllowedWindow();
+
+    const populateDayOptions = () => {
+      const daysInMonth = getDaysInMonth(state.year, state.monthIndex);
+      if (state.day > daysInMonth) state.day = daysInMonth;
+      daySelect.innerHTML = "";
+      for (let d = 1; d <= daysInMonth; d += 1) {
+        const opt = document.createElement("option");
+        opt.value = String(d);
+        opt.textContent = String(d);
+        if (d === state.day) opt.selected = true;
+        daySelect.appendChild(opt);
+      }
+    };
+
+    const syncSelectors = () => {
+      state.month = PRAYER_TIMES_MONTH_NAMES[state.monthIndex];
+      populateMonthTabs();
+      populateDayOptions();
+      daySelect.value = String(state.day);
+      if (dayWrap) {
+        dayWrap.hidden = state.view !== "day";
+      }
+      updateNavButtons();
+    };
+
+    const getMonthCacheKey = (year, monthName) => year + "-" + monthName;
+
+    const loadMonthData = (year, monthName) => {
+      const key = getMonthCacheKey(year, monthName);
+      if (state.monthCache[key]) {
+        return Promise.resolve(state.monthCache[key]);
+      }
+      setStatus("Loading timetable…", true);
+      return fetchIqamahMonth(year, monthName)
+        .then(function (records) {
+          const sorted = (records || []).slice().sort(function (a, b) {
+            return a.gregorianDay - b.gregorianDay;
+          });
+          state.monthCache[key] = sorted;
+          return sorted;
+        })
+        .catch(function () {
+          state.monthCache[key] = [];
+          return [];
+        });
+    };
+
+    const getMonthsNeededForWeek = () => {
+      const seen = Object.create(null);
+      const months = [];
+      for (let i = 0; i < 7; i += 1) {
+        const d = new Date(state.weekStart.getTime());
+        d.setDate(d.getDate() + i);
+        const monthName = PRAYER_TIMES_MONTH_NAMES[d.getMonth()];
+        const key = d.getFullYear() + "-" + monthName;
+        if (!seen[key]) {
+          seen[key] = true;
+          months.push({ year: d.getFullYear(), monthName: monthName });
+        }
+      }
+      return months;
+    };
+
+    const loadRecordsForView = () => {
+      const w = getWindow();
+      if (state.view === "week") {
+        const months = getMonthsNeededForWeek().filter(function (m) {
+          return w.periods.some(function (p) {
+            return p.year === m.year && p.monthName === m.monthName;
+          });
+        });
+        return Promise.all(
+          months.map(function (m) {
+            return loadMonthData(m.year, m.monthName);
+          }),
+        ).then(function (results) {
+          const merged = [];
+          results.forEach(function (arr) {
+            merged.push.apply(merged, arr);
+          });
+          return merged;
+        });
+      }
+      return loadMonthData(state.year, state.month);
+    };
+
+    const updateSubtitle = (records) => {
+      const hijriPart = buildHijriPeriodLabel(records);
+      subtitleEl.textContent =
+        state.month +
+        " " +
+        state.year +
+        (hijriPart ? " – " + hijriPart : "");
+    };
+
+    const updatePeriodLabel = () => {
+      if (state.view === "day") {
+        periodLabel.textContent =
+          "Showing daily times for " +
+          state.day +
+          " " +
+          state.month +
+          " " +
+          state.year;
+        return;
+      }
+      if (state.view === "week") {
+        const weekEnd = new Date(state.weekStart.getTime());
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        periodLabel.textContent =
+          "Showing weekly times from " +
+          state.weekStart.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }) +
+          " to " +
+          weekEnd.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+        return;
+      }
+      periodLabel.textContent =
+        "Showing full month for " + state.month + " " + state.year;
+    };
+
+    const paintTable = (records) => {
+      updatePeriodLabel();
+      setStatus("", false);
+
+      if (state.view === "day") {
+        const record = findRecordForDate(
+          records,
+          state.year,
+          state.monthIndex,
+          state.day,
+        );
+        updateSubtitle(record ? [record] : records);
+        tableHost.innerHTML = buildDailyTimetableHtml(record);
+        if (!record) {
+          setStatus("No timetable data available for this date.", true);
+        }
+        return;
+      }
+
+      let rows = [];
+      if (state.view === "month") {
+        rows = records.slice();
+      } else {
+        for (let i = 0; i < 7; i += 1) {
+          const d = new Date(state.weekStart.getTime());
+          d.setDate(d.getDate() + i);
+          rows.push(
+            findRecordForDate(
+              records,
+              d.getFullYear(),
+              d.getMonth(),
+              d.getDate(),
+            ),
+          );
+        }
+      }
+
+      const displayRecords = rows.filter(Boolean);
+      updateSubtitle(displayRecords.length ? displayRecords : records);
+
+      if (
+        !rows.length ||
+        rows.every(function (r) {
+          return !r;
+        })
+      ) {
+        tableHost.innerHTML =
+          '<p class="mb-0">No timetable data available for this period.</p>';
+        setStatus("No timetable data available for this period.", true);
+        return;
+      }
+
+      const body = rows
+        .map(function (record) {
+          return buildTimetableRowHtml(record, { highlightToday: true });
+        })
+        .join("");
+
+      tableHost.innerHTML =
+        '<table class="prayer-timetable-table">' +
+        buildTimetableTableHead(state.month) +
+        "<tbody>" +
+        body +
+        "</tbody></table>";
+    };
+
+    const renderTable = (records) => {
+      if (!tableStage) {
+        paintTable(records);
+        return;
+      }
+
+      tableStage.classList.add("is-swapping");
+      window.setTimeout(function () {
+        paintTable(records);
+        tableStage.classList.remove("is-swapping");
+      }, 180);
+    };
+
+    const refresh = () => {
+      clampStateToWindow();
+      syncSelectors();
+      loadRecordsForView().then(function (records) {
+        renderTable(records);
+      });
+    };
+
+    const setView = (view) => {
+      state.view = view;
+      viewTabs.forEach(function (tab) {
+        const active = tab.getAttribute("data-prayer-view") === view;
+        tab.classList.toggle("is-active", active);
+        tab.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      updatePrayerTimesViewIndicator();
+      if (view === "week") {
+        const anchor = new Date(state.year, state.monthIndex, state.day);
+        state.weekStart = getMondayOfWeek(anchor);
+      }
+      refresh();
+    };
+
+    const shiftPeriod = (direction) => {
+      const w = getWindow();
+      if (state.view === "day") {
+        const next = new Date(state.year, state.monthIndex, state.day + direction);
+        const clamped = clampPrayerDateToWindow(next, w);
+        if (clamped.getTime() === new Date(state.year, state.monthIndex, state.day).getTime()) {
+          return;
+        }
+        state.year = clamped.getFullYear();
+        state.monthIndex = clamped.getMonth();
+        state.day = clamped.getDate();
+      } else if (state.view === "week") {
+        const candidateStart = getMondayOfWeek(
+          new Date(state.weekStart.getTime()),
+        );
+        candidateStart.setDate(candidateStart.getDate() + direction * 7);
+        const candidateEnd = new Date(candidateStart.getTime());
+        candidateEnd.setDate(candidateEnd.getDate() + 6);
+        if (candidateStart < w.rangeStart || candidateEnd > w.rangeEnd) {
+          return;
+        }
+        state.weekStart = candidateStart;
+        const anchor = clampPrayerDateToWindow(candidateStart, w);
+        state.year = anchor.getFullYear();
+        state.monthIndex = anchor.getMonth();
+        state.day = anchor.getDate();
+      } else {
+        const keys = w.periods.map(function (p) {
+          return prayerTimesPeriodKey(p.year, p.monthIndex);
+        });
+        const currentKey = prayerTimesPeriodKey(state.year, state.monthIndex);
+        const nextIdx = keys.indexOf(currentKey) + direction;
+        if (nextIdx < 0 || nextIdx >= keys.length) return;
+        const period = w.periods[nextIdx];
+        state.year = period.year;
+        state.monthIndex = period.monthIndex;
+        state.day = 1;
+      }
+      refresh();
+    };
+
+    const goToday = () => {
+      const parts = getIrelandDateParts(getDublinDate());
+      state.year = parts.year;
+      state.monthIndex = PRAYER_TIMES_MONTH_NAMES.indexOf(parts.monthName);
+      if (state.monthIndex < 0) state.monthIndex = getDublinDate().getMonth();
+      state.month = parts.monthName;
+      state.day = parts.day;
+      state.weekStart = getMondayOfWeek(getDublinDate());
+      refresh();
+    };
+
+    populateMonthTabs();
+    populateDayOptions();
+
+    viewTabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        setView(tab.getAttribute("data-prayer-view") || "month");
+      });
+    });
+
+    daySelect.addEventListener("change", function () {
+      state.day = Number(daySelect.value);
+      refresh();
+    });
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        shiftPeriod(-1);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        shiftPeriod(1);
+      });
+    }
+    if (todayBtn) {
+      todayBtn.addEventListener("click", goToday);
+    }
+
+    const sheetEl = root.querySelector("[data-prayer-sheet]");
+
+    if (printBtn && sheetEl) {
+      printBtn.addEventListener("click", function () {
+        printPrayerTimetableSheet(sheetEl);
+      });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const viewParam = params.get("view");
+    if (viewParam === "week" || viewParam === "month" || viewParam === "day") {
+      state.view = viewParam;
+    }
+    const yearParamRaw = params.get("year");
+    const monthParamRaw = params.get("month");
+    const dayParamRaw = params.get("day");
+    if (yearParamRaw !== null && yearParamRaw !== "") {
+      const yearParam = Number(yearParamRaw);
+      if (!Number.isNaN(yearParam)) state.year = yearParam;
+    }
+    if (monthParamRaw !== null && monthParamRaw !== "") {
+      const monthParam = Number(monthParamRaw);
+      if (!Number.isNaN(monthParam) && monthParam >= 0 && monthParam <= 11) {
+        state.monthIndex = monthParam;
+      }
+    }
+    if (dayParamRaw !== null && dayParamRaw !== "") {
+      const dayParam = Number(dayParamRaw);
+      if (!Number.isNaN(dayParam) && dayParam >= 1) state.day = dayParam;
+    }
+
+    clampStateToWindow();
+
+    viewTabs.forEach(function (tab) {
+      const active = tab.getAttribute("data-prayer-view") === state.view;
+      tab.classList.toggle("is-active", active);
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    if (state.view === "week") {
+      state.weekStart = getMondayOfWeek(
+        new Date(state.year, state.monthIndex, state.day),
+      );
+    }
+    updatePrayerTimesViewIndicator();
+    refresh();
+  };
+
   const setLocationSpecific = () => {
     if (isHomePage()) {
       setEvent();
@@ -7033,6 +8180,9 @@
     if (isProjectsPage()) {
       initBaguetteBox();
     }
+    if (isPrayerTimesPage()) {
+      initPrayerTimesPage();
+    }
   };
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -7040,6 +8190,10 @@
       showNotices();
       initHomeNotices();
       initHomePillars();
+    }
+    if (isPrayerTimesPage()) {
+      initPrayerTimesPage();
+      initPrayerTimesPageMotion();
     }
     initSiteAnnouncements();
     initNavSalahPanel();

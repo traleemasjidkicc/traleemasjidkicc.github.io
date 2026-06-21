@@ -6,48 +6,41 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description"
-    content="Evening Islamic school in Tralee for children — Qur'an, An Nasihah curriculum, and nurturing teachers. Register your child via WhatsApp.">
+    content="Daily, weekly and monthly salah timetables for Kerry Islamic Cultural Centre, Tralee Masjid — adhan and iqamah times.">
   <meta name="keywords"
-    content="masjid, mosque, religion, islam, allah, god, faith, kicc">
+    content="masjid, mosque, salah, prayer times, iqamah, timetable, tralee, kicc">
   <meta name="author" content="Nazmul Alam">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
-  <title>Children&rsquo;s Madrasa | Tralee Masjid — Kerry Islamic Cultural Centre</title>
+  <title>Prayer Times | Tralee Mosque — Kerry Islamic Cultural Centre</title>
 
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet"
     href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/main-1782019298767.css">
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <link rel="stylesheet" href="assets/css/main-1782019298767.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous">
-    </script>
+    crossorigin="anonymous"></script>
   <script
     src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous">
-    </script>
+    crossorigin="anonymous"></script>
   <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous">
-    </script>
-  <script src="//cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script src="//threejs.org/examples/js/libs/stats.min.js"></script>
-
+    crossorigin="anonymous"></script>
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"
     integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -60,7 +53,6 @@
       wait_for_update: 500
     });
   </script>
-  <!-- Google Analytics loads only after Analytics consent (see scripts) -->
   <script defer type="text/javascript" src="assets/js/scripts-1782019298633.js"></script>
   <script>
     (function () {
@@ -73,9 +65,8 @@
   </script>
 </head>
 
-<body class="page-madrasa">
+<body class="page-prayer-times">
   <a class="skip-link" href="#main-content">Skip to main content</a>
-  <!-- START OF NAV -->
   <nav class="navbar navbar-expand-lg navbar-light site-nav kicc-nav kicc-nav-v2 sticky-top"
     aria-label="Main navigation">
     <div class="container kicc-nav-container">
@@ -129,8 +120,8 @@
               </div>
             </div>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link kicc-nav-link" href="madrasa.html">Madrasa <span class="sr-only">(current)</span></a>
+          <li class="nav-item">
+            <a class="nav-link kicc-nav-link" href="madrasa.html">Madrasa</a>
           </li>
           <li class="nav-item">
             <a class="nav-link kicc-nav-link" href="projects.html">New Masjid</a>
@@ -165,11 +156,11 @@
           </li>
         </ul>
         <div class="kicc-nav-actions">
-          <div class="dropdown kicc-nav-salah-dropdown">
-            <a class="nav-link kicc-nav-link kicc-nav-salah-toggle dropdown-toggle"
+          <div class="dropdown kicc-nav-salah-dropdown active">
+            <a class="nav-link kicc-nav-link kicc-nav-salah-toggle dropdown-toggle active"
               href="prayer-times.html" id="navSalahDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
-              Salah times
+              Salah times <span class="sr-only">(current)</span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg-right kicc-nav-salah-menu"
               aria-labelledby="navSalahDropdown">
@@ -226,380 +217,359 @@
       </div>
     </div>
   </nav>
-  <!-- END OF NAV -->
-  <main id="main-content">
-  <section class="clearfix">
-    <div class="hero-cover-madrasa">
-      <div class="container py-5">
-        <header class="text-center text-white py-4 madrasa-hero-header">
-          <span class="campaign-eyebrow">For Parents &amp; Guardians</span>
-          <h1 class="madrasa-hero-title text-wrap-safe">Give Your Child a Strong
-            Islamic Foundation</h1>
-          <p class="lead mb-4">Evening Madrasa at Tralee Masjid &mdash; Qur&rsquo;an,
-            Islamic studies, and good character for children in Kerry, taught
-            according to the Qur&rsquo;an and Sunnah.</p>
-          <div class="action-btn-row madrasa-hero-actions justify-content-center">
-            <a class="btn btn-kicc btn-kicc-lg btn-kicc-whatsapp mb-2"
-              href="https://wa.me/353862440556?text=As-salamu%20alaikum.%20I%20would%20like%20to%20register%20my%20child%20for%20the%20Children%27s%20Madrasa%20at%20Tralee%20Masjid."
-              target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-whatsapp mr-1" aria-hidden="true"></i>
-              Register on WhatsApp
-            </a>
-            <a class="btn btn-kicc btn-kicc-lg btn-kicc-ghost mb-2"
-              href="#madrasa-schedule">
-              <i class="fas fa-clock mr-1" aria-hidden="true"></i>
-              View Class Times
-            </a>
+
+  <main id="main-content" class="prayer-times-main" data-prayer-times-page>
+    <section class="prayer-times-hero" aria-labelledby="prayer-times-heading">
+      <div class="prayer-times-hero-pattern" aria-hidden="true"></div>
+      <div class="prayer-times-hero-glow" aria-hidden="true"></div>
+      <div class="container position-relative">
+        <div class="prayer-times-hero-enter">
+          <p class="prayer-times-eyebrow arabic-greeting" lang="ar" dir="rtl">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ</p>
+          <div class="prayer-times-hero-badge" aria-hidden="true">
+            <i class="fas fa-clock"></i>
           </div>
+          <span class="prayer-times-hero-kicker">Salah times</span>
+          <h1 id="prayer-times-heading">Prayer Timetable</h1>
+          <p class="prayer-times-lead">Browse daily, weekly, or monthly adhan and iqamah times for Tralee Masjid. Times are kept in sync with the masjid schedule.</p>
+
+          <div class="prayer-times-hero-live prayer-reveal" data-prayer-hero-live aria-live="polite">
+            <article class="prayer-times-live-card prayer-times-live-card-date">
+              <span class="prayer-times-live-label">Today</span>
+              <strong id="prayer-hero-gregorian" class="prayer-times-live-value">&mdash;</strong>
+              <span id="prayer-hero-hijri" class="prayer-times-live-meta">&mdash;</span>
+            </article>
+            <article class="prayer-times-live-card prayer-times-live-card-now">
+              <span class="prayer-times-live-label">Now</span>
+              <strong id="prayer-hero-current" class="prayer-times-live-value">&mdash;</strong>
+              <span id="prayer-hero-sunrise" class="prayer-times-live-meta"></span>
+            </article>
+            <article class="prayer-times-live-card prayer-times-live-card-next">
+              <span id="prayer-hero-next-label" class="prayer-times-live-label">Next</span>
+              <strong id="prayer-hero-next-name" class="prayer-times-live-value">&mdash;</strong>
+              <span id="prayer-hero-countdown" class="prayer-times-live-countdown">&mdash;</span>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="prayer-times-section-nav page-section-nav-dock" aria-label="Prayer times page sections">
+      <div class="container">
+        <ul class="prayer-times-section-nav-list">
+          <li><a href="#prayer-times-heading">Overview</a></li>
+          <li><a href="#prayer-times-essentials">Essentials</a></li>
+          <li><a href="#prayer-times-timetable">Timetable</a></li>
+          <li><a href="#prayer-times-visit">Visit</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="prayer-times-essentials-section" id="prayer-times-essentials"
+      aria-labelledby="prayer-times-essentials-heading">
+      <div class="container">
+        <header class="prayer-times-section-head prayer-reveal">
+          <p class="prayer-times-section-eyebrow">At a glance</p>
+          <h2 id="prayer-times-essentials-heading" class="prayer-times-section-title">Everything you need for salah</h2>
+          <p class="prayer-times-section-lead">Quick links to programmes, Jumuah, the live stream, and the official monthly PDF.</p>
         </header>
-      </div>
-    </div>
-  </section>
 
-  <nav class="madrasa-section-nav page-section-nav-dock" aria-label="Madrasa page sections">
-    <div class="container">
-      <ul class="madrasa-section-nav-list">
-        <li><a href="#madrasa-why">Why Madrasa</a></li>
-        <li><a href="#madrasa-enrol">How to Enrol</a></li>
-        <li><a href="#madrasa-curriculum">Curriculum</a></li>
-        <li><a href="#madrasa-schedule">Class Times</a></li>
-        <li><a href="#madrasa-register">Register</a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <section class="campaign-section campaign-section-warm" id="madrasa-why">
-    <div class="container">
-      <div class="campaign-section-title">
-        <img src="assets/images/brand/bismillah-dark.png" alt="Bismillah">
-        <h2>Why Choose Our Madrasa?</h2>
-        <p>A caring, structured environment where children grow in faith, manners,
-          and confidence &mdash; with you as our partner every step of the way.</p>
-      </div>
-      <div class="row">
-        <div class="col-md-4 mb-4 mb-md-0">
-          <div class="madrasa-benefit-card h-100">
-            <span class="madrasa-benefit-icon" aria-hidden="true"><i
-                class="fas fa-book-quran"></i></span>
-            <h3>Faith That Lasts</h3>
-            <p>Children learn Qur&rsquo;an recitation, duas, and the essentials of
-              Islam in a way that is engaging, age-appropriate, and rooted in
-              authentic sources.</p>
+        <div class="row prayer-times-essentials-grid">
+          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 0">
+            <article class="prayer-times-essential-card prayer-times-essential-card-jumuah">
+              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
+              <h3 class="prayer-times-essential-title">Jumuah</h3>
+              <dl class="prayer-times-essential-meta">
+                <div><dt>Speech</dt><dd>1.25pm</dd></div>
+                <div><dt>Khutbah</dt><dd>1.45pm</dd></div>
+              </dl>
+            </article>
           </div>
-        </div>
-        <div class="col-md-4 mb-4 mb-md-0">
-          <div class="madrasa-benefit-card h-100">
-            <span class="madrasa-benefit-icon" aria-hidden="true"><i
-                class="fas fa-shield-alt"></i></span>
-            <h3>Safe &amp; Nurturing</h3>
-            <p>Classes run in the masjid with qualified teachers, clear behaviour
-              expectations, and a welcoming atmosphere where every child is known
-              and valued.</p>
+          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 1">
+            <article class="prayer-times-essential-card">
+              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-calendar-week"></i></span>
+              <h3 class="prayer-times-essential-title">Programmes</h3>
+              <ul class="prayer-times-essential-list">
+                <li>Women&rsquo;s class &mdash; Wed 10.30am</li>
+                <li>Durood Majlis &mdash; Thu after Magrib</li>
+              </ul>
+              <a class="prayer-times-essential-link" href="activities.html">View all programmes</a>
+            </article>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="madrasa-benefit-card h-100">
-            <span class="madrasa-benefit-icon" aria-hidden="true"><i
-                class="fas fa-hands-helping"></i></span>
-            <h3>We Work With You</h3>
-            <p>We recognise that home and Madrasa together shape a child&rsquo;s
-              character. We keep communication open so you always know how your
-              child is progressing.</p>
+          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 2">
+            <article class="prayer-times-essential-card">
+              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-headphones-alt"></i></span>
+              <h3 class="prayer-times-essential-title">Listen live</h3>
+              <p class="prayer-times-essential-copy">Follow talks and events from Tralee Masjid on Mixlr.</p>
+              <a class="prayer-times-essential-link" href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">Open Mixlr</a>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 3">
+            <article class="prayer-times-essential-card prayer-times-essential-card-pdf">
+              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="far fa-file-pdf"></i></span>
+              <h3 class="prayer-times-essential-title">Official PDF</h3>
+              <p class="prayer-times-essential-copy">Download the masjid&rsquo;s published monthly timetable.</p>
+              <a class="prayer-times-essential-link prayer-times-essential-link-pdf" href="#" id="prayer-hero-pdf" target="_blank" rel="noopener noreferrer">
+                <span id="prayer-hero-pdf-month">Month</span> PDF
+              </a>
+            </article>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="campaign-section" id="madrasa-enrol">
-    <div class="container">
-      <div class="campaign-section-title">
-        <h2>Enrolling Is Simple</h2>
-        <p>Three easy steps &mdash; most families complete registration in a
-          single WhatsApp conversation.</p>
-      </div>
-      <ol class="madrasa-steps">
-        <li class="madrasa-step">
-          <span class="madrasa-step-num" aria-hidden="true">1</span>
-          <div class="madrasa-step-body">
-            <h3>Message us on WhatsApp</h3>
-            <p>Tell us your child&rsquo;s name, age, and whether you need a girls&rsquo;
-              or boys&rsquo; class. Imam Mustafa or the Madrasa team will reply
-              promptly.</p>
-          </div>
-        </li>
-        <li class="madrasa-step">
-          <span class="madrasa-step-num" aria-hidden="true">2</span>
-          <div class="madrasa-step-body">
-            <h3>We confirm your session</h3>
-            <p>We match your child to the right class time from our weekday
-              schedule and answer any questions about what to expect.</p>
-          </div>
-        </li>
-        <li class="madrasa-step">
-          <span class="madrasa-step-num" aria-hidden="true">3</span>
-          <div class="madrasa-step-body">
-            <h3>Attend the first lesson</h3>
-            <p>Bring your child to Kerry Islamic Cultural Centre at the agreed
-              time. Teachers will welcome them and guide them from day one.</p>
-          </div>
-        </li>
-      </ol>
-      <div class="text-center mt-4">
-        <a class="btn btn-kicc btn-kicc-lg btn-kicc-whatsapp"
-          href="https://wa.me/353862440556?text=As-salamu%20alaikum.%20I%20would%20like%20to%20register%20my%20child%20for%20the%20Children%27s%20Madrasa%20at%20Tralee%20Masjid."
-          target="_blank" rel="noopener noreferrer">
-          <i class="fab fa-whatsapp mr-1" aria-hidden="true"></i>
-          Start Registration on WhatsApp
-        </a>
-        <p class="madrasa-enrol-alt mt-3 mb-0">
-          Prefer a form?
-          <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
-            target="_blank" rel="noopener noreferrer">Register online instead</a>
-        </p>
-      </div>
-    </div>
-  </section>
+    <section class="prayer-times-controls-section" id="prayer-times-timetable"
+      aria-label="Timetable options">
+      <div class="container">
+        <header class="prayer-times-section-head prayer-times-section-head-left prayer-reveal">
+          <p class="prayer-times-section-eyebrow">Interactive timetable</p>
+          <h2 class="prayer-times-section-title">Browse by day, week, or month</h2>
+        </header>
 
-  <section class="campaign-section campaign-section-warm" id="madrasa-curriculum">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <div class="campaign-section-title text-lg-left mb-lg-0">
-            <p class="madrasa-curriculum-eyebrow">Our Teaching Programme</p>
-            <h2>Built on the An Nasihah Curriculum</h2>
-            <p>We follow the widely trusted
-              <a href="https://an-nasihah.com/islamic-curriculum/"
-                target="_blank" rel="noopener noreferrer">An Nasihah Islamic
-                Curriculum</a> &mdash; a structured, child-friendly programme
-              spanning eight years, designed for young Muslims today.</p>
-          </div>
-          <ul class="madrasa-curriculum-points">
-            <li><i class="fas fa-check-circle" aria-hidden="true"></i>
-              Colourful, illustrated course books that make learning enjoyable</li>
-            <li><i class="fas fa-check-circle" aria-hidden="true"></i>
-              Content verified by senior scholars using authentic sources</li>
-            <li><i class="fas fa-check-circle" aria-hidden="true"></i>
-              All key subjects in one coursebook: Fiqh, Hadith, Sirah, History,
-              Aqidah, Akhlaq &amp; Adab</li>
-            <li><i class="fas fa-check-circle" aria-hidden="true"></i>
-              Matching workbooks to reinforce learning at home</li>
-          </ul>
-          <a class="btn btn-kicc btn-kicc-secondary btn-kicc-sm mt-2"
-            href="https://an-nasihah.com/products/" target="_blank"
-            rel="noopener noreferrer">
-            View An Nasihah Books
-            <i class="fas fa-external-link-alt ml-1" aria-hidden="true"></i>
-          </a>
-        </div>
-        <div class="col-lg-6">
-          <div class="madrasa-subjects-card">
-            <h3 class="madrasa-subjects-heading">What Your Child Will Learn</h3>
-            <ul class="madrasa-subjects-list">
-              <li><span class="madrasa-subject-tag">Qur&rsquo;an Recitation</span></li>
-              <li><span class="madrasa-subject-tag">Hifz <small>(boys)</small></span></li>
-              <li><span class="madrasa-subject-tag">Fiqh</span></li>
-              <li><span class="madrasa-subject-tag">Hadith</span></li>
-              <li><span class="madrasa-subject-tag">Sirah</span></li>
-              <li><span class="madrasa-subject-tag">Islamic History</span></li>
-              <li><span class="madrasa-subject-tag">Aqidah</span></li>
-              <li><span class="madrasa-subject-tag">Akhlaq &amp; Adab</span></li>
-              <li><span class="madrasa-subject-tag">Duas &amp; Surahs</span></li>
-            </ul>
-            <p class="madrasa-subjects-note mb-0">Books are selected from the
-              <a href="https://an-nasihah.com/products/" target="_blank"
-                rel="noopener noreferrer">An Nasihah range</a> according to each
-              pupil&rsquo;s age and level.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="campaign-section" id="madrasa-schedule">
-    <div class="container">
-      <div class="campaign-section-title">
-        <h2>Class Times</h2>
-        <p>Weekday evening sessions, Monday to Friday. Separate classes for girls
-          and boys. Times shown are for the regular term &mdash; see note below
-          for holiday variations.</p>
-      </div>
-      <div class="madrasa-schedule-variation" role="note">
-        <i class="fas fa-info-circle madrasa-schedule-variation-icon"
-          aria-hidden="true"></i>
-        <p class="mb-0"><strong>Please note:</strong> Class times may vary during
-          summer holidays, Ramadan, and other school or public holidays. Contact
-          us on WhatsApp for the current timetable before attending.</p>
-      </div>
-      <div class="row mt-4">
-        <div class="col-md-6 mb-4 mb-md-0">
-          <h3 class="madrasa-schedule-heading">
-            <i class="fas fa-female mr-2" aria-hidden="true"></i>Girls&rsquo; Classes
-          </h3>
-          <p class="madrasa-schedule-teachers">
-            <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
-            Taught by <strong>Apa</strong>
-          </p>
-          <div class="schedule-warp">
-            <div class="day-one">Monday to Friday</div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-girls">4:00 PM</span>
-                <span class="schedule-start">Session 1</span>
-              </div>
+        <div class="prayer-times-toolbar card-like-panel prayer-reveal">
+          <div class="prayer-times-toolbar-row prayer-times-toolbar-view">
+            <span class="prayer-times-toolbar-label">View</span>
+            <div class="prayer-times-view-tabs" role="tablist" aria-label="Timetable view"
+              data-prayer-view-tabs>
+              <span class="prayer-times-view-indicator" aria-hidden="true"></span>
+              <button type="button" class="prayer-times-view-tab is-active" role="tab"
+                aria-selected="true" data-prayer-view="month">Monthly</button>
+              <button type="button" class="prayer-times-view-tab" role="tab"
+                aria-selected="false" data-prayer-view="week">Weekly</button>
+              <button type="button" class="prayer-times-view-tab" role="tab"
+                aria-selected="false" data-prayer-view="day">Daily</button>
             </div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-girls">5:30 PM</span>
-                <span class="schedule-start">Session 2</span>
+          </div>
+
+          <div class="prayer-times-toolbar-row prayer-times-toolbar-period">
+            <span class="prayer-times-toolbar-label">Period</span>
+            <div class="prayer-times-period-body">
+              <div class="prayer-times-month-tabs" data-prayer-month-tabs role="tablist"
+                aria-label="Select month"></div>
+              <div class="prayer-times-day-picker" data-prayer-day-wrap hidden>
+                <label for="prayer-times-day">Day</label>
+                <select id="prayer-times-day" data-prayer-day
+                  aria-label="Select day"></select>
               </div>
-            </div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-girls">6:45 PM</span>
-                <span class="schedule-start">Session 3</span>
+              <div class="prayer-times-nav-actions">
+                <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+                  data-prayer-prev aria-label="Previous period">
+                  <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                  <span class="d-none d-sm-inline">Previous</span>
+                </button>
+                <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-primary"
+                  data-prayer-today>Today</button>
+                <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+                  data-prayer-next aria-label="Next period">
+                  <span class="d-none d-sm-inline">Next</span>
+                  <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-md-6">
-          <h3 class="madrasa-schedule-heading">
-            <i class="fas fa-male mr-2" aria-hidden="true"></i>Boys&rsquo; Classes
-          </h3>
-          <p class="madrasa-schedule-teachers">
-            <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
-            Taught by <strong>Imam Mustafa</strong> and
-            <strong>Moulana Salman</strong>
-          </p>
-          <div class="schedule-warp">
-            <div class="day-one">Monday to Friday</div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-boys">4:00 PM</span>
-                <span class="schedule-start">Session 1</span>
-              </div>
-            </div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-boys">5:30 PM</span>
-                <span class="schedule-start">Session 2</span>
-              </div>
-            </div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-boys">6:45 PM</span>
-                <span class="schedule-start">Session 3</span>
-              </div>
-            </div>
-            <div class="schedule-card">
-              <div class="insidebox">
-                <span class="schedule-tag schedule-tag-boys">6:00 PM</span>
-                <span class="schedule-start">Hifz Class</span>
-              </div>
+
+          <div class="prayer-times-toolbar-row prayer-times-toolbar-export">
+            <span class="prayer-times-toolbar-label">Export</span>
+            <div class="prayer-times-export-actions">
+              <a href="#" class="btn btn-kicc btn-kicc-sm btn-kicc-salah prayer-times-pdf-btn"
+                id="salah-times-body" target="_blank" rel="noopener noreferrer">
+                <i class="far fa-file-pdf" aria-hidden="true"></i>
+                Download PDF
+              </a>
+              <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary prayer-times-print-btn"
+                data-prayer-print aria-label="Print this timetable">
+                <i class="fas fa-print" aria-hidden="true"></i>
+                Print timetable
+              </button>
             </div>
           </div>
+        </div>
+
+        <p class="prayer-times-period-label prayer-reveal" data-prayer-period-label aria-live="polite"></p>
+        <div class="prayer-times-status" data-prayer-status hidden aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="prayer-times-sheet-section" aria-label="Prayer timetable">
+      <div class="container">
+        <div class="prayer-timetable-sheet prayer-reveal" data-prayer-sheet>
+          <header class="prayer-timetable-header">
+            <div class="prayer-timetable-header-main">
+              <div class="prayer-timetable-header-logo-col">
+                <img src="assets/images/brand/logo.png" width="160" height="160"
+                  class="prayer-timetable-logo" alt="Kerry Islamic Cultural Centre">
+              </div>
+              <div class="prayer-timetable-header-content">
+                <div class="prayer-timetable-brand">
+                  <div class="prayer-timetable-brand-text">
+                    <span class="prayer-timetable-brand-name">Kerry Islamic Cultural Centre</span>
+                    <span class="prayer-timetable-brand-sub">Tralee Masjid</span>
+                  </div>
+                </div>
+                <address class="prayer-timetable-address">
+                  Killerisk Business Centre, Tralee, Kerry V92 N6YR
+                </address>
+                <div class="prayer-timetable-header-details">
+                  <a href="tel:+353866038982">
+                    <i class="fas fa-phone-alt" aria-hidden="true"></i>
+                    086 603 8982
+                  </a>
+                  <a href="mailto:info@traleemasjidkicc.ie">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    info@traleemasjidkicc.ie
+                  </a>
+                  <a href="https://www.traleemasjidkicc.ie">
+                    <i class="fas fa-globe" aria-hidden="true"></i>
+                    www.traleemasjidkicc.ie
+                  </a>
+                </div>
+                <p class="prayer-timetable-header-charity">Registered charity CHY 14981 &middot; RCN 20050351</p>
+              </div>
+            </div>
+            <div class="prayer-timetable-header-doc">
+              <h2 class="prayer-timetable-doc-title">Salah Timetable</h2>
+              <p class="prayer-timetable-subtitle" data-prayer-sheet-subtitle>&mdash;</p>
+            </div>
+          </header>
+
+          <div class="prayer-timetable-scroll" data-prayer-table-wrap>
+            <div class="prayer-timetable-stage" data-prayer-table-stage>
+              <div data-prayer-table-host></div>
+            </div>
+          </div>
+
+          <footer class="prayer-timetable-sheet-footer">
+            <div class="prayer-timetable-footer-cards">
+              <article class="prayer-timetable-footer-card">
+                <div class="prayer-timetable-footer-card-icon" aria-hidden="true">
+                  <i class="fas fa-calendar-week"></i>
+                </div>
+                <h3 class="prayer-timetable-footer-card-title">Weekly programmes</h3>
+                <ul class="prayer-timetable-footer-list">
+                  <li><strong>Women&rsquo;s class</strong> &mdash; Wed 10.30am</li>
+                  <li><strong>Durood Majlis</strong> &mdash; Thu after Magrib</li>
+                  <li><strong>Qur&rsquo;an tafseer</strong> &mdash; Fri after Magrib</li>
+                </ul>
+              </article>
+
+              <article class="prayer-timetable-footer-card prayer-timetable-footer-card--jumuah">
+                <div class="prayer-timetable-footer-card-icon" aria-hidden="true">
+                  <i class="fas fa-mosque"></i>
+                </div>
+                <h3 class="prayer-timetable-footer-card-title">Jumuah</h3>
+                <dl class="prayer-timetable-footer-jumuah">
+                  <div>
+                    <dt>Speech</dt>
+                    <dd>1.25pm</dd>
+                  </div>
+                  <div>
+                    <dt>Khutbah</dt>
+                    <dd>1.45pm</dd>
+                  </div>
+                </dl>
+              </article>
+
+              <article class="prayer-timetable-footer-card">
+                <div class="prayer-timetable-footer-card-icon" aria-hidden="true">
+                  <i class="fas fa-headphones-alt"></i>
+                </div>
+                <h3 class="prayer-timetable-footer-card-title">Listen &amp; connect</h3>
+                <ul class="prayer-timetable-footer-list prayer-timetable-footer-list--links">
+                  <li>
+                    <a href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">
+                      Live on Mixlr — traleemasjid.mixlr.com
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.traleemasjidkicc.ie">www.traleemasjidkicc.ie</a>
+                  </li>
+                </ul>
+              </article>
+
+              <article class="prayer-timetable-footer-card">
+                <div class="prayer-timetable-footer-card-icon" aria-hidden="true">
+                  <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="prayer-timetable-footer-card-title">Prayer guidance</h3>
+                <ul class="prayer-timetable-footer-list prayer-timetable-footer-list--notes">
+                  <li>Zawaal is 10 minutes before Zohr.</li>
+                  <li>Ishraaq is 15 minutes after sunrise.</li>
+                  <li>No salaah at Zawaal, after sunrise (15 min), or 10 min before Maghrib.</li>
+                  <li>Hijri dates subject to moon sighting.</li>
+                </ul>
+              </article>
+            </div>
+
+            <div class="prayer-timetable-donate-strip">
+              <img src="assets/images/brand/gofundme-donate-qr.png" width="72" height="72"
+                class="prayer-timetable-donate-qr" alt="GoFundMe donation QR code">
+              <div class="prayer-timetable-donate-copy">
+                <p class="prayer-timetable-donate-title">Support our new masjid</p>
+                <p class="prayer-timetable-donate-visit">
+                  <span class="prayer-timetable-donate-lead">Scan to donate or visit:</span>
+                  <span class="prayer-timetable-donate-url">kicc.page.link/gfm</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="prayer-timetable-footer-bar">
+              <p class="prayer-timetable-footer-contact-address">
+                Killerisk Business Centre, Tralee, Kerry V92 N6YR
+              </p>
+              <ul class="prayer-timetable-footer-contact-list">
+                <li>Phone: 086 603 8982</li>
+                <li>Email: info@traleemasjidkicc.ie</li>
+                <li>Live stream: traleemasjid.mixlr.com</li>
+              </ul>
+              <p class="prayer-timetable-footer-meta">
+                Registered charity CHY 14981 &middot; RCN 20050351
+                &middot; Kerry Islamic Cultural Centre, Tralee
+              </p>
+            </div>
+          </footer>
         </div>
       </div>
-      <p class="madrasa-schedule-note text-center mt-4 mb-0">
-        Not sure which session suits your child?
-        <a href="https://wa.me/353862440556?text=As-salamu%20alaikum.%20I%20would%20like%20help%20choosing%20a%20Madrasa%20class%20time%20for%20my%20child."
-          target="_blank" rel="noopener noreferrer">Ask us on WhatsApp</a>.
-      </p>
-    </div>
-  </section>
+    </section>
 
-  <section class="campaign-section madrasa-parents-section">
-    <div class="container">
-      <div class="row align-items-start">
-        <div class="col-lg-5 mb-4 mb-lg-0">
-          <div class="campaign-section-title text-lg-left mb-lg-0">
-            <h2>A Note for Parents</h2>
-            <p>We aim to provide knowledge in a caring Islamic environment, to
-              nurture excellent manners, and to prepare future leaders of our
-              community &mdash; with your support at home.</p>
+    <section class="prayer-times-visit-section" id="prayer-times-visit"
+      aria-labelledby="prayer-times-visit-heading">
+      <div class="container">
+        <div class="prayer-times-visit-panel prayer-reveal">
+          <div class="prayer-times-visit-copy">
+            <p class="prayer-times-section-eyebrow">Visit the masjid</p>
+            <h2 id="prayer-times-visit-heading" class="prayer-times-section-title">Find us in Tralee</h2>
+            <p class="prayer-times-section-lead">Killerisk Business Centre, Tralee, Co. Kerry. All welcome for salah, programmes, and community events.</p>
+            <address class="prayer-times-visit-address">
+              Kerry Islamic Cultural Centre<br>
+              Killerisk Business Centre, Killierisk<br>
+              Tralee, Co. Kerry, V92 N6YR
+            </address>
           </div>
-        </div>
-        <div class="col-lg-7">
-          <div class="madrasa-notes">
-            <h3 class="madrasa-notes-heading">Guidelines for Pupils</h3>
-            <ul class="madrasa-notes-list">
-              <li>Please ensure children complete wudhu at home before attending.
-                Toilets and the wudhu area are for emergency use only during
-                class time.</li>
-              <li>If your child is unwell, has a fever, or flu-like symptoms,
-                please keep them at home until they are fully recovered.</li>
-              <li>If your child has a medical condition or allergy, inform the
-                Imam or teacher as soon as possible.</li>
-              <li>Hand sanitiser is available in the Madrasa.</li>
-              <li>Parents dropping off or collecting children should avoid
-                gathering in the masjid car park.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="madrasa-register-band" id="madrasa-register">
-    <div class="container">
-      <div class="madrasa-register-card">
-        <div class="row align-items-center">
-          <div class="col-lg-7 mb-4 mb-lg-0">
-            <h2 class="madrasa-register-title">Ready to Enrol Your Child?</h2>
-            <p class="madrasa-register-lead mb-0">Spaces are available across our
-              weekday sessions. Send us a WhatsApp message today &mdash; we will
-              guide you through registration and answer any questions.</p>
-          </div>
-          <div class="col-lg-5 text-lg-right">
-            <a class="btn btn-kicc btn-kicc-lg btn-kicc-whatsapp btn-block mb-2"
-              href="https://wa.me/353862440556?text=As-salamu%20alaikum.%20I%20would%20like%20to%20register%20my%20child%20for%20the%20Children%27s%20Madrasa%20at%20Tralee%20Masjid."
+          <div class="prayer-times-visit-actions">
+            <a class="btn btn-kicc btn-kicc-sm btn-kicc-primary"
+              href="https://maps.app.goo.gl/Lya1necC8WXXpUE5A" target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-directions" aria-hidden="true"></i>
+              Get directions
+            </a>
+            <a class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+              href="tel:+353866038982">
+              <i class="fas fa-phone-alt" aria-hidden="true"></i>
+              Call
+            </a>
+            <a class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+              href="https://wa.me/353862440556?text=As-salamu%20alaikum"
               target="_blank" rel="noopener noreferrer">
-              <i class="fab fa-whatsapp mr-1" aria-hidden="true"></i>
-              WhatsApp to Register
+              <i class="fab fa-whatsapp" aria-hidden="true"></i>
+              WhatsApp
             </a>
-            <a class="btn btn-kicc btn-kicc-lg btn-kicc-ghost btn-block mb-0"
-              href="tel:+353862440556">
-              <i class="fas fa-phone-alt mr-1" aria-hidden="true"></i>
-              Call 086 244 0556
+            <a class="btn btn-kicc btn-kicc-sm btn-kicc-ghost prayer-times-visit-contact"
+              href="contact.html">
+              Contact us
             </a>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   </main>
-
-  <!-- RANDOM HADITH START -->
-  <section class="hadith-section" aria-label="Hadith of the day">
-    <div class="container">
-      <article class="hadith-card">
-        <header class="hadith-card-header">
-          <i class="fas fa-book-quran hadith-card-icon" aria-hidden="true"></i>
-          <p class="hadith-card-label">Daily Hadith</p>
-        </header>
-        <blockquote class="hadith-card-quote">
-          <div id="hadith-body">
-            <p>Abu Hurairah (May Allah be pleased with him) reported: Messenger
-              of Allah (ﷺ) said, &ldquo;The five (daily) Salat (prayers), and from
-              one Jumu&rsquo;ah prayer to the (next) Jumu&rsquo;ah prayer, and from
-              Ramadan to Ramadan are expiations for the (sins) committed in
-              between (their intervals); provided the major sins are not
-              committed&rdquo;.<br /><br /><b>[Muslim]</b>.</p>
-          </div>
-        </blockquote>
-        <footer class="hadith-card-footer">
-          <a id="hadith-link" class="hadith-card-source"
-            href="https://sunnah.com/riyadussalihin:1059"
-            target="_blank" rel="noopener noreferrer">
-            <cite><span id="hadith-cite">Riyad as-Salihin 189:1059</span></cite>
-            <i class="fas fa-external-link-alt hadith-card-source-icon"
-              aria-hidden="true"></i>
-          </a>
-        </footer>
-      </article>
-    </div>
-  </section>
-  <!-- RANDOM HADITH END -->
 
   <!-- COOKIE POLICY START -->
   <div id="cookie-consent" class="cookie-consent" aria-hidden="true">
@@ -739,7 +709,8 @@
           <button type="button" id="cookie-prefs-clear" class="cookie-consent-clear">Clear optional stored data</button>
         </div>
         <div class="cookie-preferences-actions cookie-preferences-actions-granular">
-          <button type="button" id="cookie-prefs-necessary" class="cookie-consent-essential">Necessary only</button>          <button type="button" id="cookie-prefs-accept" class="cookie-consent-accept">Accept all</button>
+          <button type="button" id="cookie-prefs-necessary" class="cookie-consent-essential">Necessary only</button>
+          <button type="button" id="cookie-prefs-accept" class="cookie-consent-accept">Accept all</button>
         </div>
       </div>
     </div>

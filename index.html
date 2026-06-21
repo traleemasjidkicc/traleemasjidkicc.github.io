@@ -33,7 +33,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1782008918139.css">
+  <link rel="stylesheet" href="assets/css/main-1782019298767.css">
   <link rel="stylesheet" href="assets/css/animations.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -75,7 +75,7 @@
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
 
-  <script defer type="text/javascript" src="assets/js/scripts-1782008918002.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782019298633.js"></script>
 
   <script>
     (function () {
@@ -183,7 +183,7 @@
         <div class="kicc-nav-actions">
           <div class="dropdown kicc-nav-salah-dropdown">
             <a class="nav-link kicc-nav-link kicc-nav-salah-toggle dropdown-toggle"
-              href="#" id="navSalahDropdown" role="button" data-toggle="dropdown"
+              href="prayer-times.html" id="navSalahDropdown" role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
               Salah times
             </a>
@@ -228,10 +228,12 @@
               </table>
               <p class="kicc-nav-salah-sunrise text-muted mb-2">Sunrise:
                 <span id="nav-sunrise"></span></p>
-              <a class="btn btn-kicc btn-kicc-sm btn-kicc-salah d-block text-center"
+              <a class="btn btn-kicc btn-kicc-sm btn-kicc-salah d-block text-center mb-2"
+                href="prayer-times.html">Full timetable</a>
+              <a class="btn btn-kicc btn-kicc-sm btn-kicc-secondary d-block text-center"
                 id="salah-times" role="button" href="#" target="_blank"
                 rel="noopener noreferrer"><span id="nav-cur-month"></span>
-                Timetable</a>
+                PDF</a>
             </div>
           </div>
           <a class="kicc-nav-donate-btn" href="https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate"
@@ -331,14 +333,18 @@
             </div>
           </div>
         </div>
-        <p class="home-hero-timetable-link text-center mb-0">
-          <a href="#" target="_blank" id="salah-times-body"
-            class="btn btn-kicc btn-kicc-lg home-hero-timetable-btn"
-            rel="noopener noreferrer">
-            <i class="far fa-calendar-alt mr-1"></i> Download <span
+        <div class="home-hero-timetable-link text-center mb-0">
+          <a href="prayer-times.html"
+            class="btn btn-kicc btn-kicc-lg home-hero-timetable-btn">
+            <i class="far fa-calendar-alt mr-1"></i> View <span
               id="cur-month"></span> Timetable
           </a>
-        </p>
+          <a href="#" target="_blank" id="salah-times-body"
+            class="btn btn-kicc btn-kicc-sm btn-kicc-ghost home-hero-timetable-pdf"
+            rel="noopener noreferrer">
+            <i class="far fa-file-pdf mr-1"></i> PDF
+          </a>
+        </div>
       </div>
       </div>
     </div>
@@ -863,7 +869,7 @@
           <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
           <h3>Daily &amp; Jumu&rsquo;ah Prayer</h3>
           <p>Five daily salah, Friday Jumu&rsquo;ah, Taraweeh, and Eid congregations for the community.</p>
-          <a href="#home-hero" class="home-services-card-link">View salah times</a>
+          <a href="prayer-times.html" class="home-services-card-link">View salah times</a>
         </article>
         <article class="home-services-card" style="--service-i: 2">
           <span class="home-services-card-glow" aria-hidden="true"></span>
@@ -1556,10 +1562,7 @@
             <li><a href="activities.html#adult-classes">Men's class</a></li>
             <li><a href="madrasa.html#madrasa-schedule">Children's madrasa</a></li>
             <li><a href="activities.html#listen">Talks &amp; recordings</a></li>
-            <li>
-              <a href="#" target="_blank" rel="noopener noreferrer"
-                id="salah-times-footer"><span id="footer-cur-month"></span> timetable</a>
-            </li>
+            <li><a href="prayer-times.html">Salah timetable</a></li>
           </ul>
         </div>
 
