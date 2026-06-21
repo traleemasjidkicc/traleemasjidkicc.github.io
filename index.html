@@ -33,7 +33,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1781988455985.css">
+  <link rel="stylesheet" href="assets/css/main-1782008918139.css">
   <link rel="stylesheet" href="assets/css/animations.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -75,7 +75,7 @@
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
 
-  <script defer type="text/javascript" src="assets/js/scripts-1781988455843.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782008918002.js"></script>
 
   <script>
     (function () {
@@ -246,6 +246,7 @@
   <main id="main-content">
   <section id="home-hero" class="hero-cover text-white home-hero-cover home-hero-v2">
     <div class="container home-hero-cover-inner">
+      <div class="home-hero-stack">
       <header class="home-hero-intro text-center">
         <div class="home-hero-intro-panel">
         <img src="assets/images/brand/bismillah-light.png" alt="Bismillah"
@@ -296,73 +297,39 @@
         </div>
       </header>
 
-      <div class="home-hero-salah home-hero-salah-panel" aria-label="Today's prayer times">
+      <div class="home-hero-salah home-hero-salah-panel" aria-label="Prayer times carousel">
         <div id="home-prayer-status" class="home-prayer-status" aria-live="polite"
           hidden>
           <div class="home-prayer-status-line" id="home-prayer-status-line"></div>
         </div>
         <div class="programmes-jumuah-feature jumuah-friday-banner home-jumuah-friday-banner jumuah-feature-banner" hidden
           aria-live="polite" aria-label="Friday Jumu'ah times"></div>
-        <div class="home-hero-prayer-scroll">
-        <div class="row home-hero-prayer-grid justify-content-center no-gutters">
-          <div class="col-6 col-md home-hero-prayer-card-wrap" data-prayer="fajr">
-            <div class="home-hero-prayer-card">
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-current">Now</span>
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>
-              <h3 class="home-hero-prayer-name">Fajr</h3>
-              <span class="home-hero-prayer-label">Begins</span>
-              <p class="home-hero-prayer-begins" id="fajr-begins">--</p>
-              <span class="home-hero-prayer-label">Iqamah</span>
-              <p class="home-hero-prayer-iqamah" id="fajr-iqamah">--</p>
-              <p class="home-hero-prayer-sunrise"><span id="sunrise">--</span>
-                (sunrise)</p>
+        <div class="home-prayer-suite" data-home-prayer-suite hidden>
+          <div class="home-prayer-deck-toolbar" data-prayer-deck-toolbar hidden>
+            <button type="button" class="home-prayer-deck-btn home-prayer-deck-btn-today"
+              data-prayer-day-today>
+              <i class="fas fa-crosshairs" aria-hidden="true"></i>
+              <span>Today</span>
+            </button>
+            <div class="home-prayer-deck-nav">
+              <button type="button" class="home-prayer-deck-btn home-prayer-deck-btn-icon"
+                data-prayer-day-prev aria-label="Previous prayer">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+              </button>
+              <span class="home-prayer-deck-date" data-prayer-carousel-label
+                aria-live="polite"></span>
+              <button type="button" class="home-prayer-deck-btn home-prayer-deck-btn-icon"
+                data-prayer-day-next aria-label="Next prayer">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
-          <div class="col-6 col-md home-hero-prayer-card-wrap" data-prayer="dhuhr">
-            <div class="home-hero-prayer-card">
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-current">Now</span>
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>
-              <h3 class="home-hero-prayer-name">Zohr</h3>
-              <span class="home-hero-prayer-label">Begins</span>
-              <p class="home-hero-prayer-begins" id="dhuhr-begins">--</p>
-              <span class="home-hero-prayer-label">Iqamah</span>
-              <p class="home-hero-prayer-iqamah" id="dhuhr-iqamah">--</p>
+          <div class="home-prayer-carousel-stage" data-prayer-carousel-stage>
+            <div class="home-prayer-carousel-viewport" data-prayer-carousel-viewport>
+              <div class="home-prayer-carousel-track" data-prayer-carousel-track role="list"
+                aria-label="Daily prayer times"></div>
             </div>
           </div>
-          <div class="col-6 col-md home-hero-prayer-card-wrap" data-prayer="asr">
-            <div class="home-hero-prayer-card">
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-current">Now</span>
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>
-              <h3 class="home-hero-prayer-name">Asar</h3>
-              <span class="home-hero-prayer-label">Begins</span>
-              <p class="home-hero-prayer-begins" id="asr-begins">--</p>
-              <span class="home-hero-prayer-label">Iqamah</span>
-              <p class="home-hero-prayer-iqamah" id="asr-iqamah">--</p>
-            </div>
-          </div>
-          <div class="col-6 col-md home-hero-prayer-card-wrap" data-prayer="maghrib">
-            <div class="home-hero-prayer-card">
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-current">Now</span>
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>
-              <h3 class="home-hero-prayer-name">Magrib</h3>
-              <span class="home-hero-prayer-label">Begins</span>
-              <p class="home-hero-prayer-begins" id="maghrib-begins">--</p>
-              <span class="home-hero-prayer-label">Iqamah</span>
-              <p class="home-hero-prayer-iqamah" id="maghrib-iqamah">--</p>
-            </div>
-          </div>
-          <div class="col-6 col-md home-hero-prayer-card-wrap" data-prayer="isha">
-            <div class="home-hero-prayer-card">
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-current">Now</span>
-              <span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>
-              <h3 class="home-hero-prayer-name">Isha</h3>
-              <span class="home-hero-prayer-label">Begins</span>
-              <p class="home-hero-prayer-begins" id="isha-begins">--</p>
-              <span class="home-hero-prayer-label">Iqamah</span>
-              <p class="home-hero-prayer-iqamah" id="isha-iqamah">--</p>
-            </div>
-          </div>
-        </div>
         </div>
         <p class="home-hero-timetable-link text-center mb-0">
           <a href="#" target="_blank" id="salah-times-body"
@@ -372,6 +339,7 @@
               id="cur-month"></span> Timetable
           </a>
         </p>
+      </div>
       </div>
     </div>
   </section>

@@ -383,6 +383,32 @@
     return Object.assign({ date: now }, getIrelandDateParts(now));
   };
 
+  const getDublinDate = () => {
+    return new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Europe/Dublin" }),
+    );
+  };
+
+  const parseTimeToDublinDate = (timeStr, dayOffset) => {
+    if (!timeStr) return null;
+    const base = getDublinDate();
+    if (dayOffset) {
+      base.setDate(base.getDate() + dayOffset);
+    }
+    const t = String(timeStr).trim().toLowerCase();
+    const m = t.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
+    if (!m) return null;
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ampm = m[3] || null;
+    if (ampm) {
+      if (ampm === "pm" && hh !== 12) hh += 12;
+      if (ampm === "am" && hh === 12) hh = 0;
+    }
+    base.setHours(hh, mm, 0, 0);
+    return base;
+  };
+
   const getTomorrowInIreland = () => {
     const dublin = getDublinDate();
     dublin.setDate(dublin.getDate() + 1);
@@ -433,61 +459,139 @@
 
   let cachedPrayerDayData = null;
   let cachedTomorrowPrayerDayData = null;
+  let cachedPrayerDayMap = null;
+  let cachedSalahEvents = null;
   let prayerHighlightTimer = null;
+  let prayerCarouselBuilt = false;
+  let prayerCarouselUserScrolling = false;
+  let prayerCarouselScrollTimer = null;
+  let prayerCarouselNormalizeTimer = null;
+  let prayerCarouselJumping = false;
 
-  const shouldAutoScrollPrayerStrip = () => {
-    if (!window.matchMedia("(max-width: 767.98px)").matches) return false;
-    if (!isHomePage()) return false;
+  const PRAYER_DAY_RADIUS = 30;
+  const PRAYER_CAROUSEL_REPEAT = 3;
+  const PRAYER_CAROUSEL_PRIMARY = 1;
 
-    var panel = document.querySelector(".home-hero-salah-panel");
-    if (!panel) return false;
-
-    var rect = panel.getBoundingClientRect();
-    return rect.top < window.innerHeight * 0.55 && rect.bottom > 48;
+  const PRAYER_DECK_ICONS = {
+    fajr: "fa-cloud-sun",
+    dhuhr: "fa-sun",
+    asr: "fa-cloud-sun-rain",
+    maghrib: "fa-moon",
+    isha: "fa-star-and-crescent",
   };
 
-  const centerPrayerCardInStrip = (cardWrap, behavior) => {
-    if (!cardWrap) return;
+  const makeDayKeyFromParts = (year, month, day) =>
+    year + "-" + month + "-" + day;
 
-    var strip = cardWrap.closest(".home-hero-prayer-scroll");
-    if (!strip || strip.scrollWidth <= strip.clientWidth + 2) return;
-
-    var stripRect = strip.getBoundingClientRect();
-    var cardRect = cardWrap.getBoundingClientRect();
-    var targetScroll =
-      strip.scrollLeft +
-      (cardRect.left - stripRect.left) -
-      strip.clientWidth / 2 +
-      cardRect.width / 2;
-    var maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
-    targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
-
-    strip.scrollTo({
-      left: targetScroll,
-      behavior: behavior || "auto",
-    });
-  };
-
-  const getDublinDate = () => {
-    return new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Europe/Dublin" }),
+  const makeDayKeyFromRecord = (record) =>
+    makeDayKeyFromParts(
+      record.gregorianYear,
+      record.gregorianMonth,
+      record.gregorianDay,
     );
+
+  const makeDayKeyFromDate = (date) =>
+    makeDayKeyFromParts(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const getDublinDateWithOffset = (dayOffset) => {
+    const d = getDublinDate();
+    if (dayOffset) {
+      d.setDate(d.getDate() + dayOffset);
+    }
+    return d;
   };
 
-  const parseTimeToDublinDate = (timeStr, dayOffset) => {
-    if (!timeStr) return null;
+  const getDayRecordForOffset = (dayOffset) => {
+    if (!cachedPrayerDayMap) return null;
+    const key = makeDayKeyFromDate(getDublinDateWithOffset(dayOffset));
+    return cachedPrayerDayMap[key] || null;
+  };
+
+  const getMonthsForDayRange = (radius) => {
+    const seen = Object.create(null);
+    const months = [];
+    for (let offset = -radius; offset <= radius; offset += 1) {
+      const parts = getIrelandDateParts(getDublinDateWithOffset(offset));
+      const id = parts.year + "-" + parts.monthName;
+      if (!seen[id]) {
+        seen[id] = true;
+        months.push({ year: parts.year, monthName: parts.monthName });
+      }
+    }
+    return months;
+  };
+
+  const buildMonthUrl = (year, monthName) =>
+    IQAMAH_API_URL +
+    "?year=" +
+    year +
+    "&month=" +
+    encodeURIComponent(monthName);
+
+  const fetchIqamahMonth = (year, monthName) => {
+    const storageKey = "iqamah-month-" + year + "-" + monthName;
+    const cached = kiccStorageGet(localStorage, storageKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (
+          parsed &&
+          parsed.year === year &&
+          parsed.month === monthName &&
+          Array.isArray(parsed.data)
+        ) {
+          return Promise.resolve(parsed.data);
+        }
+      } catch (e) {
+        console.warn("Failed to parse cached iqamah month", storageKey, e);
+      }
+    }
+
+    return fetch(buildMonthUrl(year, monthName))
+      .then(function (resp) {
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        return resp.json();
+      })
+      .then(function (json) {
+        if (!json || !Array.isArray(json.data)) {
+          throw new Error("No iqamah month data");
+        }
+        try {
+          kiccStorageSet(
+            localStorage,
+            storageKey,
+            JSON.stringify({
+              year: year,
+              month: monthName,
+              data: json.data,
+            }),
+          );
+        } catch (e) {
+          console.warn("Unable to cache iqamah month", storageKey, e);
+        }
+        return json.data;
+      });
+  };
+
+  const parseTimeOnRecord = (record, field, dayOffset) => {
+    if (!record || !record[field]) return null;
     const base = getDublinDate();
+    base.setFullYear(
+      record.gregorianYear,
+      record.gregorianMonth,
+      record.gregorianDay,
+    );
     if (dayOffset) {
       base.setDate(base.getDate() + dayOffset);
     }
-    const t = String(timeStr).trim().toLowerCase();
+    const t = String(record[field]).trim().toLowerCase();
     const m = t.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
     if (!m) return null;
     let hh = parseInt(m[1], 10);
     const mm = parseInt(m[2], 10);
     const ampm = m[3] || null;
     if (ampm) {
-      if (ampm === "pm" && hh !== 12) hh = hh + 12;
+      if (ampm === "pm" && hh !== 12) hh += 12;
       if (ampm === "am" && hh === 12) hh = 0;
     }
     base.setHours(hh, mm, 0, 0);
@@ -507,79 +611,520 @@
     return minutes + "m";
   };
 
-  const getPrayerState = (d) => {
-    const now = getDublinDate().getTime();
-    const slots = PRAYER_SLOTS.map(function (slot) {
-      return {
-        id: slot.id,
-        label: slot.label,
-        navKey: slot.navKey,
-        begins: parseTimeToDublinDate(d[slot.beginsKey]),
-        iqamah: parseTimeToDublinDate(d[slot.iqamahKey]),
-      };
-    }).filter(function (slot) {
-      return slot.begins;
-    });
+  const formatEventChipLabel = (event) => {
+    if (!event) return "";
+    if (event.type === "sunrise") return "Sunrise";
+    if (event.type === "adhan") return event.label + " Adhan";
+    if (event.type === "iqamah") return event.label + " Iqamah";
+    return event.label || "";
+  };
 
-    if (slots.length === 0) return null;
+  const buildDayEvents = (record) => {
+    if (!record) return [];
+    const dayKey = makeDayKeyFromRecord(record);
+    const events = [];
 
-    let current = null;
-    slots.forEach(function (slot) {
-      if (slot.begins.getTime() <= now) {
-        current = slot;
+    PRAYER_SLOTS.forEach(function (slot) {
+      const adhan = parseTimeOnRecord(record, slot.beginsKey);
+      const iqamah = parseTimeOnRecord(record, slot.iqamahKey);
+      if (adhan) {
+        events.push({
+          type: "adhan",
+          prayerId: slot.id,
+          label: slot.label,
+          at: adhan,
+          dayKey: dayKey,
+        });
+      }
+      if (iqamah) {
+        events.push({
+          type: "iqamah",
+          prayerId: slot.id,
+          label: slot.label,
+          at: iqamah,
+          dayKey: dayKey,
+        });
+      }
+      if (slot.id === "fajr" && record.sunriseTime) {
+        const sunrise = parseTimeOnRecord(record, "sunriseTime");
+        if (sunrise) {
+          events.push({
+            type: "sunrise",
+            prayerId: "fajr",
+            label: "Sunrise",
+            at: sunrise,
+            dayKey: dayKey,
+          });
+        }
       }
     });
 
-    let next = null;
-    let countdownTarget = null;
-    let countdownKind = "begins";
+    events.sort(function (a, b) {
+      return a.at.getTime() - b.at.getTime();
+    });
+    return events;
+  };
 
-    if (
-      current &&
-      current.iqamah &&
-      current.begins.getTime() <= now &&
-      current.iqamah.getTime() > now
-    ) {
-      countdownTarget = current.iqamah;
-      countdownKind = "iqamah";
-    }
-
-    if (!current) {
-      current = slots[slots.length - 1];
-      next = slots[0];
-      if (!countdownTarget) {
-        countdownTarget = next.begins;
-      }
-    } else {
-      const currentIndex = slots.findIndex(function (slot) {
-        return slot.id === current.id;
+  const buildSalahEventTimeline = () => {
+    if (!cachedPrayerDayMap) return [];
+    const events = [];
+    for (let offset = -PRAYER_DAY_RADIUS; offset <= PRAYER_DAY_RADIUS; offset += 1) {
+      const record = getDayRecordForOffset(offset);
+      if (!record) continue;
+      buildDayEvents(record).forEach(function (event) {
+        events.push(event);
       });
-      if (currentIndex < slots.length - 1) {
-        next = slots[currentIndex + 1];
-        if (!countdownTarget) {
-          countdownTarget = next.begins;
-        }
-      } else {
-        next = slots[0];
-        if (!countdownTarget) {
-          countdownTarget = parseTimeToDublinDate(d.fajarTime, 1);
-        }
+    }
+    events.sort(function (a, b) {
+      return a.at.getTime() - b.at.getTime();
+    });
+    return events;
+  };
+
+  const getCurrentPrayerSlotForRecord = (record, nowMs) => {
+    if (!record) return null;
+    let current = null;
+    PRAYER_SLOTS.forEach(function (slot) {
+      const adhan = parseTimeOnRecord(record, slot.beginsKey);
+      if (adhan && adhan.getTime() <= nowMs) {
+        current = {
+          id: slot.id,
+          label: slot.label,
+          navKey: slot.navKey,
+          dayKey: makeDayKeyFromRecord(record),
+        };
+      }
+    });
+    if (!current) {
+      const prev = getDayRecordForOffset(-1);
+      if (prev) {
+        const last = PRAYER_SLOTS[PRAYER_SLOTS.length - 1];
+        current = {
+          id: last.id,
+          label: last.label,
+          navKey: last.navKey,
+          dayKey: makeDayKeyFromRecord(prev),
+        };
       }
     }
+    return current;
+  };
+
+  const getNextPrayerSlot = (currentSlot) => {
+    if (!currentSlot) return null;
+    const index = PRAYER_SLOTS.findIndex(function (slot) {
+      return slot.id === currentSlot.id;
+    });
+    if (index < 0) return null;
+
+    if (index < PRAYER_SLOTS.length - 1) {
+      const next = PRAYER_SLOTS[index + 1];
+      return {
+        id: next.id,
+        label: next.label,
+        navKey: next.navKey,
+        dayKey: currentSlot.dayKey,
+      };
+    }
+
+    const currentRecord = cachedPrayerDayMap[currentSlot.dayKey];
+    if (!currentRecord) return null;
+    const nextDate = getDublinDate();
+    nextDate.setFullYear(
+      currentRecord.gregorianYear,
+      currentRecord.gregorianMonth,
+      currentRecord.gregorianDay,
+    );
+    nextDate.setDate(nextDate.getDate() + 1);
+    const nextKey = makeDayKeyFromDate(nextDate);
+    const first = PRAYER_SLOTS[0];
+    return {
+      id: first.id,
+      label: first.label,
+      navKey: first.navKey,
+      dayKey: nextKey,
+    };
+  };
+
+  const getSalahTimelineState = () => {
+    const nowMs = getDublinDate().getTime();
+    const todayRecord =
+      cachedPrayerDayData || getDayRecordForOffset(0);
+    const events = cachedSalahEvents || buildSalahEventTimeline();
+    const nextEvent =
+      events.find(function (event) {
+        return event.at.getTime() > nowMs;
+      }) || null;
+    const current = getCurrentPrayerSlotForRecord(todayRecord, nowMs);
+    const nextPrayer = getNextPrayerSlot(current);
 
     return {
       current: current,
-      next: next,
-      countdownTarget: countdownTarget,
-      countdownKind: countdownKind,
+      nextPrayer: nextPrayer,
+      nextEvent: nextEvent,
+      countdownTarget: nextEvent ? nextEvent.at : null,
     };
+  };
+
+  const getPrayerCarouselTrack = () =>
+    document.querySelector("[data-prayer-carousel-track]");
+
+  const getPrayerCarouselViewport = () =>
+    document.querySelector("[data-prayer-carousel-viewport]");
+
+  const getDeckHighlightState = () => {
+    const todayRecord = cachedPrayerDayData || getDayRecordForOffset(0);
+    const nowMs = getDublinDate().getTime();
+    const current = getCurrentPrayerSlotForRecord(todayRecord, nowMs);
+    const nextPrayer = getNextPrayerSlot(current);
+
+    return { current: current, nextPrayer: nextPrayer };
+  };
+
+  const formatDeckTime = (raw) => {
+    if (!raw || raw === "—") return "—";
+    return String(raw)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+(am|pm)\b/i, "\u00a0$1");
+  };
+
+  const buildPrayerDeckCardHtml = (record, slot, deckIndex, repeat, dayOffset) => {
+    const dayKey = makeDayKeyFromRecord(record);
+    const adhan = formatDeckTime(record[slot.beginsKey]);
+    const iqamah = formatDeckTime(record[slot.iqamahKey]);
+    const icon = PRAYER_DECK_ICONS[slot.id] || "fa-mosque";
+    const sunriseHtml =
+      slot.id === "fajr" && record.sunriseTime
+        ? '<p class="home-hero-prayer-sunrise"><i class="fas fa-sun" aria-hidden="true"></i> ' +
+          formatDeckTime(record.sunriseTime) +
+          "</p>"
+        : "";
+
+    return (
+      '<article class="home-prayer-deck-card home-hero-prayer-card-wrap" role="listitem"' +
+      ' data-prayer="' +
+      slot.id +
+      '" data-day-key="' +
+      dayKey +
+      '" data-day-offset="' +
+      dayOffset +
+      '" data-carousel-repeat="' +
+      repeat +
+      '" style="--deck-index:' +
+      deckIndex +
+      '">' +
+      '<span class="home-prayer-deck-card-glow" aria-hidden="true"></span>' +
+      '<div class="home-hero-prayer-card">' +
+      '<span class="home-hero-prayer-badge home-hero-prayer-badge-current">Current</span>' +
+      '<span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>' +
+      '<span class="home-prayer-deck-date-chip home-prayer-carousel-date">' +
+      (record.gregorianDateString || record.dayOfWeek || "") +
+      "</span>" +
+      '<div class="home-prayer-deck-icon-orbit" aria-hidden="true">' +
+      '<span class="home-prayer-deck-icon"><i class="fas ' +
+      icon +
+      '"></i></span>' +
+      "</div>" +
+      '<h3 class="home-hero-prayer-name">' +
+      slot.label +
+      "</h3>" +
+      '<div class="home-prayer-deck-times">' +
+      '<div class="home-prayer-deck-time-row">' +
+      '<span class="home-hero-prayer-label">Adhan</span>' +
+      '<span class="home-hero-prayer-begins">' +
+      adhan +
+      "</span>" +
+      "</div>" +
+      '<div class="home-prayer-deck-time-row home-prayer-deck-time-row-iqamah">' +
+      '<span class="home-hero-prayer-label">Iqamah</span>' +
+      '<span class="home-hero-prayer-iqamah">' +
+      iqamah +
+      "</span>" +
+      "</div>" +
+      "</div>" +
+      sunriseHtml +
+      "</div></article>"
+    );
+  };
+
+  const renderHomePrayerDeck = () => {
+    if (!isHomePage() || !cachedPrayerDayMap) return;
+
+    const track = getPrayerCarouselTrack();
+    const suite = document.querySelector("[data-home-prayer-suite]");
+    const toolbar = document.querySelector("[data-prayer-deck-toolbar]");
+    if (!track || !suite) return;
+
+    const chunks = [];
+    for (let repeat = 0; repeat < PRAYER_CAROUSEL_REPEAT; repeat += 1) {
+      for (let offset = -PRAYER_DAY_RADIUS; offset <= PRAYER_DAY_RADIUS; offset += 1) {
+        const record = getDayRecordForOffset(offset);
+        if (!record) continue;
+        PRAYER_SLOTS.forEach(function (slot, index) {
+          chunks.push(
+            buildPrayerDeckCardHtml(record, slot, index, repeat, offset),
+          );
+        });
+      }
+    }
+
+    if (!chunks.length) {
+      track.innerHTML =
+        '<p class="home-prayer-deck-empty">Prayer times unavailable.</p>';
+      suite.hidden = false;
+      return;
+    }
+
+    track.innerHTML = chunks.join("");
+    suite.hidden = false;
+    if (toolbar) toolbar.hidden = false;
+    prayerCarouselBuilt = true;
+    initHomePrayerDeckControls();
+    requestAnimationFrame(function () {
+      centerPrayerCarouselOnSlot(null, null, "auto");
+      normalizePrayerCarouselScroll();
+      updatePrayerCarouselToolbarLabel();
+      updatePrayerHighlightsUI();
+    });
+  };
+
+  const getPrayerCarouselLoopWidth = () => {
+    const track = getPrayerCarouselTrack();
+    if (!track) return 0;
+    const firstRepeat0 = track.querySelector(
+      '.home-prayer-deck-card[data-carousel-repeat="0"]',
+    );
+    const firstRepeat1 = track.querySelector(
+      '.home-prayer-deck-card[data-carousel-repeat="1"]',
+    );
+    if (!firstRepeat0 || !firstRepeat1) return 0;
+    return firstRepeat1.offsetLeft - firstRepeat0.offsetLeft;
+  };
+
+  const getVisiblePrayerCarouselSlide = () => {
+    const viewport = getPrayerCarouselViewport();
+    const track = getPrayerCarouselTrack();
+    if (!viewport || !track) return null;
+
+    const slides = track.querySelectorAll(".home-prayer-deck-card");
+    if (!slides.length) return null;
+
+    const center = viewport.scrollLeft + viewport.clientWidth / 2;
+    let closest = null;
+    let closestDistance = Infinity;
+
+    slides.forEach(function (slide) {
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const distance = Math.abs(slideCenter - center);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closest = slide;
+      }
+    });
+
+    return closest;
+  };
+
+  const updateCarouselCenteredSlide = () => {
+    const track = getPrayerCarouselTrack();
+    const visible = getVisiblePrayerCarouselSlide();
+    if (!track) return;
+    track.querySelectorAll(".home-prayer-deck-card.is-centered").forEach(function (el) {
+      el.classList.remove("is-centered");
+    });
+    if (visible) visible.classList.add("is-centered");
+  };
+
+  const centerPrayerCarouselOnSlide = (slide, behavior) => {
+    const viewport = getPrayerCarouselViewport();
+    if (!viewport || !slide) return;
+
+    const targetScroll =
+      slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2;
+    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    viewport.scrollTo({
+      left: Math.max(0, Math.min(targetScroll, maxScroll)),
+      behavior: behavior || "smooth",
+    });
+  };
+
+  const findPrayerDeckCard = (dayKey, prayerId, repeat) => {
+    const track = getPrayerCarouselTrack();
+    if (!track || !dayKey || !prayerId) return null;
+    return track.querySelector(
+      '.home-prayer-deck-card[data-day-key="' +
+        dayKey +
+        '"][data-prayer="' +
+        prayerId +
+        '"][data-carousel-repeat="' +
+        (repeat != null ? repeat : PRAYER_CAROUSEL_PRIMARY) +
+        '"]',
+    );
+  };
+
+  const centerPrayerCarouselOnSlot = (dayKey, prayerId, behavior) => {
+    const deckState = getDeckHighlightState();
+    let targetDay = dayKey;
+    let targetPrayer = prayerId;
+
+    if (!targetDay || !targetPrayer) {
+      if (deckState.current) {
+        targetDay = deckState.current.dayKey;
+        targetPrayer = deckState.current.id;
+      } else if (deckState.nextPrayer) {
+        targetDay = deckState.nextPrayer.dayKey;
+        targetPrayer = deckState.nextPrayer.id;
+      }
+    }
+
+    if (!targetDay || !targetPrayer) return;
+
+    const slide = findPrayerDeckCard(
+      targetDay,
+      targetPrayer,
+      PRAYER_CAROUSEL_PRIMARY,
+    );
+    if (slide) {
+      centerPrayerCarouselOnSlide(slide, behavior || "smooth");
+      requestAnimationFrame(updateCarouselCenteredSlide);
+    }
+  };
+
+  const schedulePrayerCarouselNormalize = () => {
+    if (prayerCarouselNormalizeTimer) {
+      clearTimeout(prayerCarouselNormalizeTimer);
+    }
+    prayerCarouselNormalizeTimer = setTimeout(normalizePrayerCarouselScroll, 90);
+  };
+
+  const normalizePrayerCarouselScroll = () => {
+    if (prayerCarouselJumping) return;
+
+    const viewport = getPrayerCarouselViewport();
+    const loopWidth = getPrayerCarouselLoopWidth();
+    const visible = getVisiblePrayerCarouselSlide();
+    if (!viewport || !loopWidth || !visible) return;
+
+    const repeat = Number(visible.getAttribute("data-carousel-repeat"));
+    if (Number.isNaN(repeat)) return;
+
+    let jumpBy = 0;
+    if (repeat <= 0) {
+      jumpBy = loopWidth;
+    } else if (repeat >= PRAYER_CAROUSEL_REPEAT - 1) {
+      jumpBy = -loopWidth;
+    }
+    if (!jumpBy) return;
+
+    prayerCarouselJumping = true;
+    viewport.scrollLeft += jumpBy;
+    requestAnimationFrame(function () {
+      prayerCarouselJumping = false;
+      updateCarouselCenteredSlide();
+    });
+  };
+
+  const scrollPrayerCarouselBy = (direction) => {
+    const visible = getVisiblePrayerCarouselSlide();
+    if (!visible) return;
+
+    const track = getPrayerCarouselTrack();
+    const slides = track
+      ? Array.prototype.slice.call(
+          track.querySelectorAll(".home-prayer-deck-card"),
+        )
+      : [];
+    const index = slides.indexOf(visible);
+    if (index < 0) return;
+
+    const nextIndex =
+      direction < 0
+        ? Math.max(0, index - 1)
+        : Math.min(slides.length - 1, index + 1);
+    centerPrayerCarouselOnSlide(slides[nextIndex], "smooth");
+  };
+
+  const initHomePrayerDeckControls = () => {
+    const viewport = getPrayerCarouselViewport();
+    if (!viewport || viewport.dataset.prayerCarouselInit === "true") return;
+    viewport.dataset.prayerCarouselInit = "true";
+
+    viewport.addEventListener(
+      "scroll",
+      function () {
+        prayerCarouselUserScrolling = true;
+        if (prayerCarouselScrollTimer) {
+          clearTimeout(prayerCarouselScrollTimer);
+        }
+        prayerCarouselScrollTimer = setTimeout(function () {
+          prayerCarouselUserScrolling = false;
+          schedulePrayerCarouselNormalize();
+          updatePrayerCarouselToolbarLabel();
+          updateCarouselCenteredSlide();
+        }, 120);
+      },
+      { passive: true },
+    );
+
+    const todayBtn = document.querySelector("[data-prayer-day-today]");
+    const prevBtn = document.querySelector("[data-prayer-day-prev]");
+    const nextBtn = document.querySelector("[data-prayer-day-next]");
+
+    if (todayBtn) {
+      todayBtn.addEventListener("click", function () {
+        centerPrayerCarouselOnSlot(null, null, "smooth");
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        scrollPrayerCarouselBy(-1);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        scrollPrayerCarouselBy(1);
+      });
+    }
+
+    window.addEventListener(
+      "resize",
+      function () {
+        if (!prayerCarouselUserScrolling) {
+          centerPrayerCarouselOnSlot(null, null, "auto");
+        }
+      },
+      { passive: true },
+    );
+  };
+
+  const updatePrayerCarouselToolbarLabel = () => {
+    const label = document.querySelector("[data-prayer-carousel-label]");
+    const visible = getVisiblePrayerCarouselSlide();
+    if (!label || !visible) return;
+    const nameEl = visible.querySelector(".home-hero-prayer-name");
+    const dateEl = visible.querySelector(".home-prayer-carousel-date");
+    const offset = Number(visible.getAttribute("data-day-offset"));
+    let offsetLabel = "";
+    if (offset === 0) offsetLabel = "Today";
+    else if (offset === 1) offsetLabel = "Tomorrow";
+    else if (offset === -1) offsetLabel = "Yesterday";
+    label.textContent =
+      (nameEl ? nameEl.textContent.trim() : "") +
+      (dateEl && dateEl.textContent
+        ? " · " +
+          (offsetLabel ? offsetLabel + " · " : "") +
+          dateEl.textContent.trim()
+        : "");
   };
 
   const clearPrayerHighlights = () => {
     document
-      .querySelectorAll(".home-hero-prayer-card-wrap")
+      .querySelectorAll(
+        ".home-prayer-deck-card, .home-hero-prayer-card-wrap",
+      )
       .forEach(function (el) {
-        el.classList.remove("is-current-prayer", "is-next-prayer");
+        el.classList.remove("is-current-prayer", "is-next-prayer", "is-centered");
       });
     document
       .querySelectorAll(".kicc-nav-prayer-row, .kicc-nav-salah-row")
@@ -590,9 +1135,7 @@
 
   const highlightPrayerSlot = (slot, className) => {
     if (!slot) return;
-    var homeCard = document.querySelector(
-      '.home-hero-prayer-card-wrap[data-prayer="' + slot.id + '"]',
-    );
+    var homeCard = findPrayerDeckCard(slot.dayKey, slot.id);
     if (homeCard) {
       homeCard.classList.add(className);
     }
@@ -605,58 +1148,64 @@
     }
   };
 
-  const updatePrayerHighlightsUI = () => {
-    if (!cachedPrayerDayData) return;
+  const buildPrayerStatusHtml = (state) => {
+    const countdown = formatCountdown(state.countdownTarget);
+    const nextLabel = formatEventChipLabel(state.nextEvent);
+    const currentLabel = state.current ? state.current.label : "—";
 
-    var state = getPrayerState(cachedPrayerDayData);
+    return (
+      '<div class="home-prayer-status-chip home-prayer-status-chip-current">' +
+      '<span class="home-prayer-status-chip-label">Current prayer</span>' +
+      '<strong class="home-prayer-status-chip-value">' +
+      currentLabel +
+      "</strong></div>" +
+      '<div class="home-prayer-status-chip home-prayer-status-chip-next">' +
+      '<span class="home-prayer-status-chip-label">' +
+      nextLabel +
+      " in</span>" +
+      '<strong class="home-prayer-status-chip-value home-prayer-countdown">' +
+      countdown +
+      "</strong></div>"
+    );
+  };
+
+  const updatePrayerHighlightsUI = () => {
+    if (!cachedPrayerDayMap && !cachedPrayerDayData) return;
+
+    cachedSalahEvents = buildSalahEventTimeline();
+    var state = getSalahTimelineState();
+    var deckState = getDeckHighlightState();
     clearPrayerHighlights();
 
-    if (!state) return;
+    if (!state.current && !state.nextEvent) return;
 
-    highlightPrayerSlot(state.current, "is-current-prayer");
-    highlightPrayerSlot(state.next, "is-next-prayer");
+    if (deckState.current) {
+      highlightPrayerSlot(deckState.current, "is-current-prayer");
+    }
+    if (deckState.nextPrayer) {
+      highlightPrayerSlot(deckState.nextPrayer, "is-next-prayer");
+    }
 
     var statusEl = document.getElementById("home-prayer-status");
     var statusLine = document.getElementById("home-prayer-status-line");
 
     if (statusEl && statusLine) {
-      var countdown = formatCountdown(state.countdownTarget);
-      var countdownLabel =
-        state.countdownKind === "iqamah"
-          ? state.current.label + " iqamah"
-          : state.next.label;
-
-      statusLine.innerHTML =
-        '<div class="home-prayer-status-chip home-prayer-status-chip-current">' +
-        '<span class="home-prayer-status-chip-label">Current prayer</span>' +
-        '<strong class="home-prayer-status-chip-value">' +
-        state.current.label +
-        "</strong></div>" +
-        '<div class="home-prayer-status-chip home-prayer-status-chip-next">' +
-        '<span class="home-prayer-status-chip-label">Next: ' +
-        countdownLabel +
-        "</span>" +
-        '<strong class="home-prayer-status-chip-value home-prayer-countdown">' +
-        countdown +
-        "</strong></div>";
-
+      statusLine.innerHTML = buildPrayerStatusHtml(state);
       statusEl.hidden = false;
-
-      if (shouldAutoScrollPrayerStrip()) {
-        var activeCard = document.querySelector(
-          ".home-hero-prayer-card-wrap.is-current-prayer, .home-hero-prayer-card-wrap.is-next-prayer",
-        );
-        if (activeCard) {
-          centerPrayerCardInStrip(activeCard, "smooth");
-        }
-      }
     }
 
+    if (prayerCarouselBuilt && !prayerCarouselUserScrolling) {
+      centerPrayerCarouselOnSlot(null, null, "auto");
+      updateCarouselCenteredSlide();
+    }
+
+    updatePrayerCarouselToolbarLabel();
     updateNavSalahStatus();
   };
 
   const schedulePrayerHighlights = (d) => {
     cachedPrayerDayData = d;
+    cachedSalahEvents = buildSalahEventTimeline();
     updatePrayerHighlightsUI();
     refreshJumuahDisplay();
     if (!prayerHighlightTimer) {
@@ -668,23 +1217,7 @@
   };
 
   const applyToHomePage = (d) => {
-    if (!isHomePage()) return;
-    const lower = (s) => s.toLowerCase();
-    const setPrayer = (beginsId, iqamahId, beginsVal, iqamahVal) => {
-      const beginsEl = document.getElementById(beginsId);
-      const iqamahEl = document.getElementById(iqamahId);
-      if (beginsEl) beginsEl.innerHTML = lower(beginsVal);
-      if (iqamahEl) iqamahEl.innerHTML = lower(iqamahVal);
-    };
-
-    setPrayer("fajr-begins", "fajr-iqamah", d.fajarTime, d.fajarJamahTime);
-    setPrayer("dhuhr-begins", "dhuhr-iqamah", d.dhuharTime, d.zohrJamahTime);
-    setPrayer("asr-begins", "asr-iqamah", d.asrTime, d.asarJamahTime);
-    setPrayer("maghrib-begins", "maghrib-iqamah", d.maghribTime, d.maghribJamahTime);
-    setPrayer("isha-begins", "isha-iqamah", d.ishaTime, d.ishaJamahTime);
-
-    const sunriseEl = document.getElementById("sunrise");
-    if (sunriseEl) sunriseEl.innerHTML = lower(d.sunriseTime);
+    if (!isHomePage() || !d) return;
 
     const hijriEl = document.getElementById("home-hero-hijri");
     if (hijriEl) {
@@ -815,17 +1348,14 @@
       return;
     }
 
-    const state = getPrayerState(cachedPrayerDayData);
-    if (!state) {
+    const state = getSalahTimelineState();
+    if (!state || !state.current) {
       statusEl.hidden = true;
       return;
     }
 
     const countdown = formatCountdown(state.countdownTarget);
-    const countdownLabel =
-      state.countdownKind === "iqamah"
-        ? state.current.label + " iqamah"
-        : state.next.label;
+    const nextLabel = formatEventChipLabel(state.nextEvent);
 
     statusEl.innerHTML =
       '<div class="kicc-nav-salah-status-chip kicc-nav-salah-status-chip-current">' +
@@ -834,9 +1364,9 @@
       state.current.label +
       "</strong></div>" +
       '<div class="kicc-nav-salah-status-chip kicc-nav-salah-status-chip-next">' +
-      '<span class="kicc-nav-salah-status-label">Next · ' +
-      countdownLabel +
-      "</span>" +
+      '<span class="kicc-nav-salah-status-label">' +
+      nextLabel +
+      " in</span>" +
       '<strong class="kicc-nav-salah-countdown">' +
       countdown +
       "</strong></div>";
@@ -1212,27 +1742,62 @@
     }
   };
 
-  const setSalahTimes = () => {
-    const todayParts = getTodayInIreland();
-    const tomorrowParts = getTomorrowInIreland();
-
-    fetchIqamahForDate(todayParts, "iqamah-today")
-      .then(function (d) {
-        applyToHomePage(d);
-        applyToNav(d);
-        schedulePrayerHighlights(d);
-        setDynamicCelebrationToBanner(d);
-      })
-      .catch(function (err) {
-        console.error("Failed to load today's iqamah times", err);
+  const loadPrayerDataWindow = () => {
+    const months = getMonthsForDayRange(PRAYER_DAY_RADIUS);
+    return Promise.all(
+      months.map(function (m) {
+        return fetchIqamahMonth(m.year, m.monthName).catch(function (err) {
+          console.warn("Failed to load iqamah month", m, err);
+          return [];
+        });
+      }),
+    ).then(function (results) {
+      cachedPrayerDayMap = Object.create(null);
+      results.forEach(function (days) {
+        if (!Array.isArray(days)) return;
+        days.forEach(function (d) {
+          cachedPrayerDayMap[makeDayKeyFromRecord(d)] = d;
+        });
       });
+      return cachedPrayerDayMap;
+    });
+  };
 
-    fetchIqamahForDate(tomorrowParts, "iqamah-tomorrow")
-      .then(function (d) {
-        applyTomorrowToNav(d);
+  const setSalahTimes = () => {
+    loadPrayerDataWindow()
+      .then(function () {
+        const todayData =
+          cachedPrayerDayMap[makeDayKeyFromDate(getDublinDate())] ||
+          getDayRecordForOffset(0);
+        const tomorrowData = getDayRecordForOffset(1);
+
+        cachedPrayerDayData = todayData || null;
+        cachedTomorrowPrayerDayData = tomorrowData || null;
+
+        if (todayData) {
+          applyToHomePage(todayData);
+          applyToNav(todayData);
+          schedulePrayerHighlights(todayData);
+          setDynamicCelebrationToBanner(todayData);
+          renderHomePrayerDeck();
+        } else {
+          console.error("No prayer data for today");
+        }
+
+        if (tomorrowData) {
+          applyTomorrowToNav(tomorrowData);
+        } else {
+          fetchIqamahForDate(getTomorrowInIreland(), "iqamah-tomorrow")
+            .then(function (d) {
+              applyTomorrowToNav(d);
+            })
+            .catch(function (err) {
+              console.warn("Failed to load tomorrow's iqamah times", err);
+            });
+        }
       })
       .catch(function (err) {
-        console.warn("Failed to load tomorrow's iqamah times", err);
+        console.error("Failed to load prayer times", err);
       });
   };
 
