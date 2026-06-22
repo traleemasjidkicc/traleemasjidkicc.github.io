@@ -17603,10 +17603,13 @@ body.has-page-section-nav [id] {
 		width: 100%;
 	}
 
-	.page-prayer-times .prayer-times-pdf-btn,
-	.page-prayer-times .prayer-times-print-btn {
+	.page-prayer-times .prayer-times-pdf-btn {
 		flex: 1 1 auto;
 		justify-content: center;
+	}
+
+	.page-prayer-times .prayer-times-print-btn {
+		display: none;
 	}
 
 	.page-prayer-times .prayer-times-visit-panel {

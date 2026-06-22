@@ -6240,7 +6240,11 @@
     { code: "CZK", label: "Czech koruna", locale: "cs-CZ", country: "CZ" },
     { code: "HUF", label: "Hungarian forint", locale: "hu-HU", country: "HU" },
     { code: "BGN", label: "Bulgarian lev", locale: "en-GB", country: "BG" },
+    { code: "HRK", label: "Croatian kuna", locale: "hr-HR", country: "HR" },
+    { code: "RON", label: "Romanian leu", locale: "ro-RO", country: "RO" },
     { code: "BRL", label: "Brazilian real", locale: "pt-BR", country: "BR" },
+    { code: "CLP", label: "Chilean peso", locale: "es-CL", country: "CL" },
+    { code: "COP", label: "Colombian peso", locale: "es-CO", country: "CO" },
   ];
   const CAMPAIGN_PROGRESS_KEY = "kicc-campaign-progress";
 
