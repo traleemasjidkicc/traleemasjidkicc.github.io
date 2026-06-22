@@ -39,8 +39,14 @@
     const target = document.getElementById(id);
     if (!target) return;
 
-    requestAnimationFrame(function () {
+    const scrollToTarget = () => {
+      syncStickyNavOffset();
+      syncPageSectionNavMetrics();
       target.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(scrollToTarget);
     });
   };
 
@@ -113,8 +119,12 @@
     "masjidProgrammes_programme_active_true_v1",
     "kicc-campaign-progress",
   ];
-  const FUNCTIONAL_SESSION_KEYS = ["kicc-notices-spotlight-dismissed"];
+  const FUNCTIONAL_SESSION_KEYS = [
+    "kicc-notices-spotlight-dismissed",
+    "kicc-announcements-dismissed",
+  ];
   const BREAKING_DISMISS_PREFIX = "kicc-breaking-dismiss-";
+  const ANNOUNCEMENTS_SESSION_DISMISS_KEY = "kicc-announcements-dismissed";
 
   const parseConsentCookie = () => {
     try {
@@ -187,102 +197,131 @@
     Cookies.set(name, value, options);
   };
 
+  const SALAH_TIMES_API_URL = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
+
+  const fetchSalahTimesAssetUrl = (month, year, options) => {
+    const opts = options || {};
+    const ramadan =
+      opts.isRamadan != null ? opts.isRamadan : isRamadan();
+    const url = new URL(SALAH_TIMES_API_URL);
+    url.searchParams.set("month", month);
+    url.searchParams.set("year", String(year));
+    url.searchParams.set("isRamadan", String(ramadan));
+
+    return fetch(url.toString())
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      })
+      .then(function (json) {
+        const data = json && json.data;
+        if (!Array.isArray(data) || !data.length || !data[0].url) {
+          return null;
+        }
+        return data[0].url;
+      });
+  };
+
+  const getDefaultSalahTimesPeriod = () => {
+    const targetDate = addDays(getToday(), 3);
+    return {
+      month: targetDate.toLocaleString("en-GB", { month: "long" }),
+      year: targetDate.getFullYear(),
+      isRamadan: isRamadan(),
+    };
+  };
+
+  const getSalahTimesMonthLabel = (monthName) => {
+    if (monthName) return String(monthName).trim();
+    if (isRamadan()) return "Ramadan";
+    return getDefaultSalahTimesPeriod().month;
+  };
+
+  const formatOfficialTimetableLabel = (monthName) => {
+    const month = getSalahTimesMonthLabel(monthName);
+    return month ? "Official " + month + " Timetable" : "Official Timetable";
+  };
+
+  const setOfficialTimetableLabels = (monthName) => {
+    const label = formatOfficialTimetableLabel(monthName);
+    document.querySelectorAll("[data-official-timetable-label]").forEach(function (el) {
+      el.textContent = label;
+    });
+  };
+
   const setSalahTimeUrl = () => {
     const SALAH_TIMES_KEY = "salahTimesAssetUrl";
-    const baseUrl = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
 
     // 1) Try to use cached URL first (non-blocking)
     try {
       const cached = kiccStorageGet(localStorage, SALAH_TIMES_KEY);
       if (cached) {
         console.log("Using cached salah times URL:", cached);
-        applySalahTimesUrl(cached);
+        applySalahTimesUrl(
+          cached,
+          isPrayerTimesPage() ? "nav" : "all",
+        );
       }
     } catch (e) {
       console.warn("Unable to read localStorage", e);
     }
 
-    // 2) Always call API to refresh
-    let targetDate;
+    // 2) Always call API to refresh the default period (today + 3 days)
+    let period;
     try {
-      targetDate = addDays(getToday(), 3);
+      period = getDefaultSalahTimesPeriod();
     } catch (e) {
       console.error("Error computing target date", e);
       return;
     }
 
-    const month = targetDate.toLocaleString("en-GB", { month: "long" });
-    const year = targetDate.getFullYear();
-    const ramadan = isRamadan();
-
-    const url = new URL(baseUrl);
-    url.searchParams.set("month", month);
-    url.searchParams.set("year", String(year));
-    url.searchParams.set("isRamadan", String(ramadan));
-
-    fetch(url.toString())
-      .then((response) => {
-        console.log("Salah times API response status:", response.status);
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        return response.json();
-      })
-      .then((json) => {
-        console.log("Salah times API JSON:", json);
-        const data = json && json.data;
-        if (!Array.isArray(data) || !data.length || !data[0].url) {
+    fetchSalahTimesAssetUrl(period.month, period.year, {
+      isRamadan: period.isRamadan,
+    })
+      .then(function (asset) {
+        if (!asset) {
           console.error("No salah times data returned");
           return;
         }
 
-        const asset = data[0].url;
         console.log("Latest salah times URL from API:", asset);
+        applySalahTimesUrl(
+          asset,
+          isPrayerTimesPage() ? "nav" : "all",
+        );
 
-        // Update DOM
-        applySalahTimesUrl(asset);
-
-        // Update localStorage
         try {
           kiccStorageSet(localStorage, SALAH_TIMES_KEY, asset);
         } catch (e) {
           console.warn("Unable to write localStorage", e);
         }
       })
-      .catch((error) => {
+      .catch(function (error) {
         console.error("Error loading salah times", error);
       });
   };
 
-  const applySalahTimesUrl = (asset) => {
+  const applySalahTimesUrl = (asset, scope) => {
+    const mode = scope || "all";
     const elMain = document.getElementById("salah-times");
     const elBody = document.getElementById("salah-times-body");
-    const elHeroPdf = document.getElementById("prayer-hero-pdf");
+    const elHeroQuickPdf = document.getElementById("prayer-hero-quick-pdf");
 
     if (elMain) elMain.href = asset;
-    if (elHeroPdf) elHeroPdf.href = asset;
+    if (mode === "nav") return;
+    if (elHeroQuickPdf) elHeroQuickPdf.href = asset;
     if (elBody && (isHomePage() || isPrayerTimesPage())) {
       elBody.href = asset;
     }
   };
 
-  const setEvent = () => {
+  const setLiveStreamStatus = () => {
     const liveNowEl = document.getElementById("live-now");
-    const nameEl = document.getElementById("event-name");
-    const startsAtEl = document.getElementById("starts-at");
-    const dayEl = document.getElementById("event-day");
-    const dateEl = document.getElementById("event-date");
-    const monthEl = document.getElementById("event-month");
-    const yearEl = document.getElementById("event-year");
+    if (!liveNowEl) return;
 
-    if (
-      !liveNowEl ||
-      !nameEl ||
-      !startsAtEl ||
-      !dayEl ||
-      !dateEl ||
-      !monthEl ||
-      !yearEl
-    ) {
-      console.warn("Event elements missing in DOM");
+    if (!hasCookieConsent() || !canUseThirdPartyEmbeds()) {
+      liveNowEl.innerHTML =
+        '<span class="programmes-live-badge is-offline">Stream paused</span>';
       return;
     }
 
@@ -292,75 +331,15 @@
         return res.json();
       })
       .then((mixlrData) => {
-        // Live / Off Air badge
         const isLive = !!mixlrData.is_live;
         liveNowEl.innerHTML = isLive
           ? '<span class="programmes-live-badge is-live"><span aria-hidden="true">●</span> Live now</span>'
           : '<span class="programmes-live-badge is-offline">Off air</span>';
-
-        const allEvents = Array.isArray(mixlrData.events)
-          ? mixlrData.events
-          : [];
-
-        // Sort safely
-        const sortedEvents = allEvents.length
-          ? allEvents
-              .slice()
-              .sort(
-                (a, b) =>
-                  Number(a.starts_at_timestamp) - Number(b.starts_at_timestamp),
-              )
-          : [];
-
-        const today = getToday();
-        const todayMs = today.getTime();
-        const defaultStarts = Math.floor(todayMs / 1000); // today
-        const defaultEnds = Math.floor((todayMs + 86400 * 1000) / 1000); // +1d
-
-        const fallbackEvent = {
-          title: "Check back for upcoming events",
-          starts_at_timestamp: defaultStarts,
-          ends_at_timestamp: defaultEnds,
-        };
-
-        const eventsData =
-          sortedEvents[0] == null ? fallbackEvent : sortedEvents[0];
-
-        const startDate = new Date(eventsData.starts_at_timestamp * 1000);
-        const endDate = new Date(eventsData.ends_at_timestamp * 1000);
-
-        const startsAt = startDate.toLocaleTimeString("en-GB", {
-          hour: "numeric",
-          minute: "numeric",
-          hour12: true,
-        });
-
-        let eventDay = startDate.toLocaleDateString("en-GB", {
-          weekday: "short",
-        });
-        const eventDate = startDate.toLocaleDateString("en-GB", {
-          day: "2-digit",
-        });
-        const eventMonth = startDate.toLocaleDateString("en-GB", {
-          month: "short",
-        });
-        const eventYear = startDate.toLocaleDateString("en-GB", {
-          year: "numeric",
-        });
-
-        if (isToday(startDate)) {
-          eventDay = "Today";
-        }
-
-        nameEl.textContent = eventsData.title;
-        startsAtEl.textContent = startsAt;
-        dayEl.textContent = eventDay;
-        dateEl.textContent = eventDate;
-        monthEl.textContent = eventMonth;
-        yearEl.textContent = eventYear;
       })
       .catch((err) => {
-        console.error("Error loading Mixlr events", err);
+        console.error("Error loading Mixlr live status", err);
+        liveNowEl.innerHTML =
+          '<span class="programmes-live-badge is-offline">Off air</span>';
       });
   };
 
@@ -510,11 +489,15 @@
     return cachedPrayerDayMap[key] || null;
   };
 
-  const getMonthsForDayRange = (radius) => {
+  const IQAMAH_MONTH_PREFIX = "iqamah-month-";
+
+  const getIqamahMonthsAroundToday = () => {
+    const dublin = getDublinDate();
     const seen = Object.create(null);
     const months = [];
-    for (let offset = -radius; offset <= radius; offset += 1) {
-      const parts = getIrelandDateParts(getDublinDateWithOffset(offset));
+    for (let offset = -1; offset <= 1; offset += 1) {
+      const d = new Date(dublin.getFullYear(), dublin.getMonth() + offset, 1);
+      const parts = getIrelandDateParts(d);
       const id = parts.year + "-" + parts.monthName;
       if (!seen[id]) {
         seen[id] = true;
@@ -522,6 +505,19 @@
       }
     }
     return months;
+  };
+
+  const clearIqamahMonthStorage = () => {
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+        const key = localStorage.key(i);
+        if (key && key.indexOf(IQAMAH_MONTH_PREFIX) === 0) {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
   };
 
   const buildMonthUrl = (year, monthName) =>
@@ -1234,15 +1230,9 @@
 
     const curMonthEl = document.getElementById("cur-month");
     if (curMonthEl) {
-      const today = new Date();
-      const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-      if (isRamadan()) {
-        curMonthEl.innerHTML = "Ramadan";
-      } else {
-        curMonthEl.innerHTML = addedDays.toLocaleString("default", {
-          month: "long",
-        });
-      }
+      const monthName = getSalahTimesMonthLabel();
+      curMonthEl.textContent = monthName;
+      setOfficialTimetableLabels(monthName);
     }
   };
 
@@ -1604,7 +1594,7 @@
       ? "Ramadan"
       : addedDays.toLocaleString("default", { month: "long" });
     setElHtml("nav-cur-month", monthName);
-    setElHtml("prayer-hero-pdf-month", monthName);
+    setOfficialTimetableLabels(monthName);
     applyNavSalahDay("nav-salah-panel-today", d, "today");
     updateNavSalahDateLabel();
     updatePrayerTimesHero();
@@ -1747,7 +1737,7 @@
   };
 
   const loadPrayerDataWindow = () => {
-    const months = getMonthsForDayRange(PRAYER_DAY_RADIUS);
+    const months = getIqamahMonthsAroundToday();
     return Promise.all(
       months.map(function (m) {
         return fetchIqamahMonth(m.year, m.monthName).catch(function (err) {
@@ -1837,6 +1827,14 @@
     {
       category: "functional",
       type: "localStorage",
+      name: "iqamah-month-*",
+      duration: "Until cleared",
+      purpose:
+        "Caches monthly iqamah timetables (previous, current, and next month only). Stored only with Functional & storage consent.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
       name: "iqamah-today / iqamah-tomorrow",
       duration: "Until cleared",
       purpose: "Caches today\u2019s and tomorrow\u2019s iqamah times.",
@@ -1891,11 +1889,28 @@
       purpose: "Hides the notice spotlight for this visit.",
     },
     {
+      category: "functional",
+      type: "sessionStorage",
+      name: "kicc-announcements-dismissed",
+      duration: "Browser session",
+      purpose:
+        "Hides site announcement banners, Jumu'ah ribbon notes, and urgent alerts for this visit. Stored only with Functional & storage consent.",
+    },
+    {
+      category: "thirdParty",
+      type: "Cookie",
+      name: "Mixlr cookies (mixlr.com)",
+      duration: "Varies",
+      purpose:
+        "Set on mixlr.com when the live stream embed or recordings player is loaded. The site cannot remove these from your browser — clear them via your browser settings if needed.",
+    },
+    {
       category: "analytics",
       type: "Cookie",
-      name: "_ga, _gid, _gat",
+      name: "_ga, _gid, _gat, _ga_*",
       duration: "Up to 2 years",
-      purpose: "Google Analytics \u2014 anonymous usage statistics.",
+      purpose:
+        "Google Analytics on this site — anonymous usage statistics. Only set with Analytics consent.",
     },
     {
       category: "thirdParty",
@@ -1965,6 +1980,12 @@
   let pendingBreakingAnnouncement = null;
   let siteAnnouncementsBound = false;
   let lastShownBreakingIdentity = "";
+  let breakingModalShownForIdentity = "";
+  let breakingAnnouncementSurfaceReady = false;
+  let signupModalFlowResolved = true;
+  let announcementsSessionDismissedFingerprint = "";
+  let latestAnnouncements = [];
+  let latestProgrammeRecordings = [];
   let cookieRegistryRendered = false;
   let cookiePrefsSavedTimer = null;
 
@@ -1980,6 +2001,21 @@
     };
 
     if (previous.functional && !next.functional) clearFunctionalData();
+    else if (!next.functional) {
+      clearFunctionalSessionKeys();
+      clearIqamahMonthStorage();
+      FUNCTIONAL_STORAGE_KEYS.forEach(function (key) {
+        try {
+          localStorage.removeItem(key);
+        } catch {
+          // ignore
+        }
+      });
+      clearBreakingDismissKeys();
+    }
+
+    if (!next.analytics) clearAnalyticsData();
+    if (!next.thirdParty) clearThirdPartyData();
 
     Cookies.set(COOKIE_CONSENT_KEY, JSON.stringify({
       functional: next.functional,
@@ -2014,20 +2050,28 @@
 
   const expireCookie = (name) => {
     const hostname = window.location.hostname;
-    const domains = [hostname, "." + hostname.replace(/^www\./, "")];
-    const paths = ["/", ""];
-    domains.forEach(function (domain) {
-      paths.forEach(function (path) {
-        document.cookie =
-          name +
-          "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=" +
-          (path || "/") +
-          "; domain=" +
-          domain +
-          "; SameSite=Lax";
-      });
+    const bareHost = hostname.replace(/^www\./, "");
+    const domainVariants = [
+      "",
+      "; domain=" + hostname,
+      "; domain=." + bareHost,
+      "; domain=" + bareHost,
+    ];
+    const secure =
+      window.location.protocol === "https:" ? "; Secure" : "";
+    domainVariants.forEach(function (domainPart) {
+      document.cookie =
+        name +
+        "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" +
+        domainPart +
+        "; SameSite=Lax" +
+        secure;
     });
-    if (typeof Cookies !== "undefined") Cookies.remove(name);
+    if (typeof Cookies !== "undefined") {
+      Cookies.remove(name, { path: "/" });
+      Cookies.remove(name, { path: "/", domain: hostname });
+      Cookies.remove(name, { path: "/", domain: "." + bareHost });
+    }
   };
 
   const clearBreakingDismissKeys = () => {
@@ -2043,6 +2087,17 @@
     }
   };
 
+  const clearFunctionalSessionKeys = () => {
+    FUNCTIONAL_SESSION_KEYS.forEach(function (key) {
+      try {
+        sessionStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
+    });
+    announcementsSessionDismissedFingerprint = "";
+  };
+
   const clearFunctionalData = () => {
     FUNCTIONAL_COOKIE_NAMES.forEach(function (name) {
       expireCookie(name);
@@ -2054,13 +2109,8 @@
         // ignore
       }
     });
-    FUNCTIONAL_SESSION_KEYS.forEach(function (key) {
-      try {
-        sessionStorage.removeItem(key);
-      } catch {
-        // ignore
-      }
-    });
+    clearIqamahMonthStorage();
+    clearFunctionalSessionKeys();
     clearBreakingDismissKeys();
   };
 
@@ -2180,6 +2230,24 @@
       return;
     }
     const state = prefs || getConsentPrefs();
+    if (!state.functional) {
+      FUNCTIONAL_SESSION_KEYS.forEach(function (key) {
+        try {
+          sessionStorage.removeItem(key);
+        } catch {
+          // ignore
+        }
+      });
+      clearIqamahMonthStorage();
+      FUNCTIONAL_STORAGE_KEYS.forEach(function (key) {
+        try {
+          localStorage.removeItem(key);
+        } catch {
+          // ignore
+        }
+      });
+      clearBreakingDismissKeys();
+    }
     if (state.analytics) loadGoogleAnalytics();
     else clearAnalyticsData();
     if (state.thirdParty) {
@@ -2189,6 +2257,9 @@
       }
     } else {
       clearThirdPartyData();
+    }
+    if (document.getElementById("programmes-recordings-wrap")) {
+      renderRecordings(latestProgrammeRecordings);
     }
   };
 
@@ -2362,6 +2433,7 @@
       }
       return;
     }
+    signupModalFlowResolved = true;
     tryShowBreakingAlert();
   };
 
@@ -2459,6 +2531,7 @@
       });
       $(modal).on("hidden.bs.modal", function () {
         modal.classList.remove("is-content-visible");
+        signupModalFlowResolved = true;
         tryShowBreakingAlert();
       });
     }
@@ -2487,6 +2560,7 @@
     initSignUpModal();
 
     if (!Cookies.get("kicc-modal-tmw")) {
+      signupModalFlowResolved = false;
       setTimeout(function () {
         $("#myModal").modal("show");
         setTimeout(function () {
@@ -2495,6 +2569,7 @@
       }, 2500);
       return true;
     }
+    signupModalFlowResolved = true;
     return false;
   };
 
@@ -2770,8 +2845,12 @@
     getDublinDate().getDay() === 5 ? "Today" : "This Friday";
 
   const refreshJumuahDisplay = () => {
-    const cached = loadAnnouncementsFromCache();
-    renderJumuahFridayBanner(cached || []);
+    const announcements = latestAnnouncements.length
+      ? latestAnnouncements
+      : loadAnnouncementsFromCache() || [];
+    renderJumuahFridayBanner(announcements);
+    if (!announcements.length) return;
+    renderSiteAnnouncementRibbon(announcements);
   };
 
   const getJumuahTimes = (announcements) => {
@@ -2942,6 +3021,174 @@
     }
   };
 
+  const prayerTimesHubState = {
+    programmes: [],
+  };
+
+  const setPrayerTimesJumuahTimes = (jummahTimes) => {
+    const slot = jummahTimes && jummahTimes[0];
+    const speech = slot ? formatTimeToAmPm(slot.speech) || "—" : "—";
+    const khutbah = slot ? formatTimeToAmPm(slot.khutbah) || "—" : "—";
+
+    document
+      .querySelectorAll(
+        "[data-prayer-jumuah-speech], [data-prayer-footer-jumuah-speech]",
+      )
+      .forEach(function (el) {
+        el.textContent = speech;
+      });
+    document
+      .querySelectorAll(
+        "[data-prayer-jumuah-khutbah], [data-prayer-footer-jumuah-khutbah]",
+      )
+      .forEach(function (el) {
+        el.textContent = khutbah;
+      });
+  };
+
+  const renderPrayerTimesJumuahSection = (announcements) => {
+    if (!isPrayerTimesPage()) return;
+
+    const panel = document.querySelector("[data-prayer-jumuah-panel]");
+    if (!panel) return;
+
+    const jummahTimes = getJumuahTimes(announcements);
+    const jumuah = pickAnnouncementByType(announcements, "jumuah");
+    const featureHost = panel.querySelector("[data-prayer-jumuah-feature]");
+    const emptyHost = panel.querySelector("[data-prayer-jumuah-empty]");
+    const messageEl = panel.querySelector("[data-prayer-jumuah-message]");
+    const badgeEl = panel.querySelector("[data-prayer-jumuah-status-badge]");
+
+    setPrayerTimesJumuahTimes(jummahTimes);
+
+    if (featureHost) {
+      if (jummahTimes) {
+        featureHost.innerHTML = buildJumuahScheduleFeatureHtml(jummahTimes);
+        featureHost.hidden = false;
+        if (emptyHost) emptyHost.hidden = true;
+      } else {
+        featureHost.innerHTML = "";
+        featureHost.hidden = true;
+        if (emptyHost) emptyHost.hidden = false;
+      }
+    }
+
+    if (messageEl) {
+      if (
+        jumuah &&
+        jumuah.active &&
+        jumuah.message &&
+        !isAnnouncementsSessionDismissed(announcements)
+      ) {
+        messageEl.innerHTML = jumuah.message;
+        messageEl.hidden = false;
+      } else {
+        messageEl.innerHTML = "";
+        messageEl.hidden = true;
+      }
+    }
+
+    if (badgeEl) {
+      if (isFridayInDublin()) {
+        badgeEl.textContent = "Today";
+      } else if (isJumuahDisplayWindow()) {
+        badgeEl.textContent = getJumuahBannerBadge();
+      } else {
+        badgeEl.textContent = "Every Friday";
+      }
+    }
+  };
+
+  const buildPrayerTimesFooterProgrammeLabel = (p) => {
+    let label = getProgrammeTimeLabel(p) || "";
+    if (!label) return "";
+
+    if (hasProgrammePrayerName(p) || /\bafter\b/i.test(label)) {
+      label = label.replace(/\s+at\s+.+$/i, "").trim();
+    }
+
+    return label;
+  };
+
+  const getPrayerTimesFooterProgrammes = (programmes) => {
+    if (!Array.isArray(programmes)) return [];
+
+    return programmes
+      .filter(isRecurringWeeklyProgramme)
+      .filter(function (p) {
+        return Array.isArray(p.weekdays) && p.weekdays.length > 0;
+      })
+      .sort(function (a, b) {
+        const dayA = WEEKDAY_ORDER.indexOf(
+          normalizeWeekday((a.weekdays || [])[0]),
+        );
+        const dayB = WEEKDAY_ORDER.indexOf(
+          normalizeWeekday((b.weekdays || [])[0]),
+        );
+        return (dayA < 0 ? 99 : dayA) - (dayB < 0 ? 99 : dayB);
+      });
+  };
+
+  const renderPrayerTimesFooterProgrammes = (programmes) => {
+    if (!isPrayerTimesPage()) return;
+
+    const list = document.querySelector("[data-prayer-footer-programmes]");
+    if (!list) return;
+
+    list.innerHTML = "";
+    const weekly = getPrayerTimesFooterProgrammes(programmes);
+
+    if (!weekly.length) {
+      const li = document.createElement("li");
+      li.textContent = "See traleemasjidkicc.ie/activities for programmes.";
+      list.appendChild(li);
+      return;
+    }
+
+    weekly.forEach(function (p) {
+      const li = document.createElement("li");
+      const strong = document.createElement("strong");
+      strong.textContent = p.name || "Programme";
+      li.appendChild(strong);
+
+      const meta = buildPrayerTimesFooterProgrammeLabel(p);
+      if (meta) {
+        li.appendChild(document.createTextNode(" — " + meta));
+      }
+
+      list.appendChild(li);
+    });
+  };
+
+  const renderPrayerTimesFooterListen = () => {
+    if (!isPrayerTimesPage()) return;
+
+    const list = document.querySelector("[data-prayer-footer-listen]");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    const addLinkItem = (href, label, external) => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = href;
+      a.textContent = label;
+      if (external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      li.appendChild(a);
+      list.appendChild(li);
+    };
+
+    addLinkItem(
+      "https://traleemasjid.mixlr.com/",
+      "Live on Mixlr — traleemasjid.mixlr.com",
+      true,
+    );
+    addLinkItem("https://www.traleemasjidkicc.ie", "www.traleemasjidkicc.ie", true);
+  };
+
   const pickAnnouncementByType = (announcements, type) => {
     if (!Array.isArray(announcements)) return null;
     const matches = announcements.filter((a) => a.type === type);
@@ -2962,6 +3209,99 @@
       general: pickAnnouncementByType(announcements, "general"),
       jumuah: pickAnnouncementByType(announcements, "jumuah"),
     };
+  };
+
+  const readAnnouncementsSessionDismiss = () =>
+    kiccStorageGet(sessionStorage, ANNOUNCEMENTS_SESSION_DISMISS_KEY);
+
+  const writeAnnouncementsSessionDismiss = (value) =>
+    kiccStorageSet(sessionStorage, ANNOUNCEMENTS_SESSION_DISMISS_KEY, value);
+
+  const restoreAnnouncementsSessionDismiss = () => {
+    if (!canUseFunctionalStorage()) {
+      try {
+        sessionStorage.removeItem(ANNOUNCEMENTS_SESSION_DISMISS_KEY);
+      } catch {
+        // ignore
+      }
+      return;
+    }
+    const stored = readAnnouncementsSessionDismiss();
+    if (stored && stored !== "none") {
+      announcementsSessionDismissedFingerprint = stored;
+    }
+  };
+
+  const getAnnouncementsDismissFingerprint = (announcements) => {
+    if (!Array.isArray(announcements)) return "none";
+
+    const parts = [];
+    announcements.forEach(function (announcement) {
+      if (!announcement || !announcement.type) return;
+
+      const hasJumuahTimes =
+        announcement.type === "jumuah" &&
+        Array.isArray(announcement.jummahTimes) &&
+        announcement.jummahTimes.length > 0;
+      if (!announcement.active && !hasJumuahTimes) return;
+
+      const timesKey = hasJumuahTimes
+        ? announcement.jummahTimes
+            .map(function (slot) {
+              return (
+                String(slot.speech || "") + "-" + String(slot.khutbah || "")
+              );
+            })
+            .join(",")
+        : "";
+
+      parts.push(
+        [
+          announcement.type,
+          announcement.id || "",
+          String(announcement.timestamp || 0),
+          timesKey,
+        ].join(":"),
+      );
+    });
+
+    if (!parts.length) return "none";
+    return parts.sort().join("|");
+  };
+
+  const isAnnouncementsSessionDismissed = (announcements) => {
+    if (!announcementsSessionDismissedFingerprint) {
+      restoreAnnouncementsSessionDismiss();
+    }
+    if (!announcementsSessionDismissedFingerprint) return false;
+    if (!Array.isArray(announcements) || !announcements.length) {
+      return announcementsSessionDismissedFingerprint === "dismissed";
+    }
+
+    const fingerprint = getAnnouncementsDismissFingerprint(announcements);
+    if (fingerprint === "none") {
+      return announcementsSessionDismissedFingerprint === "dismissed";
+    }
+    return announcementsSessionDismissedFingerprint === fingerprint;
+  };
+
+  const dismissAllAnnouncementsForSession = (announcements) => {
+    const fingerprint = getAnnouncementsDismissFingerprint(announcements);
+    const toStore =
+      fingerprint && fingerprint !== "none" ? fingerprint : "dismissed";
+    announcementsSessionDismissedFingerprint = toStore;
+    writeAnnouncementsSessionDismiss(toStore);
+  };
+
+  const handleAnnouncementsRibbonDismiss = () => {
+    const announcements = latestAnnouncements.length
+      ? latestAnnouncements
+      : loadAnnouncementsFromCache() || [];
+    dismissAllAnnouncementsForSession(announcements);
+    pendingBreakingAnnouncement = null;
+    lastShownBreakingIdentity = "";
+    hideBreakingAlert(false);
+    applyAnnouncements(announcements);
   };
 
   const getBreakingAnnouncementTimestamp = (announcement) =>
@@ -3004,6 +3344,14 @@
     return String(breaking.id || "legacy") + ":" + getBreakingAnnouncementTimestamp(breaking);
   };
 
+  const hasPendingBreakingRibbonGate = (announcements) => {
+    const { breaking } = parseAnnouncementsByType(announcements);
+    if (!breaking || !breaking.active || !breaking.message) return false;
+    if (isAnnouncementsSessionDismissed(announcements)) return false;
+    if (isBreakingDismissed(breaking)) return false;
+    return !breakingAnnouncementSurfaceReady;
+  };
+
   const selectRibbonAnnouncement = (announcements, options) => {
     options = options || {};
     const suppressJumuah = !!options.suppressJumuah;
@@ -3015,7 +3363,7 @@
       jumuah.active &&
       jumuah.message;
 
-    if (breaking && breaking.active && breaking.message) {
+    if (breaking && breaking.active && breaking.message && breakingAnnouncementSurfaceReady) {
       return { announcement: breaking, variant: "breaking" };
     }
     if (showJumuahMessage) {
@@ -3065,11 +3413,26 @@
     if (document.body.classList.contains("cookie-consent-active")) {
       return true;
     }
+    if (document.body.classList.contains("cookie-preferences-active")) {
+      return true;
+    }
     const modal = document.getElementById("myModal");
     if (modal && modal.classList.contains("show")) {
       return true;
     }
     return false;
+  };
+
+  const markBreakingAnnouncementSurfaceReady = () => {
+    if (breakingAnnouncementSurfaceReady) return;
+    breakingAnnouncementSurfaceReady = true;
+    if (latestAnnouncements.length) {
+      renderSiteAnnouncementRibbon(latestAnnouncements);
+    }
+  };
+
+  const scheduleBreakingAlertWhenReady = () => {
+    tryShowBreakingAlert();
   };
 
   const hideBreakingAlert = (animate) => {
@@ -3110,13 +3473,27 @@
   };
 
   const tryShowBreakingAlert = () => {
-    if (!pendingBreakingAnnouncement) return;
+    if (!pendingBreakingAnnouncement) {
+      markBreakingAnnouncementSurfaceReady();
+      return;
+    }
+    if (!hasCookieConsent()) return;
+    if (isHomePage() && !signupModalFlowResolved) return;
     if (isBlockingOverlayVisible()) return;
+    if (isAnnouncementsSessionDismissed(latestAnnouncements)) {
+      markBreakingAnnouncementSurfaceReady();
+      return;
+    }
     if (isBreakingDismissed(pendingBreakingAnnouncement)) {
+      markBreakingAnnouncementSurfaceReady();
       return;
     }
 
     const identity = getBreakingIdentity(pendingBreakingAnnouncement);
+    if (breakingModalShownForIdentity === identity) {
+      return;
+    }
+
     const alertEl = document.getElementById("site-breaking-alert");
     const isOpen =
       alertEl &&
@@ -3127,17 +3504,29 @@
     if (isOpen) return;
 
     showBreakingAlert(pendingBreakingAnnouncement);
+    breakingModalShownForIdentity = identity;
   };
 
   const queueBreakingAlert = (breaking) => {
+    if (isAnnouncementsSessionDismissed(latestAnnouncements)) {
+      pendingBreakingAnnouncement = null;
+      lastShownBreakingIdentity = "";
+      hideBreakingAlert(false);
+      markBreakingAnnouncementSurfaceReady();
+      return;
+    }
+
     if (!breaking || !breaking.active || !breaking.message) {
       pendingBreakingAnnouncement = null;
       lastShownBreakingIdentity = "";
       hideBreakingAlert(false);
+      markBreakingAnnouncementSurfaceReady();
       return;
     }
     if (isBreakingDismissed(breaking)) {
       pendingBreakingAnnouncement = null;
+      breakingModalShownForIdentity = getBreakingIdentity(breaking);
+      markBreakingAnnouncementSurfaceReady();
       return;
     }
 
@@ -3148,9 +3537,13 @@
 
     if (identityChanged) {
       hideBreakingAlert(false);
+      breakingModalShownForIdentity = "";
+      if (breaking.active) {
+        breakingAnnouncementSurfaceReady = false;
+      }
     }
 
-    tryShowBreakingAlert();
+    scheduleBreakingAlertWhenReady();
   };
 
   const ensureSiteAnnouncementShell = () => {
@@ -3169,6 +3562,8 @@
     ribbon.setAttribute("aria-live", "polite");
     ribbon.innerHTML =
       '<div class="site-announcement-ribbon-inner">' +
+      '<button type="button" class="site-announcement-ribbon-dismiss" id="site-announcement-ribbon-dismiss" aria-label="Dismiss announcements for this visit" hidden>' +
+      '<i class="fas fa-times" aria-hidden="true"></i></button>' +
       '<div class="site-announcement-ribbon-main">' +
       '<span class="site-announcement-ribbon-badge" id="site-announcement-ribbon-badge"></span>' +
       '<div class="site-announcement-ribbon-message" id="site-announcement-ribbon-message"></div>' +
@@ -3203,9 +3598,6 @@
   };
 
   const bindSiteAnnouncementEvents = () => {
-    if (siteAnnouncementsBound) return;
-    siteAnnouncementsBound = true;
-
     const dismissBtn = document.getElementById("site-breaking-alert-dismiss");
     if (dismissBtn && !dismissBtn.dataset.bound) {
       dismissBtn.dataset.bound = "true";
@@ -3214,6 +3606,7 @@
           dismissBreakingAnnouncement(pendingBreakingAnnouncement);
         }
         hideBreakingAlert(true);
+        markBreakingAnnouncementSurfaceReady();
       });
     }
 
@@ -3224,6 +3617,18 @@
         dismissBtn?.click();
       });
     }
+
+    if (!document.documentElement.dataset.ribbonDismissBound) {
+      document.documentElement.dataset.ribbonDismissBound = "true";
+      document.addEventListener("click", function (e) {
+        const btn = e.target.closest("#site-announcement-ribbon-dismiss");
+        if (!btn || btn.hidden) return;
+        e.preventDefault();
+        handleAnnouncementsRibbonDismiss();
+      });
+    }
+
+    siteAnnouncementsBound = true;
   };
 
   const renderSiteAnnouncementRibbon = (announcements) => {
@@ -3231,12 +3636,40 @@
     bindSiteAnnouncementEvents();
 
     const ribbon = document.getElementById("site-announcement-ribbon");
+    const mainEl = ribbon
+      ? ribbon.querySelector(".site-announcement-ribbon-main")
+      : null;
     const badgeEl = document.getElementById("site-announcement-ribbon-badge");
     const messageEl = document.getElementById("site-announcement-ribbon-message");
     const scheduleWrap = document.getElementById(
       "site-announcement-ribbon-schedule",
     );
+    const dismissBtn = document.getElementById(
+      "site-announcement-ribbon-dismiss",
+    );
     if (!ribbon || !badgeEl || !messageEl || !scheduleWrap) return;
+
+    if (isAnnouncementsSessionDismissed(announcements)) {
+      ribbon.hidden = true;
+      messageEl.innerHTML = "";
+      scheduleWrap.innerHTML = "";
+      scheduleWrap.hidden = true;
+      if (mainEl) mainEl.hidden = true;
+      if (dismissBtn) dismissBtn.hidden = true;
+      queueStickyNavOffsetSync();
+      return;
+    }
+
+    if (hasPendingBreakingRibbonGate(announcements)) {
+      ribbon.hidden = true;
+      messageEl.innerHTML = "";
+      scheduleWrap.innerHTML = "";
+      scheduleWrap.hidden = true;
+      if (mainEl) mainEl.hidden = true;
+      if (dismissBtn) dismissBtn.hidden = true;
+      queueStickyNavOffsetSync();
+      return;
+    }
 
     const jummahTimes = getJumuahTimes(announcements);
     const suppressJumuahInRibbon = isJumuahFeatureBannerVisible(jummahTimes);
@@ -3259,17 +3692,21 @@
       messageEl.innerHTML = "";
       scheduleWrap.innerHTML = "";
       scheduleWrap.hidden = true;
+      if (mainEl) mainEl.hidden = true;
+      if (dismissBtn) dismissBtn.hidden = true;
       queueStickyNavOffsetSync();
       return;
     }
 
     if (hasMessage) {
+      if (mainEl) mainEl.hidden = false;
       badgeEl.textContent = getRibbonVariantLabel(selected.variant);
       messageEl.innerHTML = selected.announcement.message;
       ribbon.classList.add("site-announcement-ribbon--" + selected.variant);
       badgeEl.hidden = false;
       messageEl.hidden = false;
     } else {
+      if (mainEl) mainEl.hidden = true;
       badgeEl.hidden = true;
       messageEl.hidden = true;
       messageEl.innerHTML = "";
@@ -3285,19 +3722,24 @@
     }
 
     ribbon.hidden = false;
+    if (dismissBtn) dismissBtn.hidden = false;
+    syncAnnouncementRibbonNavSuppression();
     queueStickyNavOffsetSync();
   };
 
   const applyAnnouncements = (announcements) => {
-    renderSiteAnnouncementRibbon(announcements);
-    renderJumuahFridayBanner(announcements);
+    latestAnnouncements = Array.isArray(announcements) ? announcements : [];
+    renderSiteAnnouncementRibbon(latestAnnouncements);
+    renderJumuahFridayBanner(latestAnnouncements);
+    renderPrayerTimesJumuahSection(latestAnnouncements);
 
-    const { breaking } = parseAnnouncementsByType(announcements);
+    const { breaking } = parseAnnouncementsByType(latestAnnouncements);
     queueBreakingAlert(breaking && breaking.active ? breaking : null);
   };
 
   const initSiteAnnouncements = () => {
     ensureSiteAnnouncementShell();
+    restoreAnnouncementsSessionDismiss();
     bindSiteAnnouncementEvents();
 
     const cached = loadAnnouncementsFromCache();
@@ -3483,10 +3925,12 @@
     observeNoticeReveals();
   };
 
+  const NOTICE_SPOTLIGHT_DESKTOP_LIMIT = 6;
+  const NOTICE_SPOTLIGHT_MOBILE_LIMIT = 4;
+
   const renderNoticeSpotlight = (notices) => {
     const section = document.getElementById("masjid-notice-spotlight");
     const track = document.getElementById("masjidNoticeSpotlightTrack");
-    const countEl = document.getElementById("masjidNoticeSpotlightCount");
     if (!section || !track) return;
 
     const sorted = sortNotices(notices);
@@ -3497,11 +3941,14 @@
     }
 
     track.innerHTML = "";
-    sorted.slice(0, 4).forEach(function (notice, index) {
+    sorted.slice(0, NOTICE_SPOTLIGHT_DESKTOP_LIMIT).forEach(function (notice, index) {
       const card = document.createElement("a");
       card.className =
         "notices-spotlight-card lightbox" +
-        (index === 0 ? " notices-spotlight-card--featured" : "");
+        (index === 0 ? " notices-spotlight-card--featured" : "") +
+        (index >= NOTICE_SPOTLIGHT_MOBILE_LIMIT
+          ? " notices-spotlight-card--mobile-hidden"
+          : "");
       card.href = notice.url;
       card.setAttribute("role", "listitem");
       card.style.setProperty("--spotlight-i", index);
@@ -3542,11 +3989,6 @@
       card.appendChild(label);
       track.appendChild(card);
     });
-
-    if (countEl) {
-      countEl.textContent =
-        sorted.length === 1 ? "1 new poster" : sorted.length + " posters available";
-    }
 
     bindNoticeSpotlightDismiss();
     section.hidden = false;
@@ -4004,6 +4446,28 @@
     return { start: start, end: end };
   };
 
+  const getProgrammeColumnDate = (dayKey, weekRepeat) => {
+    var dayIndex = WEEKDAY_ORDER.indexOf(dayKey);
+    if (dayIndex < 0) return null;
+
+    var weekRange = getThisWeekRange(getDublinDate());
+    var weekOffset =
+      (Number(weekRepeat) - PROGRAMME_WEEK_PRIMARY_REPEAT) * 7;
+    var date = new Date(weekRange.start.getTime());
+    date.setDate(weekRange.start.getDate() + weekOffset + dayIndex);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+
+  const formatProgrammeColumnDate = (date) => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
   const isDateInRange = (date, start, end) => {
     return date >= start && date <= end;
   };
@@ -4043,11 +4507,399 @@
     return (p.id || "") + "|" + (p.name || "");
   };
 
+  const MIXLR_TRALEE_EVENT_URL_RE =
+    /^https:\/\/mixlr\.com\/tralee-masjid\/events\/\d+\/?$/i;
+
+  const isMixlrTraleeEventUrl = (url) =>
+    typeof url === "string" && MIXLR_TRALEE_EVENT_URL_RE.test(url.trim());
+
+  const getMixlrEventProgrammes = (programmes) => {
+    if (!Array.isArray(programmes)) return [];
+
+    return programmes
+      .filter(function (p) {
+        return p && isMixlrTraleeEventUrl(p.listenUrl);
+      })
+      .map(function (p) {
+        return {
+          programme: p,
+          eventDate: getProgrammeEventDate(p),
+        };
+      })
+      .filter(function (item) {
+        return !!item.eventDate;
+      })
+      .sort(function (a, b) {
+        return a.eventDate.getTime() - b.eventDate.getTime();
+      });
+  };
+
+  const getNextMixlrEventProgramme = (programmes) => {
+    const now = getDublinDate();
+    const events = getMixlrEventProgrammes(programmes);
+    for (let i = 0; i < events.length; i += 1) {
+      if (events[i].eventDate.getTime() >= now.getTime()) {
+        return events[i].programme;
+      }
+    }
+    return null;
+  };
+
+  const renderNextUpEvent = (programmes) => {
+    const nameEl = document.getElementById("event-name");
+    const startsAtEl = document.getElementById("starts-at");
+    const dayEl = document.getElementById("event-day");
+    const dateEl = document.getElementById("event-date");
+    const monthEl = document.getElementById("event-month");
+    const yearEl = document.getElementById("event-year");
+
+    if (
+      !nameEl ||
+      !startsAtEl ||
+      !dayEl ||
+      !dateEl ||
+      !monthEl ||
+      !yearEl
+    ) {
+      return;
+    }
+
+    const nextProgramme = getNextMixlrEventProgramme(programmes);
+    if (!nextProgramme) {
+      nameEl.textContent = "Check back for upcoming events";
+      startsAtEl.textContent = "—";
+      dayEl.textContent = "—";
+      dateEl.textContent = "—";
+      monthEl.textContent = "—";
+      yearEl.textContent = "—";
+      cachedNextUpProgramme = null;
+      syncNextUpEventCard(null);
+      return;
+    }
+
+    const eventDate = getProgrammeEventDate(nextProgramme);
+    if (!eventDate) {
+      nameEl.textContent = nextProgramme.name || "Upcoming event";
+      startsAtEl.textContent = getProgrammeTimeLabel(nextProgramme);
+      dayEl.textContent = "—";
+      dateEl.textContent = "—";
+      monthEl.textContent = "—";
+      yearEl.textContent = "—";
+      cachedNextUpProgramme = nextProgramme;
+      syncNextUpEventCard(nextProgramme);
+      return;
+    }
+
+    const startsAt = eventDate.toLocaleTimeString("en-GB", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+
+    let eventDay = eventDate.toLocaleDateString("en-GB", {
+      weekday: "short",
+    });
+    const eventDateNum = eventDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+    });
+    const eventMonth = eventDate.toLocaleDateString("en-GB", {
+      month: "short",
+    });
+    const eventYear = eventDate.toLocaleDateString("en-GB", {
+      year: "numeric",
+    });
+
+    if (isSameCalendarDay(eventDate, getDublinDate())) {
+      eventDay = "Today";
+    }
+
+    nameEl.textContent = nextProgramme.name || "Upcoming event";
+    startsAtEl.textContent = startsAt;
+    dayEl.textContent = eventDay;
+    dateEl.textContent = eventDateNum;
+    monthEl.textContent = eventMonth;
+    yearEl.textContent = eventYear;
+    cachedNextUpProgramme = nextProgramme;
+    syncNextUpEventCard(nextProgramme);
+  };
+
   const getProgrammeAnchorId = (p) => {
     var name = (p && p.name) || "";
     if (/women/i.test(name)) return "women-class";
     if (/adult/i.test(name)) return "adult-classes";
     return programmeSlug(name);
+  };
+
+  const programmeHasDetailsContent = (p) => {
+    if (!p) return false;
+    return !!(
+      p.description ||
+      p.topic ||
+      p.speaker ||
+      (typeof p.imageUrl === "string" && p.imageUrl.trim())
+    );
+  };
+
+  let programmeDetailsModalBound = false;
+  let cachedNextUpProgramme = null;
+  let nextUpEventInteractionBound = false;
+
+  const bindNextUpEventInteraction = () => {
+    if (nextUpEventInteractionBound) return;
+    nextUpEventInteractionBound = true;
+
+    document.addEventListener("click", function (e) {
+      const trigger = e.target.closest("[data-programme-next-up-open]");
+      if (!trigger || !cachedNextUpProgramme) return;
+      if (e.target.closest(".programmes-next-event-footer a[href]")) return;
+      openProgrammeDetailsModal(cachedNextUpProgramme);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const trigger = e.target.closest("[data-programme-next-up-open]");
+      if (!trigger || !cachedNextUpProgramme) return;
+      e.preventDefault();
+      openProgrammeDetailsModal(cachedNextUpProgramme);
+    });
+  };
+
+  const syncNextUpEventCard = (programme) => {
+    bindNextUpEventInteraction();
+
+    const card = document.querySelector(".programmes-next-event");
+    const body = card ? card.querySelector(".programmes-next-event-body") : null;
+    const footer = card ? card.querySelector(".programmes-next-event-footer") : null;
+    if (!body || !footer) return;
+
+    const detailsBtn = footer.querySelector(".programmes-next-event-details-btn");
+    const canOpenDetails =
+      programme &&
+      (programmeHasDetailsContent(programme) || programme.listenUrl);
+
+    if (canOpenDetails) {
+      body.classList.add("programmes-next-event-body--interactive");
+      body.setAttribute("data-programme-next-up-open", "");
+      body.setAttribute("role", "button");
+      body.setAttribute("tabindex", "0");
+      body.setAttribute(
+        "aria-label",
+        "View programme details for " + (programme.name || "upcoming event"),
+      );
+
+      if (!detailsBtn) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className =
+          "programmes-link-more programmes-next-event-details-btn";
+        btn.setAttribute("data-programme-next-up-open", "");
+        btn.innerHTML =
+          'Programme details <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+        footer.insertBefore(btn, footer.firstChild);
+      }
+    } else {
+      body.classList.remove("programmes-next-event-body--interactive");
+      body.removeAttribute("data-programme-next-up-open");
+      body.removeAttribute("role");
+      body.removeAttribute("tabindex");
+      body.removeAttribute("aria-label");
+      if (detailsBtn) detailsBtn.remove();
+    }
+  };
+
+  const ensureProgrammeDetailsModal = () => {
+    if (document.getElementById("programme-details-modal")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "programme-details-modal";
+    modal.className = "programme-details-modal";
+    modal.hidden = true;
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-labelledby", "programme-details-modal-title");
+    modal.setAttribute("aria-describedby", "programme-details-modal-body");
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML =
+      '<div class="programme-details-modal-backdrop" data-programme-details-dismiss aria-hidden="true"></div>' +
+      '<div class="programme-details-modal-dialog">' +
+      '<div class="programme-details-modal-card">' +
+      '<button type="button" class="programme-details-modal-close" data-programme-details-dismiss aria-label="Close programme details">' +
+      '<i class="fas fa-times" aria-hidden="true"></i></button>' +
+      '<div class="programme-details-modal-layout">' +
+      '<figure class="programme-details-modal-poster" id="programme-details-modal-poster" hidden>' +
+      '<img id="programme-details-modal-image" class="programme-details-modal-image" alt="" width="640" height="960">' +
+      '<figcaption class="programme-details-modal-poster-badge">Masjid programme</figcaption>' +
+      "</figure>" +
+      '<div class="programme-details-modal-panel">' +
+      '<p class="programme-details-modal-eyebrow">Programme details</p>' +
+      '<h2 id="programme-details-modal-title" class="programme-details-modal-title"></h2>' +
+      '<div id="programme-details-modal-meta" class="programme-details-modal-meta"></div>' +
+      '<div id="programme-details-modal-highlights" class="programme-details-modal-highlights" hidden></div>' +
+      '<div id="programme-details-modal-body" class="programme-details-modal-body weekly-programme-description"></div>' +
+      '<div id="programme-details-modal-actions" class="programme-details-modal-actions" hidden></div>' +
+      "</div></div></div></div>";
+
+    document.body.appendChild(modal);
+  };
+
+  const bindProgrammeDetailsModal = () => {
+    if (programmeDetailsModalBound) return;
+    programmeDetailsModalBound = true;
+    ensureProgrammeDetailsModal();
+
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest("[data-programme-details-dismiss]")) return;
+      const modal = document.getElementById("programme-details-modal");
+      if (!modal || modal.hidden) return;
+      e.preventDefault();
+      closeProgrammeDetailsModal(true);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      const modal = document.getElementById("programme-details-modal");
+      if (!modal || modal.hidden) return;
+      closeProgrammeDetailsModal(true);
+    });
+  };
+
+  const closeProgrammeDetailsModal = (animate) => {
+    const modal = document.getElementById("programme-details-modal");
+    if (!modal) return;
+
+    const finish = () => {
+      modal.hidden = true;
+      modal.classList.remove("is-visible", "is-leaving");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("programme-details-modal-open");
+    };
+
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
+
+    modal.classList.add("is-leaving");
+    modal.classList.remove("is-visible");
+    window.setTimeout(finish, 280);
+  };
+
+  const openProgrammeDetailsModal = (programme) => {
+    if (!programme) return;
+
+    bindProgrammeDetailsModal();
+    ensureProgrammeDetailsModal();
+
+    const modal = document.getElementById("programme-details-modal");
+    const titleEl = document.getElementById("programme-details-modal-title");
+    const metaEl = document.getElementById("programme-details-modal-meta");
+    const posterEl = document.getElementById("programme-details-modal-poster");
+    const imageEl = document.getElementById("programme-details-modal-image");
+    const highlightsEl = document.getElementById("programme-details-modal-highlights");
+    const bodyEl = document.getElementById("programme-details-modal-body");
+    const actionsEl = document.getElementById("programme-details-modal-actions");
+    if (
+      !modal ||
+      !titleEl ||
+      !metaEl ||
+      !posterEl ||
+      !imageEl ||
+      !highlightsEl ||
+      !bodyEl ||
+      !actionsEl
+    ) {
+      return;
+    }
+
+    titleEl.textContent = programme.name || "Programme";
+
+    metaEl.innerHTML = "";
+    const timeLabel = getProgrammeTimeLabel(programme);
+    if (timeLabel) {
+      const chip = document.createElement("span");
+      chip.className = "programme-details-modal-chip";
+      chip.innerHTML =
+        '<i class="far fa-clock" aria-hidden="true"></i> ' + timeLabel;
+      metaEl.appendChild(chip);
+    }
+    if (programme.location) {
+      const chip = document.createElement("span");
+      chip.className = "programme-details-modal-chip";
+      chip.innerHTML =
+        '<i class="fas fa-mosque" aria-hidden="true"></i> ' + programme.location;
+      metaEl.appendChild(chip);
+    }
+    metaEl.hidden = metaEl.childNodes.length === 0;
+
+    if (programme.imageUrl) {
+      imageEl.src = programme.imageUrl;
+      imageEl.alt = programme.name || "Programme poster";
+      posterEl.hidden = false;
+    } else {
+      imageEl.removeAttribute("src");
+      imageEl.alt = "";
+      posterEl.hidden = true;
+    }
+
+    highlightsEl.innerHTML = "";
+    if (programme.topic) {
+      const topicCard = document.createElement("div");
+      topicCard.className = "programme-details-modal-highlight";
+      topicCard.innerHTML =
+        '<span class="programme-details-modal-highlight-label">Topic</span>' +
+        '<p class="programme-details-modal-highlight-value"></p>';
+      topicCard.querySelector(".programme-details-modal-highlight-value").textContent =
+        programme.topic;
+      highlightsEl.appendChild(topicCard);
+    }
+    if (programme.speaker) {
+      const speakerCard = document.createElement("div");
+      speakerCard.className = "programme-details-modal-highlight";
+      speakerCard.innerHTML =
+        '<span class="programme-details-modal-highlight-label">Speaker</span>' +
+        '<p class="programme-details-modal-highlight-value"></p>';
+      speakerCard.querySelector(".programme-details-modal-highlight-value").textContent =
+        programme.speaker;
+      highlightsEl.appendChild(speakerCard);
+    }
+    highlightsEl.hidden = highlightsEl.childNodes.length === 0;
+
+    if (programme.description) {
+      bodyEl.innerHTML = programme.description;
+      bodyEl.hidden = false;
+    } else {
+      bodyEl.innerHTML = "";
+      bodyEl.hidden = true;
+    }
+
+    actionsEl.innerHTML = "";
+    if (programme.listenUrl) {
+      const link = document.createElement("a");
+      link.href = programme.listenUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.className =
+        "programme-details-modal-listen btn btn-kicc btn-kicc-primary";
+      link.innerHTML =
+        '<i class="fas fa-headphones" aria-hidden="true"></i> Listen live';
+      actionsEl.appendChild(link);
+    }
+    actionsEl.hidden = actionsEl.childNodes.length === 0;
+
+    modal.hidden = false;
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("programme-details-modal-open");
+
+    requestAnimationFrame(function () {
+      modal.classList.add("is-visible");
+      const dialog = modal.querySelector(".programme-details-modal-dialog");
+      if (dialog) {
+        if (!dialog.hasAttribute("tabindex")) {
+          dialog.setAttribute("tabindex", "-1");
+        }
+        dialog.focus({ preventScroll: true });
+      }
+    });
   };
 
   const createScheduleItem = (p, animationDelay) => {
@@ -4119,8 +4971,6 @@
       card.className = "programmes-ongoing-card programmes-ongoing-card-animate";
       card.style.animationDelay = 0.08 + index * 0.07 + "s";
 
-      var anchorId = getProgrammeAnchorId(p);
-
       var name = document.createElement("h4");
       name.className = "programmes-ongoing-card-name";
       name.textContent = p.name || "";
@@ -4132,13 +4982,16 @@
       card.appendChild(name);
       card.appendChild(time);
 
-      if (anchorId) {
-        var link = document.createElement("a");
-        link.href = "#" + anchorId;
-        link.className = "programmes-ongoing-card-link";
-        link.innerHTML =
+      if (programmeHasDetailsContent(p)) {
+        var detailsBtn = document.createElement("button");
+        detailsBtn.type = "button";
+        detailsBtn.className = "programmes-ongoing-card-link";
+        detailsBtn.innerHTML =
           'Programme details <i class="fas fa-arrow-right" aria-hidden="true"></i>';
-        card.appendChild(link);
+        detailsBtn.addEventListener("click", function () {
+          openProgrammeDetailsModal(p);
+        });
+        card.appendChild(detailsBtn);
       }
 
       grid.appendChild(card);
@@ -4277,14 +5130,16 @@
 
     var abbr = document.createElement("span");
     abbr.className = "programmes-day-abbr";
-    abbr.textContent = day;
+    abbr.textContent = day.toUpperCase();
 
-    var full = document.createElement("span");
-    full.className = "programmes-day-full";
-    full.textContent = WEEKDAY_LABELS[day] || day;
+    var dateLabel = document.createElement("span");
+    dateLabel.className = "programmes-day-date";
+    dateLabel.textContent = formatProgrammeColumnDate(
+      getProgrammeColumnDate(day, weekRepeat),
+    );
 
     heading.appendChild(abbr);
-    heading.appendChild(full);
+    heading.appendChild(dateLabel);
     col.appendChild(heading);
 
     var dayProgrammes = byDay[day] || [];
@@ -4659,6 +5514,8 @@
           thumb.width = 56;
           thumb.height = 56;
           thumb.loading = "lazy";
+          thumb.decoding = "async";
+          thumb.referrerPolicy = "no-referrer";
           button.appendChild(thumb);
         } else {
           var iconWrap = document.createElement("span");
@@ -4767,6 +5624,15 @@
 
       var imgWrapper = document.createElement("div");
       imgWrapper.className = "weekly-programme-image-wrapper";
+      if (programmeHasDetailsContent(p)) {
+        imgWrapper.classList.add("weekly-programme-image-wrapper--interactive");
+        imgWrapper.setAttribute("role", "button");
+        imgWrapper.setAttribute("tabindex", "0");
+        imgWrapper.setAttribute(
+          "aria-label",
+          "View full programme details for " + (p.name || "programme")
+        );
+      }
 
       var img = document.createElement("img");
       img.src = p.imageUrl;
@@ -4774,6 +5640,20 @@
       img.className = "weekly-programme-image";
       img.loading = "lazy";
       imgWrapper.appendChild(img);
+
+      if (programmeHasDetailsContent(p)) {
+        var openDetails = function () {
+          openProgrammeDetailsModal(p);
+        };
+        imgWrapper.addEventListener("click", openDetails);
+        imgWrapper.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openDetails();
+          }
+        });
+      }
+
       card.appendChild(imgWrapper);
 
       var body = document.createElement("div");
@@ -4820,6 +5700,19 @@
       var footer = document.createElement("div");
       footer.className = "weekly-programme-footer";
 
+      if (programmeHasDetailsContent(p)) {
+        var viewBtn = document.createElement("button");
+        viewBtn.type = "button";
+        viewBtn.className =
+          "weekly-programme-details-btn btn btn-kicc btn-kicc-sm btn-kicc-secondary";
+        viewBtn.innerHTML =
+          '<i class="fas fa-expand-alt" aria-hidden="true"></i> View full programme';
+        viewBtn.addEventListener("click", function () {
+          openProgrammeDetailsModal(p);
+        });
+        footer.appendChild(viewBtn);
+      }
+
       if (p.topic) {
         var topic = document.createElement("p");
         topic.className = "weekly-programme-detail";
@@ -4839,9 +5732,10 @@
         link.href = p.listenUrl;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.className = "weekly-programme-link btn btn-kicc btn-kicc-sm";
+        link.className =
+          "weekly-programme-link btn btn-kicc btn-kicc-sm btn-kicc-primary";
         link.innerHTML =
-          'Listen / Watch live <i class="fas fa-external-link-alt" aria-hidden="true"></i>';
+          'Listen live <i class="fas fa-external-link-alt" aria-hidden="true"></i>';
         footer.appendChild(link);
       }
 
@@ -4860,9 +5754,15 @@
     var recordings =
       data && Array.isArray(data.recordings) ? data.recordings : [];
 
+    latestProgrammeRecordings = recordings;
     renderProgrammeTable(programmes);
     renderWeeklyProgrammes(programmes);
     renderRecordings(recordings);
+    renderNextUpEvent(programmes);
+    if (isPrayerTimesPage()) {
+      prayerTimesHubState.programmes = programmes;
+      renderPrayerTimesFooterProgrammes(programmes);
+    }
     scrollToLocationHash();
   };
 
@@ -4943,6 +5843,38 @@
 
   let stickyNavOffsetTick = false;
 
+  const setAnnouncementRibbonNavSuppressed = (suppressed) => {
+    const ribbon = document.getElementById("site-announcement-ribbon");
+    if (!ribbon) return;
+    ribbon.classList.toggle(
+      "site-announcement-ribbon--nav-suppressed",
+      !!suppressed,
+    );
+    if (suppressed) {
+      ribbon.setAttribute("aria-hidden", "true");
+    } else {
+      ribbon.removeAttribute("aria-hidden");
+    }
+  };
+
+  const syncAnnouncementRibbonNavSuppression = () => {
+    const ribbon = document.getElementById("site-announcement-ribbon");
+    if (!ribbon || ribbon.hidden) {
+      setAnnouncementRibbonNavSuppressed(false);
+      return;
+    }
+
+    const collapseEl = document.getElementById("navbarResponsive");
+    const mobileQuery = window.matchMedia("(max-width: 991.98px)");
+    if (!collapseEl || !mobileQuery.matches) {
+      setAnnouncementRibbonNavSuppressed(false);
+      return;
+    }
+    setAnnouncementRibbonNavSuppressed(
+      collapseEl.classList.contains("show"),
+    );
+  };
+
   const syncStickyNavOffset = () => {
     const mainNav = document.querySelector(".kicc-nav-v2");
     if (!mainNav) return;
@@ -4958,7 +5890,11 @@
     }
 
     const ribbon = document.getElementById("site-announcement-ribbon");
-    if (ribbon && !ribbon.hidden) {
+    const ribbonCounts =
+      ribbon &&
+      !ribbon.hidden &&
+      !ribbon.classList.contains("site-announcement-ribbon--nav-suppressed");
+    if (ribbonCounts) {
       const ribbonHeight = Math.ceil(ribbon.getBoundingClientRect().height);
       if (ribbonHeight > 0) {
         top += ribbonHeight;
@@ -5291,7 +6227,6 @@
     "https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js";
   const SUMUP_MIN_AMOUNT = 1;
   const SUMUP_MAX_AMOUNT = 5000;
-  const SUMUP_SANDBOX_MODE = true;
   const SUMUP_SUCCESS_RESET_MS = 60000;
   const SUMUP_WIDGET_CURRENCIES = [
     { code: "EUR", label: "Euro", locale: "en-IE", country: "IE" },
@@ -6331,6 +7266,19 @@
       return null;
     };
 
+    const isSandboxCheckout = (payload) => {
+      if (!payload || typeof payload !== "object") return false;
+      if (payload.sandbox === true) return true;
+      if (payload.checkout && payload.checkout.sandbox === true) return true;
+      return false;
+    };
+
+    const applySumUpSandboxFromPayload = (payload) => {
+      const isSandbox = isSandboxCheckout(payload);
+      panel.classList.toggle("is-sandbox-mode", isSandbox);
+      if (sandboxRibbon) sandboxRibbon.hidden = !isSandbox;
+    };
+
     const createCheckout = (amount) => {
       const currency = getSelectedCurrency();
       return fetch(SUMUP_CHECKOUT_API_URL, {
@@ -6462,6 +7410,7 @@
           }
           activeCheckoutId = checkoutId;
           lastCheckoutPayload = payload;
+          applySumUpSandboxFromPayload(payload);
           mountWidget(checkoutId);
           setStatus("");
         })
@@ -6590,14 +7539,10 @@
       });
     }
 
-    if (SUMUP_SANDBOX_MODE) {
-      panel.classList.add("is-sandbox-mode");
-      if (sandboxRibbon) sandboxRibbon.hidden = false;
-    }
-
     kiccSumUpConsentHandlers.teardown = function () {
       closeCheckout();
       resetToCheckout();
+      applySumUpSandboxFromPayload(null);
       removeSumUpSdk();
       updateSumUpConsentUi();
     };
@@ -6985,14 +7930,27 @@
       .on("shown.bs.collapse", function () {
         backdrop.classList.add("is-visible");
         document.body.classList.add("kicc-nav-open");
+        if (mobileQuery.matches) {
+          setAnnouncementRibbonNavSuppressed(true);
+        }
         queueStickyNavOffsetSync();
       })
       .on("hidden.bs.collapse", function () {
         backdrop.classList.remove("is-visible");
         document.body.classList.remove("kicc-nav-open");
         closeOpenDropdowns();
+        if (mobileQuery.matches) {
+          setAnnouncementRibbonNavSuppressed(false);
+        }
         queueStickyNavOffsetSync();
       });
+
+    mobileQuery.addEventListener("change", function () {
+      if (!mobileQuery.matches) {
+        setAnnouncementRibbonNavSuppressed(false);
+        queueStickyNavOffsetSync();
+      }
+    });
 
     nav.querySelectorAll(
       ".kicc-nav-mega-link, .kicc-nav-main > .nav-item:not(.dropdown) .kicc-nav-link, .kicc-nav-donate-btn, .kicc-nav-salah-tab-month",
@@ -7332,6 +8290,27 @@
   };
 
   let prayerTimesHeroTimer = null;
+  let prayerTimesCountdownTimer = null;
+
+  const PRAYER_HERO_ACCENT_CLASSES = [
+    "is-prayer-fajr",
+    "is-prayer-dhuhr",
+    "is-prayer-asr",
+    "is-prayer-maghrib",
+    "is-prayer-isha",
+  ];
+
+  const applyPrayerHeroAccent = (cardEl, iconEl, slotId) => {
+    if (!cardEl) return;
+    cardEl.classList.remove.apply(cardEl.classList, PRAYER_HERO_ACCENT_CLASSES);
+    if (slotId) {
+      cardEl.classList.add("is-prayer-" + slotId);
+    }
+    if (iconEl && slotId && PRAYER_DECK_ICONS[slotId]) {
+      iconEl.innerHTML =
+        '<i class="fas ' + PRAYER_DECK_ICONS[slotId] + '" aria-hidden="true"></i>';
+    }
+  };
 
   const updatePrayerTimesHero = () => {
     if (!isPrayerTimesPage()) return;
@@ -7343,6 +8322,10 @@
     const nextNameEl = document.getElementById("prayer-hero-next-name");
     const nextLabelEl = document.getElementById("prayer-hero-next-label");
     const countdownEl = document.getElementById("prayer-hero-countdown");
+    const nowCard = document.getElementById("prayer-hero-now-card");
+    const nextCard = document.getElementById("prayer-hero-next-card");
+    const nowIcon = document.getElementById("prayer-hero-now-icon");
+    const nextIcon = document.getElementById("prayer-hero-next-icon");
     const d = cachedPrayerDayData;
     const now = getDublinDate();
 
@@ -7366,6 +8349,15 @@
       currentEl.textContent = state.current ? state.current.label : "—";
     }
 
+    if (nowCard) {
+      nowCard.classList.toggle("is-active-prayer", !!state.current);
+      applyPrayerHeroAccent(
+        nowCard,
+        nowIcon,
+        state.current ? state.current.id : null,
+      );
+    }
+
     if (sunriseEl) {
       sunriseEl.textContent =
         d && d.sunriseTime
@@ -7373,13 +8365,24 @@
           : "";
     }
 
+    let nextSlotId = null;
     if (nextNameEl) {
       if (state.nextEvent) {
         nextNameEl.textContent = state.nextEvent.label;
+        nextSlotId = state.nextEvent.prayerId || null;
       } else if (state.nextPrayer) {
         nextNameEl.textContent = state.nextPrayer.label;
+        nextSlotId = state.nextPrayer.id;
       } else {
         nextNameEl.textContent = "—";
+      }
+    }
+
+    if (nextCard) {
+      applyPrayerHeroAccent(nextCard, nextIcon, nextSlotId);
+      if (nextIcon && !nextSlotId) {
+        nextIcon.innerHTML =
+          '<i class="fas fa-hourglass-half" aria-hidden="true"></i>';
       }
     }
 
@@ -7414,15 +8417,30 @@
     document.body.dataset.prayerMotionInit = "true";
 
     const heroEnter = document.querySelector(".prayer-times-hero-enter");
+    const liveCards = document.querySelectorAll(".prayer-times-live-card");
     if (heroEnter) {
       requestAnimationFrame(function () {
         heroEnter.classList.add("is-visible");
+        liveCards.forEach(function (card, index) {
+          window.setTimeout(function () {
+            card.classList.add("is-visible");
+          }, 100 + index * 90);
+        });
       });
     }
 
     updatePrayerTimesHero();
     if (prayerTimesHeroTimer) clearInterval(prayerTimesHeroTimer);
     prayerTimesHeroTimer = setInterval(updatePrayerTimesHero, 30000);
+    if (prayerTimesCountdownTimer) clearInterval(prayerTimesCountdownTimer);
+    prayerTimesCountdownTimer = setInterval(function () {
+      const countdownEl = document.getElementById("prayer-hero-countdown");
+      if (!countdownEl) return;
+      const state = getSalahTimelineState();
+      if (state.nextEvent && state.countdownTarget) {
+        countdownEl.textContent = formatCountdown(state.countdownTarget);
+      }
+    }, 1000);
 
     const revealNodes = document.querySelectorAll(".prayer-reveal");
     if ("IntersectionObserver" in window && revealNodes.length) {
@@ -7696,6 +8714,8 @@
       day: dublinNow.day,
       weekStart: getMondayOfWeek(getDublinDate()),
       monthCache: Object.create(null),
+      pdfCache: Object.create(null),
+      pdfRequestKey: "",
       loading: false,
     };
 
@@ -8016,9 +9036,37 @@
       }, 180);
     };
 
+    const updatePdfLinksForPeriod = () => {
+      const month = state.month;
+      const year = state.year;
+      const cacheKey = year + "-" + month;
+
+      if (state.pdfCache[cacheKey]) {
+        applySalahTimesUrl(state.pdfCache[cacheKey], "all");
+        setOfficialTimetableLabels(month);
+        return;
+      }
+
+      state.pdfRequestKey = cacheKey;
+      fetchSalahTimesAssetUrl(month, year, { isRamadan: isRamadan() })
+        .then(function (asset) {
+          if (!asset || state.pdfRequestKey !== cacheKey) return;
+          state.pdfCache[cacheKey] = asset;
+          applySalahTimesUrl(asset, "all");
+          setOfficialTimetableLabels(month);
+        })
+        .catch(function (error) {
+          console.error(
+            "Error loading salah times PDF for " + cacheKey,
+            error,
+          );
+        });
+    };
+
     const refresh = () => {
       clampStateToWindow();
       syncSelectors();
+      updatePdfLinksForPeriod();
       loadRecordsForView().then(function (records) {
         renderTable(records);
       });
@@ -8163,17 +9211,18 @@
       );
     }
     updatePrayerTimesViewIndicator();
+    renderPrayerTimesFooterListen();
     refresh();
   };
 
   const setLocationSpecific = () => {
     if (isHomePage()) {
-      setEvent();
+      setLiveStreamStatus();
       loadProgrammes();
       return;
     }
     if (isActivitiesPage()) {
-      setEvent();
+      setLiveStreamStatus();
       loadProgrammes();
       return;
     }
@@ -8182,6 +9231,7 @@
     }
     if (isPrayerTimesPage()) {
       initPrayerTimesPage();
+      loadProgrammes();
     }
   };
 
@@ -8194,6 +9244,7 @@
     if (isPrayerTimesPage()) {
       initPrayerTimesPage();
       initPrayerTimesPageMotion();
+      loadProgrammes();
     }
     initSiteAnnouncements();
     initNavSalahPanel();

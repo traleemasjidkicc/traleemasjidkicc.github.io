@@ -97,7 +97,7 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="assets/css/main-1782019298767.css">
+  <link rel="stylesheet" href="assets/css/main-1782155192383.css">
 
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -125,7 +125,7 @@
       wait_for_update: 500
     });
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1782019298633.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782155192246.js"></script>
   <script>
     (function () {
       var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
@@ -187,6 +187,8 @@
                       target="_blank" rel="noopener noreferrer">Previous talks</a>
                     <a class="kicc-nav-mega-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
                       target="_blank" rel="noopener noreferrer">Register for programmes</a>
+                    <a class="kicc-nav-mega-link" href="https://lifewithallah.com/app/"
+                      target="_blank" rel="noopener noreferrer">Dhikr &amp; Du&rsquo;a app</a>
                   </div>
                 </div>
               </div>
@@ -294,6 +296,11 @@
     <section class="prayer-times-hero" aria-labelledby="prayer-times-heading">
       <div class="prayer-times-hero-pattern" aria-hidden="true"></div>
       <div class="prayer-times-hero-glow" aria-hidden="true"></div>
+      <div class="prayer-times-hero-orbs" aria-hidden="true">
+        <span class="prayer-times-hero-orb prayer-times-hero-orb-1"></span>
+        <span class="prayer-times-hero-orb prayer-times-hero-orb-2"></span>
+        <span class="prayer-times-hero-orb prayer-times-hero-orb-3"></span>
+      </div>
       <div class="container position-relative">
         <div class="prayer-times-hero-enter">
           <p class="prayer-times-eyebrow arabic-greeting" lang="ar" dir="rtl">اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ</p>
@@ -304,18 +311,30 @@
           <h1 id="prayer-times-heading">Prayer Timetable</h1>
           <p class="prayer-times-lead">Browse daily, weekly, or monthly adhan and iqamah times for Tralee Masjid. Times are kept in sync with the masjid schedule.</p>
 
+          <div class="prayer-times-hero-actions">
+            <a href="#" class="timetable-official-btn timetable-official-btn--hero" id="prayer-hero-quick-pdf" target="_blank" rel="noopener noreferrer">
+              <span class="timetable-official-btn__icon" aria-hidden="true">
+                <i class="far fa-file-pdf"></i>
+              </span>
+              <span class="timetable-official-btn__text" data-official-timetable-label>Official Timetable</span>
+            </a>
+          </div>
+
           <div class="prayer-times-hero-live prayer-reveal" data-prayer-hero-live aria-live="polite">
             <article class="prayer-times-live-card prayer-times-live-card-date">
+              <span class="prayer-times-live-icon" aria-hidden="true"><i class="fas fa-calendar-day"></i></span>
               <span class="prayer-times-live-label">Today</span>
               <strong id="prayer-hero-gregorian" class="prayer-times-live-value">&mdash;</strong>
               <span id="prayer-hero-hijri" class="prayer-times-live-meta">&mdash;</span>
             </article>
-            <article class="prayer-times-live-card prayer-times-live-card-now">
+            <article class="prayer-times-live-card prayer-times-live-card-now" id="prayer-hero-now-card">
+              <span class="prayer-times-live-icon" id="prayer-hero-now-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
               <span class="prayer-times-live-label">Now</span>
               <strong id="prayer-hero-current" class="prayer-times-live-value">&mdash;</strong>
               <span id="prayer-hero-sunrise" class="prayer-times-live-meta"></span>
             </article>
-            <article class="prayer-times-live-card prayer-times-live-card-next">
+            <article class="prayer-times-live-card prayer-times-live-card-next" id="prayer-hero-next-card">
+              <span class="prayer-times-live-icon" id="prayer-hero-next-icon" aria-hidden="true"><i class="fas fa-hourglass-half"></i></span>
               <span id="prayer-hero-next-label" class="prayer-times-live-label">Next</span>
               <strong id="prayer-hero-next-name" class="prayer-times-live-value">&mdash;</strong>
               <span id="prayer-hero-countdown" class="prayer-times-live-countdown">&mdash;</span>
@@ -329,65 +348,13 @@
       <div class="container">
         <ul class="prayer-times-section-nav-list">
           <li><a href="#prayer-times-heading">Overview</a></li>
-          <li><a href="#prayer-times-essentials">Essentials</a></li>
           <li><a href="#prayer-times-timetable">Timetable</a></li>
+          <li><a href="#prayer-times-jumuah">Jumu&rsquo;ah</a></li>
+          <li><a href="#prayer-times-programmes">Programmes</a></li>
           <li><a href="#prayer-times-visit">Visit</a></li>
         </ul>
       </div>
     </nav>
-
-    <section class="prayer-times-essentials-section" id="prayer-times-essentials"
-      aria-labelledby="prayer-times-essentials-heading">
-      <div class="container">
-        <header class="prayer-times-section-head prayer-reveal">
-          <p class="prayer-times-section-eyebrow">At a glance</p>
-          <h2 id="prayer-times-essentials-heading" class="prayer-times-section-title">Everything you need for salah</h2>
-          <p class="prayer-times-section-lead">Quick links to programmes, Jumuah, the live stream, and the official monthly PDF.</p>
-        </header>
-
-        <div class="row prayer-times-essentials-grid">
-          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 0">
-            <article class="prayer-times-essential-card prayer-times-essential-card-jumuah">
-              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
-              <h3 class="prayer-times-essential-title">Jumuah</h3>
-              <dl class="prayer-times-essential-meta">
-                <div><dt>Speech</dt><dd>1.25pm</dd></div>
-                <div><dt>Khutbah</dt><dd>1.45pm</dd></div>
-              </dl>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 1">
-            <article class="prayer-times-essential-card">
-              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-calendar-week"></i></span>
-              <h3 class="prayer-times-essential-title">Programmes</h3>
-              <ul class="prayer-times-essential-list">
-                <li>Women&rsquo;s class &mdash; Wed 10.30am</li>
-                <li>Durood Majlis &mdash; Thu after Magrib</li>
-              </ul>
-              <a class="prayer-times-essential-link" href="activities.html">View all programmes</a>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 2">
-            <article class="prayer-times-essential-card">
-              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-headphones-alt"></i></span>
-              <h3 class="prayer-times-essential-title">Listen live</h3>
-              <p class="prayer-times-essential-copy">Follow talks and events from Tralee Masjid on Mixlr.</p>
-              <a class="prayer-times-essential-link" href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">Open Mixlr</a>
-            </article>
-          </div>
-          <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 3">
-            <article class="prayer-times-essential-card prayer-times-essential-card-pdf">
-              <span class="prayer-times-essential-icon" aria-hidden="true"><i class="far fa-file-pdf"></i></span>
-              <h3 class="prayer-times-essential-title">Official PDF</h3>
-              <p class="prayer-times-essential-copy">Download the masjid&rsquo;s published monthly timetable.</p>
-              <a class="prayer-times-essential-link prayer-times-essential-link-pdf" href="#" id="prayer-hero-pdf" target="_blank" rel="noopener noreferrer">
-                <span id="prayer-hero-pdf-month">Month</span> PDF
-              </a>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section class="prayer-times-controls-section" id="prayer-times-timetable"
       aria-label="Timetable options">
@@ -399,7 +366,10 @@
 
         <div class="prayer-times-toolbar card-like-panel prayer-reveal">
           <div class="prayer-times-toolbar-row prayer-times-toolbar-view">
-            <span class="prayer-times-toolbar-label">View</span>
+            <span class="prayer-times-toolbar-label">
+              <i class="fas fa-eye" aria-hidden="true"></i>
+              View
+            </span>
             <div class="prayer-times-view-tabs" role="tablist" aria-label="Timetable view"
               data-prayer-view-tabs>
               <span class="prayer-times-view-indicator" aria-hidden="true"></span>
@@ -413,7 +383,10 @@
           </div>
 
           <div class="prayer-times-toolbar-row prayer-times-toolbar-period">
-            <span class="prayer-times-toolbar-label">Period</span>
+            <span class="prayer-times-toolbar-label">
+              <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+              Period
+            </span>
             <div class="prayer-times-period-body">
               <div class="prayer-times-month-tabs" data-prayer-month-tabs role="tablist"
                 aria-label="Select month"></div>
@@ -440,12 +413,17 @@
           </div>
 
           <div class="prayer-times-toolbar-row prayer-times-toolbar-export">
-            <span class="prayer-times-toolbar-label">Export</span>
+            <span class="prayer-times-toolbar-label">
+              <i class="fas fa-share-square" aria-hidden="true"></i>
+              Export
+            </span>
             <div class="prayer-times-export-actions">
-              <a href="#" class="btn btn-kicc btn-kicc-sm btn-kicc-salah prayer-times-pdf-btn"
+              <a href="#" class="timetable-official-btn timetable-official-btn--toolbar prayer-times-pdf-btn"
                 id="salah-times-body" target="_blank" rel="noopener noreferrer">
-                <i class="far fa-file-pdf" aria-hidden="true"></i>
-                Download PDF
+                <span class="timetable-official-btn__icon" aria-hidden="true">
+                  <i class="far fa-file-pdf"></i>
+                </span>
+                <span class="timetable-official-btn__text" data-official-timetable-label>Official Timetable</span>
               </a>
               <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary prayer-times-print-btn"
                 data-prayer-print aria-label="Print this timetable">
@@ -463,6 +441,14 @@
 
     <section class="prayer-times-sheet-section" aria-label="Prayer timetable">
       <div class="container">
+        <div class="prayer-times-sheet-preview prayer-reveal">
+          <header class="prayer-times-sheet-preview-head">
+            <span class="prayer-times-sheet-preview-badge">
+              <i class="fas fa-certificate" aria-hidden="true"></i>
+              Official masjid timetable
+            </span>
+            <p class="prayer-times-sheet-preview-lead">Same layout as the monthly PDF &mdash; switch views above, then print or download when ready.</p>
+          </header>
         <div class="prayer-timetable-sheet prayer-reveal" data-prayer-sheet>
           <header class="prayer-timetable-header">
             <div class="prayer-timetable-header-main">
@@ -516,10 +502,9 @@
                   <i class="fas fa-calendar-week"></i>
                 </div>
                 <h3 class="prayer-timetable-footer-card-title">Weekly programmes</h3>
-                <ul class="prayer-timetable-footer-list">
-                  <li><strong>Women&rsquo;s class</strong> &mdash; Wed 10.30am</li>
-                  <li><strong>Durood Majlis</strong> &mdash; Thu after Magrib</li>
-                  <li><strong>Qur&rsquo;an tafseer</strong> &mdash; Fri after Magrib</li>
+                <ul class="prayer-timetable-footer-list prayer-timetable-footer-list--compact"
+                  id="prayer-timetable-footer-programmes" data-prayer-footer-programmes>
+                  <li>Loading programmes&hellip;</li>
                 </ul>
               </article>
 
@@ -531,11 +516,11 @@
                 <dl class="prayer-timetable-footer-jumuah">
                   <div>
                     <dt>Speech</dt>
-                    <dd>1.25pm</dd>
+                    <dd data-prayer-footer-jumuah-speech>&mdash;</dd>
                   </div>
                   <div>
                     <dt>Khutbah</dt>
-                    <dd>1.45pm</dd>
+                    <dd data-prayer-footer-jumuah-khutbah>&mdash;</dd>
                   </div>
                 </dl>
               </article>
@@ -545,14 +530,12 @@
                   <i class="fas fa-headphones-alt"></i>
                 </div>
                 <h3 class="prayer-timetable-footer-card-title">Listen &amp; connect</h3>
-                <ul class="prayer-timetable-footer-list prayer-timetable-footer-list--links">
+                <ul class="prayer-timetable-footer-list prayer-timetable-footer-list--links prayer-timetable-footer-list--compact"
+                  id="prayer-timetable-footer-listen" data-prayer-footer-listen>
                   <li>
                     <a href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">
                       Live on Mixlr — traleemasjid.mixlr.com
                     </a>
-                  </li>
-                  <li>
-                    <a href="https://www.traleemasjidkicc.ie">www.traleemasjidkicc.ie</a>
                   </li>
                 </ul>
               </article>
@@ -599,6 +582,175 @@
             </div>
           </footer>
         </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="prayer-times-jumuah-section" id="prayer-times-jumuah"
+      aria-labelledby="prayer-times-jumuah-heading">
+      <div class="container">
+        <header class="prayer-times-section-head prayer-reveal">
+          <p class="prayer-times-section-eyebrow">Friday congregation</p>
+          <h2 id="prayer-times-jumuah-heading" class="prayer-times-section-title">Jumu&rsquo;ah at Tralee Masjid</h2>
+          <p class="prayer-times-section-lead">Join us for the weekly Friday prayer. Arrive in good time, listen to the pre-khutbah speech, and pray with the community.</p>
+        </header>
+
+        <div class="prayer-times-jumuah-panel prayer-reveal" data-prayer-jumuah-panel>
+          <div class="prayer-times-jumuah-main">
+            <div class="programmes-jumuah-feature prayer-times-jumuah-feature" data-prayer-jumuah-feature-wrap>
+              <div data-prayer-jumuah-feature aria-live="polite"></div>
+              <p class="prayer-times-jumuah-empty" data-prayer-jumuah-empty hidden>
+                Jumu&rsquo;ah times are being updated. Please check the notice board or contact the masjid.
+              </p>
+            </div>
+
+            <div class="prayer-times-jumuah-notes card-like-panel">
+              <span class="prayer-times-jumuah-status-badge" data-prayer-jumuah-status-badge>Every Friday</span>
+              <h3 class="prayer-times-jumuah-notes-title">Before you arrive</h3>
+              <ul class="prayer-times-jumuah-notes-list prayer-times-jumuah-tips">
+                <li class="prayer-times-jumuah-tip">
+                  <span class="prayer-times-jumuah-tip-icon" aria-hidden="true"><i class="fas fa-car"></i></span>
+                  <span>Arrive early &mdash; parking and wudu facilities can be busy close to khutbah.</span>
+                </li>
+                <li class="prayer-times-jumuah-tip">
+                  <span class="prayer-times-jumuah-tip-icon" aria-hidden="true"><i class="fas fa-volume-mute"></i></span>
+                  <span>Phones on silent; children welcome with supervision.</span>
+                </li>
+                <li class="prayer-times-jumuah-tip">
+                  <span class="prayer-times-jumuah-tip-icon" aria-hidden="true"><i class="fas fa-people-roof"></i></span>
+                  <span>Women&rsquo;s prayer space is available &mdash; ask at reception if you need directions.</span>
+                </li>
+              </ul>
+              <div class="prayer-times-jumuah-announcement" data-prayer-jumuah-message hidden aria-live="polite"></div>
+            </div>
+          </div>
+
+          <article class="prayer-times-jumuah-sunnah" aria-labelledby="prayer-times-jumuah-sunnah-heading">
+            <header class="prayer-times-jumuah-sunnah-head">
+              <span class="prayer-times-jumuah-sunnah-badge">Sunnah</span>
+              <h3 id="prayer-times-jumuah-sunnah-heading" class="prayer-times-jumuah-sunnah-title">The sunnah deeds of Jumu&rsquo;ah</h3>
+              <p class="prayer-times-jumuah-sunnah-intro">Friday is the best of days. The Prophet &#xFDFA; encouraged Muslims to honour it with these deeds:</p>
+            </header>
+            <ol class="prayer-times-jumuah-sunnah-grid">
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 0">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-heart"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Send abundant salawat</strong>
+                  <span>Upon the Messenger of Allah &#xFDFA; throughout the day and night of Jumu&rsquo;ah.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 1">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-cloud-sun"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Pray Fajr in congregation</strong>
+                  <span>On the morning of Jumu&rsquo;ah.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 2">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-book-open"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Read S&#363;rah al-Kahf</strong>
+                  <span>For light between the two Jumu&rsquo;ahs.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 3">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-spa"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Bathe and wear your best clothes</strong>
+                  <span>Applying perfume where possible.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 4">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-spray-can-sparkles"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Use the misw&#257;k and perfume</strong>
+                  <span>As part of preparing for the prayer.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 5">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-clock"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Go early to the masjid</strong>
+                  <span>Sit close to the im&#257;m for the khutbah.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 6">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-shoe-prints"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Walk to the masjid</strong>
+                  <span>Where you can, listening attentively and remaining silent.</span>
+                </div>
+              </li>
+              <li class="prayer-times-jumuah-sunnah-item prayer-reveal" style="--sunnah-i: 7">
+                <span class="prayer-times-jumuah-sunnah-item-icon" aria-hidden="true"><i class="fas fa-hands-praying"></i></span>
+                <div class="prayer-times-jumuah-sunnah-item-copy">
+                  <strong>Make du&lsquo;&#257;</strong>
+                  <span>Especially in the period after &lsquo;Asr before Maghrib.</span>
+                </div>
+              </li>
+            </ol>
+            <p class="prayer-times-jumuah-sunnah-credit">
+              Summarised from
+              <a href="https://lifewithallah.com/articles/seasons-of-worship/jumuah/the-sunnah-deeds-of-jumuah/"
+                target="_blank" rel="noopener noreferrer">The Sunnah Deeds of Jumu&rsquo;ah</a>
+              by Life With Allah.
+            </p>
+            <p class="prayer-times-jumuah-app-promo">
+              For daily adhkar and du&rsquo;as on your phone, try the free
+              <a href="https://lifewithallah.com/app/" target="_blank" rel="noopener noreferrer">Dhikr &amp; Du&rsquo;a app</a>
+              by Life With Allah.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="prayer-times-programmes-section" id="prayer-times-programmes"
+      aria-labelledby="prayer-times-programmes-heading">
+      <div class="container">
+        <header class="prayer-times-section-head prayer-reveal">
+          <p class="prayer-times-section-eyebrow">Community</p>
+          <h2 id="prayer-times-programmes-heading" class="prayer-times-section-title">More from the masjid</h2>
+          <p class="prayer-times-section-lead">Weekly programmes, the live stream, and past recordings.</p>
+        </header>
+
+        <div class="row prayer-times-essentials-grid">
+            <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 0">
+              <article class="prayer-times-essential-card prayer-times-essential-card--programs">
+                <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-calendar-week"></i></span>
+                <h3 class="prayer-times-essential-title">Programmes</h3>
+                <ul class="prayer-times-essential-list">
+                  <li>Women&rsquo;s class &mdash; Wed 10.30am</li>
+                  <li>Durood Majlis &mdash; Thu after Magrib</li>
+                </ul>
+                <a class="prayer-times-essential-link" href="activities.html">View all programmes</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 1">
+              <article class="prayer-times-essential-card prayer-times-essential-card--listen">
+                <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-headphones-alt"></i></span>
+                <h3 class="prayer-times-essential-title">Listen live</h3>
+                <p class="prayer-times-essential-copy">Follow talks and events from Tralee Masjid on Mixlr.</p>
+                <a class="prayer-times-essential-link" href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">Open Mixlr</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 2">
+              <article class="prayer-times-essential-card prayer-times-essential-card--recordings">
+                <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-play-circle"></i></span>
+                <h3 class="prayer-times-essential-title">Recordings</h3>
+                <p class="prayer-times-essential-copy">Catch up on recent talks and programmes from Tralee Masjid.</p>
+                <a class="prayer-times-essential-link" href="activities.html#listen">Browse recordings</a>
+              </article>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 3">
+              <article class="prayer-times-essential-card prayer-times-essential-card--adhkar">
+                <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-hands-praying"></i></span>
+                <h3 class="prayer-times-essential-title">Daily adhkar &amp; du&rsquo;as</h3>
+                <p class="prayer-times-essential-copy">Morning and evening remembrances with translation and audio.</p>
+                <a class="prayer-times-essential-link" href="https://lifewithallah.com/app/" target="_blank" rel="noopener noreferrer">Download the app</a>
+              </article>
+            </div>
+        </div>
       </div>
     </section>
 
@@ -606,6 +758,10 @@
       aria-labelledby="prayer-times-visit-heading">
       <div class="container">
         <div class="prayer-times-visit-panel prayer-reveal">
+          <div class="prayer-times-visit-visual" aria-hidden="true">
+            <span class="prayer-times-visit-pin-ring"></span>
+            <span class="prayer-times-visit-pin"><i class="fas fa-map-marker-alt"></i></span>
+          </div>
           <div class="prayer-times-visit-copy">
             <p class="prayer-times-section-eyebrow">Visit the masjid</p>
             <h2 id="prayer-times-visit-heading" class="prayer-times-section-title">Find us in Tralee</h2>
@@ -618,7 +774,8 @@
           </div>
           <div class="prayer-times-visit-actions">
             <a class="btn btn-kicc btn-kicc-sm btn-kicc-primary"
-              href="https://maps.app.goo.gl/Lya1necC8WXXpUE5A" target="_blank" rel="noopener noreferrer">
+              href="https://www.google.com/maps/dir/?api=1&amp;destination=7866%2BQX+Tralee%2C+County+Kerry&amp;travelmode=driving"
+              target="_blank" rel="noopener noreferrer">
               <i class="fas fa-directions" aria-hidden="true"></i>
               Get directions
             </a>
@@ -829,6 +986,22 @@
               <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
               Support the masjid
             </a>
+            <div class="site-footer-app-promo" aria-label="Recommended app">
+              <p class="site-footer-app-promo-label">Recommended app</p>
+              <p class="site-footer-app-promo-copy">Morning &amp; evening adhkar and sunnah du&rsquo;as &mdash; free from Life With Allah.</p>
+              <div class="lwa-app-badges">
+                <a class="lwa-app-badge" href="https://apps.apple.com/app/dhikr-dua/id1561598617"
+                  target="_blank" rel="noopener noreferrer"
+                  aria-label="Download Dhikr &amp; Du&rsquo;a on the App Store">
+                  <i class="fab fa-apple" aria-hidden="true"></i> App Store
+                </a>
+                <a class="lwa-app-badge" href="https://play.google.com/store/apps/details?id=com.alifewithallah.app"
+                  target="_blank" rel="noopener noreferrer"
+                  aria-label="Get Dhikr &amp; Du&rsquo;a on Google Play">
+                  <i class="fab fa-google-play" aria-hidden="true"></i> Google Play
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -856,7 +1029,11 @@
             <li><a href="activities.html#adult-classes">Men's class</a></li>
             <li><a href="madrasa.html#madrasa-schedule">Children's madrasa</a></li>
             <li><a href="activities.html#listen">Talks &amp; recordings</a></li>
+            <li><a href="prayer-times.html#prayer-times-jumuah">Jumu&rsquo;ah Salah</a></li>
             <li><a href="prayer-times.html">Salah timetable</a></li>
+            <li>
+              <a href="https://lifewithallah.com/app/" target="_blank" rel="noopener noreferrer">Dhikr &amp; Du&rsquo;a app</a>
+            </li>
           </ul>
         </div>
 
@@ -894,7 +1071,8 @@
               </li>
             </ul>
             <a class="site-footer-directions-btn"
-              href="https://maps.app.goo.gl/Lya1necC8WXXpUE5A" target="_blank"
+              href="https://www.google.com/maps/dir/?api=1&amp;destination=7866%2BQX+Tralee%2C+County+Kerry&amp;travelmode=driving"
+              target="_blank"
               rel="noopener noreferrer">
               <i class="fas fa-directions" aria-hidden="true"></i>
               Get directions
@@ -904,18 +1082,16 @@
       </div>
 
       <div class="site-footer-bottom">
-        <p class="site-footer-copy mb-0">
-          © <span id="footer-year">2019</span> Kerry Islamic Cultural Centre
-          <span class="site-footer-legal">
-            <a href="#" class="site-footer-legal-link" id="cookie-prefs-open">Privacy &amp; cookies</a>
-          </span>
+        <div class="site-footer-meta">
+          <span class="site-footer-copy-text">© <span id="footer-year">2019</span> Kerry Islamic Cultural Centre</span>
+          <a href="#" class="site-footer-legal-link" id="cookie-prefs-open">Privacy &amp; cookies</a>
           <span class="site-footer-credit">Made with
             <i class="fas fa-heart" aria-hidden="true"></i> &amp;
             <i class="fas fa-mug-hot" aria-hidden="true"></i> by
             <a href="https://nalam.me" rel="external noopener"
               target="_blank">Nazmul Alam</a>
           </span>
-        </p>
+        </div>
         <ul class="site-footer-social list-unstyled mb-0">
           <li>
             <a class="site-footer-social-link"

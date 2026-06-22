@@ -109,7 +109,7 @@
     href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css" />
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="assets/css/main-1782019298767.css">
+  <link rel="stylesheet" href="assets/css/main-1782155192383.css">
 
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -150,7 +150,7 @@
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
 
-  <script defer type="text/javascript" src="assets/js/scripts-1782019298633.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782155192246.js"></script>
 
   <script>
     (function () {
@@ -215,6 +215,8 @@
                       target="_blank" rel="noopener noreferrer">Previous talks</a>
                     <a class="kicc-nav-mega-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
                       target="_blank" rel="noopener noreferrer">Register for programmes</a>
+                    <a class="kicc-nav-mega-link" href="https://lifewithallah.com/app/"
+                      target="_blank" rel="noopener noreferrer">Dhikr &amp; Du&rsquo;a app</a>
                   </div>
                 </div>
               </div>
@@ -409,16 +411,21 @@
           </div>
         </div>
         <div class="home-hero-timetable-link text-center mb-0">
-          <a href="prayer-times.html"
-            class="btn btn-kicc btn-kicc-lg home-hero-timetable-btn">
-            <i class="far fa-calendar-alt mr-1"></i> View <span
-              id="cur-month"></span> Timetable
-          </a>
-          <a href="#" target="_blank" id="salah-times-body"
-            class="btn btn-kicc btn-kicc-sm btn-kicc-ghost home-hero-timetable-pdf"
-            rel="noopener noreferrer">
-            <i class="far fa-file-pdf mr-1"></i> PDF
-          </a>
+          <div class="home-hero-timetable-actions">
+            <a href="prayer-times.html#prayer-times-timetable"
+              class="btn btn-kicc btn-kicc-lg home-hero-timetable-btn">
+              <i class="far fa-calendar-alt" aria-hidden="true"></i>
+              <span>View <span id="cur-month"></span> Timetable</span>
+            </a>
+            <a href="#" target="_blank" id="salah-times-body"
+              class="timetable-official-btn home-hero-timetable-official"
+              rel="noopener noreferrer">
+              <span class="timetable-official-btn__icon" aria-hidden="true">
+                <i class="far fa-file-pdf"></i>
+              </span>
+              <span class="timetable-official-btn__text" data-official-timetable-label>Official Timetable</span>
+            </a>
+          </div>
         </div>
       </div>
       </div>
@@ -481,7 +488,6 @@
               <i class="fas fa-thumbtack notices-spotlight-pin" aria-hidden="true"></i>
               Masjid notices
             </span>
-            <p id="masjidNoticeSpotlightCount" class="notices-spotlight-count mb-0"></p>
           </div>
         </div>
         <div id="masjidNoticeSpotlightTrack" class="notices-spotlight-track"
@@ -616,7 +622,7 @@
       </div>
 
       <div class="home-live-actions text-center mt-4">
-        <a href="activities.html#schedule" class="btn btn-kicc btn-kicc-sm mr-2 mb-2">
+        <a href="activities.html#schedule" class="btn btn-kicc btn-kicc-sm btn-kicc-primary mr-2 mb-2">
           <i class="fas fa-calendar-week mr-1" aria-hidden="true"></i> Weekly schedule
         </a>
         <a href="activities.html#weekly-programmes-section" class="btn btn-kicc btn-kicc-sm btn-kicc-ghost mb-2">
@@ -663,7 +669,7 @@
               enrolling a child in madrasa, or seeking a welcoming Muslim community in the
               south-west of Ireland, you are welcome here.</p>
             <div class="home-welcome-actions mt-4">
-              <a href="about.html" class="btn btn-kicc btn-kicc-sm mr-2 mb-2">Our story</a>
+              <a href="about.html" class="btn btn-kicc btn-kicc-sm btn-kicc-primary mr-2 mb-2">Our story</a>
               <a href="about.html#our-team" class="btn btn-kicc btn-kicc-sm btn-kicc-ghost mb-2">Meet the team</a>
             </div>
           </div>
@@ -927,8 +933,7 @@
           class="home-services-bismillah">
         <span class="home-section-eyebrow">Community</span>
         <h2 id="masjid-services-heading">Services We Provide</h2>
-        <p class="home-services-lead">Prayer, education, and support for Muslims across Kerry
-          &mdash; open to all who wish to learn and connect.</p>
+        <p class="home-services-lead">Salah, learning, and pastoral support for Muslims across Kerry.</p>
       </header>
 
       <div class="home-services-spotlight services-reveal services-reveal--d1">
@@ -936,28 +941,28 @@
           <span class="home-services-card-glow" aria-hidden="true"></span>
           <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-book-quran"></i></span>
           <h3>Teaching Al-Qur&rsquo;an</h3>
-          <p>Children&rsquo;s madrasa, Hifz, adult Tajweed, and weekly tafseer for all ages.</p>
+          <p>Madrasa, Hifz, and adult Tajweed classes.</p>
           <a href="madrasa.html" class="home-services-card-link">Madrasa &amp; classes</a>
         </article>
         <article class="home-services-card" style="--service-i: 1">
           <span class="home-services-card-glow" aria-hidden="true"></span>
           <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-mosque"></i></span>
           <h3>Daily &amp; Jumu&rsquo;ah Prayer</h3>
-          <p>Five daily salah, Friday Jumu&rsquo;ah, Taraweeh, and Eid congregations for the community.</p>
+          <p>Five daily salah, Jumu&rsquo;ah, and seasonal congregations.</p>
           <a href="prayer-times.html" class="home-services-card-link">View salah times</a>
         </article>
         <article class="home-services-card" style="--service-i: 2">
           <span class="home-services-card-glow" aria-hidden="true"></span>
           <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-users"></i></span>
-          <h3>Community Services</h3>
-          <p>Eid gatherings, Ramadan iftar, youth programmes, and our Know thy Neighbours outreach.</p>
+          <h3>Community Programmes</h3>
+          <p>Iftar, youth events, and local outreach.</p>
           <a href="activities.html" class="home-services-card-link">See programmes</a>
         </article>
         <article class="home-services-card" style="--service-i: 3">
           <span class="home-services-card-glow" aria-hidden="true"></span>
           <span class="home-services-card-icon" aria-hidden="true"><i class="fas fa-hand-holding-heart"></i></span>
           <h3>Funeral &amp; Marriage</h3>
-          <p>Religious guidance and practical support for families at every stage of life.</p>
+          <p>Guidance and support for families.</p>
           <a href="contact.html" class="home-services-card-link">Get in touch</a>
         </article>
       </div>
@@ -989,13 +994,11 @@
             id="services-panel-religious" aria-labelledby="services-tab-religious"
             data-services-panel="religious">
             <ul class="home-services-list">
-              <li style="--item-i: 0">Five daily prayers</li>
-              <li style="--item-i: 1"><strong>Friday Jumu&rsquo;ah prayer</strong></li>
-              <li style="--item-i: 2">Congregational Taraweeh</li>
-              <li style="--item-i: 3">Eid salah</li>
-              <li style="--item-i: 4">Monthly bayaan for men &amp; women</li>
-              <li style="--item-i: 5">Marriage &amp; funeral services</li>
-              <li style="--item-i: 6">Religious advice &amp; counselling</li>
+              <li style="--item-i: 0"><strong>Friday Jumu&rsquo;ah</strong> &amp; daily salah</li>
+              <li style="--item-i: 1">Taraweeh &amp; Eid congregations</li>
+              <li style="--item-i: 2">Monthly bayaan for men &amp; women</li>
+              <li style="--item-i: 3">Marriage &amp; funeral services</li>
+              <li style="--item-i: 4">Religious advice &amp; counselling</li>
             </ul>
           </article>
           <article class="home-services-panel" role="tabpanel"
@@ -1003,63 +1006,23 @@
             data-services-panel="educational" hidden>
             <ul class="home-services-list">
               <li style="--item-i: 0"><strong>Children&rsquo;s madrasa</strong> &mdash; 140+ students</li>
-              <li style="--item-i: 1">Hifz class</li>
-              <li style="--item-i: 2">Women&rsquo;s Qur&rsquo;an class</li>
-              <li style="--item-i: 3">Men&rsquo;s Qur&rsquo;an &amp; Tajweed</li>
-              <li style="--item-i: 4">Weekly tafseer lessons</li>
-              <li style="--item-i: 5">Islamic lectures &amp; bayaan</li>
-              <li style="--item-i: 6">Adult learning circles</li>
+              <li style="--item-i: 1">Hifz programme</li>
+              <li style="--item-i: 2">Women&rsquo;s &amp; men&rsquo;s Qur&rsquo;an classes</li>
+              <li style="--item-i: 3">Weekly tafseer &amp; lectures</li>
+              <li style="--item-i: 4">Adult learning circles</li>
             </ul>
           </article>
           <article class="home-services-panel" role="tabpanel"
             id="services-panel-social" aria-labelledby="services-tab-social"
             data-services-panel="social" hidden>
             <ul class="home-services-list">
-              <li style="--item-i: 0">Eid celebration gatherings</li>
-              <li style="--item-i: 1">Daily iftar during Ramadan</li>
-              <li style="--item-i: 2">Youth programmes</li>
-              <li style="--item-i: 3">1-to-1 counselling &amp; social advice</li>
-              <li style="--item-i: 4">Children&rsquo;s day out</li>
-              <li style="--item-i: 5"><strong>Know thy Neighbours</strong> outreach</li>
-              <li style="--item-i: 6">School visits &amp; community outreach</li>
+              <li style="--item-i: 0">Eid gatherings &amp; Ramadan iftar</li>
+              <li style="--item-i: 1">Youth programmes &amp; children&rsquo;s days out</li>
+              <li style="--item-i: 2">Counselling &amp; social advice</li>
+              <li style="--item-i: 3"><strong>Know thy Neighbours</strong> outreach</li>
+              <li style="--item-i: 4">School visits &amp; community events</li>
             </ul>
           </article>
-        </div>
-      </div>
-
-      <div class="home-services-ticker-wrap services-reveal services-reveal--d3"
-        aria-hidden="true">
-        <div class="home-services-ticker">
-          <div class="home-services-ticker-track">
-            <span>Five Daily Prayers</span>
-            <span>Jumu&rsquo;ah</span>
-            <span>Madrasa</span>
-            <span>Hifz</span>
-            <span>Tafseer</span>
-            <span>Taraweeh</span>
-            <span>Eid Gatherings</span>
-            <span>Ramadan Iftar</span>
-            <span>Youth Programmes</span>
-            <span>Marriage Services</span>
-            <span>Funeral Support</span>
-            <span>Know thy Neighbours</span>
-            <span>Qur&rsquo;an Classes</span>
-            <span>Community Outreach</span>
-            <span>Five Daily Prayers</span>
-            <span>Jumu&rsquo;ah</span>
-            <span>Madrasa</span>
-            <span>Hifz</span>
-            <span>Tafseer</span>
-            <span>Taraweeh</span>
-            <span>Eid Gatherings</span>
-            <span>Ramadan Iftar</span>
-            <span>Youth Programmes</span>
-            <span>Marriage Services</span>
-            <span>Funeral Support</span>
-            <span>Know thy Neighbours</span>
-            <span>Qur&rsquo;an Classes</span>
-            <span>Community Outreach</span>
-          </div>
         </div>
       </div>
     </div>
@@ -1131,6 +1094,15 @@
             <h3>Notices</h3>
             <p>Posters and announcements from the masjid</p>
             <span class="home-explore-cta">View notices</span>
+          </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+          <a href="https://lifewithallah.com/app/" class="home-explore-card"
+            target="_blank" rel="noopener noreferrer">
+            <span class="home-explore-icon" aria-hidden="true"><i class="fas fa-mobile-screen-button"></i></span>
+            <h3>Dhikr &amp; Du&rsquo;a app</h3>
+            <p>Morning &amp; evening adhkar, sunnah du&rsquo;as, and audio &mdash; free</p>
+            <span class="home-explore-cta">Download app</span>
           </a>
         </div>
         <div class="col-6 col-md-4 col-lg-3 mb-4">
@@ -1401,6 +1373,10 @@
             <i class="fas fa-external-link-alt hadith-card-source-icon"
               aria-hidden="true"></i>
           </a>
+          <p class="hadith-card-app-promo">
+            More remembrances &amp; du&rsquo;as &mdash;
+            <a href="https://lifewithallah.com/app/" target="_blank" rel="noopener noreferrer">Life With Allah app</a>
+          </p>
         </footer>
       </article>
     </div>
@@ -1610,6 +1586,22 @@
               <i class="fas fa-hand-holding-heart" aria-hidden="true"></i>
               Support the masjid
             </a>
+            <div class="site-footer-app-promo" aria-label="Recommended app">
+              <p class="site-footer-app-promo-label">Recommended app</p>
+              <p class="site-footer-app-promo-copy">Morning &amp; evening adhkar and sunnah du&rsquo;as &mdash; free from Life With Allah.</p>
+              <div class="lwa-app-badges">
+                <a class="lwa-app-badge" href="https://apps.apple.com/app/dhikr-dua/id1561598617"
+                  target="_blank" rel="noopener noreferrer"
+                  aria-label="Download Dhikr &amp; Du&rsquo;a on the App Store">
+                  <i class="fab fa-apple" aria-hidden="true"></i> App Store
+                </a>
+                <a class="lwa-app-badge" href="https://play.google.com/store/apps/details?id=com.alifewithallah.app"
+                  target="_blank" rel="noopener noreferrer"
+                  aria-label="Get Dhikr &amp; Du&rsquo;a on Google Play">
+                  <i class="fab fa-google-play" aria-hidden="true"></i> Google Play
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1637,7 +1629,11 @@
             <li><a href="activities.html#adult-classes">Men's class</a></li>
             <li><a href="madrasa.html#madrasa-schedule">Children's madrasa</a></li>
             <li><a href="activities.html#listen">Talks &amp; recordings</a></li>
+            <li><a href="prayer-times.html#prayer-times-jumuah">Jumu&rsquo;ah Salah</a></li>
             <li><a href="prayer-times.html">Salah timetable</a></li>
+            <li>
+              <a href="https://lifewithallah.com/app/" target="_blank" rel="noopener noreferrer">Dhikr &amp; Du&rsquo;a app</a>
+            </li>
           </ul>
         </div>
 
@@ -1675,7 +1671,8 @@
               </li>
             </ul>
             <a class="site-footer-directions-btn"
-              href="https://maps.app.goo.gl/Lya1necC8WXXpUE5A" target="_blank"
+              href="https://www.google.com/maps/dir/?api=1&amp;destination=7866%2BQX+Tralee%2C+County+Kerry&amp;travelmode=driving"
+              target="_blank"
               rel="noopener noreferrer">
               <i class="fas fa-directions" aria-hidden="true"></i>
               Get directions
@@ -1685,18 +1682,16 @@
       </div>
 
       <div class="site-footer-bottom">
-        <p class="site-footer-copy mb-0">
-          © <span id="footer-year">2019</span> Kerry Islamic Cultural Centre
-          <span class="site-footer-legal">
-            <a href="#" class="site-footer-legal-link" id="cookie-prefs-open">Privacy &amp; cookies</a>
-          </span>
+        <div class="site-footer-meta">
+          <span class="site-footer-copy-text">© <span id="footer-year">2019</span> Kerry Islamic Cultural Centre</span>
+          <a href="#" class="site-footer-legal-link" id="cookie-prefs-open">Privacy &amp; cookies</a>
           <span class="site-footer-credit">Made with
             <i class="fas fa-heart" aria-hidden="true"></i> &amp;
             <i class="fas fa-mug-hot" aria-hidden="true"></i> by
             <a href="https://nalam.me" rel="external noopener"
               target="_blank">Nazmul Alam</a>
           </span>
-        </p>
+        </div>
         <ul class="site-footer-social list-unstyled mb-0">
           <li>
             <a class="site-footer-social-link"
