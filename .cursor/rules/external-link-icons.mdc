@@ -1,0 +1,26 @@
+---
+description: External link icon policy — sitewide ↗ except notice board
+alwaysApply: true
+---
+
+# External link icons
+
+Sitewide, external links get a ↗ icon via `initExternalLinkIcons()` in `assets/js/scripts-*.js` (runs on load and after dynamic content).
+
+## Do not add icons to
+
+- **Notice board links** — `#noticeContainer`, `#masjid-notice-spotlight`, `#notice-board`
+- Links with `data-skip-external-icon="true"` (set in JS as `dataset.skipExternalIcon = "true"`)
+
+Notices open poster images in the BaguetteBox lightbox. They are not “leave the site” navigation, so a ↗ icon is misleading.
+
+## When adding new exceptions
+
+1. Set `data-skip-external-icon="true"` on the link in HTML or when creating it in JS, **or**
+2. Extend `shouldSkipExternalLinkIcon()` with a stable container selector.
+
+Do not disable `initExternalLinkIcons()` globally for a single section.
+
+## Still show icons on
+
+Footer links, Mixlr, GoFundMe, maps, register forms, programme listen links, PDF timetable, and other genuine off-site navigation.

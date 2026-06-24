@@ -50,6 +50,66 @@
     });
   };
 
+  const isExternalHref = (href) => {
+    if (!href || typeof href !== "string") return false;
+    var trimmed = href.trim();
+    if (
+      !trimmed ||
+      trimmed === "#" ||
+      trimmed.indexOf("#") === 0 ||
+      trimmed.indexOf("mailto:") === 0 ||
+      trimmed.indexOf("tel:") === 0 ||
+      trimmed.indexOf("javascript:") === 0
+    ) {
+      return false;
+    }
+    if (trimmed.indexOf("/") === 0 && trimmed.indexOf("//") !== 0) return false;
+    try {
+      return new URL(trimmed, window.location.href).origin !== window.location.origin;
+    } catch (e) {
+      return /^https?:\/\//i.test(trimmed);
+    }
+  };
+
+  const shouldSkipExternalLinkIcon = (link) => {
+    if (!link) return false;
+    if (link.dataset.skipExternalIcon === "true") return true;
+    if (!link.closest) return false;
+    return !!link.closest(
+      "#noticeContainer, #masjid-notice-spotlight, #notice-board",
+    );
+  };
+
+  const initExternalLinkIcons = (root) => {
+    var scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll("a[href]").forEach(function (link) {
+      if (shouldSkipExternalLinkIcon(link)) return;
+      if (link.dataset.externalIcon === "true") return;
+      if (!isExternalHref(link.getAttribute("href"))) return;
+      if (
+        link.querySelector(
+          ".fa-external-link-alt, .fa-up-right-from-square, .kicc-external-icon",
+        )
+      ) {
+        link.dataset.externalIcon = "true";
+        return;
+      }
+      var arrow = link.querySelector(".fa-arrow-right");
+      if (arrow) {
+        arrow.className = "fas fa-external-link-alt kicc-external-icon";
+        arrow.setAttribute("aria-hidden", "true");
+        link.dataset.externalIcon = "true";
+        return;
+      }
+      var icon = document.createElement("i");
+      icon.className = "fas fa-external-link-alt kicc-external-icon";
+      icon.setAttribute("aria-hidden", "true");
+      link.appendChild(document.createTextNode("\u00a0"));
+      link.appendChild(icon);
+      link.dataset.externalIcon = "true";
+    });
+  };
+
   const setElHtml = (id, html) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
@@ -239,7 +299,7 @@
 
   const formatOfficialTimetableLabel = (monthName) => {
     const month = getSalahTimesMonthLabel(monthName);
-    return month ? "Official " + month + " Timetable" : "Official Timetable";
+    return month ? "Download " + month + " Timetable" : "Download Timetable";
   };
 
   const setOfficialTimetableLabels = (monthName) => {
@@ -319,9 +379,14 @@
     const liveNowEl = document.getElementById("live-now");
     if (!liveNowEl) return;
 
+    const setBadge = (html) => {
+      liveNowEl.innerHTML = html;
+    };
+
     if (!hasCookieConsent() || !canUseThirdPartyEmbeds()) {
-      liveNowEl.innerHTML =
-        '<span class="programmes-live-badge is-offline">Stream paused</span>';
+      setBadge(
+        '<span class="programmes-live-badge is-offline">Stream paused</span>',
+      );
       return;
     }
 
@@ -332,14 +397,17 @@
       })
       .then((mixlrData) => {
         const isLive = !!mixlrData.is_live;
-        liveNowEl.innerHTML = isLive
-          ? '<span class="programmes-live-badge is-live"><span aria-hidden="true">●</span> Live now</span>'
-          : '<span class="programmes-live-badge is-offline">Off air</span>';
+        setBadge(
+          isLive
+            ? '<span class="programmes-live-badge is-live"><span aria-hidden="true">●</span> On air</span>'
+            : '<span class="programmes-live-badge is-offline">Off air</span>',
+        );
       })
       .catch((err) => {
         console.error("Error loading Mixlr live status", err);
-        liveNowEl.innerHTML =
-          '<span class="programmes-live-badge is-offline">Off air</span>';
+        setBadge(
+          '<span class="programmes-live-badge is-offline">Off air</span>',
+        );
       });
   };
 
@@ -453,6 +521,8 @@
   const PRAYER_DAY_RADIUS = 30;
   const PRAYER_CAROUSEL_REPEAT = 3;
   const PRAYER_CAROUSEL_PRIMARY = 1;
+  const SUNRISE_FORBIDDEN_MINUTES = 15;
+  const ZAWAAL_BEFORE_ZOHR_MINUTES = 10;
 
   const PRAYER_DECK_ICONS = {
     fajr: "fa-cloud-sun",
@@ -613,6 +683,8 @@
   const formatEventChipLabel = (event) => {
     if (!event) return "";
     if (event.type === "sunrise") return "Sunrise";
+    if (event.type === "duha") return "Duha";
+    if (event.type === "zawaal") return "Zawaal";
     if (event.type === "adhan") return event.label + " Adhan";
     if (event.type === "iqamah") return event.label + " Iqamah";
     return event.label || "";
@@ -654,6 +726,31 @@
             at: sunrise,
             dayKey: dayKey,
           });
+          const duhaStart = new Date(
+            sunrise.getTime() + SUNRISE_FORBIDDEN_MINUTES * 60000,
+          );
+          events.push({
+            type: "duha",
+            prayerId: "duha",
+            label: "Duha",
+            at: duhaStart,
+            dayKey: dayKey,
+          });
+        }
+      }
+      if (slot.id === "dhuhr") {
+        const zohrAdhan = parseTimeOnRecord(record, slot.beginsKey);
+        if (zohrAdhan) {
+          const zawaalStart = new Date(
+            zohrAdhan.getTime() - ZAWAAL_BEFORE_ZOHR_MINUTES * 60000,
+          );
+          events.push({
+            type: "zawaal",
+            prayerId: slot.id,
+            label: "Zawaal",
+            at: zawaalStart,
+            dayKey: dayKey,
+          });
         }
       }
     });
@@ -680,19 +777,90 @@
     return events;
   };
 
-  const getCurrentPrayerSlotForRecord = (record, nowMs) => {
-    if (!record) return null;
-    let current = null;
-    PRAYER_SLOTS.forEach(function (slot) {
-      const adhan = parseTimeOnRecord(record, slot.beginsKey);
-      if (adhan && adhan.getTime() <= nowMs) {
-        current = {
-          id: slot.id,
-          label: slot.label,
-          navKey: slot.navKey,
-          dayKey: makeDayKeyFromRecord(record),
+  const getSpecialSalahPeriod = (record, nowMs) => {
+    if (!record || !record.sunriseTime) return null;
+
+    const sunrise = parseTimeOnRecord(record, "sunriseTime");
+    if (!sunrise) return null;
+
+    const sunriseMs = sunrise.getTime();
+    if (nowMs < sunriseMs) return null;
+
+    const dayKey = makeDayKeyFromRecord(record);
+    const forbiddenEndMs =
+      sunriseMs + SUNRISE_FORBIDDEN_MINUTES * 60000;
+
+    if (nowMs < forbiddenEndMs) {
+      return {
+        id: "forbidden-after-sunrise",
+        label: "Forbidden time",
+        navKey: null,
+        dayKey: dayKey,
+        special: true,
+      };
+    }
+
+    const zohrSlot = PRAYER_SLOTS.find(function (slot) {
+      return slot.id === "dhuhr";
+    });
+    const zohrAdhan = zohrSlot
+      ? parseTimeOnRecord(record, zohrSlot.beginsKey)
+      : null;
+
+    if (zohrAdhan) {
+      const zawaalStartMs =
+        zohrAdhan.getTime() - ZAWAAL_BEFORE_ZOHR_MINUTES * 60000;
+
+      if (nowMs < zawaalStartMs) {
+        return {
+          id: "duha",
+          label: "Duha",
+          navKey: null,
+          dayKey: dayKey,
+          special: true,
         };
       }
+
+      if (nowMs < zohrAdhan.getTime()) {
+        return {
+          id: "zawaal-before-zohr",
+          label: "Zawaal",
+          navKey: null,
+          dayKey: dayKey,
+          special: true,
+        };
+      }
+    }
+
+    return null;
+  };
+
+  const getCurrentPrayerSlotForRecord = (record, nowMs) => {
+    if (!record) return null;
+
+    const special = getSpecialSalahPeriod(record, nowMs);
+    if (special) return special;
+
+    let current = null;
+    const sunrise =
+      record.sunriseTime && parseTimeOnRecord(record, "sunriseTime");
+
+    PRAYER_SLOTS.forEach(function (slot) {
+      const adhan = parseTimeOnRecord(record, slot.beginsKey);
+      if (!adhan || adhan.getTime() > nowMs) return;
+      if (
+        slot.id === "fajr" &&
+        sunrise &&
+        nowMs >= sunrise.getTime()
+      ) {
+        return;
+      }
+      current = {
+        id: slot.id,
+        label: slot.label,
+        navKey: slot.navKey,
+        dayKey: makeDayKeyFromRecord(record),
+      };
     });
     if (!current) {
       const prev = getDayRecordForOffset(-1);
@@ -711,6 +879,22 @@
 
   const getNextPrayerSlot = (currentSlot) => {
     if (!currentSlot) return null;
+
+    if (currentSlot.special) {
+      const zohr = PRAYER_SLOTS.find(function (slot) {
+        return slot.id === "dhuhr";
+      });
+      if (zohr) {
+        return {
+          id: zohr.id,
+          label: zohr.label,
+          navKey: zohr.navKey,
+          dayKey: currentSlot.dayKey,
+        };
+      }
+      return null;
+    }
+
     const index = PRAYER_SLOTS.findIndex(function (slot) {
       return slot.id === currentSlot.id;
     });
@@ -1132,13 +1316,29 @@
       });
   };
 
+  const getTodayDayKey = () => {
+    if (cachedPrayerDayData) {
+      return makeDayKeyFromRecord(cachedPrayerDayData);
+    }
+    return makeDayKeyFromDate(getDublinDate());
+  };
+
+  const getCurrentSalahChipLabel = (slot) => {
+    if (!slot) return "Current prayer";
+    if (slot.special) return "Now";
+    return "Current prayer";
+  };
+
   const highlightPrayerSlot = (slot, className) => {
-    if (!slot) return;
+    if (!slot || slot.special || !slot.navKey) return;
     var homeCard = findPrayerDeckCard(slot.dayKey, slot.id);
     if (homeCard) {
       homeCard.classList.add(className);
     }
-    var navBegins = document.getElementById("nav-" + slot.navKey + "-begins");
+    var todayKey = getTodayDayKey();
+    var idPrefix =
+      slot.dayKey === todayKey ? "nav-" : "nav-tomorrow-";
+    var navBegins = document.getElementById(idPrefix + slot.navKey + "-begins");
     if (navBegins) {
       var navRow = navBegins.closest(".kicc-nav-salah-row, tr");
       if (navRow) {
@@ -1151,10 +1351,13 @@
     const countdown = formatCountdown(state.countdownTarget);
     const nextLabel = formatEventChipLabel(state.nextEvent);
     const currentLabel = state.current ? state.current.label : "—";
+    const currentChipLabel = getCurrentSalahChipLabel(state.current);
 
     return (
       '<div class="home-prayer-status-chip home-prayer-status-chip-current">' +
-      '<span class="home-prayer-status-chip-label">Current prayer</span>' +
+      '<span class="home-prayer-status-chip-label">' +
+      currentChipLabel +
+      "</span>" +
       '<strong class="home-prayer-status-chip-value">' +
       currentLabel +
       "</strong></div>" +
@@ -1349,10 +1552,13 @@
 
     const countdown = formatCountdown(state.countdownTarget);
     const nextLabel = formatEventChipLabel(state.nextEvent);
+    const currentChipLabel = getCurrentSalahChipLabel(state.current);
 
     statusEl.innerHTML =
       '<div class="kicc-nav-salah-status-chip kicc-nav-salah-status-chip-current">' +
-      '<span class="kicc-nav-salah-status-label">Now</span>' +
+      '<span class="kicc-nav-salah-status-label">' +
+      currentChipLabel +
+      "</span>" +
       '<strong>' +
       state.current.label +
       "</strong></div>" +
@@ -3950,6 +4156,7 @@
           ? " notices-spotlight-card--mobile-hidden"
           : "");
       card.href = notice.url;
+      card.dataset.skipExternalIcon = "true";
       card.setAttribute("role", "listitem");
       card.style.setProperty("--spotlight-i", index);
       card.setAttribute(
@@ -4023,6 +4230,7 @@
       const a = document.createElement("a");
       a.className = "notices-card-link lightbox";
       a.href = notice.url;
+      a.dataset.skipExternalIcon = "true";
       a.setAttribute(
         "aria-label",
         "View notice: " + formatNoticeLabel(notice.name),
@@ -4623,11 +4831,37 @@
     syncNextUpEventCard(nextProgramme);
   };
 
+  const isAdultMonthlyProgramme = (p) => {
+    var name = ((p && p.name) || "").toLowerCase();
+    if (!name || name.indexOf("monthly") === -1) return false;
+    return (
+      name.indexOf("adult") !== -1 ||
+      /\bmen'?s?\b/.test(name) ||
+      /\bwomen'?s?\b/.test(name)
+    );
+  };
+
+  const isWomensQuranClassProgramme = (p) => {
+    var name = ((p && p.name) || "").toLowerCase();
+    return /women/i.test(name) && /qur/i.test(name) && name.indexOf("monthly") === -1;
+  };
+
+  const createAdultProgrammeSectionLink = (label, sectionId) => {
+    var link = document.createElement("a");
+    link.href = "#" + (sectionId || "adult-programme");
+    link.className = "programmes-adult-section-link";
+    link.innerHTML =
+      (label || "Segments &amp; venues") +
+      ' <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+    return link;
+  };
+
   const getProgrammeAnchorId = (p) => {
-    var name = (p && p.name) || "";
-    if (/women/i.test(name)) return "women-class";
-    if (/adult/i.test(name)) return "adult-classes";
-    return programmeSlug(name);
+    if (isAdultMonthlyProgramme(p) || isWomensQuranClassProgramme(p)) {
+      return null;
+    }
+    var name = ((p && p.name) || "").toLowerCase();
+    return programmeSlug((p && p.name) || "");
   };
 
   const programmeHasDetailsContent = (p) => {
@@ -4638,6 +4872,94 @@
       p.speaker ||
       (typeof p.imageUrl === "string" && p.imageUrl.trim())
     );
+  };
+
+  const getProgrammeAudience = (p) => {
+    var name = ((p && p.name) || "").toLowerCase();
+    if (/hadith|durood|salawat|salat alan|tafseer|tafsir|zaad/i.test(name)) {
+      return "all";
+    }
+    if (/children|child|madrasa|hifz|kids/i.test(name)) return "children";
+    if (/youth|teen/i.test(name)) return "youth";
+    if (
+      isAdultMonthlyProgramme(p) ||
+      /women|men|adult|sister|brother|qur.?an class/i.test(name)
+    ) {
+      return "adults";
+    }
+    return "all";
+  };
+
+  const getProgrammeType = (p) => {
+    if (isAdultMonthlyProgramme(p)) return "monthly";
+    var name = ((p && p.name) || "").toLowerCase();
+    if (/workshop|event|gathering|open day|iftar|eid/i.test(name)) return "event";
+    if (/talk|bayaan|lecture|tafseer|monthly/i.test(name)) return "lecture";
+    if (/qur.?an|tajweed|class|madrasa|hifz|arabic|education/i.test(name)) {
+      return "education";
+    }
+    if (p && p.topic) return "lecture";
+    return "event";
+  };
+
+  const getProgrammeCategory = (p) => {
+    if (isAdultMonthlyProgramme(p)) return "adult";
+    var name = ((p && p.name) || "").toLowerCase();
+    if (
+      /hadith|durood|salawat|salat alan|tafseer|tafsir|zaad|provisions for the seekers/i.test(
+        name,
+      )
+    ) {
+      return "community";
+    }
+    if (/youth/i.test(name) && !/children/i.test(name)) return "youth";
+    if (/children|child|madrasa|hifz|kids/i.test(name)) return "children";
+    if (
+      /women|men|adult|sister|brother|qur.?an|talk|lecture|bayaan|monthly/i.test(
+        name,
+      )
+    ) {
+      return "adult";
+    }
+    return "community";
+  };
+
+  const getProgrammeFilterDays = (p) => {
+    var days = Array.isArray(p.weekdays) ? p.weekdays : [];
+    return days
+      .map(function (d) {
+        if (!d || typeof d !== "string") return "";
+        return d.trim().slice(0, 3).toLowerCase();
+      })
+      .filter(Boolean)
+      .join(",");
+  };
+
+  const getProgrammeSearchText = (p) => {
+    var parts = [p.name, p.topic, p.speaker, p.location, p.timeDescription];
+    if (p.description) {
+      var tmp = document.createElement("div");
+      tmp.innerHTML = p.description;
+      parts.push(tmp.textContent || "");
+    }
+    return parts
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  };
+
+  const PROGRAMME_AUDIENCE_LABELS = {
+    adults: "Adults",
+    youth: "Youth",
+    children: "Children",
+    all: "All welcome",
+  };
+
+  const PROGRAMME_TYPE_LABELS = {
+    education: "Education",
+    lecture: "Lecture",
+    monthly: "Monthly",
+    event: "Event",
   };
 
   let programmeDetailsModalBound = false;
@@ -4833,7 +5155,7 @@
 
     if (programme.imageUrl) {
       imageEl.src = programme.imageUrl;
-      imageEl.alt = programme.name || "Programme poster";
+      imageEl.alt = (programme.name || "Programme") + " notice";
       posterEl.hidden = false;
     } else {
       imageEl.removeAttribute("src");
@@ -4883,6 +5205,7 @@
       link.innerHTML =
         '<i class="fas fa-headphones" aria-hidden="true"></i> Listen live';
       actionsEl.appendChild(link);
+      initExternalLinkIcons(actionsEl);
     }
     actionsEl.hidden = actionsEl.childNodes.length === 0;
 
@@ -4902,9 +5225,15 @@
     });
   };
 
-  const createScheduleItem = (p, animationDelay) => {
+  const createScheduleItem = (p, animationDelay, dayKey) => {
     var item = document.createElement("li");
     item.className = "programmes-schedule-item programmes-schedule-item-animate";
+    item.dataset.scheduleItem = "";
+    item.dataset.scheduleAudience = getProgrammeAudience(p);
+    item.dataset.scheduleType = getProgrammeType(p);
+    if (dayKey) {
+      item.dataset.scheduleDay = dayKey.slice(0, 3).toLowerCase();
+    }
     if (typeof animationDelay === "number") {
       item.style.animationDelay = animationDelay + "s";
     }
@@ -4923,11 +5252,57 @@
     item.appendChild(time);
     item.appendChild(name);
 
+    if (isAdultMonthlyProgramme(p)) {
+      var monthlyLink = createAdultProgrammeSectionLink(
+        "About this programme",
+        "adult-programme",
+      );
+      monthlyLink.classList.add("programmes-schedule-item-link");
+      item.appendChild(monthlyLink);
+    } else if (isWomensQuranClassProgramme(p)) {
+      var weeklyLink = createAdultProgrammeSectionLink(
+        "About this programme",
+        "womens-quran-class",
+      );
+      weeklyLink.classList.add("programmes-schedule-item-link");
+      item.appendChild(weeklyLink);
+    }
+
     if (p.speaker) {
       var speaker = document.createElement("span");
       speaker.className = "programmes-schedule-item-speaker";
       speaker.textContent = p.speaker;
       item.appendChild(speaker);
+    }
+
+    if (p.location) {
+      var location = document.createElement("span");
+      location.className = "programmes-schedule-item-location";
+      location.innerHTML =
+        '<i class="fas fa-mosque" aria-hidden="true"></i> ' + p.location;
+      item.appendChild(location);
+    }
+
+    if (programmeHasDetailsContent(p)) {
+      item.classList.add("programmes-schedule-item--interactive");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("role", "button");
+      item.setAttribute(
+        "aria-label",
+        "View details for " + (p.name || "programme"),
+      );
+      var openDetails = function (e) {
+        if (e.target.closest("a")) return;
+        e.preventDefault();
+        openProgrammeDetailsModal(p);
+      };
+      item.addEventListener("click", openDetails);
+      item.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if (e.target.closest("a")) return;
+        e.preventDefault();
+        openProgrammeDetailsModal(p);
+      });
     }
 
     return item;
@@ -4958,7 +5333,7 @@
     var lead = document.createElement("p");
     lead.className = "programmes-ongoing-lead";
     lead.textContent =
-      "Regular activities without a fixed weekly slot — check the notice board or ask at reception.";
+      "No fixed weekly slot — see the programme guide below or check the notice board.";
 
     header.appendChild(title);
     header.appendChild(lead);
@@ -4982,7 +5357,25 @@
       card.appendChild(name);
       card.appendChild(time);
 
-      if (programmeHasDetailsContent(p)) {
+      if (isAdultMonthlyProgramme(p)) {
+        card.appendChild(createAdultProgrammeSectionLink("About monthly programme"));
+        if (programmeHasDetailsContent(p)) {
+          var monthBtn = document.createElement("button");
+          monthBtn.type = "button";
+          monthBtn.className = "programmes-ongoing-card-link";
+          monthBtn.innerHTML =
+            'Open programme <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+          monthBtn.addEventListener("click", function () {
+            var highlights = document.getElementById("adult-programme-highlights");
+            if (highlights && !highlights.hidden && highlights.childNodes.length > 0) {
+              highlights.scrollIntoView({ behavior: "smooth", block: "start" });
+              return;
+            }
+            openProgrammeDetailsModal(p);
+          });
+          card.appendChild(monthBtn);
+        }
+      } else if (programmeHasDetailsContent(p)) {
         var detailsBtn = document.createElement("button");
         detailsBtn.type = "button";
         detailsBtn.className = "programmes-ongoing-card-link";
@@ -5098,6 +5491,7 @@
     col.className = "programmes-day-col";
     col.setAttribute("data-day", day);
     col.setAttribute("data-week-repeat", String(weekRepeat));
+    col.setAttribute("data-schedule-day", day.slice(0, 3).toLowerCase());
 
     if (isPrimary) {
       col.classList.add("programmes-day-col-animate");
@@ -5155,10 +5549,14 @@
       dayProgrammes.forEach(function (p, itemIndex) {
         if (isPrimary) {
           listEl.appendChild(
-            createScheduleItem(p, dayIndex * 0.04 + itemIndex * 0.06 + 0.15),
+            createScheduleItem(
+              p,
+              dayIndex * 0.04 + itemIndex * 0.06 + 0.15,
+              day,
+            ),
           );
         } else {
-          listEl.appendChild(createScheduleItem(p));
+          listEl.appendChild(createScheduleItem(p, undefined, day));
         }
       });
     }
@@ -5166,6 +5564,212 @@
     col.appendChild(listEl);
     parent.appendChild(col);
     return col;
+  };
+
+  const renderProgrammeOverviewList = (container, items, emptyText) => {
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!items || items.length === 0) {
+      var empty = document.createElement("p");
+      empty.className = "prog-overview-empty";
+      empty.textContent = emptyText;
+      container.appendChild(empty);
+      return;
+    }
+
+    var list = document.createElement("ul");
+    list.className = "prog-overview-list";
+
+    items.forEach(function (p) {
+      var li = document.createElement("li");
+      li.className = "prog-overview-list-item";
+
+      var time = document.createElement("span");
+      time.className = "prog-overview-list-time";
+      time.textContent = hasProgrammePrayerName(p)
+        ? "After " + String(p.prayerName).trim()
+        : getProgrammeChipTime(p) || getProgrammeTimeLabel(p);
+
+      var name = document.createElement("strong");
+      name.className = "prog-overview-list-name";
+      name.textContent = p.name || "";
+
+      li.appendChild(time);
+      li.appendChild(name);
+
+      if (p.speaker) {
+        var speaker = document.createElement("span");
+        speaker.className = "prog-overview-list-meta";
+        speaker.textContent = p.speaker;
+        li.appendChild(speaker);
+      }
+
+      list.appendChild(li);
+    });
+
+    container.appendChild(list);
+  };
+
+  const getWeekHighlightProgrammes = (byDay, todayProgrammes, limit) => {
+    var max = typeof limit === "number" ? limit : 4;
+    var seen = {};
+    var highlights = [];
+
+    todayProgrammes.forEach(function (p) {
+      var id = programmeIdentity(p);
+      seen[id] = true;
+    });
+
+    WEEKDAY_ORDER.forEach(function (day) {
+      (byDay[day] || []).forEach(function (p) {
+        var pid = programmeIdentity(p);
+        if (seen[pid] || highlights.length >= max) return;
+        seen[pid] = true;
+        highlights.push(p);
+      });
+    });
+
+    return highlights;
+  };
+
+  const syncProgrammeOverviewLive = (programme) => {
+    var body = document.getElementById("prog-overview-live-body");
+    if (!body) return;
+
+    body.innerHTML = "";
+
+    if (!programme) {
+      var empty = document.createElement("p");
+      empty.className = "prog-overview-empty";
+      empty.textContent = "No upcoming live session scheduled. Check Mixlr for past talks.";
+      body.appendChild(empty);
+      return;
+    }
+
+    var title = document.createElement("p");
+    title.className = "prog-overview-live-title";
+    title.textContent = programme.name || "Upcoming broadcast";
+
+    var meta = document.createElement("p");
+    meta.className = "prog-overview-live-meta";
+    meta.textContent = getProgrammeTimeLabel(programme) || "See Mixlr for time";
+
+    body.appendChild(title);
+    body.appendChild(meta);
+
+    if (programme.speaker) {
+      var speaker = document.createElement("p");
+      speaker.className = "prog-overview-live-speaker";
+      speaker.textContent = programme.speaker;
+      body.appendChild(speaker);
+    }
+  };
+
+  const renderProgrammeOverview = (todayProgrammes, byDay, todayKey) => {
+    var todayBody = document.getElementById("prog-overview-today-body");
+    var weekBody = document.getElementById("prog-overview-week-body");
+
+    if (todayBody) {
+      renderProgrammeOverviewList(
+        todayBody,
+        todayProgrammes,
+        "Nothing scheduled for " + (WEEKDAY_LABELS[todayKey] || "today") + ".",
+      );
+    }
+
+    if (weekBody) {
+      renderProgrammeOverviewList(
+        weekBody,
+        getWeekHighlightProgrammes(byDay, todayProgrammes, 4),
+        "Weekly highlights will appear when programmes are published.",
+      );
+    }
+
+    syncProgrammeOverviewLive(cachedNextUpProgramme);
+  };
+
+  let scheduleFilterState = { audience: "all", day: "all", type: "all" };
+
+  const applyScheduleFilters = () => {
+    var columns = document.querySelectorAll(".programmes-day-col[data-schedule-day]");
+    var hasActiveFilter =
+      scheduleFilterState.audience !== "all" ||
+      scheduleFilterState.day !== "all" ||
+      scheduleFilterState.type !== "all";
+
+    columns.forEach(function (col) {
+      var day = col.getAttribute("data-schedule-day") || "";
+      var dayMatch =
+        scheduleFilterState.day === "all" ||
+        day === scheduleFilterState.day;
+      var visibleItems = 0;
+
+      col.querySelectorAll("[data-schedule-item]").forEach(function (item) {
+        var match = true;
+        if (
+          scheduleFilterState.audience !== "all" &&
+          item.dataset.scheduleAudience !== scheduleFilterState.audience &&
+          item.dataset.scheduleAudience !== "all"
+        ) {
+          match = false;
+        }
+        if (
+          scheduleFilterState.type !== "all" &&
+          item.dataset.scheduleType !== scheduleFilterState.type
+        ) {
+          match = false;
+        }
+        item.hidden = !match;
+        if (match) visibleItems += 1;
+      });
+
+      var emptyNote = col.querySelector(".programmes-day-filter-empty");
+      if (hasActiveFilter && dayMatch && visibleItems === 0) {
+        if (!emptyNote) {
+          emptyNote = document.createElement("p");
+          emptyNote.className = "programmes-day-filter-empty";
+          emptyNote.textContent = "No matches";
+          col.appendChild(emptyNote);
+        }
+        emptyNote.hidden = false;
+      } else if (emptyNote) {
+        emptyNote.hidden = true;
+      }
+
+      col.hidden = hasActiveFilter && scheduleFilterState.day !== "all" && !dayMatch;
+    });
+  };
+
+  const initScheduleFilters = () => {
+    if (!isActivitiesPage()) return;
+
+    document
+      .querySelectorAll(".prog-schedule-filters .prog-filter-pill")
+      .forEach(function (pill) {
+        if (pill.dataset.boundSchedule) return;
+        pill.dataset.boundSchedule = "true";
+        pill.addEventListener("click", function () {
+          var group = pill.closest("[data-schedule-filter-group]");
+          if (!group) return;
+
+          group.querySelectorAll(".prog-filter-pill").forEach(function (sibling) {
+            sibling.classList.remove("is-active");
+            sibling.setAttribute("aria-pressed", "false");
+          });
+          pill.classList.add("is-active");
+          pill.setAttribute("aria-pressed", "true");
+
+          if (pill.dataset.scheduleFilterAudience !== undefined) {
+            scheduleFilterState.audience = pill.dataset.scheduleFilterAudience;
+          } else if (pill.dataset.scheduleFilterDay !== undefined) {
+            scheduleFilterState.day = pill.dataset.scheduleFilterDay;
+          } else if (pill.dataset.scheduleFilterType !== undefined) {
+            scheduleFilterState.type = pill.dataset.scheduleFilterType;
+          }
+          applyScheduleFilters();
+        });
+      });
   };
 
   const renderProgrammeSchedule = (programmes) => {
@@ -5306,7 +5910,7 @@
     var tomorrowKey = getTomorrowWeekdayKey(todayKey);
 
     var columns = document.createElement("div");
-    columns.className = "programmes-day-columns";
+    columns.className = "programmes-week-grid";
 
     var columnOptions = {
       todayKey: todayKey,
@@ -5314,23 +5918,19 @@
       byDay: byDay,
     };
 
-    for (var weekRepeat = 0; weekRepeat < PROGRAMME_WEEK_REPEAT_COUNT; weekRepeat++) {
-      WEEKDAY_ORDER.forEach(function (day, dayIndex) {
-        appendProgrammeDayColumn(
-          columns,
-          day,
-          dayIndex,
-          weekRepeat,
-          columnOptions,
-        );
-      });
-    }
+    WEEKDAY_ORDER.forEach(function (day, dayIndex) {
+      appendProgrammeDayColumn(
+        columns,
+        day,
+        dayIndex,
+        PROGRAMME_WEEK_PRIMARY_REPEAT,
+        columnOptions,
+      );
+    });
 
     container.appendChild(columns);
 
     renderOngoingProgrammes(unscheduled);
-    initProgrammeWeekScroll(todayKey);
-
     renderUpcomingEvents(upcomingEvents);
   };
 
@@ -5591,162 +6191,584 @@
     }
   };
 
-  const renderWeeklyProgrammes = (programmes) => {
-    var section = document.getElementById("weekly-programmes-section");
-    var container = document.getElementById("weekly-programmes");
-    if (!container || !section) return;
+  const getProgrammeTeaser = (p, maxLen) => {
+    var limit = typeof maxLen === "number" ? maxLen : 140;
+    var text = "";
 
-    var withImages = Array.isArray(programmes)
-      ? programmes.filter(function (p) {
-          return (
-            p && typeof p.imageUrl === "string" && p.imageUrl.trim() !== ""
-          );
-        })
-      : [];
+    if (p && p.topic) {
+      text = String(p.topic).trim();
+    } else if (p && p.description) {
+      var tmp = document.createElement("div");
+      tmp.innerHTML = p.description;
+      text = (tmp.textContent || "").replace(/\s+/g, " ").trim();
+    }
 
-    if (withImages.length === 0) {
-      section.style.display = "none";
-      container.innerHTML = "";
+    if (!text) return "";
+    if (text.length <= limit) return text;
+    return text.slice(0, limit).trim() + "\u2026";
+  };
+
+  const programmeHighlightCanOpen = (p) =>
+    programmeHasDetailsContent(p) || !!(p && p.listenUrl);
+
+  const createProgrammeHighlightCard = (p) => {
+    var card = document.createElement("article");
+    card.className = "programme-highlight-card prog-card";
+    card.dataset.progCard = "";
+    card.dataset.progAudience = getProgrammeAudience(p);
+    card.dataset.progType = getProgrammeType(p);
+    card.dataset.progCategory = getProgrammeCategory(p);
+    card.dataset.progDays = getProgrammeFilterDays(p);
+    card.dataset.progSearch = getProgrammeSearchText(p);
+    var canOpen = programmeHighlightCanOpen(p);
+
+    var anchorId = getProgrammeAnchorId(p);
+    if (anchorId) {
+      card.id = anchorId;
+    }
+
+    if (canOpen) {
+      card.classList.add("programme-highlight-card--interactive");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute(
+        "role",
+        programmeHasDetailsContent(p) ? "button" : "link",
+      );
+      card.setAttribute(
+        "aria-label",
+        "View full details for " + (p.name || "programme"),
+      );
+    }
+
+    var hasImage =
+      p && typeof p.imageUrl === "string" && p.imageUrl.trim() !== "";
+
+    if (hasImage) {
+      card.classList.add("programme-highlight-card--poster");
+      var media = document.createElement("div");
+      media.className = "programme-highlight-media programme-highlight-media--poster";
+      var img = document.createElement("img");
+      img.src = p.imageUrl;
+      img.alt = (p.name || "Masjid programme") + " notice";
+      img.className = "programme-highlight-image";
+      img.loading = "lazy";
+      media.appendChild(img);
+      card.appendChild(media);
+    } else {
+      var placeholder = document.createElement("div");
+      placeholder.className = "programme-highlight-media programme-highlight-media--placeholder";
+      placeholder.setAttribute("aria-hidden", "true");
+      placeholder.innerHTML = '<i class="fas fa-book-open"></i>';
+      card.appendChild(placeholder);
+    }
+
+    var body = document.createElement("div");
+    body.className = "programme-highlight-body";
+
+    if (p.name) {
+      var title = document.createElement("h4");
+      title.className = "programme-highlight-title prog-card-title";
+      title.textContent = p.name;
+      body.appendChild(title);
+    }
+
+    var chips = document.createElement("div");
+    chips.className = "programme-highlight-chips";
+
+    var metaText = getProgrammeChipTime(p);
+    if (metaText) {
+      var timeChip = document.createElement("span");
+      timeChip.className = "programme-highlight-chip";
+      timeChip.innerHTML =
+        '<i class="far fa-clock" aria-hidden="true"></i> ' + metaText;
+      chips.appendChild(timeChip);
+    }
+
+    if (p.location) {
+      var locChip = document.createElement("span");
+      locChip.className = "programme-highlight-chip";
+      locChip.innerHTML =
+        '<i class="fas fa-mosque" aria-hidden="true"></i> ' + p.location;
+      chips.appendChild(locChip);
+    }
+
+    if (chips.childNodes.length > 0) {
+      body.appendChild(chips);
+    }
+
+    if (p.speaker) {
+      var speaker = document.createElement("p");
+      speaker.className = "programme-highlight-speaker prog-card-instructor";
+      speaker.innerHTML =
+        '<span class="prog-card-instructor-label">Instructor</span> ' +
+        p.speaker;
+      body.appendChild(speaker);
+    }
+
+    var teaser = hasImage ? "" : getProgrammeTeaser(p);
+    if (teaser) {
+      var teaserEl = document.createElement("p");
+      teaserEl.className = "programme-highlight-teaser";
+      teaserEl.textContent = teaser;
+      body.appendChild(teaserEl);
+    }
+
+    var footer = document.createElement("div");
+    footer.className = "programme-highlight-footer";
+
+    if (programmeHasDetailsContent(p)) {
+      var detailsBtn = document.createElement("span");
+      detailsBtn.className = "programme-highlight-cta";
+      detailsBtn.innerHTML =
+        'Learn more <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+      footer.appendChild(detailsBtn);
+    }
+
+    if (p.listenUrl) {
+      var listen = document.createElement("a");
+      listen.href = p.listenUrl;
+      listen.target = "_blank";
+      listen.rel = "noopener noreferrer";
+      listen.className = "programme-highlight-listen";
+      listen.innerHTML =
+        'Listen <i class="fas fa-external-link-alt" aria-hidden="true"></i>';
+      listen.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+      footer.appendChild(listen);
+    }
+
+    if (footer.childNodes.length > 0) {
+      body.appendChild(footer);
+    }
+
+    card.appendChild(body);
+
+    if (canOpen && programmeHasDetailsContent(p)) {
+      var openDetails = function (e) {
+        if (e.target.closest(".programme-highlight-listen")) return;
+        e.preventDefault();
+        openProgrammeDetailsModal(p);
+      };
+      card.addEventListener("click", openDetails);
+      card.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if (e.target.closest(".programme-highlight-listen")) return;
+        e.preventDefault();
+        openProgrammeDetailsModal(p);
+      });
+    }
+
+    return card;
+  };
+
+  let programmeFilterState = {
+    audience: "all",
+    day: "all",
+    type: "all",
+    search: "",
+  };
+
+  const applyProgrammeFilters = () => {
+    var cards = document.querySelectorAll("[data-prog-card]");
+    var totalVisible = 0;
+    var statusEl = document.getElementById("prog-filter-status");
+    var hasActiveFilter =
+      programmeFilterState.audience !== "all" ||
+      programmeFilterState.day !== "all" ||
+      programmeFilterState.type !== "all" ||
+      programmeFilterState.search !== "";
+
+    cards.forEach(function (card) {
+      var match = true;
+      var audience = card.dataset.progAudience || "all";
+      var type = card.dataset.progType || "event";
+      var days = (card.dataset.progDays || "").split(",").filter(Boolean);
+      var searchText = card.dataset.progSearch || "";
+
+      if (
+        programmeFilterState.audience !== "all" &&
+        audience !== programmeFilterState.audience &&
+        audience !== "all"
+      ) {
+        match = false;
+      }
+      if (programmeFilterState.type !== "all" && type !== programmeFilterState.type) {
+        match = false;
+      }
+      if (
+        programmeFilterState.day !== "all" &&
+        days.indexOf(programmeFilterState.day) === -1
+      ) {
+        match = false;
+      }
+      if (
+        programmeFilterState.search &&
+        searchText.indexOf(programmeFilterState.search) === -1
+      ) {
+        match = false;
+      }
+
+      card.hidden = !match;
+      if (match) totalVisible += 1;
+    });
+
+    ["adult", "youth", "children", "community"].forEach(function (cat) {
+      var panel = document.getElementById("prog-cat-" + cat);
+      if (!panel) return;
+
+      var visibleInCat = panel.querySelectorAll(
+        "[data-prog-card]:not([hidden])",
+      ).length;
+      var countEl = panel.querySelector('[data-prog-count="' + cat + '"]');
+      var emptyEl = panel.querySelector('[data-prog-empty="' + cat + '"]');
+
+      if (countEl) {
+        if (visibleInCat > 0) {
+          countEl.textContent = String(visibleInCat);
+          countEl.hidden = false;
+        } else {
+          countEl.textContent = "";
+          countEl.hidden = true;
+        }
+      }
+
+      if (emptyEl) {
+        var showEmpty = hasActiveFilter && visibleInCat === 0;
+        if (cat === "adult") {
+          var monthlyGrid = document.getElementById("adult-programme-highlights");
+          var hasMonthly =
+            monthlyGrid &&
+            !monthlyGrid.hidden &&
+            monthlyGrid.querySelectorAll("[data-prog-card]:not([hidden])").length > 0;
+          showEmpty = hasActiveFilter && visibleInCat === 0 && !hasMonthly;
+        }
+        emptyEl.hidden = !showEmpty;
+      }
+    });
+
+    if (statusEl) {
+      if (hasActiveFilter) {
+        statusEl.textContent =
+          totalVisible === 0
+            ? "No programmes match your filters."
+            : totalVisible +
+              " programme" +
+              (totalVisible === 1 ? "" : "s") +
+              " shown";
+        statusEl.hidden = false;
+      } else {
+        statusEl.textContent = "";
+        statusEl.hidden = true;
+      }
+    }
+  };
+
+  const pickFeaturedProgramme = (programmes) => {
+    if (!Array.isArray(programmes) || !programmes.length) return null;
+    var candidates = programmes.filter(function (p) {
+      return !isAdultMonthlyProgramme(p) && programmeHasDetailsContent(p);
+    });
+    candidates.sort(function (a, b) {
+      var scoreA =
+        (a.imageUrl ? 2 : 0) + (a.speaker ? 1 : 0) + (a.topic ? 1 : 0);
+      var scoreB =
+        (b.imageUrl ? 2 : 0) + (b.speaker ? 1 : 0) + (b.topic ? 1 : 0);
+      return scoreB - scoreA;
+    });
+    return candidates[0] || programmes[0];
+  };
+
+  const renderFeaturedProgramme = (programmes) => {
+    var section = document.getElementById("featured-programme");
+    var cardEl = document.getElementById("featured-programme-card");
+    if (!section || !cardEl) return;
+
+    var featured = pickFeaturedProgramme(programmes);
+    if (!featured) {
+      section.hidden = true;
       return;
     }
 
-    section.style.display = "";
-    container.innerHTML = "";
+    section.hidden = false;
+    cardEl.innerHTML = "";
 
-    withImages.forEach(function (p) {
-      var card = document.createElement("article");
-      card.className = "weekly-programme-card";
-
-      var anchorId = getProgrammeAnchorId(p);
-      if (anchorId) {
-        card.id = anchorId;
-      }
-
-      var imgWrapper = document.createElement("div");
-      imgWrapper.className = "weekly-programme-image-wrapper";
-      if (programmeHasDetailsContent(p)) {
-        imgWrapper.classList.add("weekly-programme-image-wrapper--interactive");
-        imgWrapper.setAttribute("role", "button");
-        imgWrapper.setAttribute("tabindex", "0");
-        imgWrapper.setAttribute(
-          "aria-label",
-          "View full programme details for " + (p.name || "programme")
-        );
-      }
-
+    if (featured.imageUrl) {
+      var media = document.createElement("div");
+      media.className = "prog-featured-media";
       var img = document.createElement("img");
-      img.src = p.imageUrl;
-      img.alt = p.name || "Masjid programme";
-      img.className = "weekly-programme-image";
+      img.src = featured.imageUrl;
+      img.alt = (featured.name || "Featured programme") + " notice";
+      img.className = "prog-featured-image";
       img.loading = "lazy";
-      imgWrapper.appendChild(img);
+      media.appendChild(img);
+      cardEl.appendChild(media);
+    }
 
-      if (programmeHasDetailsContent(p)) {
-        var openDetails = function () {
-          openProgrammeDetailsModal(p);
-        };
-        imgWrapper.addEventListener("click", openDetails);
-        imgWrapper.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openDetails();
-          }
+    var content = document.createElement("div");
+    content.className = "prog-featured-content";
+
+    var eyebrow = document.createElement("p");
+    eyebrow.className = "prog-featured-eyebrow";
+    eyebrow.textContent = PROGRAMME_TYPE_LABELS[getProgrammeType(featured)] || "Programme";
+    content.appendChild(eyebrow);
+
+    var title = document.createElement("h3");
+    title.className = "prog-featured-title";
+    title.textContent = featured.name || "Featured programme";
+    content.appendChild(title);
+
+    var teaser = getProgrammeTeaser(featured, 200);
+    if (teaser) {
+      var desc = document.createElement("p");
+      desc.className = "prog-featured-desc";
+      desc.textContent = teaser;
+      content.appendChild(desc);
+    }
+
+    var meta = document.createElement("div");
+    meta.className = "prog-featured-meta";
+    var timeLabel = getProgrammeChipTime(featured);
+    if (timeLabel) {
+      var time = document.createElement("span");
+      time.innerHTML =
+        '<i class="far fa-clock" aria-hidden="true"></i> ' + timeLabel;
+      meta.appendChild(time);
+    }
+    if (featured.location) {
+      var loc = document.createElement("span");
+      loc.innerHTML =
+        '<i class="fas fa-mosque" aria-hidden="true"></i> ' + featured.location;
+      meta.appendChild(loc);
+    }
+    if (featured.speaker) {
+      var sp = document.createElement("span");
+      sp.innerHTML =
+        '<i class="fas fa-user" aria-hidden="true"></i> ' + featured.speaker;
+      meta.appendChild(sp);
+    }
+    if (meta.childNodes.length) content.appendChild(meta);
+
+    var actions = document.createElement("div");
+    actions.className = "prog-featured-actions";
+    if (programmeHasDetailsContent(featured)) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn-kicc btn-kicc-primary prog-featured-btn";
+      btn.innerHTML =
+        'View details <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+      btn.addEventListener("click", function () {
+        openProgrammeDetailsModal(featured);
+      });
+      actions.appendChild(btn);
+    }
+    var anchorId = getProgrammeAnchorId(featured);
+    if (anchorId) {
+      var link = document.createElement("a");
+      link.href = "#" + anchorId;
+      link.className = "btn btn-kicc btn-kicc-ghost prog-featured-btn";
+      link.textContent = "In programme guide";
+      actions.appendChild(link);
+    }
+    if (actions.childNodes.length) content.appendChild(actions);
+
+    cardEl.appendChild(content);
+  };
+
+  const renderProgrammeCatalog = (programmes) => {
+    var adultMonthlyGrid = document.getElementById("adult-programme-highlights");
+    var adultEmpty = document.getElementById("adult-programme-empty");
+    var adultWeeklyGrid = document.getElementById("adult-weekly-highlights");
+    var adultWeeklySection = document.getElementById("womens-quran-class");
+    var adultSplit = document.getElementById("programmes-adult-split");
+    var youngGrid = document.getElementById("prog-grid-young");
+    var categoryGrids = {
+      adult: document.getElementById("prog-grid-adult"),
+      community: document.getElementById("prog-grid-community"),
+    };
+
+    if (!adultMonthlyGrid) return;
+
+    adultMonthlyGrid.innerHTML = "";
+    adultMonthlyGrid.hidden = true;
+    if (adultEmpty) adultEmpty.hidden = true;
+
+    if (adultWeeklyGrid) {
+      adultWeeklyGrid.innerHTML = "";
+      adultWeeklyGrid.hidden = true;
+    }
+    if (adultWeeklySection) adultWeeklySection.hidden = true;
+    if (adultSplit) adultSplit.classList.add("programmes-adult-split--monthly-only");
+
+    if (youngGrid) {
+      youngGrid.innerHTML = "";
+      youngGrid.hidden = true;
+    }
+
+    Object.keys(categoryGrids).forEach(function (key) {
+      var grid = categoryGrids[key];
+      if (!grid) return;
+      grid.innerHTML = "";
+      grid.hidden = true;
+    });
+
+    var list = Array.isArray(programmes) ? programmes : [];
+    if (list.length === 0) {
+      if (adultEmpty) adultEmpty.hidden = false;
+      return;
+    }
+
+    var adultMonthly = [];
+    var adultWeekly = [];
+    var byCategory = { adult: [], youth: [], children: [], community: [] };
+
+    list.forEach(function (p) {
+      if (isAdultMonthlyProgramme(p)) {
+        adultMonthly.push(p);
+        return;
+      }
+      if (isWomensQuranClassProgramme(p)) {
+        adultWeekly.push(p);
+        return;
+      }
+      var cat = getProgrammeCategory(p);
+      if (byCategory[cat]) byCategory[cat].push(p);
+      else byCategory.community.push(p);
+    });
+
+    if (adultMonthly.length > 0) {
+      adultMonthlyGrid.hidden = false;
+      adultMonthly
+        .slice()
+        .sort(function (a, b) {
+          var an = ((a && a.name) || "").toLowerCase();
+          var bn = ((b && b.name) || "").toLowerCase();
+          var aWomen = an.indexOf("women") !== -1 || an.indexOf("sister") !== -1;
+          var bWomen = bn.indexOf("women") !== -1 || bn.indexOf("sister") !== -1;
+          if (aWomen === bWomen) return 0;
+          return aWomen ? -1 : 1;
+        })
+        .forEach(function (p) {
+          adultMonthlyGrid.appendChild(createProgrammeHighlightCard(p));
         });
+    } else if (adultEmpty) {
+      adultEmpty.hidden = false;
+    }
+
+    if (adultWeeklyGrid && adultWeekly.length > 0) {
+      if (adultWeeklySection) adultWeeklySection.hidden = false;
+      if (adultSplit) {
+        adultSplit.classList.remove("programmes-adult-split--monthly-only");
       }
+      adultWeeklyGrid.hidden = false;
+      adultWeekly.forEach(function (p) {
+        adultWeeklyGrid.appendChild(createProgrammeHighlightCard(p));
+      });
+    }
 
-      card.appendChild(imgWrapper);
+    var youngProgrammes = byCategory.youth.concat(byCategory.children);
+    if (youngGrid && youngProgrammes.length > 0) {
+      youngGrid.hidden = false;
+      youngProgrammes.forEach(function (p) {
+        youngGrid.appendChild(createProgrammeHighlightCard(p));
+      });
+    }
 
-      var body = document.createElement("div");
-      body.className = "weekly-programme-body";
+    Object.keys(categoryGrids).forEach(function (cat) {
+      var grid = categoryGrids[cat];
+      if (!grid || byCategory[cat].length === 0) return;
+      grid.hidden = false;
+      byCategory[cat].forEach(function (p) {
+        grid.appendChild(createProgrammeHighlightCard(p));
+      });
+    });
 
-      if (p.name) {
-        var title = document.createElement("h3");
-        title.className = "weekly-programme-title";
-        title.textContent = p.name;
-        body.appendChild(title);
-      }
+    initExternalLinkIcons(document.getElementById("prog-catalog"));
+  };
 
-      var chips = document.createElement("div");
-      chips.className = "weekly-programme-chips";
+  const initProgrammesPageFilters = () => {
+    if (!isActivitiesPage()) return;
 
-      var metaText = getProgrammeChipTime(p);
-      if (metaText) {
-        var timeChip = document.createElement("span");
-        timeChip.className = "weekly-programme-chip";
-        timeChip.innerHTML =
-          '<i class="far fa-clock" aria-hidden="true"></i> ' + metaText;
-        chips.appendChild(timeChip);
-      }
+    var searchInput = document.getElementById("prog-search-input");
+    var searchTimer = null;
 
-      if (p.location) {
-        var locChip = document.createElement("span");
-        locChip.className = "weekly-programme-chip";
-        locChip.innerHTML =
-          '<i class="fas fa-mosque" aria-hidden="true"></i> ' + p.location;
-        chips.appendChild(locChip);
-      }
+    if (searchInput && !searchInput.dataset.bound) {
+      searchInput.dataset.bound = "true";
+      searchInput.addEventListener("input", function () {
+        window.clearTimeout(searchTimer);
+        searchTimer = window.setTimeout(function () {
+          programmeFilterState.search = searchInput.value.trim().toLowerCase();
+          applyProgrammeFilters();
+        }, 180);
+      });
+    }
 
-      if (chips.childNodes.length > 0) {
-        body.appendChild(chips);
-      }
+    document.querySelectorAll(".prog-filter-pill").forEach(function (pill) {
+      if (pill.dataset.bound) return;
+      pill.dataset.bound = "true";
+      pill.addEventListener("click", function () {
+        var group = pill.closest("[data-prog-filter-group]");
+        if (!group) return;
 
-      if (p.description) {
-        var desc = document.createElement("div");
-        desc.className = "weekly-programme-description";
-        desc.innerHTML = p.description;
-        body.appendChild(desc);
-      }
-
-      var footer = document.createElement("div");
-      footer.className = "weekly-programme-footer";
-
-      if (programmeHasDetailsContent(p)) {
-        var viewBtn = document.createElement("button");
-        viewBtn.type = "button";
-        viewBtn.className =
-          "weekly-programme-details-btn btn btn-kicc btn-kicc-sm btn-kicc-secondary";
-        viewBtn.innerHTML =
-          '<i class="fas fa-expand-alt" aria-hidden="true"></i> View full programme';
-        viewBtn.addEventListener("click", function () {
-          openProgrammeDetailsModal(p);
+        group.querySelectorAll(".prog-filter-pill").forEach(function (sibling) {
+          sibling.classList.remove("is-active");
+          sibling.setAttribute("aria-pressed", "false");
         });
-        footer.appendChild(viewBtn);
-      }
+        pill.classList.add("is-active");
+        pill.setAttribute("aria-pressed", "true");
 
-      if (p.topic) {
-        var topic = document.createElement("p");
-        topic.className = "weekly-programme-detail";
-        topic.innerHTML = "<strong>Topic:</strong> " + p.topic;
-        footer.appendChild(topic);
-      }
-
-      if (p.speaker) {
-        var speaker = document.createElement("p");
-        speaker.className = "weekly-programme-detail";
-        speaker.innerHTML = "<strong>Speaker:</strong> " + p.speaker;
-        footer.appendChild(speaker);
-      }
-
-      if (p.listenUrl) {
-        var link = document.createElement("a");
-        link.href = p.listenUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.className =
-          "weekly-programme-link btn btn-kicc btn-kicc-sm btn-kicc-primary";
-        link.innerHTML =
-          'Listen live <i class="fas fa-external-link-alt" aria-hidden="true"></i>';
-        footer.appendChild(link);
-      }
-
-      if (footer.childNodes.length > 0) {
-        body.appendChild(footer);
-      }
-
-      card.appendChild(body);
-      container.appendChild(card);
+        if (pill.dataset.progFilterAudience !== undefined) {
+          programmeFilterState.audience = pill.dataset.progFilterAudience;
+        } else if (pill.dataset.progFilterDay !== undefined) {
+          programmeFilterState.day = pill.dataset.progFilterDay;
+        } else if (pill.dataset.progFilterType !== undefined) {
+          programmeFilterState.type = pill.dataset.progFilterType;
+        }
+        applyProgrammeFilters();
+      });
     });
   };
+
+  const initProgrammesPageMotion = () => {
+    if (!isActivitiesPage()) return;
+
+    var hero = document.querySelector(".prog-hero-inner");
+    if (hero) {
+      requestAnimationFrame(function () {
+        hero.classList.add("is-visible");
+      });
+    }
+
+    var revealEls = document.querySelectorAll(".prog-reveal");
+    if (!revealEls.length) return;
+
+    var reveal = function (el) {
+      el.classList.add("is-visible");
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      revealEls.forEach(reveal);
+      return;
+    }
+
+    var motionObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            reveal(entry.target);
+            motionObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+    );
+
+    revealEls.forEach(function (el) {
+      motionObserver.observe(el);
+    });
+  };
+
+  const renderProgrammeHighlights = renderProgrammeCatalog;
 
   const applyProgrammesResponse = (data) => {
     var programmes =
@@ -5756,7 +6778,7 @@
 
     latestProgrammeRecordings = recordings;
     renderProgrammeTable(programmes);
-    renderWeeklyProgrammes(programmes);
+    renderProgrammeHighlights(programmes);
     renderRecordings(recordings);
     renderNextUpEvent(programmes);
     if (isPrayerTimesPage()) {
@@ -5764,6 +6786,7 @@
       renderPrayerTimesFooterProgrammes(programmes);
     }
     scrollToLocationHash();
+    initExternalLinkIcons();
   };
 
   const loadProgrammes = () => {
@@ -9258,6 +10281,9 @@
     initCampaignBankDetails();
     initAboutPageMotion();
     initContactPageMotion();
+    if (isActivitiesPage()) {
+      initProgrammesPageMotion();
+    }
     initContactDirections();
     initContactFormEnhancements();
     initHomeDonateMotion();
@@ -9272,6 +10298,7 @@
     setFooterYear();
     showCookiePolicy();
     initConsentEmbeds();
+    initExternalLinkIcons();
   });
 
   window.onload = () => {
@@ -9282,5 +10309,6 @@
     loadFundraiserProgress();
     setLocationSpecific();
     scrollToLocationHash();
+    initExternalLinkIcons();
   };
 })();

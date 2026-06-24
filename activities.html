@@ -90,7 +90,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-    <link rel="stylesheet" href="assets/css/main-1782157899187.css">
+    <link rel="stylesheet" href="assets/css/main-1782308956548.css">
   
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -125,7 +125,7 @@
     });
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
-  <script defer type="text/javascript" src="assets/js/scripts-1782157899048.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782308956413.js"></script>
   <script>
     (function () {
       var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
@@ -172,13 +172,13 @@
                   <div class="col-md-4 kicc-nav-mega-col">
                     <p class="kicc-nav-mega-label">This week</p>
                     <a class="kicc-nav-mega-link" href="activities.html#schedule">Weekly schedule</a>
-                    <a class="kicc-nav-mega-link" href="activities.html#weekly-programmes-section">Programme highlights</a>
+                    <a class="kicc-nav-mega-link" href="activities.html#programmes-highlights">Programme guide</a>
                     <a class="kicc-nav-mega-link" href="activities.html">All programmes</a>
                   </div>
                   <div class="col-md-4 kicc-nav-mega-col">
                     <p class="kicc-nav-mega-label">Classes</p>
-                    <a class="kicc-nav-mega-link" href="activities.html#women-class">Women's class</a>
-                    <a class="kicc-nav-mega-link" href="activities.html#adult-classes">Men's class</a>
+                    <a class="kicc-nav-mega-link" href="activities.html#adult-programme">Adult monthly programme</a>
+                    <a class="kicc-nav-mega-link" href="activities.html#womens-quran-class">Women&rsquo;s weekly class</a>
                     <a class="kicc-nav-mega-link" href="madrasa.html#madrasa-schedule">Children's madrasa</a>
                   </div>
                   <div class="col-md-4 kicc-nav-mega-col">
@@ -296,104 +296,229 @@
 
   <!-- NEWS AND EVENTS START -->
   <main id="main-content">
-  <section class="page-intro-hero programmes-hero" aria-labelledby="programmes-heading">
-    <div class="container">
-      <span class="campaign-eyebrow">Kerry Islamic Cultural Centre</span>
-      <h1 id="programmes-heading">Masjid Programmes</h1>
-      <p class="lead">Stream talks live, see what&rsquo;s on today, and explore every regular
-        class at Tralee Masjid.</p>
+  <section class="prog-hero" aria-labelledby="programmes-heading">
+    <div class="prog-hero-bg" aria-hidden="true">
+      <span class="prog-hero-orb prog-hero-orb--1"></span>
+      <span class="prog-hero-orb prog-hero-orb--2"></span>
+    </div>
+    <div class="container prog-hero-inner">
+      <span class="prog-eyebrow">Kerry Islamic Cultural Centre</span>
+      <h1 id="programmes-heading">Programmes &amp; Activities</h1>
+      <p class="prog-hero-lead">Weekly classes, monthly talks, and live broadcasts for adults, youth, and children across Kerry.</p>
     </div>
   </section>
 
-  <nav class="programmes-section-nav page-section-nav-dock" aria-label="Programmes page sections">
+  <nav class="programmes-section-nav page-section-nav-dock prog-dock" aria-label="Programmes page sections">
     <div class="container">
       <ul class="programmes-section-nav-list">
-        <li><a href="#listen">Listen</a></li>
         <li><a href="#schedule">Schedule</a></li>
-        <li><a href="#weekly-programmes-section">Programmes</a></li>
+        <li><a href="#programmes-highlights">Programmes</a></li>
+        <li><a href="#listen">Live</a></li>
+        <li><a href="#join">Join</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Weekly talks & live stream -->
-  <section id="listen" class="page-content-section programmes-live-section"
+  <!-- Weekly schedule -->
+  <section id="schedule" class="page-content-section programmes-schedule-section prog-reveal"
+    aria-labelledby="schedule-heading">
+    <div class="container">
+      <header class="prog-section-head prog-section-head--left">
+        <h2 id="schedule-heading">This Week</h2>
+        <p class="prog-section-lead">Today is highlighted in teal; tomorrow in gold. Tap a programme for full details.</p>
+      </header>
+
+      <div class="programmes-schedule-panel">
+        <div class="programmes-jumuah-feature jumuah-friday-banner programmes-jumuah-friday-banner jumuah-feature-banner" hidden
+          aria-live="polite" aria-label="Friday Jumu'ah times"></div>
+        <div id="programmes-today-banner" class="programmes-today-banner" hidden
+          aria-live="polite"></div>
+        <div id="programmes-weekly-schedule" class="programmes-week-grid-wrap"
+          aria-label="Programmes grouped by day of week">
+          <!-- day columns inserted by renderProgrammeSchedule -->
+        </div>
+        <div id="programmes-ongoing" class="programmes-ongoing-block" hidden
+          aria-labelledby="programmes-ongoing-heading">
+        </div>
+        <div id="programmes-upcoming-events" class="programmes-upcoming" hidden
+          aria-labelledby="upcoming-events-heading">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Programme guide -->
+  <section id="programmes-highlights" class="page-content-section prog-catalog-section prog-reveal"
+    aria-labelledby="programmes-highlights-heading">
+    <div class="container">
+      <header class="prog-section-head prog-section-head--left prog-section-head--catalog">
+        <h2 id="programmes-highlights-heading">Programme Guide</h2>
+        <p class="prog-section-lead">Tap any programme below for times, speaker, and venue.</p>
+      </header>
+
+      <div id="prog-catalog" class="prog-catalog">
+        <div class="prog-catalog-block" id="prog-cat-adult">
+          <div id="adult-programme" class="programmes-hub-block"
+            aria-labelledby="adult-programmes-heading">
+            <header class="programmes-hub-block-head">
+              <h3 id="adult-programmes-heading">Adult programmes</h3>
+              <p>Monthly talks and weekly Qur&rsquo;an classes for sisters and brothers.</p>
+            </header>
+
+            <div class="programmes-adult-split programmes-adult-split--monthly-only" id="programmes-adult-split">
+              <div class="programmes-adult-col programmes-adult-col--monthly">
+                <div class="programmes-monthly-rhythm" role="list"
+                  aria-label="How the adult monthly programme works">
+                  <article class="programmes-monthly-rhythm-card programmes-monthly-rhythm-card--sisters"
+                    role="listitem">
+                    <span class="programmes-monthly-rhythm-icon" aria-hidden="true"><i class="fas fa-venus"></i></span>
+                    <div>
+                      <h4 class="visually-hidden">Sisters</h4>
+                      <p class="programmes-monthly-rhythm-label">Sisters</p>
+                      <p>Usually after Zohr at Tralee Masjid</p>
+                    </div>
+                  </article>
+                  <article class="programmes-monthly-rhythm-card programmes-monthly-rhythm-card--brothers"
+                    role="listitem">
+                    <span class="programmes-monthly-rhythm-icon" aria-hidden="true"><i class="fas fa-mars"></i></span>
+                    <div>
+                      <h4 class="visually-hidden">Brothers</h4>
+                      <p class="programmes-monthly-rhythm-label">Brothers</p>
+                      <p>Alternates each month between Tralee Masjid and Killarney Masjid</p>
+                    </div>
+                  </article>
+                </div>
+
+                <p class="programmes-adult-monthly-note" id="adult-monthly-note">
+                  <span class="programmes-adult-note-tag">Monthly</span>
+                  One topic for sisters and brothers at different times. This month&rsquo;s notices:
+                </p>
+                <div id="adult-programme-highlights" class="prog-card-grid programmes-highlights-grid programmes-highlights-grid--posters"
+                  aria-label="Adult monthly programme notices" hidden>
+                </div>
+                <p id="adult-programme-empty" class="programmes-highlights-empty" hidden>
+                  This month&rsquo;s programme details will appear here when published.
+                </p>
+              </div>
+
+              <div id="womens-quran-class" class="programmes-adult-col programmes-adult-col--weekly" hidden>
+                <p class="programmes-adult-weekly-note" id="adult-weekly-note">
+                  <span class="programmes-adult-note-tag programmes-adult-note-tag--weekly">Weekly</span>
+                  Regular Qur&rsquo;an class for sisters at Tralee Masjid.
+                </p>
+                <div id="adult-weekly-highlights" class="prog-card-grid programmes-highlights-grid programmes-adult-weekly-grid"
+                  aria-label="Women&rsquo;s weekly Qur&rsquo;an class" hidden></div>
+              </div>
+            </div>
+          </div>
+          <div id="prog-grid-adult" class="prog-card-grid" aria-label="Other adult programmes" hidden></div>
+        </div>
+
+        <div class="prog-catalog-block" id="prog-cat-young">
+          <h3 class="prog-catalog-heading">Youth &amp; children</h3>
+          <p class="prog-catalog-intro">Madrasa classes, youth activities, and programmes for young learners.</p>
+          <article class="prog-card prog-card--static">
+            <div class="prog-card-media prog-card-media--icon" aria-hidden="true">
+              <i class="fas fa-book-quran"></i>
+            </div>
+            <div class="prog-card-body">
+              <h4 class="prog-card-title">Children&rsquo;s madrasa</h4>
+              <p class="prog-card-desc">Structured Qur&rsquo;an, Arabic, and Islamic studies at Tralee Masjid.</p>
+              <dl class="prog-card-meta">
+                <div><dt>Schedule</dt><dd>Weekday evenings &mdash; see madrasa page</dd></div>
+                <div><dt>Location</dt><dd>Tralee Masjid</dd></div>
+              </dl>
+              <div class="prog-card-footer">
+                <a href="madrasa.html" class="btn btn-kicc btn-kicc-primary btn-kicc-sm">Madrasa details</a>
+              </div>
+            </div>
+          </article>
+          <div id="prog-grid-young" class="prog-card-grid" aria-label="Youth and children programmes"></div>
+        </div>
+
+        <div class="prog-catalog-block prog-catalog-block--last" id="prog-cat-community">
+          <h3 class="prog-catalog-heading">Everything for Everyone</h3>
+          <p class="prog-catalog-intro">Hadith circles, Tafseer, Durood gatherings, and other community programmes held throughout the week &mdash; usually after Salah. Everyone welcome.</p>
+          <div id="prog-grid-community" class="prog-card-grid" aria-label="Programmes for everyone"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live stream & recordings -->
+  <section id="listen" class="page-content-section programmes-live-section prog-reveal"
     aria-labelledby="weekly-talks-heading">
     <div class="container">
-      <header class="programmes-section-header programmes-section-header-left">
-        <span class="programmes-section-eyebrow">Listen live</span>
-        <h2 id="weekly-talks-heading">Weekly Talks</h2>
-        <p class="programmes-section-lead">Catch the next broadcast or replay a recent talk
-          without leaving the page.</p>
+      <header class="prog-section-head prog-section-head--left">
+        <h2 id="weekly-talks-heading">Live audio &amp; recordings</h2>
+        <p class="prog-section-lead">Listen when we&rsquo;re on air or replay recent talks.</p>
       </header>
 
       <div class="programmes-live-hub">
-        <div class="row programmes-live-grid">
-          <div class="col-lg-5 mb-4 mb-lg-0">
-            <article class="programmes-next-event programmes-feature-card"
-              aria-labelledby="next-event-label">
-              <div class="programmes-feature-badge">Next up</div>
-              <div class="programmes-next-event-body">
-                <div class="programmes-event-date">
-                  <span class="programmes-event-date-day" id="event-date">01</span>
-                  <div class="programmes-event-date-meta">
-                    <span class="programmes-event-date-month" id="event-month">Jan</span>
-                    <span class="programmes-event-date-year" id="event-year">2020</span>
-                  </div>
-                </div>
-                <div class="programmes-event-details">
-                  <h3 id="next-event-label" class="programmes-event-name">
-                    <span id="event-name">Loading&hellip;</span>
-                  </h3>
-                  <ul class="programmes-event-meta list-unstyled mb-0">
-                    <li>
-                      <i class="far fa-calendar-alt" aria-hidden="true"></i>
-                      <span id="event-day">Fri</span>
-                    </li>
-                    <li>
-                      <i class="far fa-clock" aria-hidden="true"></i>
-                      <span id="starts-at">00:00</span>
-                    </li>
-                  </ul>
+        <div class="prog-live-layout">
+          <article class="programmes-stream-card programmes-feature-card prog-live-now"
+            aria-labelledby="stream-label">
+            <header class="programmes-stream-header">
+              <h3 id="stream-label" class="programmes-stream-title">
+                <i class="fas fa-headphones" aria-hidden="true"></i>
+                Listen live
+              </h3>
+              <span id="live-now"></span>
+            </header>
+            <div class="programmes-stream-body">
+              <div class="consent-embed consent-embed-mixlr" data-consent-embed
+                data-embed-title="Tralee Masjid live audio stream"
+                data-embed-src="https://mixlr.com/tralee-masjid/embed?autoplay=true&amp;color=#0a8a8e"
+                data-embed-height="150">
+                <div class="consent-embed-placeholder" hidden>
+                  <p>Enable <strong>Third-party embeds</strong> in
+                    <a href="#" class="cookie-prefs-inline-open">Privacy &amp; cookies</a>
+                    to load the Mixlr live stream.</p>
                 </div>
               </div>
-              <footer class="programmes-next-event-footer">
-                <a href="https://mixlr.com/tralee-masjid/events/" target="_blank"
-                  rel="noopener noreferrer" class="programmes-link-more">
-                  View all events <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                </a>
-              </footer>
-            </article>
-          </div>
-          <div class="col-lg-7">
-            <article class="programmes-stream-card programmes-feature-card"
-              aria-labelledby="stream-label">
-              <div class="programmes-stream-header">
-                <h3 id="stream-label" class="programmes-stream-title">
-                  <i class="fas fa-broadcast-tower" aria-hidden="true"></i>
-                  Live stream
+            </div>
+          </article>
+
+          <article class="programmes-next-event programmes-feature-card prog-live-next"
+            aria-labelledby="next-event-label">
+            <div class="programmes-feature-badge">Next audio broadcast</div>
+            <div class="programmes-next-event-body">
+              <div class="programmes-event-date">
+                <span class="programmes-event-date-day" id="event-date">01</span>
+                <div class="programmes-event-date-meta">
+                  <span class="programmes-event-date-month" id="event-month">Jan</span>
+                  <span class="programmes-event-date-year" id="event-year">2020</span>
+                </div>
+              </div>
+              <div class="programmes-event-details">
+                <h3 id="next-event-label" class="programmes-event-name">
+                  <span id="event-name">Loading&hellip;</span>
                 </h3>
-                <span id="live-now"></span>
+                <ul class="programmes-event-meta list-unstyled mb-0">
+                  <li>
+                    <i class="far fa-calendar-alt" aria-hidden="true"></i>
+                    <span id="event-day">Fri</span>
+                  </li>
+                  <li>
+                    <i class="far fa-clock" aria-hidden="true"></i>
+                    <span id="starts-at">00:00</span>
+                  </li>
+                </ul>
               </div>
-              <div class="programmes-stream-body">
-                <div class="consent-embed consent-embed-mixlr" data-consent-embed
-                  data-embed-title="Tralee Masjid live audio stream"
-                  data-embed-src="https://mixlr.com/tralee-masjid/embed?autoplay=true&amp;color=#0a8a8e"
-                  data-embed-height="150">
-                  <div class="consent-embed-placeholder" hidden>
-                    <p>Enable <strong>Third-party embeds</strong> in
-                      <a href="#" class="cookie-prefs-inline-open">Privacy &amp; cookies</a>
-                      to load the Mixlr live stream.</p>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
+            </div>
+            <footer class="programmes-next-event-footer">
+              <a href="https://mixlr.com/tralee-masjid/events/" target="_blank"
+                rel="noopener noreferrer" class="programmes-link-more">
+                All Mixlr events <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+              </a>
+            </footer>
+          </article>
         </div>
 
-        <div id="programmes-recordings-wrap" class="programmes-recordings-wrap" hidden>
+        <div id="programmes-recordings-wrap" class="programmes-recordings-wrap prog-recordings" hidden>
           <header class="programmes-recordings-header">
             <div>
-              <h3 id="recordings-heading" class="programmes-recordings-heading">Previous recordings</h3>
+              <h3 id="recordings-heading" class="programmes-recordings-heading">Recent recordings</h3>
               <p class="programmes-recordings-sublead">Tap a talk to play it here</p>
             </div>
             <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank"
@@ -434,76 +559,43 @@
     </div>
   </section>
 
-  <!-- Weekly schedule -->
-  <section id="schedule" class="page-content-section programmes-schedule-section"
-    aria-labelledby="schedule-heading">
+  <section id="join" class="page-content-section prog-join-section prog-reveal" aria-labelledby="join-heading">
     <div class="container">
-      <header class="programmes-section-header programmes-section-header-left">
-        <span class="programmes-section-eyebrow">At a glance</span>
-        <h2 id="schedule-heading">Weekly Schedule</h2>
-        <p class="programmes-section-lead">Regular classes and gatherings throughout the week. Today is centred in the&nbsp;carousel; tomorrow is highlighted in&nbsp;gold.</p>
+      <header class="prog-section-head prog-section-head--left">
+        <h2 id="join-heading">How to Join</h2>
+        <p class="prog-section-lead">Everyone is welcome. Most programmes are free; weekly classes are usually drop-in.</p>
       </header>
-
-      <div class="programmes-schedule-panel">
-        <div class="programmes-jumuah-feature jumuah-friday-banner programmes-jumuah-friday-banner jumuah-feature-banner" hidden
-          aria-live="polite" aria-label="Friday Jumu'ah times"></div>
-        <div id="programmes-today-banner" class="programmes-today-banner" hidden
-          aria-live="polite"></div>
-        <div class="programmes-week-toolbar" data-programmes-week-toolbar hidden>
-          <button type="button" class="programmes-week-nav-btn programmes-week-nav-btn-today"
-            data-programmes-scroll-today>
-            <i class="fas fa-location-crosshairs" aria-hidden="true"></i>
-            Jump to today
-          </button>
-          <p class="programmes-week-nav-hint">Swipe or scroll — the week loops continuously</p>
-          <div class="programmes-week-nav-arrows" aria-label="Browse days">
-            <button type="button" class="programmes-week-nav-btn programmes-week-nav-btn-icon"
-              data-programmes-scroll-prev aria-label="Previous day">
-              <i class="fas fa-chevron-left" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="programmes-week-nav-btn programmes-week-nav-btn-icon"
-              data-programmes-scroll-next aria-label="Next day">
-              <i class="fas fa-chevron-right" aria-hidden="true"></i>
-            </button>
+      <ol class="prog-join-steps">
+        <li class="prog-join-step">
+          <span class="prog-join-step-num" aria-hidden="true">1</span>
+          <div>
+            <h3>Pick a programme</h3>
+            <p>Check <a href="#schedule">this week&rsquo;s schedule</a> or browse the <a href="#programmes-highlights">programme guide</a>.</p>
           </div>
-        </div>
-        <div class="programmes-week-scroll-wrap" data-programmes-week-scroll>
-          <div class="programmes-week-scroll-fade programmes-week-scroll-fade-left"
-            aria-hidden="true"></div>
-          <div id="programmes-weekly-schedule" class="programmes-weekly-schedule"
-            aria-label="Programmes grouped by day of week">
-            <!-- day columns inserted by renderProgrammeSchedule -->
+        </li>
+        <li class="prog-join-step">
+          <span class="prog-join-step-num" aria-hidden="true">2</span>
+          <div>
+            <h3>Come along</h3>
+            <p>Turn up at the masjid for weekly classes. For madrasa or special events, contact us first.</p>
           </div>
-          <div class="programmes-week-scroll-fade programmes-week-scroll-fade-right"
-            aria-hidden="true"></div>
-        </div>
-        <div id="programmes-ongoing" class="programmes-ongoing-block" hidden
-          aria-labelledby="programmes-ongoing-heading">
-          <!-- ongoing / unscheduled programmes -->
-        </div>
-        <div id="programmes-upcoming-events" class="programmes-upcoming" hidden
-          aria-labelledby="upcoming-events-heading">
-          <!-- one-off events outside this week -->
-        </div>
+        </li>
+        <li class="prog-join-step">
+          <span class="prog-join-step-num" aria-hidden="true">3</span>
+          <div>
+            <h3>Stay in the loop</h3>
+            <p>Schedule changes are posted on the <a href="index.html#notice-board">homepage notice board</a>.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="prog-join-actions">
+        <a href="contact.html" class="btn btn-kicc btn-kicc-primary">Contact us</a>
+        <a href="index.html#notice-board" class="btn btn-kicc btn-kicc-secondary">View notices</a>
+        <a href="madrasa.html" class="btn btn-kicc btn-kicc-secondary">Children&rsquo;s madrasa</a>
       </div>
     </div>
   </section>
 
-  <!-- Programme detail cards -->
-  <section id="weekly-programmes-section" class="page-content-section programmes-cards-section"
-    aria-labelledby="programmes-detail-heading">
-    <div class="container">
-      <header class="programmes-section-header programmes-section-header-left">
-        <span class="programmes-section-eyebrow">Learn more</span>
-        <h2 id="programmes-detail-heading">Programme Details</h2>
-        <p class="programmes-section-lead">Full descriptions, speakers, and topics for each
-          regular programme.</p>
-      </header>
-      <div id="weekly-programmes" class="programmes-cards-grid">
-        <!-- cards inserted dynamically by renderWeeklyProgrammes -->
-      </div>
-    </div>
-  </section>
   </main>
   <!-- NEWS AND EVENTS END -->
 
@@ -767,8 +859,7 @@
               <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u"
                 target="_blank" rel="noopener noreferrer">Register</a>
             </li>
-            <li><a href="activities.html#women-class">Women's class</a></li>
-            <li><a href="activities.html#adult-classes">Men's class</a></li>
+            <li><a href="activities.html#adult-programme">Adult monthly programme</a></li>
             <li><a href="madrasa.html#madrasa-schedule">Children's madrasa</a></li>
             <li><a href="activities.html#listen">Talks &amp; recordings</a></li>
             <li><a href="prayer-times.html#prayer-times-jumuah">Jumu&rsquo;ah Salah</a></li>

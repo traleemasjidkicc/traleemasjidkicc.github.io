@@ -1,0 +1,48 @@
+---
+description: Plain-language copy for visitors — no developer or UI framework jargon
+alwaysApply: true
+---
+
+# No code jargon in user-facing copy
+
+All visible text on the Tralee Masjid site is for mosque visitors, not developers. Write in plain, welcoming language.
+
+## Applies to
+
+- Page headings, leads, buttons, labels, empty states, and error messages
+- `aria-label` and other accessibility text read aloud to visitors
+- Alt text and link text
+
+Does **not** apply to HTML class names, CSS selectors, JS identifiers, or build tooling.
+
+## Avoid in visitor copy
+
+| Jargon | Prefer instead |
+|--------|----------------|
+| card | programme, notice, section, entry |
+| modal / dialog | details, full information |
+| embed / widget | live player, map, donation form |
+| toggle | setting, switch, on/off |
+| grid / carousel | schedule, list, gallery |
+| tab / dropdown | menu, section |
+| cache / API / localStorage | (omit — never mention) |
+| component | section, block |
+
+## Keep when meant literally
+
+- **Card payment** / **credit card** — payment method, not UI
+- **Twitter Card** — meta tag only, not visible copy
+
+## Examples
+
+```html
+<!-- BAD -->
+<p>Open any card for times and venue.</p>
+<p>Enable third-party embeds to load the stream.</p>
+
+<!-- GOOD -->
+<p>Tap any programme below for times, speaker, and venue.</p>
+<p>Allow external content in Privacy &amp; cookies to listen live.</p>
+```
+
+When editing existing pages, scan for jargon and replace with visitor-friendly wording.
