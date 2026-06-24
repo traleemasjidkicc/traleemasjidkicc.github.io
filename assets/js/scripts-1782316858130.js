@@ -164,13 +164,47 @@
     }
   };
 
+  const isWhatsAppHref = (href) => {
+    if (!href || typeof href !== "string") return false;
+    var trimmed = href.trim();
+    return (
+      /^(https?:)?\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\//i.test(
+        trimmed,
+      ) || trimmed.indexOf("//wa.me/") === 0
+    );
+  };
+
+  const isExternalButtonLink = (link) => {
+    if (!link || !link.classList) return false;
+    return (
+      link.classList.contains("btn") ||
+      link.classList.contains("contact-action-btn") ||
+      link.classList.contains("site-action-btn") ||
+      link.classList.contains("btn-campaign") ||
+      link.classList.contains("site-footer-social-link")
+    );
+  };
+
   const shouldSkipExternalLinkIcon = (link) => {
     if (!link) return false;
     if (link.dataset.skipExternalIcon === "true") return true;
+    if (isWhatsAppHref(link.getAttribute("href"))) return true;
+    if (isExternalButtonLink(link)) return true;
+    if (
+      link.querySelector &&
+      link.querySelector(".fa-whatsapp, .fa-brands.fa-whatsapp")
+    ) {
+      return true;
+    }
     if (!link.closest) return false;
-    return !!link.closest(
-      "#noticeContainer, #masjid-notice-spotlight, #notice-board",
-    );
+    if (
+      link.closest(
+        "#noticeContainer, #masjid-notice-spotlight, #notice-board, .site-action-dock",
+      )
+    ) {
+      return true;
+    }
+    return false;
   };
 
   const initExternalLinkIcons = (root) => {
@@ -760,6 +794,7 @@
   let prayerHighlightTimer = null;
   let prayerCarouselBuilt = false;
   let prayerCarouselUserScrolling = false;
+  let prayerCarouselInitializing = false;
   let prayerCarouselScrollTimer = null;
   let prayerCarouselNormalizeTimer = null;
   let prayerCarouselJumping = false;
@@ -1305,16 +1340,63 @@
     }
 
     track.innerHTML = chunks.join("");
-    suite.hidden = false;
-    if (toolbar) toolbar.hidden = false;
     prayerCarouselBuilt = true;
     initHomePrayerDeckControls();
+    positionPrayerCarouselAtCurrentSlot(true);
+    suite.hidden = false;
+    if (toolbar) toolbar.hidden = false;
     requestAnimationFrame(function () {
-      centerPrayerCarouselOnSlot(null, null, "auto");
-      normalizePrayerCarouselScroll();
-      updatePrayerCarouselToolbarLabel();
       updatePrayerHighlightsUI();
     });
+  };
+
+  const getPrayerDeckTargetSlide = (dayKey, prayerId) => {
+    const deckState = getDeckHighlightState();
+    let targetDay = dayKey;
+    let targetPrayer = prayerId;
+
+    if (!targetDay || !targetPrayer) {
+      if (deckState.current) {
+        targetDay = deckState.current.dayKey;
+        targetPrayer = deckState.current.id;
+      } else if (deckState.nextPrayer) {
+        targetDay = deckState.nextPrayer.dayKey;
+        targetPrayer = deckState.nextPrayer.id;
+      }
+    }
+
+    if (!targetDay || !targetPrayer) return null;
+
+    return findPrayerDeckCard(
+      targetDay,
+      targetPrayer,
+      PRAYER_CAROUSEL_PRIMARY,
+    );
+  };
+
+  const positionPrayerCarouselAtCurrentSlot = (instant) => {
+    const viewport = getPrayerCarouselViewport();
+    const track = getPrayerCarouselTrack();
+    const slide = getPrayerDeckTargetSlide();
+    if (!viewport || !track || !slide) return false;
+
+    if (instant) {
+      prayerCarouselInitializing = true;
+      viewport.classList.add("is-prayer-carousel-init");
+      void track.offsetHeight;
+    }
+
+    centerPrayerCarouselOnSlide(slide, instant ? "auto" : "smooth");
+    normalizePrayerCarouselScroll();
+    updateCarouselCenteredSlide();
+    updatePrayerCarouselToolbarLabel();
+
+    if (instant) {
+      viewport.classList.remove("is-prayer-carousel-init");
+      prayerCarouselInitializing = false;
+    }
+
+    return true;
   };
 
   const getPrayerCarouselLoopWidth = () => {
@@ -1419,10 +1501,16 @@
     }
 
     const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-    viewport.scrollTo({
-      left: Math.max(0, Math.min(targetScroll, maxScroll)),
-      behavior: behavior || "smooth",
-    });
+    const left = Math.max(0, Math.min(targetScroll, maxScroll));
+
+    if (behavior === "auto") {
+      viewport.scrollLeft = left;
+    } else {
+      viewport.scrollTo({
+        left: left,
+        behavior: behavior || "smooth",
+      });
+    }
   };
 
   const findPrayerDeckCard = (dayKey, prayerId, repeat) => {
@@ -1440,31 +1528,11 @@
   };
 
   const centerPrayerCarouselOnSlot = (dayKey, prayerId, behavior) => {
-    const deckState = getDeckHighlightState();
-    let targetDay = dayKey;
-    let targetPrayer = prayerId;
+    const slide = getPrayerDeckTargetSlide(dayKey, prayerId);
+    if (!slide) return;
 
-    if (!targetDay || !targetPrayer) {
-      if (deckState.current) {
-        targetDay = deckState.current.dayKey;
-        targetPrayer = deckState.current.id;
-      } else if (deckState.nextPrayer) {
-        targetDay = deckState.nextPrayer.dayKey;
-        targetPrayer = deckState.nextPrayer.id;
-      }
-    }
-
-    if (!targetDay || !targetPrayer) return;
-
-    const slide = findPrayerDeckCard(
-      targetDay,
-      targetPrayer,
-      PRAYER_CAROUSEL_PRIMARY,
-    );
-    if (slide) {
-      centerPrayerCarouselOnSlide(slide, behavior || "smooth");
-      requestAnimationFrame(updateCarouselCenteredSlide);
-    }
+    centerPrayerCarouselOnSlide(slide, behavior || "smooth");
+    requestAnimationFrame(updateCarouselCenteredSlide);
   };
 
   const schedulePrayerCarouselNormalize = () => {
@@ -1533,6 +1601,7 @@
     viewport.addEventListener(
       "scroll",
       function () {
+        if (prayerCarouselInitializing) return;
         prayerCarouselUserScrolling = true;
         if (prayerCarouselScrollTimer) {
           clearTimeout(prayerCarouselScrollTimer);
@@ -3643,6 +3712,79 @@
     });
   };
 
+  const renderPrayerTimesHubProgrammes = (programmes) => {
+    if (!isPrayerTimesPage()) return;
+
+    const list = document.querySelector("[data-prayer-hub-programmes]");
+    if (!list) return;
+
+    list.innerHTML = "";
+    const weekly = getPrayerTimesFooterProgrammes(programmes).slice(0, 2);
+
+    if (!weekly.length) {
+      const li = document.createElement("li");
+      li.textContent = "See activities for the weekly programme schedule.";
+      list.appendChild(li);
+      return;
+    }
+
+    weekly.forEach(function (p) {
+      const li = document.createElement("li");
+      const strong = document.createElement("strong");
+      strong.textContent = p.name || "Programme";
+      li.appendChild(strong);
+
+      const meta = buildPrayerTimesFooterProgrammeLabel(p);
+      if (meta) {
+        li.appendChild(document.createTextNode(" — " + meta));
+      }
+
+      list.appendChild(li);
+    });
+  };
+
+  const renderPrayerTimesHubListen = (programmes) => {
+    if (!isPrayerTimesPage()) return;
+
+    const fallback = document.querySelector("[data-prayer-hub-listen-fallback]");
+    const eventsList = document.querySelector("[data-prayer-hub-listen-events]");
+    const primaryLink = document.querySelector("[data-prayer-hub-listen-link]");
+    if (!fallback || !eventsList || !primaryLink) return;
+
+    const mixlrEvents = getPrayerTimesHubMixlrEvents(programmes, 1);
+    eventsList.innerHTML = "";
+
+    if (!mixlrEvents.length) {
+      fallback.hidden = false;
+      eventsList.hidden = true;
+      primaryLink.href = SITE_LINKS["mixlr-station"].href;
+      primaryLink.textContent = "Open Mixlr";
+      delete primaryLink.dataset.externalIcon;
+      initExternalLinkIcons(
+        primaryLink.closest(".prayer-times-essential-card"),
+      );
+      return;
+    }
+
+    fallback.hidden = true;
+    eventsList.hidden = false;
+
+    mixlrEvents.forEach(function (p) {
+      const li = document.createElement("li");
+      li.textContent = formatPrayerTimesHubMixlrEventLine(p);
+      eventsList.appendChild(li);
+    });
+
+    const featured = mixlrEvents[0];
+    primaryLink.href =
+      (featured && featured.listenUrl) || SITE_LINKS["mixlr-station"].href;
+    primaryLink.textContent = "View event on Mixlr";
+    delete primaryLink.dataset.externalIcon;
+    initExternalLinkIcons(
+      primaryLink.closest(".prayer-times-essential-card"),
+    );
+  };
+
   const renderPrayerTimesFooterListen = () => {
     if (!isPrayerTimesPage()) return;
 
@@ -5021,6 +5163,44 @@
       }
     }
     return null;
+  };
+
+  const getPrayerTimesHubMixlrEvents = (programmes, limit) => {
+    const max = typeof limit === "number" && limit > 0 ? limit : 1;
+    const events = getMixlrEventProgrammes(programmes);
+    if (!events.length) return [];
+
+    const now = getDublinDate().getTime();
+    const upcoming = events.filter(function (item) {
+      return item.eventDate.getTime() >= now;
+    });
+    const picks = upcoming.length ? upcoming : events.slice(-1);
+
+    return picks.slice(0, max).map(function (item) {
+      return item.programme;
+    });
+  };
+
+  const formatPrayerTimesHubMixlrEventLine = (p) => {
+    if (!p) return "Upcoming event";
+
+    const eventDate = getProgrammeEventDate(p);
+    const name = p.name || "Upcoming event";
+    if (!eventDate) {
+      const timeLabel = getProgrammeTimeLabel(p);
+      return timeLabel ? name + " — " + timeLabel : name;
+    }
+
+    let dayLabel = formatUkDateLocal(eventDate, "weekdayShort");
+    if (isSameCalendarDay(eventDate, getDublinDate())) {
+      dayLabel = "Today";
+    }
+
+    const datePart = formatUkDateLocal(eventDate, "short");
+    const timePart = p.clockTime ? formatUkDisplayTime(p.clockTime) : "";
+    const when = timePart ? dayLabel + ", " + timePart : datePart;
+
+    return name + " — " + when;
   };
 
   const renderNextUpEvent = (programmes) => {
@@ -7046,6 +7226,8 @@
     if (isPrayerTimesPage()) {
       prayerTimesHubState.programmes = programmes;
       renderPrayerTimesFooterProgrammes(programmes);
+      renderPrayerTimesHubProgrammes(programmes);
+      renderPrayerTimesHubListen(programmes);
     }
     scrollToLocationHash();
     initExternalLinkIcons();
@@ -7486,6 +7668,7 @@
     waLink.target = "_blank";
     waLink.rel = "noopener noreferrer";
     waLink.className = "site-action-btn site-action-btn--whatsapp";
+    waLink.dataset.skipExternalIcon = "true";
     waLink.setAttribute("aria-label", "Chat on WhatsApp");
     waLink.style.setProperty("--action-i", "0");
     waLink.innerHTML =
@@ -7497,6 +7680,7 @@
     donateLink.target = "_blank";
     donateLink.rel = "noopener noreferrer";
     donateLink.className = "site-action-btn site-action-btn--donate";
+    donateLink.dataset.skipExternalIcon = "true";
     donateLink.setAttribute("aria-label", "Donate to the masjid");
     donateLink.style.setProperty("--action-i", "1");
     donateLink.innerHTML =

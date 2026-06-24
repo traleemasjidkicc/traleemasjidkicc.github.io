@@ -97,7 +97,7 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="assets/css/main-1782313768620.css">
+  <link rel="stylesheet" href="assets/css/main-1782316858287.css">
 
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -125,7 +125,7 @@
       wait_for_update: 500
     });
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1782313768439.js"></script>
+  <script defer type="text/javascript" src="assets/js/scripts-1782316858130.js"></script>
   <script>
     (function () {
       var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
@@ -220,6 +220,7 @@
                     <p class="kicc-nav-mega-label">People &amp; contact</p>
                     <a class="kicc-nav-mega-link" href="about.html#our-team">Our team</a>
                     <a class="kicc-nav-mega-link" href="contact.html">Contact us</a>
+                    <a class="kicc-nav-mega-link" href="prayer-times.html">View prayer timetable</a>
                     <a class="kicc-nav-mega-link" href="https://maps.app.goo.gl/Lya1necC8WXXpUE5A"
                       target="_blank" rel="noopener noreferrer">Find us on the map</a>
                     <a class="kicc-nav-mega-link" href="mailto:info@traleemasjidkicc.ie">info@traleemasjidkicc.ie</a>
@@ -278,7 +279,7 @@
               <p class="kicc-nav-salah-sunrise text-muted mb-2">Sunrise:
                 <span id="nav-sunrise"></span></p>
               <a class="btn btn-kicc btn-kicc-sm btn-kicc-salah d-block text-center mb-2"
-                href="prayer-times.html">Full timetable</a>
+                href="prayer-times.html">View prayer timetable</a>
               <a class="btn btn-kicc btn-kicc-sm btn-kicc-secondary d-block text-center"
                 id="salah-times" role="button" href="#" target="_blank"
                 rel="noopener noreferrer"><span id="nav-cur-month"></span>
@@ -447,7 +448,7 @@
               <i class="fas fa-certificate" aria-hidden="true"></i>
               Official masjid timetable
             </span>
-            <p class="prayer-times-sheet-preview-lead">Same layout as the monthly PDF &mdash; switch views above, then print or download when ready.</p>
+            <p class="prayer-times-sheet-preview-lead">Same layout as the official monthly timetable published by the masjid &mdash; switch views above, then print or download when ready.</p>
           </header>
         <div class="prayer-timetable-sheet prayer-reveal" data-prayer-sheet>
           <header class="prayer-timetable-header">
@@ -719,9 +720,8 @@
               <article class="prayer-times-essential-card prayer-times-essential-card--programs">
                 <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-calendar-week"></i></span>
                 <h3 class="prayer-times-essential-title">Programmes</h3>
-                <ul class="prayer-times-essential-list">
-                  <li>Women&rsquo;s class &mdash; Wed 10.30am</li>
-                  <li>Durood Majlis &mdash; Thu after Magrib</li>
+                <ul class="prayer-times-essential-list" data-prayer-hub-programmes>
+                  <li>Loading weekly programmes&hellip;</li>
                 </ul>
                 <a class="prayer-times-essential-link" href="activities.html">View all programmes</a>
               </article>
@@ -730,8 +730,14 @@
               <article class="prayer-times-essential-card prayer-times-essential-card--listen">
                 <span class="prayer-times-essential-icon" aria-hidden="true"><i class="fas fa-headphones-alt"></i></span>
                 <h3 class="prayer-times-essential-title">Listen live</h3>
-                <p class="prayer-times-essential-copy">Follow talks and events from Tralee Masjid on Mixlr.</p>
-                <a class="prayer-times-essential-link" href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">Open Mixlr</a>
+                <div data-prayer-hub-listen>
+                  <p class="prayer-times-essential-copy" data-prayer-hub-listen-fallback>
+                    Follow talks and events from Tralee Masjid on Mixlr.
+                  </p>
+                  <ul class="prayer-times-essential-list" data-prayer-hub-listen-events hidden></ul>
+                </div>
+                <a class="prayer-times-essential-link" data-prayer-hub-listen-link
+                  href="https://traleemasjid.mixlr.com/" target="_blank" rel="noopener noreferrer">Open Mixlr</a>
               </article>
             </div>
             <div class="col-md-6 col-lg-3 mb-4 prayer-reveal" style="--prayer-i: 2">

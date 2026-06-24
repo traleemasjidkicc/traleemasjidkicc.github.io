@@ -10344,6 +10344,11 @@ a:focus-visible .kicc-external-icon {
 	padding: 2.35rem 0 0.75rem;
 }
 
+.home-prayer-carousel-viewport.is-prayer-carousel-init {
+	scroll-behavior: auto;
+	scroll-snap-type: none;
+}
+
 .home-prayer-carousel-viewport::-webkit-scrollbar {
 	display: none;
 }
@@ -18907,6 +18912,18 @@ body.has-page-section-nav [id] {
 
 .page-prayer-times .prayer-times-essential-list {
 	list-style: none;
+}
+
+.page-prayer-times .prayer-times-essential-list a {
+	color: var(--kicc-teal);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.page-prayer-times .prayer-times-essential-list a:hover,
+.page-prayer-times .prayer-times-essential-list a:focus {
+	color: var(--kicc-teal-deep);
+	text-decoration: underline;
 }
 
 .page-prayer-times .prayer-times-essential-meta {

@@ -37,6 +37,11 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 2. **Classes** — adult programmes, women’s weekly class, children’s madrasa  
 3. **Listen & updates** — live audio & recordings, previous talks, Kerry Muslim database, Dhikr app  
 
+**About**
+
+1. **Our centre** — who we are, our story, how we evolved, community today  
+2. **People & contact** — our team, contact us, view prayer timetable, find us on the map, email  
+
 ## External URLs in JS
 
 - Repeat off-site URLs once in `SITE_LINKS` (forms, Mixlr, GoFundMe, maps, WhatsApp madrasa).

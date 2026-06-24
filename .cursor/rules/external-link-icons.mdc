@@ -1,5 +1,5 @@
 ---
-description: External link icon policy — sitewide ↗ except notice board
+description: External link icon policy — sitewide ↗ except notices, buttons, WhatsApp, and action dock
 alwaysApply: true
 ---
 
@@ -10,17 +10,20 @@ Sitewide, external links get a ↗ icon via `initExternalLinkIcons()` in `assets
 ## Do not add icons to
 
 - **Notice board links** — `#noticeContainer`, `#masjid-notice-spotlight`, `#notice-board`
-- Links with `data-skip-external-icon="true"` (set in JS as `dataset.skipExternalIcon = "true"`)
+- **Button-style links** — `.btn`, `.contact-action-btn`, `.site-action-btn`, `.btn-campaign`, `.site-footer-social-link` (icons belong on the button label, not a ↗)
+- **WhatsApp links** — `wa.me` / `api.whatsapp.com` URLs, or any link that already shows a WhatsApp icon (`.fa-whatsapp`)
+- **Floating action dock** — `.site-action-dock` (WhatsApp, Donate, Back to top)
+- Links with `data-skip-external-icon="true"` (set in HTML or JS as `dataset.skipExternalIcon = "true"`)
 
-Notices open poster images in the BaguetteBox lightbox. They are not “leave the site” navigation, so a ↗ icon is misleading.
+Notices open poster images in the BaguetteBox lightbox. Buttons and WhatsApp already signal action/channel — a ↗ icon is redundant or misleading.
 
 ## When adding new exceptions
 
 1. Set `data-skip-external-icon="true"` on the link in HTML or when creating it in JS, **or**
-2. Extend `shouldSkipExternalLinkIcon()` with a stable container selector.
+2. Extend `shouldSkipExternalLinkIcon()` with a stable container selector or helper (`isExternalButtonLink`, `isWhatsAppHref`).
 
 Do not disable `initExternalLinkIcons()` globally for a single section.
 
 ## Still show icons on
 
-Footer links, Mixlr, GoFundMe, maps, register forms, programme listen links, PDF timetable, and other genuine off-site navigation.
+Inline text links in body copy, nav mega menu off-site links, footer text links, Mixlr archive text links, maps, Kerry Muslim database (non-button), PDF timetable, and other genuine off-site inline navigation.
