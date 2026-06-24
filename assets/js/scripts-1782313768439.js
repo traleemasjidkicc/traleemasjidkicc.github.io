@@ -1,6 +1,23 @@
 (function () {
   "use strict";
 
+  /*
+   * Tralee Masjid — scripts.js (single IIFE)
+   * ---------------------------------------------------------------------------
+   *  1. Routing — getPathname(), is*Page(), getPageKey()
+   *  2. Site links — SITE_LINKS, initCanonicalSiteLinks()
+   *  3. Backend URLs — CLOUD_RUN_APIS (content), FIREBASE_FUNCTIONS (SumUp)
+   *  4. UK dates & times — formatUkDate(), formatUkDisplayTime() (en-GB, 12hr, lowercase am/pm)
+   *  5. Salah & iqamah — timetable PDF, nav panel, prayer-times page
+   *  5. Announcements, notices, hadith
+   *  6. Programmes — schedule, catalogue, activities page
+   *  7. Donations — GoFundMe, SumUp, getcampaigns progress
+   *  8. Navigation — mobile nav, section dock, external link icons
+   *  9. Consent, cookies, analytics embeds
+   * 10. Page motion & init — DOMContentLoaded / window.onload
+   * ---------------------------------------------------------------------------
+   */
+
   const getPathname = () => window.location.pathname || "";
 
   const isHomePage = () => {
@@ -31,6 +48,84 @@
     return null;
   };
 
+  /* --------------------------------------------------------------------------
+   * Site links — canonical external URLs (see .cursor/rules/site-links.mdc)
+   * Use data-site-link="<key>" on anchors; initCanonicalSiteLinks() syncs href.
+   * -------------------------------------------------------------------------- */
+  const SITE_LINKS = {
+    "kerry-muslim-database": {
+      href:
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAZ__rE22wdUNjhCNTdMR08yME1GUzM5WUtXMU5JRFhJVC4u",
+      external: true,
+    },
+    "mixlr-showreel": {
+      href: "https://mixlr.com/tralee-masjid/showreel/",
+      external: true,
+    },
+    "mixlr-events": {
+      href: "https://mixlr.com/tralee-masjid/events/",
+      external: true,
+    },
+    "mixlr-station": {
+      href: "https://traleemasjid.mixlr.com/",
+      external: true,
+    },
+    "lifewithallah-app": {
+      href: "https://lifewithallah.com/app/",
+      external: true,
+    },
+    "madrasa-whatsapp": {
+      href:
+        "https://wa.me/353862440556?text=As-salamu%20alaikum.%20I%20would%20like%20to%20register%20my%20child%20for%20the%20Children%27s%20Madrasa%20at%20Tralee%20Masjid.",
+      external: true,
+    },
+    "gofundme-donate": {
+      href:
+        "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate",
+      external: true,
+    },
+    "google-maps-directions": {
+      href: "https://maps.app.goo.gl/Lya1necC8WXXpUE5A",
+      external: true,
+    },
+  };
+
+  const initCanonicalSiteLinks = () => {
+    document.querySelectorAll("a[data-site-link]").forEach(function (anchor) {
+      var key = anchor.getAttribute("data-site-link");
+      var entry = key && SITE_LINKS[key];
+      if (!entry || !entry.href) return;
+      anchor.href = entry.href;
+      if (entry.external) {
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+      }
+    });
+  };
+
+  /* Google Cloud Run (europe-west1) — masjid JSON/content APIs */
+  const CLOUD_RUN_APIS = {
+    salahTimes: "https://getsalahtimes-rds3nxm6za-ew.a.run.app",
+    iqamahTimes: "https://getiqamahtimes-rds3nxm6za-ew.a.run.app",
+    announcements: "https://getannouncements-rds3nxm6za-ew.a.run.app",
+    notices: "https://getnotices-rds3nxm6za-ew.a.run.app",
+    programmes:
+      "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true",
+    randomHadith: "https://randomhadith-rds3nxm6za-ew.a.run.app",
+    campaigns: "https://getcampaigns-rds3nxm6za-ew.a.run.app",
+  };
+
+  /* Firebase Cloud Functions — payment checkout only (not Cloud Run) */
+  const FIREBASE_FUNCTIONS = {
+    createCheckout:
+      "https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout",
+  };
+
+  /* --------------------------------------------------------------------------
+   * Cloud Run APIs (europe-west1) — masjid content, cache-then-fetch in browser
+   * Firebase Cloud Functions — SumUp card checkout only (not Cloud Run)
+   * -------------------------------------------------------------------------- */
+
   const scrollToLocationHash = () => {
     const hash = window.location.hash;
     if (!hash || hash.length < 2) return;
@@ -40,9 +135,7 @@
     if (!target) return;
 
     const scrollToTarget = () => {
-      syncStickyNavOffset();
-      syncPageSectionNavMetrics();
-      target.scrollIntoView({ behavior: "auto", block: "start" });
+      scrollToAnchorElement(target, "auto");
     };
 
     requestAnimationFrame(function () {
@@ -257,7 +350,7 @@
     Cookies.set(name, value, options);
   };
 
-  const SALAH_TIMES_API_URL = "https://getsalahtimes-rds3nxm6za-ew.a.run.app";
+  const SALAH_TIMES_API_URL = CLOUD_RUN_APIS.salahTimes;
 
   const fetchSalahTimesAssetUrl = (month, year, options) => {
     const opts = options || {};
@@ -411,7 +504,7 @@
       });
   };
 
-  const IQAMAH_API_URL = "https://getiqamahtimes-rds3nxm6za-ew.a.run.app";
+  const IQAMAH_API_URL = CLOUD_RUN_APIS.iqamahTimes;
   let navSalahActiveTab = "today";
 
   const getIrelandDateParts = (date) => {
@@ -428,12 +521,165 @@
     };
   };
 
+  /* --------------------------------------------------------------------------
+   * UK / Ireland date display — day before month, Europe/Dublin (see uk-date-format.mdc)
+   * -------------------------------------------------------------------------- */
+  const UK_DATE_LOCALE = "en-GB";
+  const UK_TIME_ZONE = "Europe/Dublin";
+
+  const UK_DATE_PRESETS = {
+    short: { day: "numeric", month: "short", year: "numeric" },
+    medium: { day: "numeric", month: "long", year: "numeric" },
+    long: { weekday: "long", day: "numeric", month: "long", year: "numeric" },
+    weekdayLong: { weekday: "long", day: "numeric", month: "long" },
+    weekdayShort: { weekday: "short" },
+    day2: { day: "2-digit" },
+    monthShort: { month: "short" },
+    monthLong: { month: "long" },
+    year: { year: "numeric" },
+  };
+
+  const getUkOrdinalSuffix = (day) => {
+    const n = Math.abs(Number(day));
+    const tens = n % 100;
+    if (tens >= 11 && tens <= 13) return "th";
+    switch (n % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const formatUkDate = (date, presetOrOptions) => {
+    if (!date || Number.isNaN(date.getTime())) return "";
+    let preset = "medium";
+    let local = false;
+    let ordinal = false;
+    let ordinalWeekday = false;
+    let monthStyle = "long";
+
+    if (typeof presetOrOptions === "string") {
+      preset = presetOrOptions;
+    } else if (presetOrOptions) {
+      preset = presetOrOptions.preset || preset;
+      local = !!presetOrOptions.local;
+      ordinal = !!presetOrOptions.ordinal;
+      ordinalWeekday = !!presetOrOptions.weekday;
+      monthStyle = presetOrOptions.monthStyle || monthStyle;
+    }
+
+    const options = UK_DATE_PRESETS[preset] || UK_DATE_PRESETS.medium;
+    const tzOpt = local ? {} : { timeZone: UK_TIME_ZONE };
+
+    if (ordinal) {
+      const parts = new Intl.DateTimeFormat(UK_DATE_LOCALE, {
+        ...tzOpt,
+        weekday: ordinalWeekday ? "long" : undefined,
+        month: monthStyle === "short" ? "short" : "long",
+        year: "numeric",
+      }).formatToParts(date);
+      const day = Number(parts.find((p) => p.type === "day").value);
+      const month = parts.find((p) => p.type === "month").value;
+      const year = parts.find((p) => p.type === "year").value;
+      const weekday = ordinalWeekday
+        ? parts.find((p) => p.type === "weekday").value + ", "
+        : "";
+      return (
+        weekday + day + getUkOrdinalSuffix(day) + " " + month + " " + year
+      );
+    }
+
+    return date.toLocaleDateString(UK_DATE_LOCALE, {
+      ...tzOpt,
+      ...options,
+    });
+  };
+
+  const formatUkDateLocal = (date, preset) =>
+    formatUkDate(date, { preset: preset || "medium", local: true });
+
+  const dateFromGregorianParts = (year, month, day) => {
+    if (year == null || month == null || day == null) return null;
+    const date = new Date(year, month, day);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const formatGregorianFromRecord = (record, preset) => {
+    if (!record) return "";
+    const date = dateFromGregorianParts(
+      record.gregorianYear,
+      record.gregorianMonth,
+      record.gregorianDay,
+    );
+    if (date) return formatUkDateLocal(date, preset || "medium");
+    if (record.gregorianDateString) {
+      return formatUkDisplayDate(record.gregorianDateString, preset || "medium");
+    }
+    return record.dayOfWeek || "";
+  };
+
+  const formatUkDisplayDate = (value, preset) => {
+    if (value == null || value === "") return "";
+    if (value instanceof Date) {
+      return formatUkDate(value, preset || "medium");
+    }
+    const str = String(value).trim();
+    if (!str) return "";
+    const parsed = Date.parse(str);
+    if (!Number.isNaN(parsed) && /\d/.test(str)) {
+      return formatUkDate(new Date(parsed), preset || "medium");
+    }
+    return str;
+  };
+
+  /** 12-hour clock for visitor-facing copy: no leading zero on hour, lowercase am/pm */
+  const formatUkDisplayTime = (raw, options) => {
+    if (raw == null || raw === "") return "";
+    const str = String(raw).trim();
+    if (!str || str === "—") return str === "—" ? "—" : "";
+
+    const match = str.match(/^(\d{1,2})[:.](\d{2})(?:\s*(am|pm))?\b/i);
+    if (!match) {
+      return str
+        .replace(/\b0(\d)([:.])/g, "$1$2")
+        .replace(/\s*(am|pm)\b/gi, function (_, ap) {
+          return " " + ap.toLowerCase();
+        });
+    }
+
+    let hh = parseInt(match[1], 10);
+    const mm = match[2];
+    const explicit = match[3] ? match[3].toLowerCase() : null;
+    let period;
+    let displayHour;
+
+    if (explicit) {
+      period = explicit;
+      displayHour = hh;
+      if (displayHour === 0) displayHour = 12;
+    } else {
+      period = hh >= 12 ? "pm" : "am";
+      displayHour = hh % 12;
+      if (displayHour === 0) displayHour = 12;
+    }
+
+    const sep =
+      options && options.nbspBeforePeriod ? "\u00a0" : " ";
+    return String(displayHour) + ":" + mm + sep + period;
+  };
+
   const getTodayInIreland = () => {
     const now = new Date();
     return Object.assign({ date: now }, getIrelandDateParts(now));
   };
 
   const getDublinDate = () => {
+    // en-US + timeZone is a clock normalisation trick only — never use for displayed dates
     return new Date(
       new Date().toLocaleString("en-US", { timeZone: "Europe/Dublin" }),
     );
@@ -521,6 +767,7 @@
   const PRAYER_DAY_RADIUS = 30;
   const PRAYER_CAROUSEL_REPEAT = 3;
   const PRAYER_CAROUSEL_PRIMARY = 1;
+  const PRAYER_DECK_LEAD_ALIGN_QUERY = "(min-width: 992px)";
   const SUNRISE_FORBIDDEN_MINUTES = 15;
   const ZAWAAL_BEFORE_ZOHR_MINUTES = 10;
 
@@ -949,6 +1196,9 @@
     };
   };
 
+  const usesPrayerDeckLeadAlign = () =>
+    window.matchMedia(PRAYER_DECK_LEAD_ALIGN_QUERY).matches;
+
   const getPrayerCarouselTrack = () =>
     document.querySelector("[data-prayer-carousel-track]");
 
@@ -964,13 +1214,8 @@
     return { current: current, nextPrayer: nextPrayer };
   };
 
-  const formatDeckTime = (raw) => {
-    if (!raw || raw === "—") return "—";
-    return String(raw)
-      .trim()
-      .toLowerCase()
-      .replace(/\s+(am|pm)\b/i, "\u00a0$1");
-  };
+  const formatDeckTime = (raw) =>
+    formatUkDisplayTime(raw, { nbspBeforePeriod: true });
 
   const buildPrayerDeckCardHtml = (record, slot, deckIndex, repeat, dayOffset) => {
     const dayKey = makeDayKeyFromRecord(record);
@@ -1002,7 +1247,7 @@
       '<span class="home-hero-prayer-badge home-hero-prayer-badge-current">Current</span>' +
       '<span class="home-hero-prayer-badge home-hero-prayer-badge-next">Up next</span>' +
       '<span class="home-prayer-deck-date-chip home-prayer-carousel-date">' +
-      (record.gregorianDateString || record.dayOfWeek || "") +
+      (formatGregorianFromRecord(record, "medium") || record.dayOfWeek || "") +
       "</span>" +
       '<div class="home-prayer-deck-icon-orbit" aria-hidden="true">' +
       '<span class="home-prayer-deck-icon"><i class="fas ' +
@@ -1109,22 +1354,70 @@
     return closest;
   };
 
+  const getLeadPrayerCarouselSlide = () => {
+    const viewport = getPrayerCarouselViewport();
+    const track = getPrayerCarouselTrack();
+    if (!viewport || !track) return null;
+
+    const slides = track.querySelectorAll(".home-prayer-deck-card");
+    if (!slides.length) return null;
+
+    const trackStyle = getComputedStyle(track);
+    const padLeft = parseFloat(trackStyle.paddingLeft) || 0;
+    const anchor = viewport.scrollLeft + padLeft + 2;
+    let lead = slides[0];
+
+    slides.forEach(function (slide) {
+      if (slide.offsetLeft <= anchor) {
+        lead = slide;
+      }
+    });
+
+    return lead;
+  };
+
+  const getPrayerCarouselNavSlide = () => {
+    if (usesPrayerDeckLeadAlign()) {
+      return getLeadPrayerCarouselSlide();
+    }
+    return getVisiblePrayerCarouselSlide();
+  };
+
   const updateCarouselCenteredSlide = () => {
     const track = getPrayerCarouselTrack();
-    const visible = getVisiblePrayerCarouselSlide();
     if (!track) return;
+
     track.querySelectorAll(".home-prayer-deck-card.is-centered").forEach(function (el) {
       el.classList.remove("is-centered");
     });
+
+    if (usesPrayerDeckLeadAlign()) {
+      const leadCard = getLeadPrayerCarouselSlide();
+      if (leadCard) {
+        leadCard.classList.add("is-centered");
+      }
+      return;
+    }
+
+    const visible = getVisiblePrayerCarouselSlide();
     if (visible) visible.classList.add("is-centered");
   };
 
   const centerPrayerCarouselOnSlide = (slide, behavior) => {
     const viewport = getPrayerCarouselViewport();
+    const track = getPrayerCarouselTrack();
     if (!viewport || !slide) return;
 
-    const targetScroll =
-      slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2;
+    let targetScroll;
+    if (usesPrayerDeckLeadAlign()) {
+      const trackStyle = track ? getComputedStyle(track) : null;
+      const padLeft = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
+      targetScroll = slide.offsetLeft - padLeft;
+    } else {
+      targetScroll =
+        slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2;
+    }
+
     const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
     viewport.scrollTo({
       left: Math.max(0, Math.min(targetScroll, maxScroll)),
@@ -1209,7 +1502,7 @@
   };
 
   const scrollPrayerCarouselBy = (direction) => {
-    const visible = getVisiblePrayerCarouselSlide();
+    const visible = getPrayerCarouselNavSlide();
     if (!visible) return;
 
     const track = getPrayerCarouselTrack();
@@ -1225,7 +1518,11 @@
       direction < 0
         ? Math.max(0, index - 1)
         : Math.min(slides.length - 1, index + 1);
+    if (nextIndex === index) return;
+
     centerPrayerCarouselOnSlide(slides[nextIndex], "smooth");
+    requestAnimationFrame(updateCarouselCenteredSlide);
+    window.setTimeout(updatePrayerCarouselToolbarLabel, 180);
   };
 
   const initHomePrayerDeckControls = () => {
@@ -1283,8 +1580,11 @@
 
   const updatePrayerCarouselToolbarLabel = () => {
     const label = document.querySelector("[data-prayer-carousel-label]");
-    const visible = getVisiblePrayerCarouselSlide();
-    if (!label || !visible) return;
+    if (!label) return;
+
+    const visible = getPrayerCarouselNavSlide();
+    if (!visible) return;
+
     const nameEl = visible.querySelector(".home-hero-prayer-name");
     const dateEl = visible.querySelector(".home-prayer-carousel-date");
     const offset = Number(visible.getAttribute("data-day-offset"));
@@ -1427,8 +1727,9 @@
         d.hijriDay + " " + d.hijriMonthName + " " + d.hijriYear + " AH";
     }
     const gregEl = document.getElementById("home-hero-gregorian");
-    if (gregEl && d.gregorianDateString) {
-      gregEl.textContent = d.gregorianDateString;
+    if (gregEl) {
+      const label = formatGregorianFromRecord(d, "long");
+      if (label) gregEl.textContent = label;
     }
 
     const curMonthEl = document.getElementById("cur-month");
@@ -1739,7 +2040,8 @@
     const panel = document.getElementById(panelId);
     if (!panel || !d) return;
 
-    const lower = (s) => (s ? String(s).toLowerCase() : "—");
+    const formatNavTime = (value) =>
+      value ? formatUkDisplayTime(value) : "—";
 
     PRAYER_SLOTS.forEach(function (slot) {
       const row = panel.querySelector(
@@ -1748,8 +2050,8 @@
       if (!row) return;
       const beginsEl = row.querySelector('[data-field="begins"]');
       const iqamahEl = row.querySelector('[data-field="iqamah"]');
-      const beginsVal = lower(d[slot.beginsKey]);
-      const iqamahVal = lower(d[slot.iqamahKey]);
+      const beginsVal = formatNavTime(d[slot.beginsKey]);
+      const iqamahVal = formatNavTime(d[slot.iqamahKey]);
       if (beginsEl) beginsEl.textContent = beginsVal;
       if (iqamahEl) iqamahEl.textContent = iqamahVal;
 
@@ -1759,7 +2061,7 @@
       }
     });
 
-    const sunriseVal = lower(d.sunriseTime);
+    const sunriseVal = formatNavTime(d.sunriseTime);
     const sunriseInPanel = panel.querySelector('[data-field="sunrise"]');
     if (sunriseInPanel) sunriseInPanel.textContent = sunriseVal;
     if (dayKey === "today") {
@@ -1772,14 +2074,16 @@
       setElHtml("nav-hijri", hijriText);
       const todayDateEl = document.getElementById("nav-salah-date-today");
       if (todayDateEl) {
-        todayDateEl.textContent = d.gregorianDateString || "Today";
+        todayDateEl.textContent =
+          formatGregorianFromRecord(d, "medium") || "Today";
       }
     } else {
       const hijriTomorrow = document.getElementById("nav-hijri-tomorrow");
       if (hijriTomorrow) hijriTomorrow.textContent = hijriText;
       const tomorrowDateEl = document.getElementById("nav-salah-date-tomorrow");
       if (tomorrowDateEl) {
-        tomorrowDateEl.textContent = d.gregorianDateString || "Tomorrow";
+        tomorrowDateEl.textContent =
+          formatGregorianFromRecord(d, "medium") || "Tomorrow";
       }
     }
 
@@ -1798,7 +2102,7 @@
     const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
     const monthName = isRamadan()
       ? "Ramadan"
-      : addedDays.toLocaleString("default", { month: "long" });
+      : formatUkDate(addedDays, "monthLong");
     setElHtml("nav-cur-month", monthName);
     setOfficialTimetableLabels(monthName);
     applyNavSalahDay("nav-salah-panel-today", d, "today");
@@ -2180,8 +2484,7 @@
     },
   ];
   const kiccSumUpConsentHandlers = { teardown: null, refresh: null };
-  const ANNOUNCEMENTS_API_URL =
-    "https://getannouncements-rds3nxm6za-ew.a.run.app";
+  const ANNOUNCEMENTS_API_URL = CLOUD_RUN_APIS.announcements;
   let postCookieConsentDone = false;
   let pendingBreakingAnnouncement = null;
   let siteAnnouncementsBound = false;
@@ -2925,7 +3228,7 @@
     }
 
     // 2) Always fetch latest and update cache + DOM
-    fetch("https://randomhadith-rds3nxm6za-ew.a.run.app")
+    fetch(CLOUD_RUN_APIS.randomHadith)
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
@@ -2941,35 +3244,7 @@
       });
   };
 
-  const formatTimeToAmPm = (timeInput) => {
-    if (!timeInput) return "";
-    const s = String(timeInput).trim();
-
-    // Match hh:mm with optional am/pm
-    const m = s.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
-    if (!m) return "";
-    let hh = parseInt(m[1], 10);
-    const mm = parseInt(m[2], 10);
-    const explicit = m[3] ? String(m[3]).toLowerCase() : null;
-
-    let period;
-    let displayHour = hh;
-
-    if (explicit) {
-      period = explicit;
-      // If explicit period is provided, keep hour as-is (assume it's 12-hour input)
-      displayHour = hh;
-      if (displayHour === 0) displayHour = 12;
-    } else {
-      // assume 24-hour input
-      period = hh >= 12 ? "pm" : "am";
-      displayHour = hh % 12;
-      if (displayHour === 0) displayHour = 12;
-    }
-
-    const minutePadded = mm.toString().padStart(2, "0");
-    return `${displayHour}:${minutePadded} ${period}`;
-  };
+  const formatTimeToAmPm = (timeInput) => formatUkDisplayTime(timeInput);
 
   // Parse a time string (HH:MM or H:MM with optional am/pm) into a Date for today
   const parseTimeToDate = (timeStr) => {
@@ -3002,12 +3277,14 @@
     return d;
   };
 
-  // Given a time string like "04:30" return an object {time, period}
   const splitTimeAndPeriod = (timeStr) => {
-    const formatted = formatTimeToAmPm(timeStr);
-    if (!formatted) return { time: "—", period: "" };
-    const parts = formatted.split(" ");
-    return { time: parts[0], period: parts[1] || "" };
+    const formatted = formatUkDisplayTime(timeStr);
+    if (!formatted || formatted === "—") return { time: "—", period: "" };
+    const match = formatted.match(/^(\d{1,2}:\d{2})(?:\s|\u00a0)(am|pm)$/i);
+    if (match) {
+      return { time: match[1], period: match[2].toLowerCase() };
+    }
+    return { time: formatted, period: "" };
   };
 
   const getPrayerDayData = () => {
@@ -4280,7 +4557,7 @@
   };
 
   const getNotices = () => {
-    const NOTICE_API_URL = "https://getnotices-rds3nxm6za-ew.a.run.app";
+    const NOTICE_API_URL = CLOUD_RUN_APIS.notices;
     return fetch(NOTICE_API_URL)
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -4576,7 +4853,9 @@
   };
 
   const getProgrammeTimeLabel = (p) => {
-    return p.timeDescription || (p.clockTime ? "At " + p.clockTime : "");
+    if (p.timeDescription) return p.timeDescription;
+    if (p.clockTime) return "At " + formatUkDisplayTime(p.clockTime);
+    return "";
   };
 
   const hasProgrammePrayerName = (p) => {
@@ -4588,7 +4867,7 @@
       return String(p.prayerName).trim();
     }
     if (p.clockTime) {
-      return p.clockTime;
+      return formatUkDisplayTime(p.clockTime);
     }
     return "—";
   };
@@ -4669,11 +4948,7 @@
 
   const formatProgrammeColumnDate = (date) => {
     if (!date) return "";
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    return formatUkDateLocal(date, "medium");
   };
 
   const isDateInRange = (date, start, end) => {
@@ -4689,12 +4964,7 @@
   };
 
   const formatProgrammeEventDate = (date) => {
-    return date.toLocaleDateString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+    return formatUkDateLocal(date, "long");
   };
 
   const programmeMatchesDay = (p, dayKey) => {
@@ -4804,18 +5074,10 @@
       hour12: true,
     });
 
-    let eventDay = eventDate.toLocaleDateString("en-GB", {
-      weekday: "short",
-    });
-    const eventDateNum = eventDate.toLocaleDateString("en-GB", {
-      day: "2-digit",
-    });
-    const eventMonth = eventDate.toLocaleDateString("en-GB", {
-      month: "short",
-    });
-    const eventYear = eventDate.toLocaleDateString("en-GB", {
-      year: "numeric",
-    });
+    let eventDay = formatUkDateLocal(eventDate, "weekdayShort");
+    const eventDateNum = formatUkDateLocal(eventDate, "day2");
+    const eventMonth = formatUkDateLocal(eventDate, "monthShort");
+    const eventYear = formatUkDateLocal(eventDate, "year");
 
     if (isSameCalendarDay(eventDate, getDublinDate())) {
       eventDay = "Today";
@@ -4848,7 +5110,7 @@
 
   const createAdultProgrammeSectionLink = (label, sectionId) => {
     var link = document.createElement("a");
-    link.href = "#" + (sectionId || "adult-programme");
+    link.href = "#" + (sectionId || "adult-programmes");
     link.className = "programmes-adult-section-link";
     link.innerHTML =
       (label || "Segments &amp; venues") +
@@ -5255,14 +5517,14 @@
     if (isAdultMonthlyProgramme(p)) {
       var monthlyLink = createAdultProgrammeSectionLink(
         "About this programme",
-        "adult-programme",
+        "adult-programmes",
       );
       monthlyLink.classList.add("programmes-schedule-item-link");
       item.appendChild(monthlyLink);
     } else if (isWomensQuranClassProgramme(p)) {
       var weeklyLink = createAdultProgrammeSectionLink(
         "About this programme",
-        "womens-quran-class",
+        "womens-weekly-class",
       );
       weeklyLink.classList.add("programmes-schedule-item-link");
       item.appendChild(weeklyLink);
@@ -5806,7 +6068,7 @@
     var upcomingEvents = [];
     var today = new Date();
     today.setHours(0, 0, 0, 0);
-    var todayKey = today.toLocaleDateString("en-GB", { weekday: "short" });
+    var todayKey = formatUkDateLocal(today, "weekdayShort");
     var weekRange = getThisWeekRange(today);
     var todayProgrammes = [];
     var seenToday = {};
@@ -5856,7 +6118,7 @@
         return;
       }
 
-      var eventDay = eventDate.toLocaleDateString("en-GB", { weekday: "short" });
+      var eventDay = formatUkDateLocal(eventDate, "weekdayShort");
       if (byDay[eventDay]) {
         byDay[eventDay].push(p);
       }
@@ -5948,11 +6210,11 @@
   };
 
   const getRecordingDateLabel = (recording) => {
-    if (recording.timeDescription) {
-      return recording.timeDescription;
-    }
     if (recording.createdAt) {
-      return formatProgrammeEventDate(new Date(recording.createdAt));
+      return formatUkDate(new Date(recording.createdAt), "long");
+    }
+    if (recording.timeDescription) {
+      return formatUkDisplayDate(recording.timeDescription, "long");
     }
     return "";
   };
@@ -6579,7 +6841,7 @@
     var adultMonthlyGrid = document.getElementById("adult-programme-highlights");
     var adultEmpty = document.getElementById("adult-programme-empty");
     var adultWeeklyGrid = document.getElementById("adult-weekly-highlights");
-    var adultWeeklySection = document.getElementById("womens-quran-class");
+    var adultWeeklySection = document.getElementById("womens-weekly-class");
     var adultSplit = document.getElementById("programmes-adult-split");
     var youngGrid = document.getElementById("prog-grid-young");
     var categoryGrids = {
@@ -6791,8 +7053,7 @@
 
   const loadProgrammes = () => {
     // Weekly Programmes + recordings on activities page
-    const PROGRAMMES_API_URL =
-      "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true";
+    const PROGRAMMES_API_URL = CLOUD_RUN_APIS.programmes;
     const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v1";
     var cachedJson = kiccStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
     if (cachedJson) {
@@ -6944,6 +7205,29 @@
         top + "px",
       );
     }
+  };
+
+  const STICKY_ANCHOR_SCROLL_BUFFER_PX = 16;
+
+  const getStickyAnchorScrollOffset = () => {
+    syncStickyNavOffset();
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue("--kicc-sticky-nav-top")
+      .trim();
+    const parsed = parseFloat(raw);
+    const navTop = Number.isFinite(parsed) ? parsed : 68;
+    return navTop + STICKY_ANCHOR_SCROLL_BUFFER_PX;
+  };
+
+  const scrollToAnchorElement = (target, behavior) => {
+    if (!target || typeof target.getBoundingClientRect !== "function") return;
+    syncPageSectionNavMetrics();
+    const offset = getStickyAnchorScrollOffset();
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: behavior || "auto",
+    });
   };
 
   const queueStickyNavOffsetSync = () => {
@@ -7139,9 +7423,19 @@
     });
 
     links.forEach(function (link) {
-      link.addEventListener("click", function () {
+      link.addEventListener("click", function (event) {
         const id = decodeURIComponent(link.getAttribute("href").slice(1));
         const el = document.getElementById(id);
+        if (!el) return;
+
+        event.preventDefault();
+        if (window.history && window.history.pushState) {
+          window.history.pushState(null, "", "#" + id);
+        } else {
+          window.location.hash = id;
+        }
+        scrollToAnchorElement(el, "smooth");
+
         const item = sections.find(function (entry) {
           return entry.el === el;
         });
@@ -7239,13 +7533,10 @@
     });
   };
 
-  const GOFUNDME_DONATE_URL =
-    "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
+  const GOFUNDME_DONATE_URL = SITE_LINKS["gofundme-donate"].href;
   const SUMUP_DEVELOPER_WHATSAPP = "353833114171";
-  const CAMPAIGNS_API_URL =
-    "https://getcampaigns-rds3nxm6za-ew.a.run.app";
-  const SUMUP_CHECKOUT_API_URL =
-    "https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout";
+  const CAMPAIGNS_API_URL = CLOUD_RUN_APIS.campaigns;
+  const SUMUP_CHECKOUT_API_URL = FIREBASE_FUNCTIONS.createCheckout;
   const SUMUP_SDK_URL =
     "https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js";
   const SUMUP_MIN_AMOUNT = 1;
@@ -8315,7 +8606,7 @@
           amount: amount,
           currency: currency,
           returnUrl: isProjectsPage()
-            ? window.location.origin + "/projects.html#donate"
+            ? window.location.origin + "/projects.html#ways-to-donate"
             : window.location.origin + "/#home-donate",
         }),
       }).then(function (resp) {
@@ -9097,23 +9388,8 @@
 
   const formatTimetableTime = (raw) => {
     if (!raw) return "—";
-    const str = String(raw).trim();
-    const match = str.match(/^(\d{1,2})[:.](\d{2})\s*(am|pm)?\b/i);
-    if (match) {
-      const hour = String(Number(match[1]));
-      const mins = match[2];
-      const suffix = match[3];
-      let time = hour + ":" + mins;
-      if (suffix) {
-        time += " " + suffix.toLowerCase();
-      }
-      return time;
-    }
-    return str
-      .replace(/\b0(\d)([:.])/g, "$1$2")
-      .replace(/\s+(am|pm)\b/gi, function (_, ap) {
-        return " " + ap.toLowerCase();
-      });
+    const formatted = formatUkDisplayTime(raw);
+    return formatted || "—";
   };
 
   const formatHijriShort = (record) => {
@@ -9281,7 +9557,7 @@
       '<div class="prayer-timetable-daily">' +
       '<div class="prayer-timetable-daily-meta">' +
       "<span><strong>Gregorian:</strong> " +
-      (record.gregorianDateString || "—") +
+      (formatGregorianFromRecord(record, "long") || "—") +
       "</span>" +
       "<span><strong>Islamic:</strong> " +
       record.hijriDay +
@@ -9357,11 +9633,7 @@
     const now = getDublinDate();
 
     if (gregorianEl) {
-      gregorianEl.textContent = now.toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      });
+      gregorianEl.textContent = formatUkDateLocal(now, "weekdayLong");
     }
 
     if (hijriEl) {
@@ -9967,17 +10239,9 @@
         weekEnd.setDate(weekEnd.getDate() + 6);
         periodLabel.textContent =
           "Showing weekly times from " +
-          state.weekStart.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          }) +
+          formatUkDateLocal(state.weekStart, "short") +
           " to " +
-          weekEnd.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          });
+          formatUkDateLocal(weekEnd, "short");
         return;
       }
       periodLabel.textContent =
@@ -10298,6 +10562,7 @@
     setFooterYear();
     showCookiePolicy();
     initConsentEmbeds();
+    initCanonicalSiteLinks();
     initExternalLinkIcons();
   });
 

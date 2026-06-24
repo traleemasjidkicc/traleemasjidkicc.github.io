@@ -26,18 +26,23 @@ Browser (GitHub Pages)
   ├── SEO: robots.txt, sitemap.xml, site.webmanifest
   └── CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 
-External APIs (Google Cloud Run, europe-west1)
+Google Cloud Run (europe-west1) — masjid content APIs in CLOUD_RUN_APIS
   ├── getsalahtimes-*       → monthly salah times PDF/image URL
   ├── getiqamahtimes-*      → today's iqamah times + Jumuah schedule
   ├── getannouncements-*    → site-wide announcements ribbon
   ├── getnotices-*          → homepage notice board
-  ├── getmasjidprogrammes-* → activities programmes (table + weekly cards)
-  └── randomhadith-*        → daily hadith
+  ├── getmasjidprogrammes-* → activities programmes (schedule + catalogue)
+  ├── randomhadith-*        → daily hadith
+  └── getcampaigns-*        → donation campaign progress (GoFundMe totals)
+
+Firebase Cloud Functions (europe-west1-tralee-masjid) — FIREBASE_FUNCTIONS
+  └── createCheckout        → SumUp card checkout only (not Cloud Run)
 
 Other third-party
   ├── api.mixlr.com         → live stream status and events (homepage + activities)
   ├── GoFundMe embed        → donation widgets (homepage + projects.html)
-  ├── SumUp Payment Widget  → card donations via Firebase `createCheckout` (homepage + projects)
+  ├── Microsoft Forms       → Kerry Muslim database (nav/footer/modal; not madrasa enrolment)
+  ├── SumUp Payment Widget  → uses Firebase createCheckout above
   └── Google Analytics      → gtag G-3H9CDDS71D (consent-gated)
 ```
 
@@ -72,7 +77,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 | `activities.html` | — | `setEvent`, `loadProgrammes` |
 | `projects.html` | — | `initBaguetteBox` (`.grid-gallery`) |
 
-**All pages** on `DOMContentLoaded`: announcements ribbon, nav salah panel, mobile nav, section nav dock, cookie consent, consent-gated embeds (maps), WhatsApp/back-to-top, footer year, page motion inits (about/contact/campaign/home donate as applicable), SumUp widget init.
+**All pages** on `DOMContentLoaded`: announcements ribbon, nav salah panel, mobile nav, section nav dock, cookie consent, consent-gated embeds (maps), WhatsApp/back-to-top, footer year, `initCanonicalSiteLinks`, page motion inits (about/contact/campaign/home donate as applicable), SumUp widget init.
 
 **All pages** on `window.onload`: `setSalahTimeUrl`, `setSalahTimes`, `getRandomHadith`, `loadFundraiserProgress`, `setLocationSpecific`, `scrollToLocationHash`.
 
@@ -86,6 +91,13 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 | `kicc-notices` | Homepage notices |
 | `kicc-random-hadith` | Daily hadith |
 | `masjidProgrammes_programme_active_true_v1` | Activities programmes |
+| `kicc-campaign-progress` | GoFundMe / campaign totals from `getcampaigns` |
+
+## Site links & naming
+
+- **Kerry Muslim database** — Microsoft Form for email updates (`data-site-link="kerry-muslim-database"`). Never label it “Register for programmes”.
+- **Madrasa enrolment** — WhatsApp only (`madrasa.html#ready-to-enrol`).
+- Canonical URLs: `SITE_LINKS` in `scripts-*.js`; see `.cursor/rules/site-links.mdc`.
 
 ## SEO and discoverability
 
@@ -101,6 +113,8 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 - **HTML:** Bootstrap 4 grid, shared nav/footer patterns, SRI on CDN assets, `lang="en-GB"`, descriptive `alt` on images
 - **CSS:** single versioned `main-{timestamp}.css` — layout, theme, motion, campaign, prayer-times, page-specific sections
 - **JS:** IIFE with `"use strict"`; `const` arrow functions; localStorage cache-then-fetch; defensive fetch error handling
+- **Dates:** UK format via `formatUkDate` / `formatGregorianFromRecord` (`en-GB`, day before month) — see `.cursor/rules/uk-date-format.mdc`
+- **Times:** 12-hour via `formatUkDisplayTime` (no leading zero, lowercase `am`/`pm`) — see `.cursor/rules/uk-time-format.mdc`
 - **Images:** under `assets/images/` (`brand/`, `backgrounds/`, `photos/`, `blueprints/`, `team/`, `ui/`)
 - **Deployment:** `main` branch → GitHub Pages; custom domain via `CNAME` (`traleemasjidkicc.ie`)
 

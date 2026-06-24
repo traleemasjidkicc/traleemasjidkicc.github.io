@@ -16,6 +16,9 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no tra
 - Embeds: GoFundMe widgets, SumUp donate, Mixlr player, Google Analytics (gtag, consent-gated)
 - SEO/PWA: `robots.txt`, `sitemap.xml`, `site.webmanifest`, per-page OG/JSON-LD
 - Gulp + BrowserSync for local dev (`yarn start`); Playwright e2e (`yarn test:e2e`)
+- Backend: **Cloud Run** for masjid content APIs; **Firebase Functions** for SumUp `createCheckout` only
+- Link naming: see `.cursor/rules/site-links.mdc` and `.cursor/rules/anchor-links.mdc`
+- Dates: UK format (`en-GB`, day before month) — see `.cursor/rules/uk-date-format.mdc`
 
 ## Pages
 

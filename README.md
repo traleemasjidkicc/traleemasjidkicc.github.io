@@ -78,6 +78,7 @@ Local development uses **[Gulp](https://gulpjs.com/)** and **[BrowserSync](https
 | **Donations** | Homepage, [`projects.html`](projects.html) | GoFundMe embed + SumUp card checkout |
 | **New Masjid campaign** | [`projects.html`](projects.html) | Progress gallery, blueprints, funding breakdown |
 | **Children's madrasa** | [`madrasa.html`](madrasa.html) | Registration via WhatsApp |
+| **Kerry Muslim database** | Nav, footer, homepage modal | Microsoft Form — email updates for Muslims in Kerry (not madrasa enrolment) |
 | **Contact & directions** | [`contact.html`](contact.html) | Consent-gated Google Maps embed |
 | **Add to Home Screen** | Mobile | `site.webmanifest` + Apple meta tags |
 
@@ -418,8 +419,17 @@ All masjid content is fetched client-side and cached in `localStorage`.
 | `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board | `kicc-notices` |
 | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Weekly programmes | `masjidProgrammes_programme_active_true_v1` |
 | `randomhadith-rds3nxm6za-ew.a.run.app` | Daily hadith | `kicc-random-hadith` |
+| `getcampaigns-rds3nxm6za-ew.a.run.app` | Donation campaign progress (GoFundMe totals) | `kicc-campaign-progress` |
 
-If an API is temporarily down, the site shows the last cached response where available.
+All of the above are **Google Cloud Run** services in `europe-west1`. They are **not** Firebase Cloud Functions.
+
+If a Cloud Run API is temporarily down, the site shows the last cached response where available.
+
+### Firebase Cloud Functions (`europe-west1-tralee-masjid`)
+
+| Function | Purpose |
+|----------|---------|
+| `createCheckout` | SumUp card payment session (homepage + New Masjid page) |
 
 ### Other third-party services
 
@@ -428,6 +438,7 @@ If an API is temporarily down, the site shows the last cached response where ava
 | [Mixlr](https://traleemasjid.mixlr.com/) (`api.mixlr.com`) | Live stream status and upcoming events |
 | **GoFundMe embed** | Donation widgets on homepage and New Masjid page |
 | **SumUp** via Firebase `createCheckout` | Card donations (homepage + projects) |
+| **Microsoft Forms** | Kerry Muslim database sign-up (nav, footer, homepage modal) |
 | **Google Analytics** (`G-3H9CDDS71D`) | Site analytics (loaded after consent) |
 | **js-cookie** (CDN) | Cookie preferences and newsletter modal |
 | **Google Maps** (embed) | Contact page map (loaded after functional cookie consent) |
@@ -485,7 +496,7 @@ This repo includes documentation for AI coding tools:
 | File | Purpose |
 |------|---------|
 | [`AGENTS.md`](AGENTS.md) | Primary instructions for Cursor / agents |
-| [`.cursor/rules/`](.cursor/rules/) | Scoped rules (overview, JS, HTML/CSS, build workflow) |
+| [`.cursor/rules/`](.cursor/rules/) | Scoped rules (overview, JS, HTML/CSS, site links, anchor links, UK dates, build workflow) |
 | [`.cursorignore`](.cursorignore) | Excludes `node_modules`, Playwright reports from indexing |
 | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) | GitHub Copilot context |
 

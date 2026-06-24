@@ -1,0 +1,51 @@
+---
+description: Site link labels, anchor IDs, and canonical external URLs
+globs: "**/*.html,assets/js/**/*.js"
+alwaysApply: false
+---
+
+# Site links & anchor naming
+
+Use **plain-language labels** that match what the visitor actually gets. Section `id` values must match heading slugs — see `.cursor/rules/anchor-links.mdc`.
+
+## Kerry Muslim database (Microsoft Form)
+
+| Use this label | Do not use |
+|----------------|------------|
+| Kerry Muslim database | Register, Register for programmes, Sign up (alone) |
+| Join the database / Join the Kerry Muslim database | Register now (for the form) |
+
+- **What it is:** Microsoft Form for a Kerry-wide Muslim contact database (salah timetables, masjid news by email).
+- **What it is not:** Madrasa enrolment or weekly programme signup.
+- **Canonical key:** `data-site-link="kerry-muslim-database"` — URL lives in `SITE_LINKS` in `scripts-*.js`.
+- **Madrasa enrolment:** WhatsApp only (`madrasa.html#ready-to-enrol`, `data-site-link="madrasa-whatsapp"`).
+
+## Programmes page anchors (`activities.html`)
+
+| Section `id` | Heading | Sticky nav label |
+|--------------|---------|------------------|
+| `#this-week` | This Week | This week |
+| `#programme-guide` | Programme Guide | Programme guide |
+| `#live-audio-recordings` | Live audio & recordings | Live audio |
+| `#how-to-join` | How to Join | How to join |
+| `#adult-programmes` | Adult programmes | — |
+| `#womens-weekly-class` | Women’s weekly class | — |
+
+## Nav mega menu columns
+
+1. **Browse programmes** — this week, programme guide, all programmes  
+2. **Classes** — adult programmes, women’s weekly class, children’s madrasa  
+3. **Listen & updates** — live audio & recordings, previous talks, Kerry Muslim database, Dhikr app  
+
+## External URLs in JS
+
+- Repeat off-site URLs once in `SITE_LINKS` (forms, Mixlr, GoFundMe, maps, WhatsApp madrasa).
+- Masjid content APIs: `CLOUD_RUN_APIS` (Google Cloud Run, `europe-west1`).
+- SumUp checkout only: `FIREBASE_FUNCTIONS.createCheckout` (Firebase Cloud Functions — **not** Cloud Run).
+
+## Adding a new public link
+
+1. Add entry to `SITE_LINKS` in `scripts-*.js`.
+2. Use `data-site-link="<key>"` on HTML anchors (keep a full `href` fallback for no-JS).
+3. Match label in nav and body copy; update section `id` if the heading changes.
+4. Update `README.md` / `AGENTS.md` if it is a new third-party service.

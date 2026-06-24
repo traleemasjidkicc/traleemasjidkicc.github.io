@@ -16,46 +16,46 @@ test.describe("New Masjid campaign page", () => {
 
   test("section nav links to all major segments", async ({ page }) => {
     const nav = page.locator(".campaign-section-nav-list");
-    await expect(nav.getByRole("link", { name: "Our Appeal" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Opening message" })).toHaveAttribute(
       "href",
-      "#campaign-message",
+      "#opening-message",
     );
-    await expect(nav.getByRole("link", { name: "The Project" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Two parts, one vision" })).toHaveAttribute(
       "href",
-      "#campaign-phases",
+      "#two-parts-one-vision",
     );
-    await expect(nav.getByRole("link", { name: "Progress So Far" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Progress so far" })).toHaveAttribute(
       "href",
-      "#campaign-progress",
+      "#progress-so-far",
     );
-    await expect(nav.getByRole("link", { name: "The Vision" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "The vision" })).toHaveAttribute(
       "href",
-      "#campaign-vision",
+      "#the-vision",
     );
-    await expect(nav.getByRole("link", { name: "Site Updates" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Construction updates" })).toHaveAttribute(
       "href",
-      "#campaign-updates",
+      "#masjid-construction-updates",
     );
-    await expect(nav.getByRole("link", { name: "What's Needed" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "What your donation supports" })).toHaveAttribute(
       "href",
-      "#campaign-costs",
+      "#what-your-donation-supports",
     );
-    await expect(nav.getByRole("link", { name: "Donate" })).toHaveAttribute(
+    await expect(nav.getByRole("link", { name: "Ways to donate" })).toHaveAttribute(
       "href",
-      "#donate",
+      "#ways-to-donate",
     );
   });
 
   test("explains community centre progress and main masjid not yet built", async ({
     page,
   }) => {
-    await expect(page.locator("#campaign-message")).toContainText(
+    await expect(page.locator("#opening-message")).toContainText(
       "main masjid prayer hall has not yet been constructed",
     );
-    await expect(page.locator("#campaign-phases")).toContainText(
+    await expect(page.locator("#two-parts-one-vision")).toContainText(
       "Community Centre",
     );
-    await expect(page.locator("#campaign-phases")).toContainText("Main Masjid");
+    await expect(page.locator("#two-parts-one-vision")).toContainText("Main Masjid");
     await expect(page.locator(".campaign-phase-badge-progress")).toContainText(
       "In Progress",
     );
@@ -65,7 +65,7 @@ test.describe("New Masjid campaign page", () => {
   });
 
   test("shows site photos in progress section", async ({ page }) => {
-    const progress = page.locator("#campaign-progress");
+    const progress = page.locator("#progress-so-far");
     await expect(progress.locator('img[src*="photos/site-wide"]')).toBeVisible();
     await expect(
       progress.locator('img[src*="photos/community-centre-exterior"]'),
@@ -76,7 +76,7 @@ test.describe("New Masjid campaign page", () => {
   });
 
   test("shows blueprint vision renders and site layouts", async ({ page }) => {
-    const vision = page.locator("#campaign-vision");
+    const vision = page.locator("#the-vision");
     await expect(
       vision.locator('img[src*="blueprints/render-front-elevation"]'),
     ).toBeVisible();
@@ -87,7 +87,7 @@ test.describe("New Masjid campaign page", () => {
   });
 
   test("shows construction update photos", async ({ page }) => {
-    const updates = page.locator("#campaign-updates");
+    const updates = page.locator("#masjid-construction-updates");
     await expect(
       updates.locator('img[src*="construction-update-2024-03-site"]'),
     ).toBeVisible();
@@ -100,7 +100,7 @@ test.describe("New Masjid campaign page", () => {
   test("lists funding needs including qardh hasanah and car park", async ({
     page,
   }) => {
-    const costs = page.locator("#campaign-costs");
+    const costs = page.locator("#what-your-donation-supports");
     await expect(costs).toContainText("Qardh Hasanah");
     await expect(costs).toContainText("Car Park");
     await expect(costs).toContainText("Main Masjid");
@@ -109,11 +109,11 @@ test.describe("New Masjid campaign page", () => {
   });
 
   test("donate section includes SumUp card payment", async ({ page }) => {
-    const sumup = page.locator("#donate [data-sumup-donate]");
+    const sumup = page.locator("#ways-to-donate [data-sumup-donate]");
     await sumup.scrollIntoViewIfNeeded();
     await expect(sumup).toBeVisible();
     await expect(
-      page.locator("#donate [data-sumup-start-donate]"),
+      page.locator("#ways-to-donate [data-sumup-start-donate]"),
     ).toContainText("Donate with SumUp");
   });
 

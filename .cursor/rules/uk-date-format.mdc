@@ -1,0 +1,48 @@
+---
+description: UK date and time display for visitor-facing copy (en-GB, day before month)
+globs: "**/*.html,assets/js/**/*.js"
+alwaysApply: false
+---
+
+# UK date format
+
+The site serves Ireland/UK visitors. Show **Gregorian dates in British/Irish style**: day before month, never US order (`Jun 24, 2026`). **Times:** see `.cursor/rules/uk-time-format.mdc`.
+
+## Allowed formats
+
+| Style | Example | When to use |
+|-------|---------|-------------|
+| Short | 24 Jun 2026 | Compact UI, week ranges |
+| Medium (default) | 24 June 2026 | Nav labels, deck chips |
+| Long | Wednesday, 24 June 2026 | Programme events, daily timetable |
+| Ordinal | 24th June 2026 | Optional emphasis (`formatUkDate` + `{ ordinal: true }`) |
+
+## JavaScript
+
+Use helpers in `scripts-*.js` (do not hand-roll or use `en-US`):
+
+- `formatUkDate(date, preset)` — ISO/UTC timestamps → `Europe/Dublin`
+- `formatUkDateLocal(date, preset)` — calendar dates already built from Dublin day parts
+- `formatGregorianFromRecord(record, preset)` — prayer timetable rows (prefer `gregorianYear/Month/Day` over API `gregorianDateString`)
+- `formatUkDisplayDate(string, preset)` — reformat API text that may be US-shaped
+
+Presets: `short`, `medium`, `long`, `weekdayLong`, `weekdayShort`, `monthLong`, etc.
+
+```javascript
+// ❌ US order risk
+date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+// ✅ UK
+formatUkDate(isoDate, "short");           // 24 Jun 2026
+formatUkDateLocal(calendarDate, "medium"); // 24 June 2026
+```
+
+## HTML
+
+- Static copy: `24 June 2026`, `March 2024`, not `June 24, 2024`.
+- Placeholder values in templates are overwritten by JS; keep them UK-shaped (`Jan` short month is fine in the date chip layout).
+
+## Locale
+
+- Page `lang="en-GB"`; `Intl` locale `en-GB` (or `en-IE` for Ireland date parts).
+- Time zone: `Europe/Dublin` for live clocks and ISO timestamps.

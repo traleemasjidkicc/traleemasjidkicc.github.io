@@ -13,6 +13,7 @@ alwaysApply: false
 - CDN assets must include `integrity` and `crossorigin` where already used
 - Nav links to `projects.html` are labelled **New Masjid** (not "Projects")
 - Salah timetable page: `prayer-times.html` (nav **Salah times**, footer **Salah timetable**)
+- **Dates in copy:** UK order — `24 June 2026`, not `June 24, 2026` (see `.cursor/rules/uk-date-format.mdc`)
 - Script tag for app JS (do not change filename manually):
 
 ```html

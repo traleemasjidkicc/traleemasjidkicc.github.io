@@ -1,0 +1,47 @@
+---
+description: UK 12-hour time display for visitor-facing copy (no leading zero, lowercase am/pm)
+globs: "**/*.html,assets/js/**/*.js"
+alwaysApply: false
+---
+
+# UK time format
+
+Show **12-hour clock times** in British/Irish style for all visitor-facing salah, iqamah, programme, and schedule copy.
+
+## Rules
+
+| Rule | Example |
+|------|---------|
+| 12-hour clock | `4:30 pm`, not `16:30` |
+| No leading zero on hour | `4:30 pm`, not `04:30 pm` |
+| Lowercase `am` / `pm` | `7:00 am`, not `7:00 AM` |
+| Minutes always two digits | `4:05 pm`, not `4:5 pm` |
+| Space before period (HTML may use `&nbsp;` in tight UI) | `1:15 pm` |
+
+## JavaScript
+
+Use `formatUkDisplayTime()` in `scripts-*.js` — do not hand-roll or only call `.toLowerCase()` on API strings.
+
+```javascript
+formatUkDisplayTime("04:30 PM");           // 4:30 pm
+formatUkDisplayTime("16:30");              // 4:30 pm (24h input)
+formatUkDisplayTime("7:30", { nbspBeforePeriod: true }); // deck cards
+```
+
+Wrappers (all delegate to `formatUkDisplayTime`):
+
+- `formatDeckTime` — home prayer deck (thin space before am/pm)
+- `formatTimetableTime` — prayer-times page tables
+- `formatTimeToAmPm` — Jumu'ah, Ramadan/Eid hero slots
+
+Programme `clockTime` values must pass through `formatUkDisplayTime` in `getProgrammeTimeLabel` / `getProgrammeScheduleTime`.
+
+## HTML
+
+Static times in HTML: `4:00 pm`, `5:30 pm` — not `PM` or `04:00 PM`.
+
+Nav/deck placeholders (`—`) are filled by JS; API times are normalised on display.
+
+## Parsing
+
+Internal parsing (`parseTimeOnRecord`, `parseTimeToDate`) accepts both 24-hour and 12-hour inputs — formatting is display-only.

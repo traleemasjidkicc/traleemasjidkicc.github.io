@@ -1,0 +1,51 @@
+---
+description: Section anchor IDs must match headings; keep nav links in sync
+globs: "**/*.html,assets/js/**/*.js,assets/css/**/*.css,tests/**/*.js"
+alwaysApply: false
+---
+
+# Anchor links & section IDs
+
+Every jump target (`id` on `<section>` or major landmark) must be a **kebab-case slug of the section’s primary heading** (usually the `<h2>`, or `<h1>` on single-hero pages). Sticky nav, mega menu, footer, and in-page links must use that same `id` and a **matching label**.
+
+## Slug rules
+
+1. Lowercase; spaces → hyphens; strip `?` `!` `'` `&rsquo;` punctuation.
+2. `&amp;` → `and` in the slug (e.g. “Live audio & recordings” → `live-audio-and-recordings` or `live-audio-recordings`).
+3. Pair heading with `id="{slug}-heading"` when using `aria-labelledby`.
+4. **Do not** reuse legacy names (`programmes-highlights`, `campaign-message`) when the visible title is “Programme guide”, “Two parts, one vision”, etc.
+
+## When you change a heading
+
+Update in the **same change**:
+
+- Section `id` and heading `id` (`#programme-guide`, `#programme-guide-heading`)
+- All `href="#…"` / `page.html#…` across **all seven HTML pages**
+- Sticky section nav label text
+- CSS selectors that target `#section-id` (not `campaign-*` layout classes)
+- JS string literals (`createCheckout` return URL, programme section links)
+- Playwright tests that assert `#ids` or nav `href`s
+- `.cursor/rules/site-links.mdc` anchor table if programmes/madrasa anchors change
+
+## Examples (this site)
+
+| Heading | Section `id` | Sticky nav label |
+|---------|--------------|------------------|
+| This Week | `this-week` | This week |
+| Programme Guide | `programme-guide` | Programme guide |
+| Live audio & recordings | `live-audio-recordings` | Live audio |
+| How to Join | `how-to-join` | How to join |
+| Who We Are | `who-we-are` | Who we are |
+| Class Times | `class-times` | Class times |
+
+## Sub-blocks
+
+Nested hubs (e.g. `#adult-programmes` inside programme guide) use the **sub-heading** slug. JS-injected links (`createAdultProgrammeSectionLink`) must use the same ids.
+
+## Scroll offset (sticky nav)
+
+Section jump targets must not sit under the sticky main nav. Use:
+
+- CSS: `scroll-margin-top: calc(var(--kicc-sticky-nav-top, 4.25rem) + 1rem)` on section `id`s (global rules on `main section[id]` and `body.has-page-section-nav [id]`).
+- JS: `scrollToAnchorElement()` for hash-on-load and section-nav clicks; it reads `--kicc-sticky-nav-top` after `syncStickyNavOffset()`.
+- Do not use a fixed `rem` offset alone — nav height changes with breakpoint and the announcement ribbon.

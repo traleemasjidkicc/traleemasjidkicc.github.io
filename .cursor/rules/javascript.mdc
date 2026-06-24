@@ -8,36 +8,59 @@ alwaysApply: false
 
 ## File structure
 
-- Single app file: `assets/js/scripts-{timestamp}.js` (~8200 lines)
+- Single app file: `assets/js/scripts-{timestamp}.js` (~10k lines)
 - Wrapped in IIFE: `(function () { "use strict"; ... })()`
-- Use `const` arrow functions for helpers
+- Table of contents comment at top of file lists major areas
 - Pathname helpers: `getPathname()`, `isHomePage()`, `isActivitiesPage()`, `isProjectsPage()`, `isPrayerTimesPage()`, `getPageKey()`
 - **Two init hooks:** `DOMContentLoaded` (shared chrome + page-specific) and `window.onload` (API fetches, `setLocationSpecific()`)
 
+## Site links
+
+- `SITE_LINKS` — canonical external URLs; HTML uses `data-site-link="<key>"`
+- `initCanonicalSiteLinks()` runs on every page `DOMContentLoaded`
+- See `.cursor/rules/site-links.mdc` for label conventions
+
+## UK dates
+
+- Use `formatUkDate` / `formatGregorianFromRecord` — never `en-US` or `Month DD, YYYY` for display
+- See `.cursor/rules/uk-date-format.mdc`
+
+## UK times
+
+- Use `formatUkDisplayTime` — 12-hour, no leading zero on hour, lowercase `am`/`pm`
+- See `.cursor/rules/uk-time-format.mdc`
+
 ## External APIs
 
-### Cloud Run (masjid content)
+### Google Cloud Run (`europe-west1`) — `CLOUD_RUN_APIS`
 
-| Function | Endpoint |
-|----------|----------|
-| `setSalahTimeUrl` | `getsalahtimes-rds3nxm6za-ew.a.run.app` |
-| `setSalahTimes` | `getiqamahtimes-rds3nxm6za-ew.a.run.app` |
-| `getAnnouncement` / ribbon | `getannouncements-rds3nxm6za-ew.a.run.app` (via `initSiteAnnouncements`) |
-| `showNotices` / `getNotices` | `getnotices-rds3nxm6za-ew.a.run.app` |
-| `loadProgrammes` | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true` |
-| `getRandomHadith` | `randomhadith-rds3nxm6za-ew.a.run.app` |
+| Key | Endpoint suffix | Used by |
+|-----|-----------------|---------|
+| `salahTimes` | `getsalahtimes-*` | `setSalahTimeUrl` |
+| `iqamahTimes` | `getiqamahtimes-*` | `setSalahTimes`, nav panel |
+| `announcements` | `getannouncements-*` | `initSiteAnnouncements` |
+| `notices` | `getnotices-*` | `showNotices` |
+| `programmes` | `getmasjidprogrammes-*` | `loadProgrammes` |
+| `randomHadith` | `randomhadith-*` | `getRandomHadith` |
+| `campaigns` | `getcampaigns-*` | `loadFundraiserProgress` |
+
+### Firebase Cloud Functions — `FIREBASE_FUNCTIONS`
+
+| Key | Function | Used by |
+|-----|----------|---------|
+| `createCheckout` | `europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` | `initSumUpDonate` |
 
 ### Other services
 
 | Function | Endpoint |
 |----------|----------|
 | `setEvent` | `https://api.mixlr.com/users/7752720?source=embed` |
-| `initSumUpDonate` | `https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` (Firebase) |
-| `loadFundraiserProgress` | GoFundMe progress API (campaign widgets) |
+| GoFundMe | embed widgets + `SITE_LINKS["gofundme-donate"]` |
+| Kerry Muslim database | `SITE_LINKS["kerry-muslim-database"]` (Microsoft Form) |
 
 ## localStorage keys
 
-`salahTimesAssetUrl`, `iqamah-today`, `kicc-announcements`, `kicc-notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`
+`salahTimesAssetUrl`, `iqamah-today`, `kicc-announcements`, `kicc-notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`, `kicc-campaign-progress`
 
 ## Page routing
 
