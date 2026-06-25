@@ -804,7 +804,7 @@
   const PRAYER_CAROUSEL_PRIMARY = 1;
   const PRAYER_DECK_LEAD_ALIGN_QUERY = "(min-width: 992px)";
   const SUNRISE_FORBIDDEN_MINUTES = 15;
-  const ZAWAAL_BEFORE_ZOHR_MINUTES = 10;
+  const ZAWAAL_BEFORE_PRAYER_MINUTES = 10;
 
   const PRAYER_DECK_ICONS = {
     fajr: "fa-cloud-sun",
@@ -1024,7 +1024,22 @@
         const zohrAdhan = parseTimeOnRecord(record, slot.beginsKey);
         if (zohrAdhan) {
           const zawaalStart = new Date(
-            zohrAdhan.getTime() - ZAWAAL_BEFORE_ZOHR_MINUTES * 60000,
+            zohrAdhan.getTime() - ZAWAAL_BEFORE_PRAYER_MINUTES * 60000,
+          );
+          events.push({
+            type: "zawaal",
+            prayerId: slot.id,
+            label: "Zawaal",
+            at: zawaalStart,
+            dayKey: dayKey,
+          });
+        }
+      }
+      if (slot.id === "maghrib") {
+        const maghribAdhan = parseTimeOnRecord(record, slot.beginsKey);
+        if (maghribAdhan) {
+          const zawaalStart = new Date(
+            maghribAdhan.getTime() - ZAWAAL_BEFORE_PRAYER_MINUTES * 60000,
           );
           events.push({
             type: "zawaal",
@@ -1091,7 +1106,7 @@
 
     if (zohrAdhan) {
       const zawaalStartMs =
-        zohrAdhan.getTime() - ZAWAAL_BEFORE_ZOHR_MINUTES * 60000;
+        zohrAdhan.getTime() - ZAWAAL_BEFORE_PRAYER_MINUTES * 60000;
 
       if (nowMs < zawaalStartMs) {
         return {
@@ -1106,6 +1121,28 @@
       if (nowMs < zohrAdhan.getTime()) {
         return {
           id: "zawaal-before-zohr",
+          label: "Zawaal",
+          navKey: null,
+          dayKey: dayKey,
+          special: true,
+        };
+      }
+    }
+
+    const maghribSlot = PRAYER_SLOTS.find(function (slot) {
+      return slot.id === "maghrib";
+    });
+    const maghribAdhan = maghribSlot
+      ? parseTimeOnRecord(record, maghribSlot.beginsKey)
+      : null;
+
+    if (maghribAdhan) {
+      const maghribZawaalStartMs =
+        maghribAdhan.getTime() - ZAWAAL_BEFORE_PRAYER_MINUTES * 60000;
+
+      if (nowMs >= maghribZawaalStartMs && nowMs < maghribAdhan.getTime()) {
+        return {
+          id: "zawaal-before-maghrib",
           label: "Zawaal",
           navKey: null,
           dayKey: dayKey,
@@ -1163,14 +1200,16 @@
     if (!currentSlot) return null;
 
     if (currentSlot.special) {
-      const zohr = PRAYER_SLOTS.find(function (slot) {
-        return slot.id === "dhuhr";
+      const nextPrayerId =
+        currentSlot.id === "zawaal-before-maghrib" ? "maghrib" : "dhuhr";
+      const nextSlot = PRAYER_SLOTS.find(function (slot) {
+        return slot.id === nextPrayerId;
       });
-      if (zohr) {
+      if (nextSlot) {
         return {
-          id: zohr.id,
-          label: zohr.label,
-          navKey: zohr.navKey,
+          id: nextSlot.id,
+          label: nextSlot.label,
+          navKey: nextSlot.navKey,
           dayKey: currentSlot.dayKey,
         };
       }
@@ -1223,11 +1262,33 @@
     const current = getCurrentPrayerSlotForRecord(todayRecord, nowMs);
     const nextPrayer = getNextPrayerSlot(current);
 
+    let countdownTarget = nextEvent ? nextEvent.at : null;
+    let countdownLabel = nextEvent ? formatEventChipLabel(nextEvent) : "";
+
+    // During Duha the next timeline event is Zawaal, but visitors care about Zohr.
+    if (
+      current &&
+      current.special &&
+      current.id === "duha" &&
+      nextPrayer
+    ) {
+      const record = cachedPrayerDayMap[nextPrayer.dayKey] || todayRecord;
+      const slot = PRAYER_SLOTS.find(function (s) {
+        return s.id === nextPrayer.id;
+      });
+      const adhan = slot ? parseTimeOnRecord(record, slot.beginsKey) : null;
+      if (adhan) {
+        countdownTarget = adhan;
+        countdownLabel = nextPrayer.label;
+      }
+    }
+
     return {
       current: current,
       nextPrayer: nextPrayer,
       nextEvent: nextEvent,
-      countdownTarget: nextEvent ? nextEvent.at : null,
+      countdownTarget: countdownTarget,
+      countdownLabel: countdownLabel,
     };
   };
 
@@ -1356,7 +1417,7 @@
     let targetPrayer = prayerId;
 
     if (!targetDay || !targetPrayer) {
-      if (deckState.current) {
+      if (deckState.current && !deckState.current.special) {
         targetDay = deckState.current.dayKey;
         targetPrayer = deckState.current.id;
       } else if (deckState.nextPrayer) {
@@ -1718,7 +1779,7 @@
 
   const buildPrayerStatusHtml = (state) => {
     const countdown = formatCountdown(state.countdownTarget);
-    const nextLabel = formatEventChipLabel(state.nextEvent);
+    const nextLabel = state.countdownLabel || "—";
     const currentLabel = state.current ? state.current.label : "—";
     const currentChipLabel = getCurrentSalahChipLabel(state.current);
 
@@ -1921,7 +1982,7 @@
     }
 
     const countdown = formatCountdown(state.countdownTarget);
-    const nextLabel = formatEventChipLabel(state.nextEvent);
+    const nextLabel = state.countdownLabel || "—";
     const currentChipLabel = getCurrentSalahChipLabel(state.current);
 
     statusEl.innerHTML =
@@ -9850,7 +9911,15 @@
 
     let nextSlotId = null;
     if (nextNameEl) {
-      if (state.nextEvent) {
+      if (
+        state.current &&
+        state.current.special &&
+        state.current.id === "duha" &&
+        state.nextPrayer
+      ) {
+        nextNameEl.textContent = state.nextPrayer.label;
+        nextSlotId = state.nextPrayer.id;
+      } else if (state.nextEvent) {
         nextNameEl.textContent = state.nextEvent.label;
         nextSlotId = state.nextEvent.prayerId || null;
       } else if (state.nextPrayer) {
@@ -9870,8 +9939,8 @@
     }
 
     if (nextLabelEl && countdownEl) {
-      if (state.nextEvent && state.countdownTarget) {
-        nextLabelEl.textContent = formatEventChipLabel(state.nextEvent) + " in";
+      if (state.countdownTarget && state.countdownLabel) {
+        nextLabelEl.textContent = state.countdownLabel + " in";
         countdownEl.textContent = formatCountdown(state.countdownTarget);
       } else {
         nextLabelEl.textContent = "Next";
@@ -9920,7 +9989,7 @@
       const countdownEl = document.getElementById("prayer-hero-countdown");
       if (!countdownEl) return;
       const state = getSalahTimelineState();
-      if (state.nextEvent && state.countdownTarget) {
+      if (state.countdownTarget) {
         countdownEl.textContent = formatCountdown(state.countdownTarget);
       }
     }, 1000);

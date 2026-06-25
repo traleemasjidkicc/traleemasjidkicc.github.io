@@ -9524,6 +9524,54 @@ a:focus-visible .kicc-external-icon {
 	align-self: stretch;
 }
 
+/* Donate bands — readable CTAs on teal / glass backgrounds */
+.campaign-donate-section .btn-kicc-ghost,
+.campaign-donate-section .btn-campaign-outline {
+	background: rgba(255, 255, 255, 0.94);
+	border: 2px solid rgba(255, 255, 255, 0.95);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+.campaign-donate-section .btn-kicc-ghost:hover,
+.campaign-donate-section .btn-kicc-ghost:focus,
+.campaign-donate-section .btn-campaign-outline:hover,
+.campaign-donate-section .btn-campaign-outline:focus {
+	background: #fff;
+	border-color: #fff;
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+	transform: translateY(-2px);
+}
+
+.campaign-donate-section .btn-kicc-donate,
+.campaign-donate-section .btn-campaign:not(.sumup-start-donate-btn) {
+	background: var(--kicc-green);
+	background: linear-gradient(
+		135deg,
+		var(--kicc-green) 0%,
+		var(--kicc-green-dark) 100%
+	);
+	border: 2px solid rgba(255, 255, 255, 0.92);
+	color: #fff;
+	box-shadow:
+		0 4px 16px rgba(0, 0, 0, 0.2),
+		0 4px 18px rgba(26, 158, 34, 0.35);
+}
+
+.campaign-donate-section .btn-kicc-donate:hover,
+.campaign-donate-section .btn-kicc-donate:focus,
+.campaign-donate-section .btn-campaign:not(.sumup-start-donate-btn):hover,
+.campaign-donate-section .btn-campaign:not(.sumup-start-donate-btn):focus {
+	background: var(--kicc-green-dark);
+	border-color: #fff;
+	color: #fff;
+	box-shadow:
+		0 6px 20px rgba(0, 0, 0, 0.22),
+		0 6px 22px rgba(26, 158, 34, 0.42);
+	transform: translateY(-2px);
+}
+
 .campaign-bank-details {
 	background: rgba(255, 255, 255, 0.08);
 	border-radius: 12px;
@@ -12461,6 +12509,161 @@ a:focus-visible .kicc-external-icon {
 	gap: 1.25rem;
 }
 
+/* Home donate — high-contrast button system */
+.home-donate-section .home-donate-actions {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.75rem;
+	max-width: 24rem;
+}
+
+.home-donate-section .home-donate-actions .btn {
+	width: 100%;
+	justify-content: center;
+	margin-bottom: 0 !important;
+	min-height: 3.15rem;
+	padding: 0.85rem 1.5rem;
+	border-radius: 999px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease,
+		box-shadow 0.2s ease,
+		transform 0.15s ease;
+}
+
+.home-donate-section .home-donate-actions .btn-kicc-donate {
+	background: #fff;
+	border: 2px solid #fff;
+	color: var(--kicc-green-dark);
+	box-shadow:
+		0 10px 28px rgba(0, 0, 0, 0.28),
+		0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.home-donate-section .home-donate-actions .btn-kicc-donate:hover,
+.home-donate-section .home-donate-actions .btn-kicc-donate:focus {
+	background: var(--kicc-green);
+	border-color: var(--kicc-green);
+	color: #fff;
+	box-shadow:
+		0 12px 32px rgba(0, 0, 0, 0.3),
+		0 8px 22px rgba(26, 158, 34, 0.42);
+	transform: translateY(-2px);
+}
+
+.home-donate-section .home-donate-actions .btn-kicc-ghost {
+	background: rgba(5, 90, 94, 0.62);
+	border: 2px solid rgba(255, 255, 255, 0.88);
+	color: #fff;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+
+.home-donate-section .home-donate-actions .btn-kicc-ghost:hover,
+.home-donate-section .home-donate-actions .btn-kicc-ghost:focus {
+	background: #fff;
+	border-color: #fff;
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
+	transform: translateY(-2px);
+}
+
+.home-donate-section .sumup-donate-panel {
+	background: linear-gradient(
+		145deg,
+		rgba(5, 90, 94, 0.78) 0%,
+		rgba(5, 90, 94, 0.58) 100%
+	);
+	border-color: rgba(255, 255, 255, 0.42);
+	box-shadow:
+		0 18px 52px rgba(0, 0, 0, 0.28),
+		inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.home-donate-section .sumup-amount-btn {
+	background: #fff;
+	border: 2px solid #fff;
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+.home-donate-section .sumup-amount-btn:hover,
+.home-donate-section .sumup-amount-btn:focus {
+	background: var(--kicc-teal-soft);
+	border-color: #fff;
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+}
+
+.home-donate-section .sumup-amount-btn.is-active {
+	background: var(--kicc-gold);
+	border-color: var(--kicc-gold);
+	color: var(--kicc-teal-deep);
+	box-shadow:
+		0 0 0 2px rgba(255, 255, 255, 0.95),
+		0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+.home-donate-section .sumup-donate-panel .sumup-start-donate-btn {
+	min-height: 3.25rem;
+	font-size: 1.05rem;
+	background: linear-gradient(
+		135deg,
+		var(--kicc-green) 0%,
+		var(--kicc-green-dark) 100%
+	);
+	border: 2px solid #fff;
+	color: #fff;
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.45),
+		0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.home-donate-section .sumup-donate-panel .sumup-start-donate-btn:hover,
+.home-donate-section .sumup-donate-panel .sumup-start-donate-btn:focus {
+	background: #fff;
+	border-color: #fff;
+	color: var(--kicc-green-dark);
+	box-shadow:
+		0 0 0 1px rgba(255, 255, 255, 0.55),
+		0 14px 34px rgba(0, 0, 0, 0.32);
+	transform: translateY(-2px);
+}
+
+.home-donate-section .sumup-donate-again-btn,
+.home-donate-section .sumup-donate-error-actions .btn-kicc-secondary {
+	background: #fff;
+	border: 2px solid #fff;
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.home-donate-section .sumup-donate-again-btn:hover,
+.home-donate-section .sumup-donate-again-btn:focus,
+.home-donate-section .sumup-donate-error-actions .btn-kicc-secondary:hover,
+.home-donate-section .sumup-donate-error-actions .btn-kicc-secondary:focus {
+	background: var(--kicc-gold-light);
+	border-color: var(--kicc-gold-light);
+	color: var(--kicc-teal-deep);
+}
+
+.home-donate-section .sumup-donate-error-actions .sumup-donate-error-retry {
+	background: #fff;
+	border: 2px solid #fff;
+	color: var(--kicc-green-dark);
+	box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+.home-donate-section .sumup-donate-error-actions .sumup-donate-error-retry:hover,
+.home-donate-section .sumup-donate-error-actions .sumup-donate-error-retry:focus {
+	background: var(--kicc-green);
+	border-color: var(--kicc-green);
+	color: #fff;
+}
+
 /* SumUp donation panel (home) */
 .sumup-donate-panel {
 	position: relative;
@@ -12560,6 +12763,11 @@ a:focus-visible .kicc-external-icon {
 	color: rgba(255, 255, 255, 0.95);
 }
 
+.sumup-donate-badge i {
+	color: var(--kicc-gold-bright);
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
 .sumup-donate-note {
 	margin: 0;
 	width: 100%;
@@ -12624,29 +12832,35 @@ a:focus-visible .kicc-external-icon {
 	min-width: 4.5rem;
 	padding: 0.55rem 0.65rem;
 	border-radius: 999px;
-	border: 1px solid rgba(255, 255, 255, 0.35);
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
+	border: 1.5px solid rgba(255, 255, 255, 0.9);
+	background: rgba(255, 255, 255, 0.94);
+	color: var(--kicc-teal-deep);
 	font-size: 0.92rem;
 	font-weight: 600;
 	cursor: pointer;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
 	transition:
 		background 0.2s ease,
 		border-color 0.2s ease,
+		box-shadow 0.2s ease,
 		transform 0.15s ease;
 }
 
 .sumup-amount-btn:hover,
 .sumup-amount-btn:focus {
-	background: rgba(255, 255, 255, 0.2);
-	border-color: rgba(255, 255, 255, 0.55);
+	background: #fff;
+	border-color: #fff;
 	outline: none;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .sumup-amount-btn.is-active {
-	background: rgba(201, 168, 76, 0.35);
-	border-color: #c9a84c;
-	box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.35);
+	background: #fff;
+	border-color: var(--kicc-gold);
+	color: var(--kicc-teal-deep);
+	box-shadow:
+		0 0 0 2px var(--kicc-gold),
+		0 4px 12px rgba(0, 0, 0, 0.16);
 }
 
 .sumup-amount-btn:disabled {
@@ -12711,6 +12925,23 @@ a:focus-visible .kicc-external-icon {
 
 .sumup-start-donate-btn {
 	width: 100%;
+}
+
+.sumup-donate-panel .sumup-start-donate-btn {
+	background: #fff;
+	border: 2px solid #fff;
+	color: var(--kicc-green-dark);
+	font-weight: 700;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.sumup-donate-panel .sumup-start-donate-btn:hover,
+.sumup-donate-panel .sumup-start-donate-btn:focus {
+	background: var(--kicc-green);
+	border-color: var(--kicc-green);
+	color: #fff;
+	box-shadow: 0 6px 20px rgba(26, 158, 34, 0.42);
+	transform: translateY(-2px);
 }
 
 .sumup-donate-panel.is-widget-open .sumup-start-donate-btn {
