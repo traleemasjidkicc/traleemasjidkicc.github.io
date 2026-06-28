@@ -10,6 +10,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no tra
 ## Stack
 
 - HTML pages at repo root: `index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`, `prayer-times.html`
+- Error pages: `404.html` (GitHub Pages auto-serves), `403.html`, `500.html` — regenerate with `yarn build:error-pages`
 - CSS: single versioned `assets/css/main-{timestamp}.css`
 - JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~8200 lines)
 - CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
@@ -47,3 +48,4 @@ Use **Yarn only**. Run `yarn ci` to install, `yarn start` to develop.
 - Do not add frameworks, bundlers, or TypeScript unless explicitly requested
 - Campaign styling on `projects.html` uses `campaign-*` classes; prayer times uses `prayer-times-*`
 - New public pages: update nav, footer, and `sitemap.xml`
+- Error pages: not in nav/sitemap; edit `scripts/build-error-pages.js` or `.page-error` CSS, then `yarn build:error-pages`

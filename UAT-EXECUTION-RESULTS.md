@@ -14,7 +14,6 @@
 | High-priority UAT cases with automated coverage | 44 |
 | Automated ✅ Pass | 43 |
 | Not automated (manual / device-only) | Remaining cases in [UAT-TEST-CASES.md](UAT-TEST-CASES.md) |
-| Pre-audit 💡 Recommendation | 1 (case 136 — no custom 404 page) |
 
 ## High-priority results (automated)
 
@@ -65,7 +64,7 @@
 | 120 | Form labels and error roles | Desktop | ✅ Pass | `contact-form.spec.js` |
 | 134 | UK date format | Desktop | ✅ Pass | `prayer-times.spec.js` |
 | 135 | UK time format in nav | Desktop | ✅ Pass | `prayer-times.spec.js` |
-| 136 | 404 for unknown URL | Desktop | 💡 Recommendation | No branded 404 page in repo (GitHub Pages default) |
+| 136 | 404 for unknown URL | Desktop | — | Manual after deploy — branded `404.html` on GitHub Pages |
 
 ## Manual follow-up (not fully automatable)
 

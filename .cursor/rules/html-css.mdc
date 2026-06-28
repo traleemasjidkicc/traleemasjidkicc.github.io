@@ -39,6 +39,8 @@ Each page needs a **unique** set (copy pattern from an existing page and customi
 
 When adding a page, also add it to `sitemap.xml` and ensure `robots.txt` references the sitemap.
 
+**Error pages** (`404.html`, `403.html`, `500.html`) are generated — do not add to `sitemap.xml`. Use `noindex, nofollow`. On error pages only, use root-relative asset paths (`/assets/...`) so `404.html` works from any missing URL depth. Regenerate with `yarn build:error-pages` after nav/footer/cookie changes on `contact.html`.
+
 ## CSS
 
 - `assets/css/main-{timestamp}.css` — layout, typography, components, motion, campaign, prayer-times, responsive rules

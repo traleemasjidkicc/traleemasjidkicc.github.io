@@ -56,6 +56,9 @@ assets/
 
 index.html, about.html, activities.html, madrasa.html,
 projects.html, contact.html, prayer-times.html
+404.html, 403.html, 500.html   # Themed error pages (404 auto-served by GitHub Pages)
+
+scripts/build-error-pages.js   # Regenerates error pages from contact.html chrome
 
 gulpfile.js             # Gulp task configuration
 playwright.config.js    # E2E test config (Edge, port 3000)
@@ -79,6 +82,8 @@ AGENTS.md               # Primary AI agent instructions
 | `about.html` | — | History, vision, team |
 | `madrasa.html` | Madrasa | Children's madrasa info and registration |
 | `contact.html` | Contact | Imams, management, consent-gated Google Maps embed, directions |
+
+**Error pages:** `404.html` (GitHub Pages serves for missing URLs), `403.html`, `500.html`. Not in nav or `sitemap.xml`. Regenerate with `yarn build:error-pages` after nav/footer changes on `contact.html`.
 
 ## Critical JavaScript Functionality
 

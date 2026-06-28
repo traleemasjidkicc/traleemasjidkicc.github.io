@@ -20879,3 +20879,174 @@ body.has-page-section-nav [id] {
 }
 
 /* ABOUT PAGE END */
+
+/* ERROR PAGES START */
+
+.page-error {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background: var(--kicc-bg);
+}
+
+.page-error .error-main {
+	flex: 1 0 auto;
+}
+
+.page-error .error-hero {
+	position: relative;
+	overflow: hidden;
+	padding: 3.5rem 0 4rem;
+	background: linear-gradient(
+		145deg,
+		#eef8f8 0%,
+		#f8fbfb 42%,
+		#fff9ef 100%
+	);
+}
+
+.page-error .error-hero-bg {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(circle at 12% 18%, rgba(13, 91, 94, 0.12), transparent 42%),
+		radial-gradient(circle at 88% 0%, rgba(201, 168, 76, 0.14), transparent 36%);
+	pointer-events: none;
+}
+
+.page-error .error-hero-inner {
+	position: relative;
+	z-index: 1;
+	max-width: 40rem;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.page-error .error-code {
+	margin-bottom: 0.5rem;
+	color: var(--kicc-teal);
+	font-family: var(--kicc-font-display);
+	font-size: clamp(3.5rem, 12vw, 5.5rem);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.04em;
+	opacity: 0.92;
+}
+
+.page-error .error-eyebrow.arabic-greeting {
+	margin-bottom: 0.75rem;
+	font-family: var(--kicc-font-arabic);
+	font-size: clamp(1.35rem, 3vw, 1.75rem);
+	font-weight: 700;
+	line-height: 1.6;
+	color: var(--kicc-teal);
+}
+
+.page-error .error-title {
+	margin-bottom: 1rem;
+	color: #101828;
+	font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+	line-height: 1.15;
+}
+
+.page-error .error-lead {
+	max-width: 34rem;
+	margin: 0 auto 1.5rem;
+	color: #475467;
+	font-size: 1.05rem;
+	line-height: 1.65;
+}
+
+.page-error .error-path-wrap {
+	max-width: 100%;
+	margin: 0 auto 1.75rem;
+	padding: 0.85rem 1rem;
+	border-radius: 0.75rem;
+	background: rgba(255, 255, 255, 0.72);
+	border: 1px solid rgba(10, 138, 142, 0.14);
+	box-shadow: var(--kicc-shadow-sm);
+}
+
+.page-error .error-path-label {
+	display: block;
+	margin-bottom: 0.35rem;
+	color: var(--kicc-text-muted);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.page-error .error-path {
+	display: block;
+	overflow-wrap: anywhere;
+	color: var(--kicc-text);
+	font-size: 0.95rem;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	background: transparent;
+}
+
+.page-error .error-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+	margin-bottom: 2.25rem;
+}
+
+.page-error .error-actions .btn-kicc {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	min-width: 11rem;
+}
+
+.page-error .error-quick-links {
+	padding-top: 1.75rem;
+	border-top: 1px solid rgba(10, 138, 142, 0.12);
+}
+
+.page-error .error-quick-links-label {
+	margin-bottom: 0.85rem;
+	color: var(--kicc-text-muted);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.page-error .error-quick-links-list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem 1rem;
+}
+
+.page-error .error-quick-links-list a {
+	color: var(--kicc-teal-dark);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.page-error .error-quick-links-list a:hover,
+.page-error .error-quick-links-list a:focus {
+	color: var(--kicc-teal-deep);
+	text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+	.page-error .error-hero {
+		padding-top: 4.5rem;
+		padding-bottom: 5rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-error .error-hero-enter {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ERROR PAGES END */

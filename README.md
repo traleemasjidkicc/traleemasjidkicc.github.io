@@ -107,6 +107,28 @@ Seven public HTML pages live at the repository root. Navigation labels match wha
 
 Footer links also include **Salah timetable** → `prayer-times.html`.
 
+### Error pages
+
+Three themed error pages share the site nav, footer, and cookie consent. They are **not** listed in the main menu or `sitemap.xml`, and use `noindex, nofollow`.
+
+| File | When visitors see it | Summary |
+|------|----------------------|---------|
+| [`404.html`](404.html) | GitHub Pages serves this for any missing URL | “Page not found” with links home, salah times, contact, and popular pages; shows the requested path when served for a bad link |
+| [`403.html`](403.html) | Only when opened directly or mapped by a future host | “Access restricted” |
+| [`500.html`](500.html) | Only when opened directly or mapped by a future host | “Something went wrong” |
+
+GitHub Pages **only** auto-serves `404.html`. The 403 and 500 pages are ready if the site moves to infrastructure that can map HTTP status codes.
+
+Error pages use **root-relative** asset and link paths (`/assets/...`, `/contact.html`) so styles and scripts still load when `404.html` is shown for a deep URL such as `/some/missing/page`.
+
+**Regenerate** after nav, footer, or cookie-consent markup changes on `contact.html`:
+
+```bash
+yarn build:error-pages
+```
+
+Generator: [`scripts/build-error-pages.js`](scripts/build-error-pages.js). Styles: `.page-error` / `.error-*` in `assets/css/main-*.css`.
+
 ---
 
 ## Tech stack
@@ -218,6 +240,12 @@ traleemasjidkicc.github.io/
 ├── about.html
 ├── madrasa.html
 ├── contact.html
+├── 404.html                   # Custom not-found page (GitHub Pages auto-serves)
+├── 403.html                   # Access denied (standalone; not auto-served on GitHub Pages)
+├── 500.html                   # Server error (standalone; not auto-served on GitHub Pages)
+│
+├── scripts/
+│   └── build-error-pages.js   # Regenerates 404/403/500 from contact.html chrome
 │
 ├── assets/
 │   ├── css/
@@ -317,6 +345,7 @@ yarn verify
 | Start dev server | `yarn start` |
 | Verify lockfile / cache | `yarn verify` |
 | Run pre-commit tasks manually | `yarn precommit` |
+| Regenerate error pages | `yarn build:error-pages` |
 | Commit (hooks run automatically) | `git commit` |
 | E2E tests (server must be running) | `yarn test:e2e` |
 | E2E with visible browser | `yarn test:e2e:headed` |
@@ -333,6 +362,8 @@ yarn verify
 | **Dependencies** | `package.json`, `yarn.lock` | `yarn upgrade <pkg>`, then test |
 | **Ramadan / Eid banner** | `scripts-*.js` → `isRamadan()` / `isEid()` | Update dates annually (currently 2026) |
 | **New public page** | HTML + nav + footer + `sitemap.xml` + SEO `<head>` | Copy meta pattern from an existing page |
+| **Error page copy or chrome** | `scripts/build-error-pages.js` → run `yarn build:error-pages` | Do not hand-edit generated nav/footer in `404.html` / `403.html` / `500.html` |
+| **Error page styles** | `assets/css/main-*.css` (`.page-error`, `.error-*`) | Commit triggers CSS rename if changed |
 
 ### Important rules
 

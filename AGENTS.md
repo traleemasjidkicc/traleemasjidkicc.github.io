@@ -12,6 +12,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Masjid). Vani
 | Verify node_modules | `yarn verify` |
 | E2E tests (dev server must be running) | `yarn test:e2e` |
 | E2E headed / UI | `yarn test:e2e:headed` / `yarn test:e2e:ui` |
+| Regenerate error pages (after nav/footer changes) | `yarn build:error-pages` |
 | Commit (hooks run automatically) | `git commit` — runs `yarn precommit` via pre-commit hook |
 
 **Package manager:** Yarn only (`engine-strict` in `.npmrc`). Do not use npm.
@@ -66,6 +67,22 @@ Other third-party
 | `madrasa.html` | Madrasa | Children's Islamic school |
 | `contact.html` | Contact | Imams, management, map, directions |
 
+### Error pages (not in nav or sitemap)
+
+| File | Served when | Notes |
+|------|-------------|-------|
+| `404.html` | GitHub Pages auto-serves for missing URLs | Branded page; `noindex`; root-relative asset paths (`/assets/...`) so CSS/JS load from deep missing URLs |
+| `403.html` | Manual / future host config only | Access denied copy; not auto-served on GitHub Pages |
+| `500.html` | Manual / future host config only | Server error copy; not auto-served on GitHub Pages |
+
+**Regenerate** after nav, footer, or cookie-consent markup changes on `contact.html`:
+
+```bash
+yarn build:error-pages
+```
+
+Source: `scripts/build-error-pages.js` — copies shared chrome from `contact.html`, injects error hero content, and writes all three files. Styles: `.page-error` / `.error-*` in `main-*.css`. Do **not** add error pages to `sitemap.xml`.
+
 ## Page-specific JS behaviour
 
 Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses pathname helpers and `setLocationSpecific()`.
@@ -102,7 +119,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 ## SEO and discoverability
 
 - **`robots.txt`** — allows crawling; references sitemap
-- **`sitemap.xml`** — all 7 public HTML pages at `https://traleemasjidkicc.ie/`
+- **`sitemap.xml`** — all 7 public HTML pages at `https://traleemasjidkicc.ie/` (error pages excluded)
 - **Per-page `<head>`** — unique `title`, `description`, `canonical`, Open Graph, Twitter Card, JSON-LD (`Mosque`/`Organization`, `WebPage`, `BreadcrumbList`; homepage also `WebSite`)
 - **`site.webmanifest`** — PWA metadata (`start_url`, `scope`, theme colour `#0a8a8e`)
 - **Apple home screen** — `apple-touch-icon`, `apple-mobile-web-app-*`, `theme-color` on all pages
@@ -127,6 +144,7 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 5. **Ramadan/Eid dates:** update hardcoded dates in `isRamadan()` / `isEid()` annually (currently 2026)
 6. **Campaign page:** `projects.html` uses `campaign-*` CSS classes and GoFundMe iframes — match existing patterns
 7. **New public page:** add to nav/footer, `sitemap.xml`, and full SEO head block (canonical, OG, JSON-LD)
+8. **Error pages:** edit styles in `main-*.css` or messages in `scripts/build-error-pages.js`, then run `yarn build:error-pages` — do not hand-edit nav/footer in `404.html` / `403.html` / `500.html` (they are generated)
 
 ## Pitfalls
 
@@ -141,10 +159,12 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 - `gulpfile.js` — serve, watch, rename-js, rename-css, update-html, setup-hooks
 - `package.json` — scripts, version, devDependencies
+- `scripts/build-error-pages.js` — regenerates `404.html`, `403.html`, `500.html` from `contact.html` chrome
 - `playwright.config.js` — Edge e2e; CI starts BrowserSync on port 3000
 - `tests/projects.spec.js` — New Masjid campaign page tests
 - `assets/js/scripts-*.js` — all client-side logic
 - `assets/css/main-*.css` — all styles including `campaign-*` and `prayer-times-*`
 - `index.html`, `prayer-times.html`, `projects.html` — highest-traffic / feature-rich pages
+- `404.html`, `403.html`, `500.html` — themed error pages (`404.html` auto-served by GitHub Pages)
 - `robots.txt`, `sitemap.xml`, `site.webmanifest` — SEO/PWA root assets
 - `pre-commit` / `post-commit` — git hook scripts (copy to `.git/hooks/` via `yarn setup-hooks`)

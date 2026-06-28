@@ -38,6 +38,7 @@ alwaysApply: false
 | `ci` | `yarn install --immutable` (then `postci` runs `yarn start`) |
 | `verify` | `yarn install --immutable --check-cache` |
 | `precommit` | `gulp precommit` |
+| `build:error-pages` | `node scripts/build-error-pages.js` — rebuild `404.html`, `403.html`, `500.html` from `contact.html` chrome |
 | `test:e2e` | `playwright test` (local: requires `yarn start` on port 3000) |
 | `test:e2e:headed` | Headed Edge run |
 | `test:e2e:ui` | Playwright UI mode |

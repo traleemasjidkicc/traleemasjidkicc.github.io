@@ -269,7 +269,7 @@
 
 | # | Test Case Heading | Device / Orientation | How to Test (Steps) | Expected Result | Status |
 |---|-------------------|----------------------|----------------------|-----------------|--------|
-| 136 | 404 for unknown URL | Laptop / Desktop | 1. Visit `https://traleemasjidkicc.ie/nonexistent-page.html`. | GitHub Pages 404 shown (no custom branded 404 in repo). | 💡 Recommendation |
+| 136 | 404 for unknown URL | Laptop / Desktop | 1. Visit `https://traleemasjidkicc.ie/nonexistent-page.html` (after deploy). | Branded `404.html` with site nav, helpful links, and requested path shown. | — |
 | 137 | Invalid hash anchor | Mobile – Portrait | 1. Open `about.html#nonexistent-section`. | Page loads; no JS crash; user not stuck. | — |
 | 138 | API total failure — prayer nav | Mobile – Portrait | 1. Block all Cloud Run; clear cache; reload. | Nav salah panel degrades gracefully; no infinite spinners. | — |
 | 139 | Mixlr API failure | Laptop / Desktop | 1. Block api.mixlr.com. | Shows Off air; page remains usable. | — |
@@ -322,15 +322,13 @@
 - Motion/reduced-motion polish (63, 121)
 - External link icon rules (16)
 - Breaking alert modal when configured (31)
-- 404 branding (136 — enhancement, not blocker)
 
 ### Critical issues from code audit (pre-UAT execution)
 
-1. **No custom 404 page** — GitHub Pages default only; visitors hitting bad links get generic 404 (test 136).
-2. **Automated regression suite** — Playwright now covers high-priority flows; extend for API-failure and device-only cases as needed.
-3. **Third-party dependency** — Core value (prayer times, programmes, donations) depends on Cloud Run, Mixlr, GoFundMe, SumUp, Formspree; UAT must include API-down scenarios.
-4. **No end-user authentication** — By design; not a defect.
-5. **Payment completion** — SumUp card checkout cannot be fully UAT-tested without test cards / sandbox; limit to widget mount and error UI (85–86).
+1. **Automated regression suite** — Playwright now covers high-priority flows; extend for API-failure and device-only cases as needed.
+2. **Third-party dependency** — Core value (prayer times, programmes, donations) depends on Cloud Run, Mixlr, GoFundMe, SumUp, Formspree; UAT must include API-down scenarios.
+3. **No end-user authentication** — By design; not a defect.
+4. **Payment completion** — SumUp card checkout cannot be fully UAT-tested without test cards / sandbox; limit to widget mount and error UI (85–86).
 
 ### Suggested UAT execution order
 
