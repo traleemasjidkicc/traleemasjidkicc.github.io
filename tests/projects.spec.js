@@ -1,9 +1,12 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 
+import { acceptAllCookies } from "./helpers/site.js";
+
 test.describe("New Masjid campaign page", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/projects.html");
+    await acceptAllCookies(page);
   });
 
   test("loads with campaign hero and visible title", async ({ page }) => {

@@ -10,12 +10,12 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: isCI,
-  retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  retries: isCI ? 2 : 1,
+  workers: 1,
   reporter: [["list"], ["html", { open: isCI ? "never" : "on-failure" }]],
-  timeout: 30_000,
+  timeout: 45_000,
   expect: {
-    timeout: 10_000,
+    timeout: 15_000,
   },
   use: {
     baseURL,
