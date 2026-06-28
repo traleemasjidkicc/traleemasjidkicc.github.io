@@ -13865,29 +13865,37 @@ a:focus-visible .kicc-external-icon {
 	--faith-glow: rgba(45, 122, 128, 0.38);
 }
 
-/* Faith — tabbed hub */
+/* Faith — article hub (grid selectors + reading panel) */
 .pillars-faith-layout {
-	display: grid;
-	grid-template-columns: minmax(220px, 280px) 1fr;
+	display: flex;
+	flex-direction: column;
 	gap: 1.5rem;
-	align-items: stretch;
 	position: relative;
 	z-index: 1;
+	max-width: 920px;
+	margin: 0 auto;
 }
 
-.pillars-faith-tabs-wrap {
+.pillars-faith-selector {
 	position: relative;
 	min-width: 0;
 }
 
 .pillars-faith-tabs {
-	display: flex;
-	flex-direction: column;
-	gap: 0.55rem;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.65rem;
 	position: relative;
 	--faith-accent: #0a8a8e;
 	--faith-accent-deep: #067276;
 	--faith-glow: rgba(10, 138, 142, 0.38);
+}
+
+@media (min-width: 576px) {
+	.pillars-faith-tabs {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
 }
 
 .pillars-faith-tab-indicator {
@@ -13896,9 +13904,11 @@ a:focus-visible .kicc-external-icon {
 	top: 0;
 	width: 100%;
 	height: 3.5rem;
-	border-radius: 12px;
-	background: linear-gradient(135deg, var(--faith-accent) 0%, var(--faith-accent-deep) 100%);
-	box-shadow: 0 10px 32px var(--faith-glow), 0 0 0 2px rgba(255, 255, 255, 0.15) inset;
+	border-radius: 14px;
+	background: linear-gradient(145deg, var(--faith-accent) 0%, var(--faith-accent-deep) 100%);
+	box-shadow:
+		0 12px 28px var(--faith-glow),
+		0 0 0 2px rgba(255, 255, 255, 0.18) inset;
 	transition:
 		top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
 		left 0.38s cubic-bezier(0.22, 1, 0.36, 1),
@@ -13914,39 +13924,52 @@ a:focus-visible .kicc-external-icon {
 	position: relative;
 	z-index: 1;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	gap: 0.75rem;
+	justify-content: flex-start;
+	gap: 0.45rem;
 	width: 100%;
-	padding: 0.9rem 1rem;
+	min-height: 7.5rem;
+	padding: 1rem 0.65rem 0.85rem;
 	border: 2px solid rgba(13, 91, 94, 0.1);
-	border-radius: 12px;
-	background: rgba(255, 255, 255, 0.85);
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.92);
 	color: var(--kicc-text);
-	text-align: left;
+	text-align: center;
 	cursor: pointer;
-	transition: color 0.25s ease, border-color 0.25s ease, transform 0.3s ease;
+	transition: color 0.25s ease, border-color 0.25s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.pillars-faith-tab:hover:not(.is-active) {
+.pillars-faith-tab:hover:not(.is-active),
+.pillars-faith-tab:focus-visible:not(.is-active) {
 	border-color: var(--faith-accent, rgba(13, 91, 94, 0.35));
-	transform: translateX(3px);
+	transform: translateY(-3px);
+	box-shadow: 0 10px 24px rgba(13, 91, 94, 0.1);
+}
+
+.pillars-faith-tab:focus-visible {
+	outline: 2px solid var(--faith-accent, var(--kicc-teal));
+	outline-offset: 2px;
 }
 
 .pillars-faith-tab.is-active {
 	border-color: rgba(255, 255, 255, 0.35);
 	background: transparent;
 	color: #fff;
-	transform: translateX(6px);
+	transform: translateY(-4px);
+	box-shadow: none;
 }
 
 .pillars-faith-tab-num {
-	flex-shrink: 0;
-	width: 1.75rem;
-	height: 1.75rem;
-	line-height: 1.75rem;
+	position: absolute;
+	top: 0.45rem;
+	right: 0.45rem;
+	width: 1.5rem;
+	height: 1.5rem;
+	line-height: 1.5rem;
 	text-align: center;
 	border-radius: 50%;
-	font-size: 0.75rem;
+	font-size: 0.68rem;
 	font-weight: 700;
 	background: var(--faith-accent-soft, rgba(13, 91, 94, 0.1));
 	color: var(--faith-accent, var(--kicc-teal));
@@ -13954,26 +13977,31 @@ a:focus-visible .kicc-external-icon {
 }
 
 .pillars-faith-tab.is-active .pillars-faith-tab-num {
-	background: rgba(255, 255, 255, 0.22);
+	background: rgba(255, 255, 255, 0.32);
 	color: #fff;
-	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
 }
 
 .pillars-faith-tab-icon {
 	flex-shrink: 0;
-	width: 2.35rem;
-	height: 2.35rem;
-	line-height: 2.35rem;
+	width: 2.65rem;
+	height: 2.65rem;
+	line-height: 2.65rem;
 	text-align: center;
-	border-radius: 10px;
+	border-radius: 12px;
 	background: var(--faith-accent-soft, rgba(13, 91, 94, 0.08));
 	color: var(--faith-accent, var(--kicc-teal));
-	font-size: 1rem;
+	font-size: 1.1rem;
+	margin-top: 0.15rem;
 	transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
+.pillars-faith-tab-icon .fas {
+	color: inherit;
+}
+
 .pillars-faith-tab.is-active .pillars-faith-tab-icon {
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(255, 255, 255, 0.28);
 	color: #fff;
 	transform: scale(1.06);
 }
@@ -13982,22 +14010,47 @@ a:focus-visible .kicc-external-icon {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
+	width: 100%;
 }
 
 .pillars-faith-tab-title {
 	font-weight: 700;
-	font-size: 0.95rem;
+	font-size: 0.82rem;
 	line-height: 1.3;
 }
 
 .pillars-faith-tab-arabic {
-	font-size: 0.75rem;
+	font-size: 0.7rem;
 	opacity: 0.75;
-	margin-top: 0.1rem;
+	margin-top: 0.12rem;
 }
 
 .pillars-faith-tab.is-active .pillars-faith-tab-arabic {
 	opacity: 0.92;
+}
+
+.pillars-faith-tab[data-faith-tab="tawheed"] {
+	--faith-tab-accent: #0a8a8e;
+}
+
+.pillars-faith-tab[data-faith-tab="angels"] {
+	--faith-tab-accent: #4a7fd4;
+}
+
+.pillars-faith-tab[data-faith-tab="books"] {
+	--faith-tab-accent: #8b5fbf;
+}
+
+.pillars-faith-tab[data-faith-tab="prophets"] {
+	--faith-tab-accent: #d4a017;
+}
+
+.pillars-faith-tab[data-faith-tab="judgement"] {
+	--faith-tab-accent: #d95f45;
+}
+
+.pillars-faith-tab[data-faith-tab="decree"] {
+	--faith-tab-accent: #2d7a80;
 }
 
 .pillars-faith-tab[data-faith-tab="tawheed"]:hover:not(.is-active) {
@@ -14026,12 +14079,11 @@ a:focus-visible .kicc-external-icon {
 
 .pillars-faith-panels {
 	position: relative;
-	min-height: 300px;
+	min-height: 280px;
 	background: #fff;
-	border-radius: 18px;
+	border-radius: 20px;
 	border: 1px solid rgba(13, 91, 94, 0.1);
-	border-left: 5px solid var(--faith-accent, var(--kicc-teal));
-	box-shadow: 0 16px 48px rgba(13, 91, 94, 0.12);
+	box-shadow: 0 20px 56px rgba(13, 91, 94, 0.12);
 	overflow: hidden;
 	transition: border-color 0.45s ease, box-shadow 0.45s ease;
 	--faith-accent: #0a8a8e;
@@ -14045,7 +14097,7 @@ a:focus-visible .kicc-external-icon {
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 4px;
+	height: 5px;
 	background: linear-gradient(90deg, var(--faith-accent), var(--kicc-gold));
 	transition: background 0.45s ease;
 }
@@ -14053,10 +14105,10 @@ a:focus-visible .kicc-external-icon {
 .pillars-faith-panels::after {
 	content: "";
 	position: absolute;
-	top: -40%;
-	right: -15%;
-	width: 280px;
-	height: 280px;
+	top: -35%;
+	right: -12%;
+	width: 320px;
+	height: 320px;
 	border-radius: 50%;
 	background: radial-gradient(circle, var(--faith-accent-soft) 0%, transparent 70%);
 	pointer-events: none;
@@ -14066,9 +14118,8 @@ a:focus-visible .kicc-external-icon {
 .pillars-faith-panel {
 	position: absolute;
 	inset: 0;
-	padding: 2rem 2.25rem;
 	opacity: 0;
-	transform: translateY(20px) scale(0.98);
+	transform: translateY(16px);
 	transition: opacity 0.35s ease, transform 0.35s ease;
 	pointer-events: none;
 }
@@ -14076,7 +14127,7 @@ a:focus-visible .kicc-external-icon {
 .pillars-faith-panel.is-active {
 	position: relative;
 	opacity: 1;
-	transform: translateY(0) scale(1);
+	transform: translateY(0);
 	pointer-events: auto;
 }
 
@@ -14087,11 +14138,11 @@ a:focus-visible .kicc-external-icon {
 @keyframes pillarsPanelIn {
 	from {
 		opacity: 0;
-		transform: translateY(16px) scale(0.98);
+		transform: translateY(12px);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0) scale(1);
+		transform: translateY(0);
 	}
 }
 
@@ -14100,7 +14151,7 @@ a:focus-visible .kicc-external-icon {
 }
 
 .pillars-faith-panel.is-entering .pillars-faith-panel-tagline,
-.pillars-faith-panel.is-entering p:last-child {
+.pillars-faith-panel.is-entering .pillars-faith-panel-body {
 	animation: faithContentFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
 }
 
@@ -14129,47 +14180,127 @@ a:focus-visible .kicc-external-icon {
 	}
 }
 
+.pillars-faith-panel-inner {
+	position: relative;
+	z-index: 1;
+	padding: 1.75rem 1.5rem 1.85rem;
+}
+
+.pillars-faith-panel-head {
+	display: flex;
+	align-items: flex-start;
+	gap: 1.15rem;
+	padding-bottom: 1.15rem;
+	margin-bottom: 1.15rem;
+	border-bottom: 1px solid rgba(13, 91, 94, 0.1);
+}
+
 .pillars-faith-panel-icon {
-	width: 4.25rem;
-	height: 4.25rem;
-	line-height: 4.25rem;
+	flex-shrink: 0;
+	width: 4rem;
+	height: 4rem;
+	line-height: 4rem;
 	text-align: center;
 	border-radius: 50%;
 	background: linear-gradient(135deg, var(--faith-accent-soft), rgba(255, 255, 255, 0.5));
 	color: var(--faith-accent);
-	font-size: 1.55rem;
-	margin-bottom: 1.25rem;
+	font-size: 1.45rem;
 	box-shadow: 0 8px 24px var(--faith-glow, rgba(13, 91, 94, 0.15));
 }
 
+.pillars-faith-panel-icon .fas {
+	color: inherit;
+}
+
+.pillars-faith-panel-meta {
+	min-width: 0;
+	flex: 1;
+}
+
+.pillars-faith-panel-eyebrow {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--faith-accent);
+	margin: 0 0 0.35rem;
+}
+
 .pillars-faith-panel-title {
-	font-size: 1.55rem;
+	font-size: 1.45rem;
 	font-weight: 700;
 	color: var(--kicc-teal-deep);
 	margin-bottom: 0.35rem;
+	line-height: 1.25;
 }
 
 .pillars-faith-panel-arabic {
 	display: inline-block;
-	margin-left: 0.5rem;
-	font-size: 0.85rem;
+	margin-left: 0.45rem;
+	font-size: 0.82rem;
 	font-weight: 600;
 	color: var(--faith-accent-deep, var(--kicc-gold-dark, #b8860b));
 	vertical-align: middle;
 }
 
 .pillars-faith-panel-tagline {
-	font-size: 1.02rem;
+	font-size: 1rem;
 	font-weight: 700;
 	color: var(--faith-accent);
-	margin-bottom: 1rem;
+	margin-bottom: 0;
+	line-height: 1.45;
 }
 
-.pillars-faith-panel p:last-child {
+.pillars-faith-panel-body p {
 	color: var(--kicc-text-muted);
 	line-height: 1.75;
 	margin-bottom: 0;
 	font-size: 0.98rem;
+}
+
+.pillars-faith-panel-quote {
+	margin: 1.15rem 0 0;
+	padding: 1rem 1.15rem;
+	border-left: 4px solid var(--faith-accent);
+	border-radius: 0 12px 12px 0;
+	background: linear-gradient(90deg, var(--faith-accent-soft), rgba(255, 255, 255, 0.6));
+	font-size: 1.02rem;
+	font-weight: 600;
+	font-style: italic;
+	line-height: 1.65;
+	color: var(--kicc-teal-deep);
+}
+
+@media (min-width: 768px) {
+	.pillars-faith-tab {
+		min-height: 8rem;
+		padding: 1.1rem 0.75rem 0.95rem;
+	}
+
+	.pillars-faith-tab-title {
+		font-size: 0.88rem;
+	}
+
+	.pillars-faith-panel-inner {
+		padding: 2rem 2.25rem 2.15rem;
+	}
+
+	.pillars-faith-panel-head {
+		gap: 1.35rem;
+		padding-bottom: 1.35rem;
+		margin-bottom: 1.35rem;
+	}
+
+	.pillars-faith-panel-icon {
+		width: 4.5rem;
+		height: 4.5rem;
+		line-height: 4.5rem;
+		font-size: 1.65rem;
+	}
+
+	.pillars-faith-panel-title {
+		font-size: 1.6rem;
+	}
 }
 
 /* Islam — per-pillar accent colours */
@@ -14354,14 +14485,18 @@ a:focus-visible .kicc-external-icon {
 	position: absolute;
 	top: 0.75rem;
 	left: 0.75rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	width: 1.75rem;
 	height: 1.75rem;
-	line-height: 1.75rem;
+	line-height: 1;
 	border-radius: 50%;
 	background: rgba(255, 255, 255, 0.28);
 	color: #fff;
 	font-size: 0.75rem;
 	font-weight: 700;
+	text-align: center;
 	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 	z-index: 2;
@@ -14442,69 +14577,6 @@ a:focus-visible .kicc-external-icon {
 }
 
 @media (max-width: 991px) {
-	.pillars-faith-layout {
-		grid-template-columns: 1fr;
-		gap: 1.25rem;
-	}
-
-	.pillars-faith-tabs-wrap {
-		margin: 0 -0.25rem;
-		padding: 0 0.25rem;
-		overflow-x: auto;
-		overflow-y: hidden;
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;
-	}
-
-	.pillars-faith-tabs-wrap::-webkit-scrollbar {
-		display: none;
-	}
-
-	.pillars-faith-tabs {
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 0.5rem;
-		min-width: min-content;
-		padding-bottom: 0.25rem;
-	}
-
-	.pillars-faith-tab {
-		flex: 0 0 auto;
-		min-width: 148px;
-		max-width: 168px;
-		padding: 0.75rem 0.85rem;
-		scroll-snap-align: center;
-	}
-
-	.pillars-faith-tab.is-active {
-		transform: translateY(-3px);
-	}
-
-	.pillars-faith-tab-text {
-		display: none;
-	}
-
-	.pillars-faith-tab-icon {
-		width: 2.5rem;
-		height: 2.5rem;
-		line-height: 2.5rem;
-		font-size: 1.1rem;
-	}
-
-	.pillars-faith-tab-num {
-		position: absolute;
-		top: 0.35rem;
-		right: 0.35rem;
-		width: 1.3rem;
-		height: 1.3rem;
-		line-height: 1.3rem;
-		font-size: 0.65rem;
-	}
-
-	.pillars-faith-panels {
-		min-height: 260px;
-	}
-
 	.pillars-islam-stage {
 		flex-wrap: wrap;
 		min-height: 0;
@@ -14540,7 +14612,7 @@ a:focus-visible .kicc-external-icon {
 	.pillars-islam-pillar-num {
 		width: 2rem;
 		height: 2rem;
-		line-height: 2rem;
+		line-height: 1;
 		font-size: 0.82rem;
 	}
 }
@@ -14555,12 +14627,19 @@ a:focus-visible .kicc-external-icon {
 		padding-right: 1rem;
 	}
 
-	.pillars-faith-panel {
-		padding: 1.5rem 1.25rem;
+	.pillars-faith-panel-inner {
+		padding: 1.35rem 1.15rem 1.45rem;
+	}
+
+	.pillars-faith-panel-head {
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 0.85rem;
 	}
 
 	.pillars-faith-tab {
-		min-width: 132px;
+		min-height: 7rem;
 	}
 
 	.pillars-islam-stage {
@@ -14631,7 +14710,7 @@ a:focus-visible .kicc-external-icon {
 	}
 
 	.pillars-islam-pillar-num {
-		position: static;
+		position: relative;
 		top: auto;
 		left: auto;
 		grid-column: 1;
@@ -14640,10 +14719,18 @@ a:focus-visible .kicc-external-icon {
 		justify-self: center;
 		width: 1.5rem;
 		height: 1.5rem;
-		line-height: 1.5rem;
+		line-height: 1;
 		font-size: 0.65rem;
 		flex-shrink: 0;
+		text-align: center;
 		background: rgba(255, 255, 255, 0.35);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+		transform: none;
+	}
+
+	.pillars-islam-pillar.is-highlighted .pillars-islam-pillar-num,
+	.pillars-islam-pillar.is-expanded .pillars-islam-pillar-num {
+		transform: none;
 		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
 	}
 
@@ -14705,7 +14792,7 @@ a:focus-visible .kicc-external-icon {
 
 	.pillars-faith-panel.is-entering .pillars-faith-panel-icon,
 	.pillars-faith-panel.is-entering .pillars-faith-panel-tagline,
-	.pillars-faith-panel.is-entering p:last-child {
+	.pillars-faith-panel.is-entering .pillars-faith-panel-body {
 		animation: none;
 	}
 
@@ -15943,10 +16030,6 @@ body.has-page-section-nav .site-action-dock {
 		width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.page-about .page-section-nav-indicator {
-	background: var(--kicc-teal-deep);
-}
-
 .page-section-nav-dock .page-section-nav-track li {
 	flex: 0 0 auto;
 	position: relative;
@@ -15987,6 +16070,8 @@ body.has-page-section-nav .site-action-dock {
 
 .page-section-nav-dock .madrasa-section-nav-list a:hover,
 .page-section-nav-dock .madrasa-section-nav-list a:focus,
+.page-section-nav-dock .about-section-nav-list a:hover,
+.page-section-nav-dock .about-section-nav-list a:focus,
 .page-section-nav-dock .campaign-section-nav-list a:hover,
 .page-section-nav-dock .campaign-section-nav-list a:focus,
 .page-section-nav-dock .programmes-section-nav-list a:hover,
@@ -16001,23 +16086,6 @@ body.has-page-section-nav .site-action-dock {
 	outline: none;
 }
 
-.page-section-nav-dock .about-section-nav-list a {
-	font-size: 0.78rem;
-	font-weight: 700;
-	letter-spacing: 0.07em;
-	text-transform: uppercase;
-	color: #555;
-	background: #f9f0e7;
-	border: 1px solid rgba(13, 91, 94, 0.12);
-}
-
-.page-section-nav-dock .about-section-nav-list a:hover,
-.page-section-nav-dock .about-section-nav-list a:focus {
-	background: #0d5b5e;
-	border-color: #0d5b5e;
-	color: #fff;
-}
-
 .page-section-nav-dock .madrasa-section-nav-list a.is-active,
 .page-section-nav-dock .about-section-nav-list a.is-active,
 .page-section-nav-dock .campaign-section-nav-list a.is-active,
@@ -16028,12 +16096,6 @@ body.has-page-section-nav .site-action-dock {
 	color: var(--kicc-text-on-dark);
 	box-shadow: none;
 	transform: none;
-}
-
-.page-section-nav-dock .about-section-nav-list a.is-active {
-	background: transparent;
-	border-color: transparent;
-	color: #fff;
 }
 
 .page-section-nav-dock .page-section-nav-track li {
@@ -17328,58 +17390,6 @@ body.has-page-section-nav [id] {
 	padding-bottom: 0;
 }
 
-.page-about .about-section-nav {
-	background: transparent;
-	border-bottom: none;
-	padding: 0;
-}
-
-.page-about .about-section-nav-list {
-	display: flex;
-	flex-wrap: nowrap;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	gap: 0.5rem;
-	scrollbar-width: none;
-	justify-content: center;
-}
-
-.page-about .about-section-nav-list::-webkit-scrollbar {
-	display: none;
-}
-
-.page-about .about-section-nav-list li {
-	flex: 0 0 auto;
-}
-
-.page-about .about-section-nav-list a {
-	display: block;
-	padding: 0.45rem 1rem;
-	font-size: 0.78rem;
-	font-weight: 700;
-	letter-spacing: 0.07em;
-	text-transform: uppercase;
-	color: #555;
-	text-decoration: none;
-	border-radius: 999px;
-	border: 1px solid rgba(13, 91, 94, 0.12);
-	background: #f9f0e7;
-	white-space: nowrap;
-	transition: background-color 0.15s ease, color 0.15s ease,
-		border-color 0.15s ease;
-}
-
-.page-about .about-section-nav-list a:hover,
-.page-about .about-section-nav-list a:focus {
-	background: #0d5b5e;
-	border-color: #0d5b5e;
-	color: #fff;
-	text-decoration: none;
-}
-
 .page-about .about-section-eyebrow {
 	font-size: 0.85rem;
 	font-weight: 700;
@@ -17841,11 +17851,6 @@ body.has-page-section-nav [id] {
 
 	.page-about [id] {
 		scroll-margin-top: calc(var(--kicc-sticky-nav-top, 4.25rem) + 0.75rem);
-	}
-
-	.page-about .about-section-nav-list {
-		justify-content: flex-start;
-		padding-bottom: 0.15rem;
 	}
 
 	.page-about .about-stats {
@@ -19295,16 +19300,18 @@ body.has-page-section-nav [id] {
 
 .page-prayer-times .prayer-times-view-indicator {
 	position: absolute;
-	top: 0.28rem;
-	left: 0.28rem;
-	height: calc(100% - 0.56rem);
+	top: 0;
+	left: 0;
 	border-radius: 999px;
 	background: linear-gradient(145deg, #2dd4bf 0%, #0d9488 52%, #0f766e 100%);
 	box-shadow: 0 4px 14px rgba(10, 138, 142, 0.25);
 	transition:
-		transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-		width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+		left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+		top 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+		width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+		height 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 	z-index: 0;
+	pointer-events: none;
 }
 
 .page-prayer-times .prayer-times-view-tab {
@@ -19319,6 +19326,17 @@ body.has-page-section-nav [id] {
 	border-radius: 999px;
 	cursor: pointer;
 	transition: color 0.22s ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.page-prayer-times .prayer-times-view-tab:focus {
+	outline: none;
+}
+
+.page-prayer-times .prayer-times-view-tab:focus-visible {
+	outline: 2px solid var(--kicc-teal);
+	outline-offset: 2px;
 }
 
 .page-prayer-times .prayer-times-view-tab.is-active {

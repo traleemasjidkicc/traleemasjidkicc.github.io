@@ -10,7 +10,7 @@ Sitewide, external links get a ↗ icon via `initExternalLinkIcons()` in `assets
 ## Do not add icons to
 
 - **Notice board links** — `#noticeContainer`, `#masjid-notice-spotlight`, `#notice-board`
-- **Button-style links** — `.btn`, `.contact-action-btn`, `.site-action-btn`, `.btn-campaign`, `.site-footer-social-link` (icons belong on the button label, not a ↗)
+- **Button-style links** — `.btn`, `.contact-action-btn`, `.site-action-btn`, `.btn-campaign`, `.kicc-nav-donate-btn`, `.site-footer-social-link` (icons belong on the button label, not a ↗)
 - **WhatsApp links** — `wa.me` / `api.whatsapp.com` URLs, or any link that already shows a WhatsApp icon (`.fa-whatsapp`)
 - **Floating action dock** — `.site-action-dock` (WhatsApp, Donate, Back to top)
 - Links with `data-skip-external-icon="true"` (set in HTML or JS as `dataset.skipExternalIcon = "true"`)

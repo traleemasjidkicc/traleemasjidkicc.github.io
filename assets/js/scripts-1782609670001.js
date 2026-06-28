@@ -181,6 +181,7 @@
       link.classList.contains("contact-action-btn") ||
       link.classList.contains("site-action-btn") ||
       link.classList.contains("btn-campaign") ||
+      link.classList.contains("kicc-nav-donate-btn") ||
       link.classList.contains("site-footer-social-link")
     );
   };
@@ -502,15 +503,28 @@
     }
   };
 
+  let cachedProgrammesForNextUp = null;
+  let mixlrIsLive = false;
+  let mixlrLiveStatusKnown = false;
+
+  const applyMixlrLiveStatus = (isLive) => {
+    mixlrIsLive = !!isLive;
+    mixlrLiveStatusKnown = true;
+    if (cachedProgrammesForNextUp) {
+      renderNextUpEvent(cachedProgrammesForNextUp);
+    }
+  };
+
   const setLiveStreamStatus = () => {
     const liveNowEl = document.getElementById("live-now");
-    if (!liveNowEl) return;
+    if (!liveNowEl && !document.querySelector(".programmes-next-event")) return;
 
     const setBadge = (html) => {
-      liveNowEl.innerHTML = html;
+      if (liveNowEl) liveNowEl.innerHTML = html;
     };
 
     if (!hasCookieConsent() || !canUseThirdPartyEmbeds()) {
+      applyMixlrLiveStatus(false);
       setBadge(
         '<span class="programmes-live-badge is-offline">Stream paused</span>',
       );
@@ -524,6 +538,7 @@
       })
       .then((mixlrData) => {
         const isLive = !!mixlrData.is_live;
+        applyMixlrLiveStatus(isLive);
         setBadge(
           isLive
             ? '<span class="programmes-live-badge is-live"><span aria-hidden="true">●</span> On air</span>'
@@ -532,6 +547,7 @@
       })
       .catch((err) => {
         console.error("Error loading Mixlr live status", err);
+        applyMixlrLiveStatus(false);
         setBadge(
           '<span class="programmes-live-badge is-offline">Off air</span>',
         );
@@ -5265,6 +5281,8 @@
   };
 
   const renderNextUpEvent = (programmes) => {
+    cachedProgrammesForNextUp = Array.isArray(programmes) ? programmes : [];
+
     const nameEl = document.getElementById("event-name");
     const startsAtEl = document.getElementById("starts-at");
     const dayEl = document.getElementById("event-day");
@@ -5283,55 +5301,124 @@
       return;
     }
 
-    const nextProgramme = getNextMixlrEventProgramme(programmes);
-    if (!nextProgramme) {
-      nameEl.textContent = "Check back for upcoming events";
-      startsAtEl.textContent = "—";
-      dayEl.textContent = "—";
-      dateEl.textContent = "—";
-      monthEl.textContent = "—";
-      yearEl.textContent = "—";
+    const renderLiveNow = () => {
+      const now = getDublinDate();
+      nameEl.textContent = "Live now on Mixlr";
+      fillNextUpDateFields(dateEl, monthEl, yearEl, dayEl, startsAtEl, now, {
+        dateFallback: formatUkDateLocal(now, "day2"),
+        monthFallback: formatUkDateLocal(now, "monthShort"),
+        yearFallback: formatUkDateLocal(now, "year"),
+        dayFallback: "On air",
+        timeFallback: "Listen live",
+      });
       cachedNextUpProgramme = null;
+      syncNextUpBadge("Live now");
+      syncNextUpEventFooter("live");
       syncNextUpEventCard(null);
-      return;
-    }
+      syncProgrammeOverviewFromNextUp("live");
+    };
 
-    const eventDate = getProgrammeEventDate(nextProgramme);
-    if (!eventDate) {
+    const renderMixlrEvent = (nextProgramme) => {
+      const eventDate = getProgrammeEventDate(nextProgramme);
       nameEl.textContent = nextProgramme.name || "Upcoming event";
-      startsAtEl.textContent = getProgrammeTimeLabel(nextProgramme);
-      dayEl.textContent = "—";
-      dateEl.textContent = "—";
-      monthEl.textContent = "—";
-      yearEl.textContent = "—";
+
+      if (!eventDate) {
+        fillNextUpDateFields(
+          dateEl,
+          monthEl,
+          yearEl,
+          dayEl,
+          startsAtEl,
+          null,
+          {
+            timeFallback: getProgrammeTimeLabel(nextProgramme) || "—",
+          },
+        );
+      } else {
+        fillNextUpDateFields(
+          dateEl,
+          monthEl,
+          yearEl,
+          dayEl,
+          startsAtEl,
+          eventDate,
+        );
+      }
+
       cachedNextUpProgramme = nextProgramme;
+      syncNextUpBadge();
+      syncNextUpEventFooter("default");
       syncNextUpEventCard(nextProgramme);
+      syncProgrammeOverviewFromNextUp("mixlr", nextProgramme);
+    };
+
+    const renderWeeklyProgramme = (weeklyProgramme) => {
+      const occurrence = getNextOccurrenceForProgramme(weeklyProgramme);
+      const weekday = getProgrammePrimaryWeekday(weeklyProgramme);
+
+      nameEl.textContent = weeklyProgramme.name || "Weekly programme";
+      fillNextUpDateFields(
+        dateEl,
+        monthEl,
+        yearEl,
+        dayEl,
+        startsAtEl,
+        occurrence,
+        {
+          dayFallback: weekday
+            ? WEEKDAY_LABELS[weekday] || weekday
+            : "This week",
+          timeFallback:
+            getProgrammeScheduleTime(weeklyProgramme) ||
+            getProgrammeTimeLabel(weeklyProgramme) ||
+            "See schedule",
+        },
+      );
+
+      cachedNextUpProgramme = weeklyProgramme;
+      syncNextUpBadge("This week");
+      syncNextUpEventFooter("default");
+      syncNextUpEventCard(weeklyProgramme);
+      syncProgrammeOverviewFromNextUp("weekly", weeklyProgramme);
+    };
+
+    const renderEmpty = () => {
+      nameEl.textContent = "No upcoming live broadcast scheduled";
+      fillNextUpDateFields(
+        dateEl,
+        monthEl,
+        yearEl,
+        dayEl,
+        startsAtEl,
+        null,
+      );
+      cachedNextUpProgramme = null;
+      syncNextUpBadge();
+      syncNextUpEventFooter("empty");
+      syncNextUpEventCard(null);
+      syncProgrammeOverviewFromNextUp("empty");
+    };
+
+    if (mixlrLiveStatusKnown && mixlrIsLive) {
+      renderLiveNow();
       return;
     }
 
-    const startsAt = eventDate.toLocaleTimeString("en-GB", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-
-    let eventDay = formatUkDateLocal(eventDate, "weekdayShort");
-    const eventDateNum = formatUkDateLocal(eventDate, "day2");
-    const eventMonth = formatUkDateLocal(eventDate, "monthShort");
-    const eventYear = formatUkDateLocal(eventDate, "year");
-
-    if (isSameCalendarDay(eventDate, getDublinDate())) {
-      eventDay = "Today";
+    const nextProgramme = getNextMixlrEventProgramme(cachedProgrammesForNextUp);
+    if (nextProgramme) {
+      renderMixlrEvent(nextProgramme);
+      return;
     }
 
-    nameEl.textContent = nextProgramme.name || "Upcoming event";
-    startsAtEl.textContent = startsAt;
-    dayEl.textContent = eventDay;
-    dateEl.textContent = eventDateNum;
-    monthEl.textContent = eventMonth;
-    yearEl.textContent = eventYear;
-    cachedNextUpProgramme = nextProgramme;
-    syncNextUpEventCard(nextProgramme);
+    const weeklyProgramme = getNextWeeklyProgrammeForNextUp(
+      cachedProgrammesForNextUp,
+    );
+    if (weeklyProgramme) {
+      renderWeeklyProgramme(weeklyProgramme);
+      return;
+    }
+
+    renderEmpty();
   };
 
   const isAdultMonthlyProgramme = (p) => {
@@ -5468,6 +5555,202 @@
   let programmeDetailsModalBound = false;
   let cachedNextUpProgramme = null;
   let nextUpEventInteractionBound = false;
+  let nextUpFooterDefaultHtml = null;
+  let nextUpBadgeDefaultLabel = null;
+
+  const getProgrammesThisWeekHref = () =>
+    isActivitiesPage() ? "#this-week" : "activities.html#this-week";
+
+  const getProgrammePrimaryWeekday = (p) => {
+    if (!p) return null;
+    const days = Array.isArray(p.weekdays) ? p.weekdays : [];
+    const normalized = days.map(normalizeWeekday).filter(Boolean);
+    return normalized.length ? normalized[0] : null;
+  };
+
+  const getNextWeekdayOccurrence = (weekdayKey) => {
+    if (!weekdayKey) return null;
+    const today = getDublinDate();
+    today.setHours(0, 0, 0, 0);
+    const todayKey = formatUkDateLocal(today, "weekdayShort");
+    const todayIdx = WEEKDAY_ORDER.indexOf(todayKey);
+    const targetIdx = WEEKDAY_ORDER.indexOf(weekdayKey);
+    if (todayIdx < 0 || targetIdx < 0) return null;
+
+    let diff = targetIdx - todayIdx;
+    if (diff < 0) diff += WEEKDAY_ORDER.length;
+
+    const next = new Date(today);
+    next.setDate(next.getDate() + diff);
+    return next;
+  };
+
+  const getNextOccurrenceForProgramme = (p) => {
+    const weekday = getProgrammePrimaryWeekday(p);
+    const occurrence = getNextWeekdayOccurrence(weekday);
+    if (!occurrence) return null;
+    return applyClockTimeToDate(new Date(occurrence), p.clockTime);
+  };
+
+  const getNextWeeklyProgrammeForNextUp = (programmes) => {
+    if (!Array.isArray(programmes) || !programmes.length) return null;
+
+    const today = getDublinDate();
+    today.setHours(0, 0, 0, 0);
+    const todayKey = formatUkDateLocal(today, "weekdayShort");
+    const byDay = {};
+
+    WEEKDAY_ORDER.forEach(function (day) {
+      byDay[day] = [];
+    });
+
+    programmes.forEach(function (p) {
+      if (!p || !isRecurringWeeklyProgramme(p)) return;
+
+      const days = Array.isArray(p.weekdays) ? p.weekdays : [];
+      const normalized = days.map(normalizeWeekday).filter(Boolean);
+      if (!normalized.length) return;
+
+      normalized.forEach(function (day) {
+        if (!byDay[day]) return;
+        const alreadyListed = byDay[day].some(function (existing) {
+          return programmeIdentity(existing) === programmeIdentity(p);
+        });
+        if (!alreadyListed) byDay[day].push(p);
+      });
+    });
+
+    const todayProgrammes = byDay[todayKey] || [];
+    if (todayProgrammes.length) return todayProgrammes[0];
+
+    const startIdx = WEEKDAY_ORDER.indexOf(todayKey);
+    if (startIdx < 0) return null;
+
+    for (let i = 1; i <= WEEKDAY_ORDER.length; i += 1) {
+      const day = WEEKDAY_ORDER[(startIdx + i) % WEEKDAY_ORDER.length];
+      if (byDay[day] && byDay[day].length) return byDay[day][0];
+    }
+
+    return null;
+  };
+
+  const syncNextUpBadge = (label) => {
+    const badge = document.querySelector(
+      ".programmes-next-event .programmes-feature-badge",
+    );
+    if (!badge) return;
+    if (!nextUpBadgeDefaultLabel) {
+      nextUpBadgeDefaultLabel = badge.textContent.trim();
+    }
+    badge.textContent = label || nextUpBadgeDefaultLabel;
+  };
+
+  const syncNextUpEventFooter = (mode) => {
+    const footer = document.querySelector(
+      ".programmes-next-event .programmes-next-event-footer",
+    );
+    if (!footer) return;
+
+    if (!nextUpFooterDefaultHtml) {
+      nextUpFooterDefaultHtml = footer.innerHTML;
+    }
+
+    if (mode === "empty") {
+      footer.innerHTML =
+        '<a href="' +
+        SITE_LINKS["mixlr-showreel"].href +
+        '" class="programmes-link-more" data-next-up-footer-link target="_blank" rel="noopener noreferrer">' +
+        'Recent talks on Mixlr <i class="fas fa-arrow-right" aria-hidden="true"></i></a>' +
+        '<a href="' +
+        getProgrammesThisWeekHref() +
+        '" class="programmes-link-more" data-next-up-footer-link">' +
+        'This week\u2019s schedule <i class="fas fa-arrow-right" aria-hidden="true"></i></a>';
+      initExternalLinkIcons(footer);
+      return;
+    }
+
+    if (mode === "live") {
+      footer.innerHTML =
+        '<a href="' +
+        SITE_LINKS["mixlr-station"].href +
+        '" class="programmes-link-more" data-next-up-footer-link target="_blank" rel="noopener noreferrer">' +
+        'Listen live <i class="fas fa-arrow-right" aria-hidden="true"></i></a>' +
+        '<a href="' +
+        SITE_LINKS["mixlr-showreel"].href +
+        '" class="programmes-link-more programmes-link-more-subtle" data-next-up-footer-link target="_blank" rel="noopener noreferrer">' +
+        'Recent talks <i class="fas fa-external-link-alt" aria-hidden="true"></i></a>';
+      initExternalLinkIcons(footer);
+      return;
+    }
+
+    footer.innerHTML = nextUpFooterDefaultHtml;
+  };
+
+  const fillNextUpDateFields = (
+    dateEl,
+    monthEl,
+    yearEl,
+    dayEl,
+    startsAtEl,
+    eventDate,
+    options,
+  ) => {
+    const opts = options || {};
+
+    if (!eventDate) {
+      dateEl.textContent = opts.dateFallback || "—";
+      monthEl.textContent = opts.monthFallback || "—";
+      yearEl.textContent = opts.yearFallback || "—";
+      if (dayEl) dayEl.textContent = opts.dayFallback || "—";
+      if (startsAtEl) startsAtEl.textContent = opts.timeFallback || "—";
+      return;
+    }
+
+    const startsAt = eventDate.toLocaleTimeString("en-GB", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+
+    let eventDay = formatUkDateLocal(eventDate, "weekdayShort");
+    const eventDateNum = formatUkDateLocal(eventDate, "day2");
+    const eventMonth = formatUkDateLocal(eventDate, "monthShort");
+    const eventYear = formatUkDateLocal(eventDate, "year");
+
+    if (isSameCalendarDay(eventDate, getDublinDate())) {
+      eventDay = "Today";
+    }
+
+    dateEl.textContent = opts.dateFallback || eventDateNum;
+    monthEl.textContent = opts.monthFallback || eventMonth;
+    yearEl.textContent = opts.yearFallback || eventYear;
+    if (dayEl) dayEl.textContent = opts.dayFallback || eventDay;
+    if (startsAtEl) startsAtEl.textContent = opts.timeFallback || startsAt;
+  };
+
+  const syncProgrammeOverviewFromNextUp = (mode, programme) => {
+    if (mode === "live") {
+      var body = document.getElementById("prog-overview-live-body");
+      if (!body) return;
+      body.innerHTML = "";
+      var title = document.createElement("p");
+      title.className = "prog-overview-live-title";
+      title.textContent = "Live now on Mixlr";
+      var meta = document.createElement("p");
+      meta.className = "prog-overview-live-meta";
+      meta.textContent = "Listen at traleemasjid.mixlr.com";
+      body.appendChild(title);
+      body.appendChild(meta);
+      return;
+    }
+
+    if (mode === "empty") {
+      syncProgrammeOverviewLive(null);
+      return;
+    }
+
+    syncProgrammeOverviewLive(programme);
+  };
 
   const bindNextUpEventInteraction = () => {
     if (nextUpEventInteractionBound) return;
@@ -6145,7 +6428,8 @@
     if (!programme) {
       var empty = document.createElement("p");
       empty.className = "prog-overview-empty";
-      empty.textContent = "No upcoming live session scheduled. Check Mixlr for past talks.";
+      empty.textContent =
+        "No upcoming live broadcast scheduled. Browse recent talks on Mixlr or see this week\u2019s programmes.";
       body.appendChild(empty);
       return;
     }
@@ -9248,11 +9532,10 @@
       tabs.forEach(function (tab) {
         tab.addEventListener("click", function () {
           activateFaithTab(tab, tabs, panels);
-          if (window.matchMedia("(max-width: 991px)").matches) {
-            tab.scrollIntoView({
+          if (window.matchMedia("(max-width: 767px)").matches && panelsWrap) {
+            panelsWrap.scrollIntoView({
               behavior: "smooth",
               block: "nearest",
-              inline: "center",
             });
           }
         });
@@ -9950,17 +10233,19 @@
   };
 
   const updatePrayerTimesViewIndicator = () => {
-    const tabs = document.querySelector("[data-prayer-view-tabs]");
-    if (!tabs) return;
-    const activeTab = tabs.querySelector(".prayer-times-view-tab.is-active");
-    const indicator = tabs.querySelector(".prayer-times-view-indicator");
-    if (!activeTab || !indicator) return;
+    requestAnimationFrame(function () {
+      const tabs = document.querySelector("[data-prayer-view-tabs]");
+      if (!tabs) return;
+      const activeTab = tabs.querySelector(".prayer-times-view-tab.is-active");
+      const indicator = tabs.querySelector(".prayer-times-view-indicator");
+      if (!activeTab || !indicator) return;
 
-    const tabsRect = tabs.getBoundingClientRect();
-    const tabRect = activeTab.getBoundingClientRect();
-    indicator.style.width = tabRect.width + "px";
-    indicator.style.transform =
-      "translateX(" + (tabRect.left - tabsRect.left) + "px)";
+      indicator.style.transform = "";
+      indicator.style.left = activeTab.offsetLeft + "px";
+      indicator.style.top = activeTab.offsetTop + "px";
+      indicator.style.width = activeTab.offsetWidth + "px";
+      indicator.style.height = activeTab.offsetHeight + "px";
+    });
   };
 
   const initPrayerTimesPageMotion = () => {
