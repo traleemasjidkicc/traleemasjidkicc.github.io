@@ -1,0 +1,62 @@
+---
+description: Cache-first API loads with mandatory background refresh
+globs: assets/js/**/*.js
+alwaysApply: false
+---
+
+# Cache-then-fetch (cache-first + background refresh)
+
+Masjid content APIs use **localStorage** (via `kiccStorageGet` / `kiccStorageSet`, consent-gated) for fast first paint. Every fetch must also **refresh in the background** and update the UI when newer data arrives.
+
+## Required pattern
+
+1. **Read cache** — if valid, apply to DOM immediately (or resolve the promise with cached data).
+2. **Always call the API** — even when cache hit; do not `return` early before scheduling the network request.
+3. **On success** — write cache, re-apply DOM / in-memory state, dispatch refresh events if other modules listen.
+4. **On failure** — keep showing cache; log a warning, do not wipe the UI.
+
+## Shared helper
+
+Use `kiccCacheThenFetch()` for storage-backed Cloud Run reads:
+
+```javascript
+kiccCacheThenFetch({
+  storage: localStorage,
+  key: "iqamah-month-2026-July",
+  parseCached: (raw) => JSON.parse(raw),
+  isValidCached: (parsed) => /* allow-list shape */,
+  extractValue: (parsed) => parsed.data,      // optional: cached blob ≠ return value
+  serialize: (fresh) => JSON.stringify({ /* wrap fresh for storage */ }),
+  fetchFresh: () => fetch(url).then(/* parse */),
+  onRefresh: (fresh, isBackground) => { /* update DOM, maps, custom events */ },
+});
+```
+
+`onRefresh` receives `isBackground` (`true` when cache was shown first). For iqamah month data, only repaint nav/deck on background refresh — initial paint is handled by `setSalahTimes()` after `loadPrayerDataWindow()`.
+
+When cache exists, the helper resolves immediately with cached data and runs `fetchFresh` in the background. When no cache, the returned promise waits for the network.
+
+## Reference implementations
+
+| Feature | Function | Notes |
+|---------|----------|-------|
+| PDF timetable URL | `setSalahTimeUrl` | Manual two-step pattern |
+| Iqamah month | `fetchIqamahMonth` | Helper + `kicc:iqamah-month-refreshed` event |
+| Iqamah day | `fetchIqamahForDate` | Helper + day-map / nav refresh |
+| Announcements | `initSiteAnnouncements` | Manual two-step |
+| Notices | `showNotices` | Cache render, then `getNotices()` |
+| Hadith | `getRandomHadith` | Manual two-step |
+| Programmes | `loadProgrammes` | Manual two-step |
+| Campaign progress | `loadFundraiserProgress` | Manual two-step |
+
+## In-memory session caches
+
+Page-level caches (e.g. `state.monthCache` on prayer-times) may show data instantly, but must **still call** the storage/network layer so background refresh runs. Listen for `kicc:iqamah-month-refreshed` to repaint when fresh month data arrives.
+
+`loadPrayerDataWindow()` must **not** reset `cachedPrayerDayMap` — merge bootstrap data with `{ bootstrapOnly: true }` so a background refresh that completes first is not overwritten by stale cache.
+
+## Do not
+
+- Return `Promise.resolve(cached)` without scheduling a background fetch.
+- Use cache-only reads for Cloud Run content APIs.
+- Skip `onRefresh` / DOM updates when background fetch returns new data.
