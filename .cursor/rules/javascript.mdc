@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## File structure
 
-- Single app file: `assets/js/scripts-{timestamp}.js` (~10k lines)
+- Single app file: `assets/js/scripts-{timestamp}.js` (~11,400 lines)
 - Wrapped in IIFE: `(function () { "use strict"; ... })()`
 - Table of contents comment at top of file lists major areas
 - Pathname helpers: `getPathname()`, `isHomePage()`, `isActivitiesPage()`, `isProjectsPage()`, `isPrayerTimesPage()`, `getPageKey()`
@@ -54,13 +54,15 @@ alwaysApply: false
 
 | Function | Endpoint |
 |----------|----------|
-| `setEvent` | `https://api.mixlr.com/users/7752720?source=embed` |
+| `setLiveStreamStatus` | `https://api.mixlr.com/users/7752720?source=embed` |
 | GoFundMe | embed widgets + `SITE_LINKS["gofundme-donate"]` |
 | Kerry Muslim database | `SITE_LINKS["kerry-muslim-database"]` (Microsoft Form) |
 
 ## localStorage keys
 
-`salahTimesAssetUrl`, `iqamah-today`, `kicc-announcements`, `kicc-notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`, `kicc-campaign-progress`
+`salahTimesAssetUrl`, `iqamah-month-{year}-{month}`, `iqamah-tomorrow`, `kicc-announcements`, `notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`, `kicc-campaign-progress`
+
+See `.cursor/rules/cache-then-fetch.mdc` for cache-then-fetch patterns.
 
 ## Page routing
 
@@ -69,7 +71,7 @@ alwaysApply: false
 | Page | Extra init |
 |------|------------|
 | Home (`/` or `/index.html`) | `showNotices`, `initHomeNotices`, `initHomePillars` |
-| `prayer-times.html` | `initPrayerTimesPage`, `initPrayerTimesPageMotion` |
+| `prayer-times.html` | `initPrayerTimesPage`, `initPrayerTimesPageMotion`, `loadProgrammes` |
 
 All pages also run: `initSiteAnnouncements`, `initNavSalahPanel`, `initMobileNav`, `initPageSectionNavDock`, `initConsentEmbeds`, cookie/WhatsApp/footer chrome, page motion helpers (`initAboutPageMotion`, `initContactPageMotion`, `initCampaignPageMotion`, etc.), `initSumUpDonate`.
 
@@ -77,8 +79,8 @@ All pages also run: `initSiteAnnouncements`, `initNavSalahPanel`, `initMobileNav
 
 | Page | Init |
 |------|------|
-| Home | `setEvent`, `loadProgrammes` |
-| `activities.html` | `setEvent`, `loadProgrammes` |
+| Home | `setLiveStreamStatus`, `loadProgrammes` |
+| `activities.html` | `setLiveStreamStatus`, `loadProgrammes` |
 | `projects.html` | `initBaguetteBox` (`.grid-gallery`) |
 | `prayer-times.html` | `initPrayerTimesPage` |
 

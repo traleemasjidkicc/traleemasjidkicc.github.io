@@ -2036,17 +2036,6 @@ body.kicc-nav-open {
 	text-decoration: none;
 }
 
-/* Legacy footer utility — other sections may still use bg-secondary */
-.site-footer.page-footer.bg-secondary,
-.page-footer.bg-secondary {
-	position: relative;
-	overflow: hidden;
-	border-top: var(--kicc-border-gold);
-	box-shadow: 0 -10px 40px rgba(10, 138, 142, 0.22);
-	padding-top: 3.25rem !important;
-	padding-bottom: 0 !important;
-}
-
 @media (min-width: 768px) {
 	.site-footer-bottom {
 		flex-direction: row;
@@ -2880,17 +2869,6 @@ body.kicc-nav-open {
 	padding: 1.25rem 1.35rem;
 }
 
-/* Legacy notice board aliases */
-.notice-board-section {
-	background: var(--kicc-surface-muted);
-	padding-top: 2rem;
-	padding-bottom: 2rem;
-}
-
-.notice-board-section h2 {
-	color: var(--kicc-teal-deep);
-}
-
 /* Cookie consent — blocking overlay */
 html.cookie-consent-pending,
 html.cookie-consent-pending body {
@@ -3661,29 +3639,6 @@ body.cookie-preferences-active {
 	}
 }
 
-/* Legacy sticky cookie bar */
-.sticky-footer {
-	position: fixed;
-	width: 100%;
-	bottom: -20px;
-	text-align: center;
-	color: var(--kicc-text);
-	transition: all 0.25s;
-	z-index: 999;
-	background: var(--kicc-gold-light);
-	border-top: 2px solid var(--kicc-gold);
-}
-
-.sticky-footer p {
-	margin: 0;
-	color: var(--kicc-teal-deep);
-}
-
-.sticky-footer.alert-dismissible .close {
-	top: 50%;
-	transform: translateY(-55%);
-}
-
 /* ==========================================================================
    7b. CROSS-PAGE UX — skip link, inner pages, accessibility
    ========================================================================== */
@@ -3987,8 +3942,7 @@ body.cookie-preferences-active {
 .page-activities #womens-weekly-class,
 .page-activities .programme-highlight-card[id],
 .page-activities .prog-card[id],
-.page-activities .weekly-programme-card[id],
-.page-activities .programmes-unscheduled-item[id] {
+.page-activities .weekly-programme-card[id] {
 	scroll-margin-top: calc(var(--kicc-sticky-nav-top, 4.25rem) + 1rem);
 }
 
@@ -5520,15 +5474,6 @@ body.programme-details-modal-open {
 	.programmes-ongoing-card-animate {
 		animation: none !important;
 	}
-}
-
-/* Legacy alias — kept for any cached markup */
-.programmes-unscheduled {
-	margin-top: 1.35rem;
-	padding: 1.15rem 1.25rem;
-	background: var(--kicc-bg-warm);
-	border: 1px dashed rgba(212, 168, 67, 0.45);
-	border-radius: var(--kicc-radius-lg);
 }
 
 .programmes-today-banner p {
@@ -11923,21 +11868,6 @@ a:focus-visible .kicc-external-icon {
 	text-decoration: none;
 }
 
-/* Service panels — legacy (superseded by home-services-showcase) */
-.home-service-panel {
-	background: #fff;
-	border-radius: 12px;
-	padding: 1.75rem;
-	border: 1px solid rgba(13, 91, 94, 0.1);
-	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
-	transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.page-home .home-service-panel:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 10px 32px rgba(13, 91, 94, 0.12);
-}
-
 .page-home #masjid-services .campaign-facility-card {
 	border: 1px solid rgba(13, 91, 94, 0.1);
 	box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
@@ -11956,17 +11886,6 @@ a:focus-visible .kicc-external-icon {
 	line-height: 3.5rem;
 	border-radius: 50%;
 	background: rgba(13, 91, 94, 0.08);
-}
-
-.home-service-panel-title {
-	font-size: 1rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	color: #0d5b5e;
-	margin-bottom: 1rem;
-	padding-bottom: 0.75rem;
-	border-bottom: 2px solid rgba(13, 91, 94, 0.15);
 }
 
 .home-service-list {
@@ -16924,14 +16843,6 @@ body.has-page-section-nav [id] {
 }
 
 /* GALLERY END */
-
-.notice-board-section h2 {
-	font-size: clamp(2rem, 4vw, 3rem);
-	font-weight: 700;
-	margin: 5px 0 0 0;
-	line-height: 1.15;
-	color: var(--kicc-teal-deep);
-}
 
 /* ################################################ */
 /* RESPONSIVE START */

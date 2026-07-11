@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Cache-then-fetch (cache-first + background refresh)
 
-Masjid content APIs use **localStorage** (via `kiccStorageGet` / `kiccStorageSet`, consent-gated) for fast first paint. Every fetch must also **refresh in the background** and update the UI when newer data arrives.
+Masjid content APIs use **localStorage** (via `kiccTimedStorageGet` / `kiccTimedStorageSet` for API caches, or `kiccStorageGet` / `kiccStorageSet` for non-expiring functional keys — all consent-gated) for fast first paint. API caches expire after **7 days**. Every fetch must also **refresh in the background** and update the UI when newer data arrives.
 
 ## Required pattern
 
@@ -15,9 +15,13 @@ Masjid content APIs use **localStorage** (via `kiccStorageGet` / `kiccStorageSet
 3. **On success** — write cache, re-apply DOM / in-memory state, dispatch refresh events if other modules listen.
 4. **On failure** — keep showing cache; log a warning, do not wipe the UI.
 
-## Shared helper
+## Shared helpers
 
-Use `kiccCacheThenFetch()` for storage-backed Cloud Run reads:
+**API caches (7-day TTL):** use `kiccTimedStorageGet` / `kiccTimedStorageSet` — values are stored as `{ v: 1, savedAt, payload }` where `payload` is the same string you would previously pass to `kiccStorageSet`. Expired entries are removed on read.
+
+**Non-expiring functional keys** (e.g. `kicc-breaking-dismiss-*`): use `kiccStorageGet` / `kiccStorageSet`.
+
+Use `kiccCacheThenFetch()` for storage-backed Cloud Run reads (implemented in `scripts-*.js`):
 
 ```javascript
 kiccCacheThenFetch({

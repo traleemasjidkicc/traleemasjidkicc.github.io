@@ -2,12 +2,29 @@
 import { expect } from "@playwright/test";
 
 /** @typedef {import('@playwright/test').Page} Page */
+/** @typedef {import('@playwright/test').BrowserContext} BrowserContext */
 
 export const VIEWPORTS = {
   mobilePortrait: { width: 390, height: 844 },
   mobileLandscape: { width: 844, height: 390 },
   desktop: { width: 1280, height: 800 },
+  narrowMobile: { width: 320, height: 568 },
+  responsiveCheck: { width: 375, height: 812 },
 };
+
+export const PUBLIC_PAGES = [
+  "/",
+  "/prayer-times.html",
+  "/activities.html",
+  "/projects.html",
+  "/about.html",
+  "/madrasa.html",
+  "/contact.html",
+];
+
+const CLOUD_RUN_HOST = /\.run\.app/;
+const MIXLR_HOST = /api\.mixlr\.com/;
+const FIREBASE_CHECKOUT_HOST = /cloudfunctions\.net\/createCheckout/;
 
 /**
  * Clear consent cookie and web storage for a fresh visitor session.
@@ -24,8 +41,6 @@ export async function clearSiteSession(page) {
 
 /**
  * Dismiss the Kerry Muslim database signup modal when it appears.
- * On the homepage it is scheduled ~2.5s after cookie consent — use
- * `{ waitForDelayed: true }` there so beforeEach blocks until it is closed.
  * @param {Page} page
  * @param {{ waitForDelayed?: boolean }} [options]
  */
@@ -61,6 +76,7 @@ export async function acceptAllCookies(page) {
 
 /**
  * @param {Page} page
+ * @param {string} path
  * @param {keyof typeof VIEWPORTS} viewportKey
  */
 export async function gotoWithViewport(page, path, viewportKey) {
@@ -69,7 +85,28 @@ export async function gotoWithViewport(page, path, viewportKey) {
 }
 
 /**
- * UK 12-hour time: e.g. 4:30 pm (no leading zero on hour).
+ * @param {Page} page
+ */
+export async function openCookieSettings(page) {
+  const bannerSettings = page.locator("#cookie-banner-settings");
+  const footerSettings = page.locator("#cookie-prefs-open");
+  if (await bannerSettings.isVisible()) {
+    await bannerSettings.click();
+  } else {
+    await footerSettings.scrollIntoViewIfNeeded();
+    await footerSettings.click();
+  }
+  await expect(page.locator("#cookie-preferences.is-visible")).toBeVisible();
+}
+
+/**
+ * @param {Page} page
+ */
+export function mainNav(page) {
+  return page.getByLabel("Main navigation");
+}
+
+/**
  * @param {string} text
  */
 export function hasUkTimeFormat(text) {
@@ -77,7 +114,6 @@ export function hasUkTimeFormat(text) {
 }
 
 /**
- * UK date: day before month, e.g. 24 June 2026
  * @param {string} text
  */
 export function hasUkDateFormat(text) {
@@ -87,8 +123,60 @@ export function hasUkDateFormat(text) {
 }
 
 /**
+ * @param {BrowserContext} context
+ */
+export async function blockCloudRun(context) {
+  await context.route(CLOUD_RUN_HOST, (route) => route.abort("failed"));
+}
+
+/**
+ * @param {BrowserContext} context
+ */
+export async function blockMixlr(context) {
+  await context.route(MIXLR_HOST, (route) => route.abort("failed"));
+}
+
+/**
+ * @param {BrowserContext} context
+ */
+export async function blockFirebaseCheckout(context) {
+  await context.route(FIREBASE_CHECKOUT_HOST, (route) => route.abort("failed"));
+}
+
+/**
+ * @param {Page} page
+ * @param {string[]} [paths]
+ */
+export async function visitAllPublicPages(page, paths = PUBLIC_PAGES) {
+  for (const path of paths) {
+    await page.goto(path);
+    await acceptAllCookies(page);
+    await expect(page.locator("main")).toBeVisible();
+  }
+}
+
+/**
  * @param {Page} page
  */
-export function mainNav(page) {
-  return page.getByLabel("Main navigation");
+export async function expectNoHorizontalOverflow(page) {
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(24);
+}
+
+/**
+ * @param {Page} page
+ */
+export async function expectFooterYearCurrent(page) {
+  const year = String(new Date().getFullYear());
+  await expect(page.locator("#footer-year")).toHaveText(year);
+}
+
+/**
+ * @param {Page} page
+ * @param {import('@playwright/test').Locator} link
+ */
+export async function expectExternalLinkIcon(page, link) {
+  await expect(link.locator(".external-link-icon, .fa-arrow-up-right-from-square")).toBeVisible();
 }

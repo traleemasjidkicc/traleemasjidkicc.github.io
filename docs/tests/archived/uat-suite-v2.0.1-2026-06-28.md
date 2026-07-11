@@ -1,8 +1,6 @@
-# UAT Test Cases — Tralee Masjid (traleemasjidkicc.ie)
+> **Archived** — superseded by [v2.0.2](../active/uat-suite-v2.0.2-2026-07-11.md) (11 July 2026).
 
-| Field | Value |
-|-------|-------|
-| **Suite version** | v2.0.1 |
+# UAT Test Cases — Tralee Masjid (v2.0.1 archive)
 | **Status** | Active |
 | **Effective date** | 28 June 2026 |
 | **Supersedes** | [v1.0 PDF](../archived/v1.0-pdf-export-2026-06-28.pdf) (72 cases), [v1.1 code audit](../archived/v1.1-code-audit-2026-06-28.md) (141 cases) |

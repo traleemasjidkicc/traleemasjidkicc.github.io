@@ -14,7 +14,7 @@ test.describe("Homepage", () => {
     await dismissHomeSignupModal(page, { waitForDelayed: true });
   });
 
-  test("UAT-1: site loads with title and hero", async ({ page }) => {
+  test("NAV-01: site loads with title and hero", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
     await acceptAllCookies(page);
@@ -23,13 +23,22 @@ test.describe("Homepage", () => {
     await expect(page.locator("main")).toBeVisible();
   });
 
-  test("UAT-34: hero shows dates and prayer status", async ({ page }) => {
+  test("HOME-01: hero renders on mobile", async ({ page }) => {
+    const hero = page.locator("#home-hero").first();
+    await expect(hero).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(24);
+  });
+
+  test("HOME-03: hero shows dates and prayer status", async ({ page }) => {
     const text = await page.locator("main").innerText();
     expect(text.length).toBeGreaterThan(100);
     await expect(page.locator("[data-prayer-carousel-stage]")).toBeVisible();
   });
 
-  test("UAT-35: prayer deck day navigation", async ({ page }) => {
+  test("HOME-04: prayer deck day navigation", async ({ page }) => {
     await expect(page.locator("[data-home-prayer-suite]")).toBeAttached();
     await expect(page.locator("[data-prayer-day-prev]")).toBeAttached();
     await expect(page.locator("[data-prayer-day-next]")).toBeAttached();
@@ -51,7 +60,7 @@ test.describe("Homepage", () => {
     );
   });
 
-  test("UAT-37: link to full timetable", async ({ page }) => {
+  test("HOME-07: link to full timetable", async ({ page }) => {
     await page.locator("#home-explore-heading").scrollIntoViewIfNeeded();
     const timetableLink = page.getByRole("link", { name: /View timetable/i });
     await expect(timetableLink).toHaveAttribute("href", /prayer-times\.html/);
@@ -61,7 +70,7 @@ test.describe("Homepage", () => {
     ]);
   });
 
-  test("UAT-40: pillars of faith tabs switch content", async ({ page }) => {
+  test("HOME-10: pillars of faith tabs switch content", async ({ page }) => {
     const angelsTab = page.locator('[data-faith-tab="angels"]');
     await angelsTab.scrollIntoViewIfNeeded();
     await angelsTab.click();
@@ -72,7 +81,30 @@ test.describe("Homepage", () => {
     );
   });
 
-  test("UAT-47: homepage donate section with progress and SumUp", async ({ page }) => {
+  test("HOME-11: pillars of Islam accordion", async ({ page }) => {
+    const firstPillar = page.locator(".pillars-islam-pillar-trigger").first();
+    await firstPillar.scrollIntoViewIfNeeded();
+    await firstPillar.click();
+    await expect(firstPillar).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("HOME-13: explore hub links", async ({ page }) => {
+    await page.locator("#home-explore-heading").scrollIntoViewIfNeeded();
+    await expect(page.getByRole("link", { name: /View timetable/i })).toHaveAttribute(
+      "href",
+      /prayer-times/,
+    );
+    await expect(page.getByRole("link", { name: /View schedule/i })).toHaveAttribute(
+      "href",
+      /activities/,
+    );
+    await expect(page.getByRole("link", { name: /Class times/i })).toHaveAttribute(
+      "href",
+      /madrasa/,
+    );
+  });
+
+  test("HOME-17: homepage donate section with progress and SumUp", async ({ page }) => {
     const progress = page.locator(".gfm-progress").first();
     await progress.scrollIntoViewIfNeeded();
     await expect(progress).toBeVisible();
@@ -82,7 +114,14 @@ test.describe("Homepage", () => {
     await expect(page.locator("[data-sumup-donate]").first()).toBeVisible();
   });
 
-  test("UAT-50: homepage layout in landscape remains usable", async ({ page }) => {
+  test("HOME-19: Qur'an verse block", async ({ page }) => {
+    const quran = page.locator(".home-quran-verse-section").first();
+    await quran.scrollIntoViewIfNeeded();
+    await expect(quran).toBeVisible();
+    await expect(quran.getByRole("link").first()).toHaveAttribute("href", /quran\.com/);
+  });
+
+  test("HOME-20: homepage layout in landscape remains usable", async ({ page }) => {
     await page.setViewportSize({ width: 844, height: 390 });
     await page.goto("/");
     await acceptAllCookies(page);
@@ -96,50 +135,8 @@ test.describe("Homepage", () => {
   });
 });
 
-test.describe("Programmes page", () => {
-  test("UAT-66: weekly schedule grid loads", async ({ page }) => {
-    await gotoWithViewport(page, "/activities.html#this-week", "mobilePortrait");
-    await acceptAllCookies(page);
-    await expect(page.locator("#this-week-heading")).toBeVisible();
-    await page.waitForSelector("#programmes-weekly-schedule .programmes-schedule-item", {
-      timeout: 20_000,
-    });
-  });
-
-  test("UAT-68: programme details modal opens", async ({ page }) => {
-    await gotoWithViewport(page, "/activities.html#this-week", "mobilePortrait");
-    await acceptAllCookies(page);
-
-    const interactive = page.locator(".programmes-schedule-item--interactive").first();
-    await interactive.waitFor({ state: "visible", timeout: 20_000 });
-    await interactive.click();
-
-    const modal = page.locator("#programme-details-modal");
-    await expect(modal).toBeVisible();
-    await expect(modal).toHaveAttribute("aria-modal", "true");
-    await page.keyboard.press("Escape");
-    await expect(modal).toBeHidden();
-  });
-});
-
 test.describe("Donations high priority", () => {
-  test("UAT-84: GoFundMe donate links on projects (mobile)", async ({ page }) => {
-    await gotoWithViewport(page, "/projects.html", "mobilePortrait");
-    await acceptAllCookies(page);
-    const links = page.locator('a[href*="gofundme.com"][href*="/donate"]');
-    expect(await links.count()).toBeGreaterThanOrEqual(3);
-  });
-
-  test("UAT-85: SumUp widget mounts on projects (desktop)", async ({ page }) => {
-    await gotoWithViewport(page, "/projects.html#ways-to-donate", "desktop");
-    await acceptAllCookies(page);
-    const startBtn = page.locator("[data-sumup-start-donate]").first();
-    await startBtn.scrollIntoViewIfNeeded();
-    await startBtn.click();
-    await expect(page.locator("[data-sumup-donate]")).toBeVisible();
-  });
-
-  test("UAT-111: SumUp on homepage", async ({ page }) => {
+  test("DON-03: SumUp on homepage", async ({ page }) => {
     await gotoWithViewport(page, "/", "mobilePortrait");
     await acceptAllCookies(page);
     await page.locator("[data-sumup-start-donate]").first().scrollIntoViewIfNeeded();
@@ -149,12 +146,12 @@ test.describe("Donations high priority", () => {
 });
 
 test.describe("Accessibility basics", () => {
-  test("UAT-113: page language en-GB", async ({ page }) => {
+  test("ACC-01: page language en-GB", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("html")).toHaveAttribute("lang", "en-GB");
   });
 
-  test("UAT-114: keyboard focus on nav links", async ({ page }) => {
+  test("ACC-02: keyboard focus on nav links", async ({ page }) => {
     await gotoWithViewport(page, "/", "desktop");
     await acceptAllCookies(page);
     await page.keyboard.press("Tab");

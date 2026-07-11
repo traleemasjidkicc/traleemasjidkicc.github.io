@@ -1,3 +1,5 @@
+> **Archived** — superseded by [v2.0.2](../active/uat-suite-v2.0.2-2026-07-11.md).
+
 # UAT Execution Results — High-Priority Automated Run
 
 **Site:** [traleemasjidkicc.ie](https://traleemasjidkicc.ie)  

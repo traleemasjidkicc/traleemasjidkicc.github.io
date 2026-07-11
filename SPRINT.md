@@ -4,7 +4,7 @@
 **Sprint target release:** `1.2.0`  
 **Sprint goal:** Reduce single points of failure (cookie gate, CDNs, APIs), patch outdated front-end libraries within Bootstrap 4, and complete UAT for failure modes before production sign-off.
 
-**Source:** Code audit findings (June 2026) cross-checked against the [UAT suite v2.0](docs/tests/active/uat-suite-v2.0-2026-06-28.md) and the current codebase.
+**Source:** Code audit findings (June 2026) cross-checked against the [UAT suite v2.0.2](docs/tests/active/uat-suite-v2.0.2-2026-07-11.md) and the current codebase.
 
 ---
 
@@ -165,7 +165,7 @@
 | **Status** | Backlog |
 | **Target version** | 1.2.0 |
 | **UAT refs** | 138–140, 123 |
-| **Baseline** | 55 tests in `tests/` (cookie consent, nav, homepage, prayer times, contact, projects) |
+| **Baseline** | 142 tests in `tests/` (13 spec files; see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`) |
 
 **Problem:** Automated suite covers happy paths well; API-down and some mobile-only flows rely on manual UAT.
 
@@ -186,7 +186,7 @@
 | **Priority** | P1 |
 | **Status** | Backlog |
 | **Target version** | 1.2.0 |
-| **Deliverable** | Updated Status column in [uat-suite v2.0.1](docs/tests/active/uat-suite-v2.0-2026-06-28.md) |
+| **Deliverable** | Updated Status column in [uat-suite v2.0.2](docs/tests/active/uat-suite-v2.0.2-2026-07-11.md) |
 
 **Problem:** Core value (prayer times, programmes, donations, contact) depends on Cloud Run, Mixlr, GoFundMe, SumUp, Formspree. Failure modes must be exercised before sign-off.
 
@@ -205,7 +205,7 @@
 
 - [ ] All **High** priority cases in UAT doc executed (cookie, prayer, nav, contact, donations, a11y).
 - [ ] API-down cases 138–140 recorded with ✅ / ❌ / ⚠️.
-- [ ] Status column updated in `docs/tests/active/uat-suite-v2.0-2026-06-28.md` with date, tester, environment.
+- [x] Status column updated in `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md` (11 July 2026, Playwright, localhost:3000).
 
 ---
 
@@ -222,7 +222,7 @@
 
 **Remaining work**
 
-- [ ] Execute UAT **136** on production: visit `/nonexistent-page.html` → branded 404 with nav and helpful links.
+- [x] Execute UAT **ERR-01** on production: visit `/nonexistent-page.html` → branded 404 with nav and helpful links (automated in `errors.spec.js`).
 - [ ] Confirm root-relative asset paths (`/assets/...`) load CSS/JS from deep missing URLs.
 - [ ] Mark UAT 136 **Verified** in execution results.
 
@@ -367,7 +367,7 @@ flowchart LR
 
 - [ ] All **P0** and **P1** items **Done** or **Verified**
 - [ ] `yarn test:e2e` green locally and in CI
-- [ ] `docs/tests/active/uat-suite-v2.0-2026-06-28.md` Status column updated for High-priority and API-down cases
+- [x] `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md` Status column updated for automated cases (142 Playwright tests)
 - [ ] Site version bumped to **1.2.0** on merge to `main`
 - [ ] No permanent `inert` lockout when JS or CDN fails (S1-001)
 - [ ] Bootstrap/jQuery/FA patched within current majors (S1-002)
@@ -376,7 +376,7 @@ flowchart LR
 
 ## References
 
-- [docs/tests/active/uat-suite-v2.0-2026-06-28.md](docs/tests/active/uat-suite-v2.0-2026-06-28.md) — 100 UAT cases with execution Status (v2.0.1)
+- [docs/tests/active/uat-suite-v2.0.2-2026-07-11.md](docs/tests/active/uat-suite-v2.0.2-2026-07-11.md) — 103 UAT cases with execution Status (v2.0.2)
 - [docs/tests/README.md](docs/tests/README.md) — suite version index
 - [AGENTS.md](AGENTS.md) — architecture, APIs, commit workflow  
 - [scripts/build-error-pages.js](scripts/build-error-pages.js) — 404/403/500 generator  

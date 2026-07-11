@@ -6,7 +6,7 @@ Versioned UAT (User Acceptance Testing) suites for [traleemasjidkicc.ie](https:/
 
 | Version | Document | Cases | Status |
 |---------|----------|-------|--------|
-| **v2.0.1** | [uat-suite-v2.0-2026-06-28.md](active/uat-suite-v2.0-2026-06-28.md) | 100 | **Active** — cases, priorities, and execution **Status** in one file |
+| **v2.0.2** | [uat-suite-v2.0.2-2026-07-11.md](active/uat-suite-v2.0.2-2026-07-11.md) | 103 | **Active** — cases, priorities, automation mapping, and execution **Status** in one file |
 
 Update the **Status** column in the active suite when you run manual or automated tests. Do not maintain a separate results file.
 
@@ -14,6 +14,7 @@ Update the **Status** column in the active suite when you run manual or automate
 
 | Version | Document | Cases | Superseded by |
 |---------|----------|-------|---------------|
+| v2.0.1 | [uat-suite-v2.0.1-2026-06-28.md](archived/uat-suite-v2.0.1-2026-06-28.md) | 100 | v2.0.2 |
 | v1.0 | [v1.0-pdf-export-2026-06-28.pdf](archived/v1.0-pdf-export-2026-06-28.pdf) · [markdown mirror](archived/v1.0-pdf-export-2026-06-28.md) | 72 | v2.0 |
 | v1.1 | [v1.1-code-audit-2026-06-28.md](archived/v1.1-code-audit-2026-06-28.md) | 141 | v2.0 |
 | — | [uat-execution-results-2026-06-28.md](archived/uat-execution-results-2026-06-28.md) | — | Merged into v2.0.1 Status column |
@@ -29,6 +30,13 @@ When a suite is superseded:
 1. Copy the current active file to `archived/` with its version and date in the filename.
 2. Place the new suite in `active/`.
 3. Update this README and the version table in the new suite document.
+
+## Playwright ↔ UAT crosswalk
+
+- **Canonical IDs:** v2.0 prefixed case IDs (`NAV-01`, `PT-17`, `CC-05`, …). Playwright `test()` titles must use these IDs.
+- **Legacy column:** historical mapping to v1.0 PDF / v1.1 numeric IDs only — not used in test titles.
+- **Inventory:** see the Playwright appendix in the [active UAT suite](active/uat-suite-v2.0.2-2026-07-11.md) for spec file → prefix → test count (142 tests total).
+- **Helpers:** [`tests/helpers/site.js`](../../tests/helpers/site.js) — viewport presets, cookie consent, API route blockers, public page list.
 
 ## Related artefacts
 

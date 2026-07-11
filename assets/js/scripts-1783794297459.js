@@ -253,15 +253,6 @@
     return result;
   };
 
-  const isToday = (someDate) => {
-    var today = getToday();
-    return (
-      someDate.getDate() == today.getDate() &&
-      someDate.getMonth() == today.getMonth() &&
-      someDate.getFullYear() == today.getFullYear()
-    );
-  };
-
   const isRamadan = () => {
     // Ramadan 2026 is on: February 17, 2026, 15:00:00 AM
     var ramadanStartDate = new Date(2026, 1, 17, 15, 0, 0, 0);
@@ -299,7 +290,6 @@
   const FUNCTIONAL_COOKIE_NAMES = ["kicc-modal-tmw", "kicc-modal-registered"];
   const FUNCTIONAL_STORAGE_KEYS = [
     "salahTimesAssetUrl",
-    "iqamah-today",
     "iqamah-tomorrow",
     "kicc-announcements",
     "notices",
@@ -380,6 +370,95 @@
     }
   };
 
+  const KICC_API_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const kiccTimedStorageGet = (storage, key) => {
+    const raw = kiccStorageGet(storage, key);
+    if (raw == null) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.v === 1 && typeof parsed.savedAt === "number") {
+        if (Date.now() - parsed.savedAt > KICC_API_CACHE_TTL_MS) {
+          try {
+            storage.removeItem(key);
+          } catch {
+            // ignore storage errors
+          }
+          return null;
+        }
+        return parsed.payload;
+      }
+    } catch {
+      // legacy unwrapped format
+    }
+    return raw;
+  };
+
+  const kiccTimedStorageSet = (storage, key, payload) =>
+    kiccStorageSet(
+      storage,
+      key,
+      JSON.stringify({ v: 1, savedAt: Date.now(), payload: payload }),
+    );
+
+  const kiccCacheThenFetch = (options) => {
+    const {
+      key,
+      readCache,
+      writeCache,
+      parseCached,
+      fetchFresh,
+      serialize,
+      onRefresh,
+    } = options;
+
+    let cachedValue = null;
+    try {
+      const raw = readCache();
+      if (raw != null) {
+        cachedValue = parseCached(raw);
+      }
+    } catch (e) {
+      console.warn("Cache parse failed", key, e);
+    }
+
+    const applyFresh = (fresh, isBackground) => {
+      if (fresh == null) return;
+      try {
+        writeCache(serialize(fresh));
+      } catch (e) {
+        console.warn("Cache write failed", key, e);
+      }
+      if (onRefresh) {
+        onRefresh(fresh, isBackground);
+      }
+    };
+
+    const network = fetchFresh()
+      .then(function (fresh) {
+        applyFresh(fresh, !!cachedValue);
+        return fresh;
+      })
+      .catch(function (err) {
+        console.warn("Background fetch failed", key, err);
+        if (cachedValue != null) {
+          return cachedValue;
+        }
+        throw err;
+      });
+
+    if (cachedValue != null) {
+      if (onRefresh) {
+        onRefresh(cachedValue, false);
+      }
+      return network.then(function () {
+        return cachedValue;
+      });
+    }
+
+    return network;
+  };
+
   const setFunctionalCookie = (name, value, options) => {
     if (!canUseFunctionalStorage() || typeof Cookies === "undefined") return;
     Cookies.set(name, value, options);
@@ -411,9 +490,9 @@
   };
 
   const getDefaultSalahTimesPeriod = () => {
-    const targetDate = addDays(getToday(), 3);
+    const targetDate = addDays(getDublinDate(), 3);
     return {
-      month: targetDate.toLocaleString("en-GB", { month: "long" }),
+      month: formatUkDate(targetDate, "monthLong"),
       year: targetDate.getFullYear(),
       isRamadan: isRamadan(),
     };
@@ -430,9 +509,16 @@
     return month ? "Download " + month + " Timetable" : "Download Timetable";
   };
 
-  const setOfficialTimetableLabels = (monthName) => {
+  const setOfficialTimetableLabels = (monthName, options) => {
     const label = formatOfficialTimetableLabel(monthName);
-    document.querySelectorAll("[data-official-timetable-label]").forEach(function (el) {
+    const opts = options || {};
+    let nodes = document.querySelectorAll("[data-official-timetable-label]");
+    if (opts.excludePrayerTimesPage && isPrayerTimesPage()) {
+      nodes = Array.prototype.filter.call(nodes, function (el) {
+        return !el.closest("[data-prayer-times-page]");
+      });
+    }
+    nodes.forEach(function (el) {
       el.textContent = label;
     });
   };
@@ -442,9 +528,8 @@
 
     // 1) Try to use cached URL first (non-blocking)
     try {
-      const cached = kiccStorageGet(localStorage, SALAH_TIMES_KEY);
+      const cached = kiccTimedStorageGet(localStorage, SALAH_TIMES_KEY);
       if (cached) {
-        console.log("Using cached salah times URL:", cached);
         applySalahTimesUrl(
           cached,
           isPrayerTimesPage() ? "nav" : "all",
@@ -472,14 +557,13 @@
           return;
         }
 
-        console.log("Latest salah times URL from API:", asset);
         applySalahTimesUrl(
           asset,
           isPrayerTimesPage() ? "nav" : "all",
         );
 
         try {
-          kiccStorageSet(localStorage, SALAH_TIMES_KEY, asset);
+          kiccTimedStorageSet(localStorage, SALAH_TIMES_KEY, asset);
         } catch (e) {
           console.warn("Unable to write localStorage", e);
         }
@@ -830,6 +914,58 @@
     isha: "fa-star-and-crescent",
   };
 
+  const GREGORIAN_MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  /** API gregorianMonth is 1–12; normalise to JS Date month index 0–11 */
+  const normalizePrayerDayRecord = (record) => {
+    if (!record) return record;
+    const m = Number(record.gregorianMonth);
+    if (!Number.isFinite(m)) return record;
+
+    const dateStr = String(record.gregorianDateString || "").trim();
+    const dateMatch = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(dateStr);
+    if (dateMatch) {
+      const monthIndex = Number(dateMatch[2]) - 1;
+      if (monthIndex >= 0 && monthIndex <= 11) {
+        if (m === monthIndex) return record;
+        return Object.assign({}, record, { gregorianMonth: monthIndex });
+      }
+    }
+
+    const monthName = String(record.gregorianMonthName || "").trim();
+    if (monthName) {
+      const nameIndex = GREGORIAN_MONTH_NAMES.indexOf(monthName);
+      if (nameIndex >= 0) {
+        if (m === nameIndex) return record;
+        return Object.assign({}, record, { gregorianMonth: nameIndex });
+      }
+    }
+
+    if (m >= 1 && m <= 12) {
+      const monthIndex = m - 1;
+      if (monthIndex === m) return record;
+      return Object.assign({}, record, { gregorianMonth: monthIndex });
+    }
+
+    return record;
+  };
+
+  const normalizePrayerDayRecords = (records) =>
+    Array.isArray(records) ? records.map(normalizePrayerDayRecord) : [];
+
   const makeDayKeyFromParts = (year, month, day) =>
     year + "-" + month + "-" + day;
 
@@ -855,6 +991,16 @@
     if (!cachedPrayerDayMap) return null;
     const key = makeDayKeyFromDate(getDublinDateWithOffset(dayOffset));
     return cachedPrayerDayMap[key] || null;
+  };
+
+  const mergeIqamahMonthIntoDayMap = (records) => {
+    if (!Array.isArray(records) || !records.length) return;
+    if (!cachedPrayerDayMap) {
+      cachedPrayerDayMap = Object.create(null);
+    }
+    records.forEach(function (d) {
+      cachedPrayerDayMap[makeDayKeyFromRecord(d)] = d;
+    });
   };
 
   const IQAMAH_MONTH_PREFIX = "iqamah-month-";
@@ -895,49 +1041,72 @@
     "&month=" +
     encodeURIComponent(monthName);
 
+  const iqamahMonthInflight = Object.create(null);
+
   const fetchIqamahMonth = (year, monthName) => {
     const storageKey = "iqamah-month-" + year + "-" + monthName;
-    const cached = kiccStorageGet(localStorage, storageKey);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
+
+    if (iqamahMonthInflight[storageKey]) {
+      return iqamahMonthInflight[storageKey];
+    }
+
+    const promise = kiccCacheThenFetch({
+      key: storageKey,
+      readCache: function () {
+        return kiccTimedStorageGet(localStorage, storageKey);
+      },
+      writeCache: function (payload) {
+        kiccTimedStorageSet(localStorage, storageKey, payload);
+      },
+      parseCached: function (raw) {
+        const parsed = JSON.parse(raw);
         if (
           parsed &&
           parsed.year === year &&
           parsed.month === monthName &&
           Array.isArray(parsed.data)
         ) {
-          return Promise.resolve(parsed.data);
+          return normalizePrayerDayRecords(parsed.data);
         }
-      } catch (e) {
-        console.warn("Failed to parse cached iqamah month", storageKey, e);
-      }
-    }
+        return null;
+      },
+      serialize: function (records) {
+        return JSON.stringify({
+          year: year,
+          month: monthName,
+          data: records,
+        });
+      },
+      fetchFresh: function () {
+        return fetch(buildMonthUrl(year, monthName))
+          .then(function (resp) {
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            return resp.json();
+          })
+          .then(function (json) {
+            if (!json || !Array.isArray(json.data)) {
+              throw new Error("No iqamah month data");
+            }
+            return normalizePrayerDayRecords(json.data);
+          });
+      },
+      onRefresh: function (records, isBackground) {
+        if (!isBackground || !Array.isArray(records)) return;
+        mergeIqamahMonthIntoDayMap(records);
+        document.dispatchEvent(
+          new CustomEvent("kicc:iqamah-month-refreshed", {
+            detail: { year: year, monthName: monthName, records: records },
+          }),
+        );
+        refreshSalahTimesFromDayMap();
+      },
+    });
 
-    return fetch(buildMonthUrl(year, monthName))
-      .then(function (resp) {
-        if (!resp.ok) throw new Error("HTTP " + resp.status);
-        return resp.json();
-      })
-      .then(function (json) {
-        if (!json || !Array.isArray(json.data)) {
-          throw new Error("No iqamah month data");
-        }
-        try {
-          kiccStorageSet(
-            localStorage,
-            storageKey,
-            JSON.stringify({
-              year: year,
-              month: monthName,
-              data: json.data,
-            }),
-          );
-        } catch (e) {
-          console.warn("Unable to cache iqamah month", storageKey, e);
-        }
-        return json.data;
-      });
+    iqamahMonthInflight[storageKey] = promise;
+    promise.finally(function () {
+      delete iqamahMonthInflight[storageKey];
+    });
+    return promise;
   };
 
   const parseTimeOnRecord = (record, field, dayOffset) => {
@@ -2244,13 +2413,12 @@
   };
 
   const applyToNav = (d) => {
-    const today = new Date();
-    const addedDays = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const addedDays = addDays(getDublinDate(), 3);
     const monthName = isRamadan()
       ? "Ramadan"
       : formatUkDate(addedDays, "monthLong");
     setElHtml("nav-cur-month", monthName);
-    setOfficialTimetableLabels(monthName);
+    setOfficialTimetableLabels(monthName, { excludePrayerTimesPage: true });
     applyNavSalahDay("nav-salah-panel-today", d, "today");
     updateNavSalahDateLabel();
     updatePrayerTimesHero();
@@ -2265,11 +2433,43 @@
     }
   };
 
+  const refreshSalahTimesFromDayMap = () => {
+    if (!cachedPrayerDayMap) return;
+
+    const todayData =
+      cachedPrayerDayMap[makeDayKeyFromDate(getDublinDate())] ||
+      getDayRecordForOffset(0);
+    const tomorrowData = getDayRecordForOffset(1);
+
+    if (todayData) {
+      cachedPrayerDayData = todayData;
+      applyToHomePage(todayData);
+      applyToNav(todayData);
+      schedulePrayerHighlights(todayData);
+      setDynamicCelebrationToBanner(todayData);
+      if (isHomePage()) {
+        renderHomePrayerDeck();
+      }
+    }
+
+    if (tomorrowData) {
+      applyTomorrowToNav(tomorrowData);
+    } else {
+      updatePrayerTimesHero();
+    }
+  };
+
   const fetchIqamahForDate = (dateParts, storageKey) => {
-    const cached = kiccStorageGet(localStorage, storageKey);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
+    return kiccCacheThenFetch({
+      key: storageKey,
+      readCache: function () {
+        return kiccTimedStorageGet(localStorage, storageKey);
+      },
+      writeCache: function (payload) {
+        kiccTimedStorageSet(localStorage, storageKey, payload);
+      },
+      parseCached: function (raw) {
+        const parsed = JSON.parse(raw);
         if (
           parsed &&
           parsed.year === dateParts.year &&
@@ -2278,29 +2478,44 @@
           parsed.data &&
           parsed.data[0]
         ) {
-          return Promise.resolve(parsed.data[0]);
+          return normalizePrayerDayRecord(parsed.data[0]);
         }
-      } catch (e) {
-        console.warn("Failed to parse cached iqamah", storageKey, e);
-      }
-    }
-
-    return fetch(buildIqamahUrl(dateParts))
-      .then(function (resp) {
-        if (!resp.ok) throw new Error("HTTP " + resp.status);
-        return resp.json();
-      })
-      .then(function (json) {
-        if (!json || !json.data || !json.data[0]) {
-          throw new Error("No iqamah data");
+        return null;
+      },
+      serialize: function (record) {
+        return JSON.stringify({
+          year: dateParts.year,
+          month: dateParts.monthName,
+          day: dateParts.day,
+          data: [record],
+        });
+      },
+      fetchFresh: function () {
+        return fetch(buildIqamahUrl(dateParts))
+          .then(function (resp) {
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            return resp.json();
+          })
+          .then(function (json) {
+            if (!json || !json.data || !json.data[0]) {
+              throw new Error("No iqamah data");
+            }
+            return normalizePrayerDayRecord(json.data[0]);
+          });
+      },
+      onRefresh: function (record, isBackground) {
+        if (!isBackground || !record) return;
+        if (!cachedPrayerDayMap) {
+          cachedPrayerDayMap = Object.create(null);
         }
-        try {
-          kiccStorageSet(localStorage, storageKey, JSON.stringify(json));
-        } catch (e) {
-          console.warn("Unable to cache iqamah", storageKey, e);
+        cachedPrayerDayMap[makeDayKeyFromRecord(record)] = record;
+        const tomorrowKey = makeDayKeyFromDate(getDublinDateWithOffset(1));
+        if (makeDayKeyFromRecord(record) === tomorrowKey) {
+          applyTomorrowToNav(record);
         }
-        return json.data[0];
-      });
+        refreshSalahTimesFromDayMap();
+      },
+    });
   };
 
   const setDynamicCelebrationToBanner = (date) => {
@@ -2394,6 +2609,9 @@
 
   const loadPrayerDataWindow = () => {
     const months = getIqamahMonthsAroundToday();
+    if (!cachedPrayerDayMap) {
+      cachedPrayerDayMap = Object.create(null);
+    }
     return Promise.all(
       months.map(function (m) {
         return fetchIqamahMonth(m.year, m.monthName).catch(function (err) {
@@ -2402,12 +2620,8 @@
         });
       }),
     ).then(function (results) {
-      cachedPrayerDayMap = Object.create(null);
       results.forEach(function (days) {
-        if (!Array.isArray(days)) return;
-        days.forEach(function (d) {
-          cachedPrayerDayMap[makeDayKeyFromRecord(d)] = d;
-        });
+        mergeIqamahMonthIntoDayMap(days);
       });
       return cachedPrayerDayMap;
     });
@@ -2477,57 +2691,58 @@
       category: "functional",
       type: "localStorage",
       name: "salahTimesAssetUrl",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches the link to the monthly prayer timetable.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "iqamah-month-*",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose:
         "Caches monthly iqamah timetables (previous, current, and next month only). Stored only with Functional & storage consent.",
     },
     {
       category: "functional",
       type: "localStorage",
-      name: "iqamah-today / iqamah-tomorrow",
-      duration: "Until cleared",
-      purpose: "Caches today\u2019s and tomorrow\u2019s iqamah times.",
+      name: "iqamah-tomorrow",
+      duration: "7 days",
+      purpose:
+        "Caches tomorrow\u2019s iqamah times when not yet in the monthly timetable.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "kicc-announcements",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches homepage announcements.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "notices",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches the notice board.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "kicc-random-hadith",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches the daily hadith.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "masjidProgrammes_programme_active_true_v1",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches weekly programme listings.",
     },
     {
       category: "functional",
       type: "localStorage",
       name: "kicc-campaign-progress",
-      duration: "Until cleared",
+      duration: "7 days",
       purpose: "Caches New Masjid fundraiser totals.",
     },
     {
@@ -3200,13 +3415,6 @@
       $("#myModal").modal("hide");
     });
 
-    const newsTab = document.getElementById("nav-news-tab");
-    if (newsTab) {
-      newsTab.addEventListener("click", function () {
-        if (!hasCookieConsent()) return;
-        $("#myModal").modal("show");
-      });
-    }
   };
 
   const showSignUpModal = () => {
@@ -3350,7 +3558,7 @@
 
     const loadFromCache = () => {
       try {
-        const raw = kiccStorageGet(localStorage, HADITH_KEY);
+        const raw = kiccTimedStorageGet(localStorage, HADITH_KEY);
         if (!raw) return null;
         return JSON.parse(raw);
       } catch {
@@ -3361,7 +3569,7 @@
     const saveToCache = (randomHadith) => {
       try {
         if (!randomHadith) return;
-        kiccStorageSet(localStorage, HADITH_KEY, JSON.stringify(randomHadith));
+        kiccTimedStorageSet(localStorage, HADITH_KEY, JSON.stringify(randomHadith));
       } catch {
         // ignore storage errors
       }
@@ -3433,17 +3641,7 @@
     return { time: formatted, period: "" };
   };
 
-  const getPrayerDayData = () => {
-    if (cachedPrayerDayData) return cachedPrayerDayData;
-    try {
-      const cached = kiccStorageGet(localStorage, "iqamah-today");
-      if (!cached) return null;
-      const parsed = JSON.parse(cached);
-      return parsed.data && parsed.data[0] ? parsed.data[0] : null;
-    } catch {
-      return null;
-    }
-  };
+  const getPrayerDayData = () => cachedPrayerDayData;
 
   /** Show Jumu'ah from Thursday Maghrib until Friday Asr (Dublin time). */
   const isJumuahDisplayWindow = () => {
@@ -4254,9 +4452,6 @@
     const mainNav = document.querySelector(".kicc-nav-v2");
     if (!mainNav) return;
 
-    const legacyBar = document.getElementById("announcement-bar");
-    if (legacyBar) legacyBar.remove();
-
     const ribbon = document.createElement("aside");
     ribbon.id = "site-announcement-ribbon";
     ribbon.className = "site-announcement-ribbon";
@@ -4469,7 +4664,7 @@
   const loadAnnouncementsFromCache = () => {
     const ANNOUNCEMENTS_KEY = "kicc-announcements";
     try {
-      const raw = kiccStorageGet(localStorage, ANNOUNCEMENTS_KEY);
+      const raw = kiccTimedStorageGet(localStorage, ANNOUNCEMENTS_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : null;
@@ -4482,7 +4677,7 @@
     const ANNOUNCEMENTS_KEY = "kicc-announcements";
     try {
       if (!Array.isArray(announcements)) return;
-      kiccStorageSet(localStorage, ANNOUNCEMENTS_KEY, JSON.stringify(announcements));
+      kiccTimedStorageSet(localStorage, ANNOUNCEMENTS_KEY, JSON.stringify(announcements));
     } catch {
       // ignore storage errors
     }
@@ -4491,7 +4686,7 @@
   const loadNoticesFromCache = () => {
     const NOTICES_KEY = "notices";
     try {
-      const raw = kiccStorageGet(localStorage, NOTICES_KEY);
+      const raw = kiccTimedStorageGet(localStorage, NOTICES_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : null;
@@ -4504,7 +4699,7 @@
     const NOTICES_KEY = "notices";
     try {
       if (!Array.isArray(notices)) return;
-      kiccStorageSet(localStorage, NOTICES_KEY, JSON.stringify(notices));
+      kiccTimedStorageSet(localStorage, NOTICES_KEY, JSON.stringify(notices));
     } catch {
       // ignore storage errors
     }
@@ -7582,11 +7777,10 @@
     // Weekly Programmes + recordings on activities page
     const PROGRAMMES_API_URL = CLOUD_RUN_APIS.programmes;
     const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v1";
-    var cachedJson = kiccStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
+    var cachedJson = kiccTimedStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
     if (cachedJson) {
       try {
         var cached = JSON.parse(cachedJson);
-        console.log("Cached programmes:", cached);
         applyProgrammesResponse(cached);
       } catch (e) {
         console.error("Failed to parse cached programmes", e);
@@ -7607,9 +7801,8 @@
         return resp.json();
       })
       .then(function (data) {
-        console.log("Programmes API response:", data);
         if (data) {
-          kiccStorageSet(localStorage, PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
+          kiccTimedStorageSet(localStorage, PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
           applyProgrammesResponse(data);
         } else {
           applyProgrammesResponse(null);
@@ -7622,10 +7815,6 @@
 
   const addWhatsAppButton = () => {
     initSiteActionDock();
-  };
-
-  const addBackToTopButton = () => {
-    /* handled by initSiteActionDock */
   };
 
   const initBaguetteBox = () => {
@@ -9440,7 +9629,7 @@
     if (!widgets.length) return;
 
     try {
-      const cached = kiccStorageGet(localStorage, CAMPAIGN_PROGRESS_KEY);
+      const cached = kiccTimedStorageGet(localStorage, CAMPAIGN_PROGRESS_KEY);
       if (cached) {
         applyFundraiserProgress(JSON.parse(cached));
       }
@@ -9457,7 +9646,7 @@
         const fundraiser = json && json.data && json.data.fundraiser;
         if (!fundraiser) throw new Error("No fundraiser data");
         try {
-          kiccStorageSet(localStorage, CAMPAIGN_PROGRESS_KEY, JSON.stringify(fundraiser));
+          kiccTimedStorageSet(localStorage, CAMPAIGN_PROGRESS_KEY, JSON.stringify(fundraiser));
         } catch (e) {
           console.warn("Unable to cache campaign progress", e);
         }
@@ -9827,20 +10016,7 @@
     );
   };
 
-  const PRAYER_TIMES_MONTH_NAMES = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const PRAYER_TIMES_MONTH_NAMES = GREGORIAN_MONTH_NAMES;
 
   const getPrayerTimesAllowedWindow = () => {
     const dublin = getDublinDate();
@@ -10554,7 +10730,10 @@
       pdfCache: Object.create(null),
       pdfRequestKey: "",
       loading: false,
+      lastRenderedSignature: "",
     };
+
+    let paintGeneration = 0;
 
     if (state.monthIndex < 0) state.monthIndex = getDublinDate().getMonth();
 
@@ -10695,22 +10874,37 @@
 
     const loadMonthData = (year, monthName) => {
       const key = getMonthCacheKey(year, monthName);
-      if (state.monthCache[key]) {
-        return Promise.resolve(state.monthCache[key]);
-      }
-      setStatus("Loading timetable…", true);
-      return fetchIqamahMonth(year, monthName)
-        .then(function (records) {
-          const sorted = (records || []).slice().sort(function (a, b) {
-            return a.gregorianDay - b.gregorianDay;
-          });
-          state.monthCache[key] = sorted;
-          return sorted;
-        })
-        .catch(function () {
-          state.monthCache[key] = [];
-          return [];
+      const cached = state.monthCache[key];
+
+      const storeRecords = function (records) {
+        const sorted = (records || []).slice().sort(function (a, b) {
+          return a.gregorianDay - b.gregorianDay;
         });
+        state.monthCache[key] = sorted;
+        return sorted;
+      };
+
+      if (!cached) {
+        setStatus("Loading timetable…", true);
+      }
+
+      const network = fetchIqamahMonth(year, monthName)
+        .then(storeRecords)
+        .catch(function () {
+          if (!state.monthCache[key]) {
+            state.monthCache[key] = [];
+          }
+          return state.monthCache[key];
+        });
+
+      if (cached) {
+        network.catch(function () {
+          /* keep showing session cache on background failure */
+        });
+        return Promise.resolve(cached);
+      }
+
+      return network;
     };
 
     const getMonthsNeededForWeek = () => {
@@ -10852,16 +11046,68 @@
         "</tbody></table>";
     };
 
-    const renderTable = (records) => {
-      if (!tableStage) {
-        paintTable(records);
+    const timetableViewSignature = (records) => {
+      const viewPart =
+        state.view +
+        "|" +
+        state.year +
+        "|" +
+        state.month +
+        "|" +
+        state.day +
+        "|" +
+        (state.weekStart ? state.weekStart.getTime() : "");
+      const dataPart = !Array.isArray(records)
+        ? ""
+        : records
+            .map(function (r) {
+              if (!r) return "0";
+              return (
+                r.gregorianYear +
+                "/" +
+                r.gregorianMonth +
+                "/" +
+                r.gregorianDay +
+                ":" +
+                (r.fajarTime || "") +
+                ":" +
+                (r.ishaTime || "")
+              );
+            })
+            .join(";");
+      return viewPart + "::" + dataPart;
+    };
+
+    const renderTable = (records, options) => {
+      const opts = options || {};
+      const signature = timetableViewSignature(records);
+      const animate =
+        opts.animate !== false &&
+        tableStage &&
+        Boolean(tableHost && tableHost.innerHTML.trim());
+
+      if (!animate && signature === state.lastRenderedSignature) {
+        if (tableStage) tableStage.classList.remove("is-swapping");
         return;
       }
 
+      const doPaint = function () {
+        paintTable(records);
+        state.lastRenderedSignature = signature;
+        if (tableStage) tableStage.classList.remove("is-swapping");
+      };
+
+      if (!tableStage || !animate) {
+        doPaint();
+        return;
+      }
+
+      const generation = paintGeneration + 1;
+      paintGeneration = generation;
       tableStage.classList.add("is-swapping");
       window.setTimeout(function () {
-        paintTable(records);
-        tableStage.classList.remove("is-swapping");
+        if (generation !== paintGeneration) return;
+        doPaint();
       }, 180);
     };
 
@@ -10870,10 +11116,10 @@
       const year = state.year;
       const cacheKey = year + "-" + month;
 
+      setOfficialTimetableLabels(month);
+
       if (state.pdfCache[cacheKey]) {
         applySalahTimesUrl(state.pdfCache[cacheKey], "all");
-        setOfficialTimetableLabels(month);
-        return;
       }
 
       state.pdfRequestKey = cacheKey;
@@ -10900,6 +11146,32 @@
         renderTable(records);
       });
     };
+
+    const isMonthRelevantToView = (year, monthName) => {
+      if (state.view === "month" || state.view === "day") {
+        return state.year === year && state.month === monthName;
+      }
+      if (state.view === "week") {
+        return getMonthsNeededForWeek().some(function (m) {
+          return m.year === year && m.monthName === monthName;
+        });
+      }
+      return false;
+    };
+
+    document.addEventListener("kicc:iqamah-month-refreshed", function (event) {
+      const detail = event.detail;
+      if (!detail || !Array.isArray(detail.records)) return;
+      const cacheKey = getMonthCacheKey(detail.year, detail.monthName);
+      const sorted = detail.records.slice().sort(function (a, b) {
+        return a.gregorianDay - b.gregorianDay;
+      });
+      state.monthCache[cacheKey] = sorted;
+      if (!isMonthRelevantToView(detail.year, detail.monthName)) return;
+      loadRecordsForView().then(function (records) {
+        renderTable(records, { animate: false });
+      });
+    });
 
     const setView = (view) => {
       state.view = view;
@@ -11096,7 +11368,6 @@
     });
     initPageSectionNavDock();
     addWhatsAppButton();
-    addBackToTopButton();
     setFooterYear();
     showCookiePolicy();
     initConsentEmbeds();

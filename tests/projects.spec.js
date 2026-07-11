@@ -1,7 +1,9 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
+import { acceptAllCookies, gotoWithViewport } from "./helpers/site.js";
 
-import { acceptAllCookies } from "./helpers/site.js";
+const GOFUNDME_DONATE_URL =
+  "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
 
 test.describe("New Masjid campaign page", () => {
   test.beforeEach(async ({ page }) => {
@@ -9,7 +11,7 @@ test.describe("New Masjid campaign page", () => {
     await acceptAllCookies(page);
   });
 
-  test("loads with campaign hero and visible title", async ({ page }) => {
+  test("PROJ-01: campaign hero and progress", async ({ page }) => {
     await expect(page).toHaveTitle(/New Masjid Appeal/i);
     await expect(page.locator("#campaign-hero h1")).toContainText(
       "Help Us Complete the House of Allah",
@@ -17,7 +19,7 @@ test.describe("New Masjid campaign page", () => {
     await expect(page.locator(".gfm-progress")).toBeVisible();
   });
 
-  test("section nav links to all major segments", async ({ page }) => {
+  test("PROJ-02: section nav links to all major segments", async ({ page }) => {
     const nav = page.locator(".campaign-section-nav-list");
     await expect(nav.getByRole("link", { name: "Opening message" })).toHaveAttribute(
       "href",
@@ -49,9 +51,7 @@ test.describe("New Masjid campaign page", () => {
     );
   });
 
-  test("explains community centre progress and main masjid not yet built", async ({
-    page,
-  }) => {
+  test("PROJ-03: two parts one vision badges", async ({ page }) => {
     await expect(page.locator("#opening-message")).toContainText(
       "main masjid prayer hall has not yet been constructed",
     );
@@ -67,7 +67,7 @@ test.describe("New Masjid campaign page", () => {
     );
   });
 
-  test("shows site photos in progress section", async ({ page }) => {
+  test("PROJ-04: progress gallery lightbox", async ({ page }) => {
     const progress = page.locator("#progress-so-far");
     await expect(progress.locator('img[src*="photos/site-wide"]')).toBeVisible();
     await expect(
@@ -78,7 +78,7 @@ test.describe("New Masjid campaign page", () => {
     ).toBeVisible();
   });
 
-  test("shows blueprint vision renders and site layouts", async ({ page }) => {
+  test("PROJ-05: vision blueprint gallery", async ({ page }) => {
     const vision = page.locator("#the-vision");
     await expect(
       vision.locator('img[src*="blueprints/render-front-elevation"]'),
@@ -89,7 +89,7 @@ test.describe("New Masjid campaign page", () => {
     await expect(vision.locator(".campaign-gallery-caption")).toHaveCount(6);
   });
 
-  test("shows construction update photos", async ({ page }) => {
+  test("PROJ-06: construction update photos", async ({ page }) => {
     const updates = page.locator("#masjid-construction-updates");
     await expect(
       updates.locator('img[src*="construction-update-2024-03-site"]'),
@@ -100,9 +100,7 @@ test.describe("New Masjid campaign page", () => {
     await expect(updates).toContainText("March 2024");
   });
 
-  test("lists funding needs including qardh hasanah and car park", async ({
-    page,
-  }) => {
+  test("PROJ-07: funding breakdown amounts", async ({ page }) => {
     const costs = page.locator("#what-your-donation-supports");
     await expect(costs).toContainText("Qardh Hasanah");
     await expect(costs).toContainText("Car Park");
@@ -111,25 +109,62 @@ test.describe("New Masjid campaign page", () => {
     await expect(costs).toContainText("€150k");
   });
 
-  test("donate section includes SumUp card payment", async ({ page }) => {
-    const sumup = page.locator("#ways-to-donate [data-sumup-donate]");
-    await sumup.scrollIntoViewIfNeeded();
-    await expect(sumup).toBeVisible();
-    await expect(
-      page.locator("#ways-to-donate [data-sumup-start-donate]"),
-    ).toContainText("Donate with SumUp");
+  test("PROJ-08: bank details toggle", async ({ page }) => {
+    const toggle = page.locator("#bank-details-toggle");
+    await toggle.scrollIntoViewIfNeeded();
+    await toggle.click();
+    await expect(page.locator("#bank-details")).toBeVisible();
   });
 
-  const GOFUNDME_DONATE_URL =
-    "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
-
-  test("donate buttons link to GoFundMe", async ({ page }) => {
+  test("PROJ-09: GoFundMe donate links", async ({ page }) => {
     const donateLinks = page.locator('a[href*="gofundme.com"][href*="/donate"]');
     await expect(donateLinks.first()).toBeVisible();
     expect(await donateLinks.count()).toBeGreaterThanOrEqual(3);
   });
 
-  test("gallery images load successfully", async ({ page }) => {
+  test("PROJ-10: SumUp widget mount", async ({ page }) => {
+    await gotoWithViewport(page, "/projects.html#ways-to-donate", "desktop");
+    await acceptAllCookies(page);
+    const startBtn = page.locator("[data-sumup-start-donate]").first();
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
+    await expect(page.locator("[data-sumup-donate]")).toBeVisible();
+  });
+
+  test("PROJ-11: SumUp error handling when checkout blocked", async ({
+    page,
+    context,
+  }) => {
+    await context.route(/cloudfunctions\.net\/createCheckout/, (route) =>
+      route.fulfill({ status: 503, body: '{"error":"Service unavailable"}' }),
+    );
+    await page.addInitScript(() => {
+      window.SumUpCard = {
+        mount: () => ({ unmount: () => {} }),
+      };
+    });
+    await gotoWithViewport(page, "/projects.html#ways-to-donate", "desktop");
+    await acceptAllCookies(page);
+    const startBtn = page.locator("[data-sumup-start-donate]").first();
+    await startBtn.scrollIntoViewIfNeeded();
+    await startBtn.click();
+    await expect(page.locator("[data-sumup-error]:not([hidden])")).toBeVisible({
+      timeout: 20_000,
+    });
+  });
+
+  test("PROJ-12: mobile donate dock", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/projects.html");
+    await acceptAllCookies(page);
+    await expect(page.locator(".site-action-btn--donate")).toBeVisible();
+    await expect(page.locator(".site-action-btn--donate")).toHaveAttribute(
+      "href",
+      GOFUNDME_DONATE_URL,
+    );
+  });
+
+  test("PROJ-04 gallery images load successfully", async ({ page }) => {
     const images = page.locator(".campaign-gallery-img");
     const count = await images.count();
     expect(count).toBeGreaterThanOrEqual(11);
@@ -143,15 +178,5 @@ test.describe("New Masjid campaign page", () => {
       );
       expect(naturalWidth).toBeGreaterThan(0);
     }
-  });
-
-  test("sticky donate action is present on mobile", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/projects.html");
-    await expect(page.locator(".site-action-btn--donate")).toBeVisible();
-    await expect(page.locator(".site-action-btn--donate")).toHaveAttribute(
-      "href",
-      GOFUNDME_DONATE_URL,
-    );
   });
 });

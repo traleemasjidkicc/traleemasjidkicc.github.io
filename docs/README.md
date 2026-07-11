@@ -1,12 +1,16 @@
 # Documentation
 
+## Sprint backlog
+
+Active engineering tasks and audit cross-checks: [`SPRINT.md`](../SPRINT.md).
+
 ## Test suites (UAT)
 
 Versioned user-acceptance test cases live in [`tests/`](tests/README.md):
 
 | | |
 |---|---|
-| Active | [tests/active/uat-suite-v2.0-2026-06-28.md](tests/active/uat-suite-v2.0-2026-06-28.md) |
+| Active | [tests/active/uat-suite-v2.0.2-2026-07-11.md](tests/active/uat-suite-v2.0.2-2026-07-11.md) |
 | Archive | [tests/archived/](tests/archived/) |
 | Index | [tests/README.md](tests/README.md) |
 

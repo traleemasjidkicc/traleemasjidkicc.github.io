@@ -52,7 +52,7 @@ assets/
   │   ├── team/           # Staff/volunteer photos
   │   └── ui/             # UI elements (e.g. newsletter signup)
   └── js/
-      └── scripts-*.js    # Versioned main app logic (~8200 lines)
+      └── scripts-*.js    # Versioned main app logic (~11,400 lines)
 
 index.html, about.html, activities.html, madrasa.html,
 projects.html, contact.html, prayer-times.html
@@ -62,7 +62,7 @@ scripts/build-error-pages.js   # Regenerates error pages from contact.html chrom
 
 gulpfile.js             # Gulp task configuration
 playwright.config.js    # E2E test config (Edge, port 3000)
-tests/projects.spec.js  # Campaign page e2e tests
+tests/                  # 142 Playwright e2e tests (13 specs + helpers/site.js)
 robots.txt              # Crawler rules + sitemap reference
 sitemap.xml             # All public pages
 site.webmanifest        # PWA manifest (theme, icons, start_url)

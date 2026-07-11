@@ -51,7 +51,8 @@ alwaysApply: false
 - Config: `playwright.config.js` — Edge channel, `testDir: ./tests`
 - CI: starts BrowserSync on port 3000 via `webServer`
 - Local: run `yarn start` first, then `yarn test:e2e`
-- Current tests: `tests/projects.spec.js` (New Masjid campaign page)
+- **142 tests** in 13 spec files + `tests/helpers/site.js` — titles use UAT v2.0 IDs (`NAV-01`, `PT-17`, etc.)
+- Specs: `about`, `activities`, `contact-form`, `cookie-consent`, `errors`, `homepage`, `madrasa`, `mobile-nav`, `prayer-times`, `projects`, `responsive`, `seo`, `site-chrome`
 
 ## Rules for agents
 

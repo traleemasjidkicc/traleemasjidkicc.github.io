@@ -23,7 +23,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre (Tralee Masjid). Vani
 Browser (GitHub Pages)
   ├── Static HTML pages (root *.html)
   ├── assets/css/main-{timestamp}.css
-  ├── assets/js/scripts-{timestamp}.js (single app script, ~8200 lines)
+  ├── assets/js/scripts-{timestamp}.js (single app script, ~11,400 lines)
   ├── SEO: robots.txt, sitemap.xml, site.webmanifest
   └── CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 
@@ -89,9 +89,9 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 | Page | DOMContentLoaded (page-specific) | window.onload (`setLocationSpecific`) |
 |------|----------------------------------|---------------------------------------|
-| `/` (index) | `showNotices`, `initHomeNotices`, `initHomePillars` | `setEvent`, `loadProgrammes` |
-| `prayer-times.html` | `initPrayerTimesPage`, `initPrayerTimesPageMotion` | `initPrayerTimesPage` |
-| `activities.html` | — | `setEvent`, `loadProgrammes` |
+| `/` (index) | `showNotices`, `initHomeNotices`, `initHomePillars` | `setLiveStreamStatus`, `loadProgrammes` |
+| `prayer-times.html` | `initPrayerTimesPage`, `initPrayerTimesPageMotion`, `loadProgrammes` | `initPrayerTimesPage` |
+| `activities.html` | `initProgrammesPageMotion` | `setLiveStreamStatus`, `loadProgrammes` |
 | `projects.html` | — | `initBaguetteBox` (`.grid-gallery`) |
 
 **All pages** on `DOMContentLoaded`: announcements ribbon, nav salah panel, mobile nav, section nav dock, cookie consent, consent-gated embeds (maps), WhatsApp/back-to-top, footer year, `initCanonicalSiteLinks`, page motion inits (about/contact/campaign/home donate as applicable), SumUp widget init.
@@ -100,12 +100,15 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 
 ### localStorage cache keys
 
+API content caches expire after **7 days** (via `kiccTimedStorageGet` / `kiccTimedStorageSet`). Dismiss flags (`kicc-breaking-dismiss-*`) are not TTL-limited.
+
 | Key | Purpose |
 |-----|---------|
 | `salahTimesAssetUrl` | Monthly timetable PDF/image URL |
-| `iqamah-today` | Today's iqamah JSON |
+| `iqamah-month-*` | Monthly iqamah timetables (prev/current/next month) |
+| `iqamah-tomorrow` | Legacy day iqamah JSON fallback |
 | `kicc-announcements` | Announcements ribbon |
-| `kicc-notices` | Homepage notices |
+| `notices` | Homepage notices |
 | `kicc-random-hadith` | Daily hadith |
 | `masjidProgrammes_programme_active_true_v1` | Activities programmes |
 | `kicc-campaign-progress` | GoFundMe / campaign totals from `getcampaigns` |
@@ -161,7 +164,8 @@ Init is split between `DOMContentLoaded` and `window.onload`. Page routing uses 
 - `package.json` — scripts, version, devDependencies
 - `scripts/build-error-pages.js` — regenerates `404.html`, `403.html`, `500.html` from `contact.html` chrome
 - `playwright.config.js` — Edge e2e; CI starts BrowserSync on port 3000
-- `tests/projects.spec.js` — New Masjid campaign page tests
+- `tests/helpers/site.js` — shared Playwright helpers (`gotoWithViewport`, `acceptAllCookies`, `openCookieSettings`, route blockers)
+- `tests/*.spec.js` — 13 spec files, 142 tests mapped to UAT v2.0 IDs (see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`)
 - `assets/js/scripts-*.js` — all client-side logic
 - `assets/css/main-*.css` — all styles including `campaign-*` and `prayer-times-*`
 - `index.html`, `prayer-times.html`, `projects.html` — highest-traffic / feature-rich pages

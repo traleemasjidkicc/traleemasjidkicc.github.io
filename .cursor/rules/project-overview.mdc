@@ -12,7 +12,7 @@ Static GitHub Pages site for Kerry Islamic Cultural Centre. No framework, no tra
 - HTML pages at repo root: `index.html`, `about.html`, `contact.html`, `activities.html`, `madrasa.html`, `projects.html`, `prayer-times.html`
 - Error pages: `404.html` (GitHub Pages auto-serves), `403.html`, `500.html` — regenerate with `yarn build:error-pages`
 - CSS: single versioned `assets/css/main-{timestamp}.css`
-- JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~8200 lines)
+- JS: single file `assets/js/scripts-{timestamp}.js` (IIFE, ES6+, ~11,400 lines)
 - CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 - Embeds: GoFundMe widgets, SumUp donate, Mixlr player, Google Analytics (gtag, consent-gated)
 - SEO/PWA: `robots.txt`, `sitemap.xml`, `site.webmanifest`, per-page OG/JSON-LD

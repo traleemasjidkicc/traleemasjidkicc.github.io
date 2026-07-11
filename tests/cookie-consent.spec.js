@@ -4,11 +4,13 @@ import {
   acceptAllCookies,
   clearSiteSession,
   gotoWithViewport,
+  openCookieSettings,
 } from "./helpers/site.js";
 
 test.describe("Cookie consent and privacy", () => {
   test.describe.configure({ mode: "serial" });
-  test("UAT-19: first-visit cookie banner (mobile portrait)", async ({ page }) => {
+
+  test("CC-01: first-visit cookie banner (mobile portrait)", async ({ page }) => {
     await gotoWithViewport(page, "/", "mobilePortrait");
     await clearSiteSession(page);
     await page.reload();
@@ -19,7 +21,7 @@ test.describe("Cookie consent and privacy", () => {
     await expect(page.locator("html")).toHaveClass(/cookie-consent-pending/);
   });
 
-  test("UAT-20: accept all enables embeds (mobile portrait)", async ({ page }) => {
+  test("CC-02: accept all enables embeds (mobile portrait)", async ({ page }) => {
     await gotoWithViewport(page, "/", "mobilePortrait");
     await clearSiteSession(page);
     await page.reload();
@@ -34,7 +36,7 @@ test.describe("Cookie consent and privacy", () => {
     await expect(mixlrSection).toBeVisible();
   });
 
-  test("UAT-21: essential-only blocks Mixlr iframe (desktop)", async ({ page }) => {
+  test("CC-03: essential-only blocks Mixlr iframe (desktop)", async ({ page }) => {
     await gotoWithViewport(page, "/", "desktop");
     await clearSiteSession(page);
     await page.reload();
@@ -50,7 +52,37 @@ test.describe("Cookie consent and privacy", () => {
     await expect(mixlr.locator("iframe")).toHaveCount(0);
   });
 
-  test("UAT-27: preferences persist across pages (desktop)", async ({ page }) => {
+  test("CC-04: cookie settings panel", async ({ page }) => {
+    await gotoWithViewport(page, "/", "mobilePortrait");
+    await clearSiteSession(page);
+    await page.reload();
+    await openCookieSettings(page);
+    await expect(page.locator("#cookie-prefs-title")).toBeVisible();
+    await expect(page.locator("#cookie-prefs-toggle-functional")).toBeVisible();
+    await expect(page.locator(".cookie-category-locked .cookie-category-badge")).toContainText(
+      /Always on/i,
+    );
+  });
+
+  test("CC-05: functional cache toggle", async ({ page }) => {
+    await gotoWithViewport(page, "/", "desktop");
+    await clearSiteSession(page);
+    await page.reload();
+    await acceptAllCookies(page);
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "notices",
+        JSON.stringify({ v: 1, savedAt: Date.now(), payload: "[]" }),
+      );
+    });
+    await openCookieSettings(page);
+    await page.locator('label[for="cookie-prefs-toggle-functional"]').click();
+    await page.waitForFunction(() => localStorage.getItem("notices") === null, {
+      timeout: 10_000,
+    });
+  });
+
+  test("CC-07: preferences persist across pages (desktop)", async ({ page }) => {
     await gotoWithViewport(page, "/", "desktop");
     await clearSiteSession(page);
     await page.reload();
@@ -70,9 +102,22 @@ test.describe("Cookie consent and privacy", () => {
     expect(consent?.value).toMatch(/analytics/i);
   });
 
-  test("UAT-28: privacy copy avoids developer jargon (mobile portrait)", async ({
-    page,
-  }) => {
+  test("CC-09: no banner on return visit", async ({ page }) => {
+    await gotoWithViewport(page, "/", "mobilePortrait");
+    await clearSiteSession(page);
+    await page.reload();
+    await acceptAllCookies(page);
+    await page.reload();
+    await expect(page.locator("#cookie-consent")).toBeHidden();
+  });
+
+  test("CC-10: privacy and cookies footer link", async ({ page }) => {
+    await gotoWithViewport(page, "/", "mobilePortrait");
+    await acceptAllCookies(page);
+    await openCookieSettings(page);
+  });
+
+  test("CC-14: visitor-friendly privacy copy", async ({ page }) => {
     await gotoWithViewport(page, "/", "mobilePortrait");
     await clearSiteSession(page);
     await page.reload();
@@ -83,7 +128,7 @@ test.describe("Cookie consent and privacy", () => {
     expect(bannerText.toLowerCase()).not.toMatch(/\bembed\b/);
   });
 
-  test("UAT-26: Google Maps consent on contact (mobile portrait)", async ({ page }) => {
+  test("CC-13: Google Maps consent on contact (mobile portrait)", async ({ page }) => {
     await gotoWithViewport(page, "/contact.html#contact-visit", "mobilePortrait");
     await clearSiteSession(page);
     await page.goto("/contact.html#contact-visit");

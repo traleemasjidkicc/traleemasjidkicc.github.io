@@ -251,7 +251,7 @@ traleemasjidkicc.github.io/
 │   ├── css/
 │   │   └── main-*.css         # Versioned stylesheet (edit in place)
 │   ├── js/
-│   │   └── scripts-*.js       # Versioned app logic (~8 200 lines)
+│   │   └── scripts-*.js       # Versioned app logic (~11 400 lines)
 │   └── images/
 │       ├── brand/             # Logo, Bismillah, GoFundMe QR
 │       ├── backgrounds/       # Hero backgrounds
@@ -261,7 +261,20 @@ traleemasjidkicc.github.io/
 │       └── ui/                # UI illustrations
 │
 ├── tests/
-│   └── projects.spec.js       # Playwright e2e (New Masjid page)
+│   ├── helpers/site.js        # Shared Playwright helpers
+│   ├── about.spec.js
+│   ├── activities.spec.js
+│   ├── contact-form.spec.js
+│   ├── cookie-consent.spec.js
+│   ├── errors.spec.js
+│   ├── homepage.spec.js
+│   ├── madrasa.spec.js
+│   ├── mobile-nav.spec.js
+│   ├── prayer-times.spec.js
+│   ├── projects.spec.js
+│   ├── responsive.spec.js
+│   ├── seo.spec.js
+│   └── site-chrome.spec.js    # 142 Playwright tests total
 │
 ├── robots.txt                 # Crawler rules + sitemap URL
 ├── sitemap.xml                # All public pages for search engines
@@ -411,7 +424,19 @@ Example references in HTML (timestamps change on commit):
 
 ### Automated E2E (Playwright)
 
-Tests live in [`tests/projects.spec.js`](tests/projects.spec.js) and cover the **New Masjid** campaign page (hero, section nav, gallery images, GoFundMe links, SumUp donate button).
+**142 tests** across 13 spec files map to [UAT v2.0 prefixed IDs](docs/tests/active/uat-suite-v2.0.2-2026-07-11.md) (e.g. `NAV-01`, `PT-17`, `PROJ-11`). Shared helpers live in [`tests/helpers/site.js`](tests/helpers/site.js).
+
+| Spec | Primary coverage |
+|------|------------------|
+| `homepage.spec.js` | Home hero, prayer deck, pillars, donate |
+| `mobile-nav.spec.js` | Navbar, mega menus, salah dropdown |
+| `cookie-consent.spec.js` | Consent banner, preferences, embed gating |
+| `prayer-times.spec.js` | Timetable views, cache-then-fetch (PT-17–19) |
+| `projects.spec.js` | New Masjid campaign, GoFundMe, SumUp |
+| `contact-form.spec.js` | Form validation, imam CTAs |
+| `about.spec.js`, `madrasa.spec.js`, `activities.spec.js` | Static / programmes pages |
+| `errors.spec.js` | 404, API degradation |
+| `site-chrome.spec.js`, `seo.spec.js`, `responsive.spec.js` | Footer, metadata, layout |
 
 **Locally** — dev server must already be running on port 3000:
 
@@ -445,9 +470,9 @@ All masjid content is fetched client-side and cached in `localStorage`.
 | Endpoint | Purpose | Cache key |
 |----------|---------|-----------|
 | `getsalahtimes-rds3nxm6za-ew.a.run.app` | Monthly timetable PDF/image URL | `salahTimesAssetUrl` |
-| `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Today's iqamah + Jumuah schedule | `iqamah-today` |
+| `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Monthly iqamah timetables + Jumuah | `iqamah-month-{year}-{month}` |
 | `getannouncements-rds3nxm6za-ew.a.run.app` | Site-wide announcements ribbon | `kicc-announcements` |
-| `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board | `kicc-notices` |
+| `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board | `notices` |
 | `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Weekly programmes | `masjidProgrammes_programme_active_true_v1` |
 | `randomhadith-rds3nxm6za-ew.a.run.app` | Daily hadith | `kicc-random-hadith` |
 | `getcampaigns-rds3nxm6za-ew.a.run.app` | Donation campaign progress (GoFundMe totals) | `kicc-campaign-progress` |
