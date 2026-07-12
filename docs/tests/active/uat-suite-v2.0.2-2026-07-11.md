@@ -237,7 +237,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | PROJ-08 | Bank details toggle | Mobile – Portrait | 1. Expand bank transfer details. | IBAN revealed; collapses again. | Medium | `projects.spec.js` | MD-83 | ✅ Pass |
 | PROJ-09 | GoFundMe donate links | Mobile – Portrait | 1. Tap donate buttons. | ≥3 GoFundMe donate URLs work. | High | `projects.spec.js` | MD-84 | ✅ Pass |
 | PROJ-10 | SumUp widget mount | Laptop / Desktop | 1. Start SumUp; pick amount (no real charge). | Widget mounts; amount picker works. | High | `projects.spec.js` | MD-85, P-03 | ✅ Pass |
-| PROJ-11 | SumUp error handling | Laptop / Desktop | 1. Block Firebase checkout. | Error panel with retry, reference, WhatsApp. | Medium | `projects.spec.js` | MD-86 | ✅ Pass |
+| PROJ-11 | SumUp error handling | Laptop / Desktop | 1. Block createCheckout API. | Error panel with retry, reference, WhatsApp. | Medium | `projects.spec.js` | MD-86 | ✅ Pass |
 | PROJ-12 | Mobile donate dock | Mobile – Portrait | 1. At 390×844 on projects. | Floating Donate to GoFundMe. | Medium | `projects.spec.js` | MD-87 | ✅ Pass |
 | PROJ-13 | Campaign galleries landscape | Mobile – Landscape | 1. Open gallery in landscape. | Images scale; lightbox usable. | Low | Manual | MD-88 | Pending |
 | PROJ-14 | Page content readable mobile | Mobile – Portrait | 1. Load projects on narrow width. | No overflow; images scale. | Medium | Manual | P-02 | Pending |

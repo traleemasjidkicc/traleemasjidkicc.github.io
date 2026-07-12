@@ -24,7 +24,7 @@ export const PUBLIC_PAGES = [
 
 const CLOUD_RUN_HOST = /\.run\.app/;
 const MIXLR_HOST = /api\.mixlr\.com/;
-const FIREBASE_CHECKOUT_HOST = /cloudfunctions\.net\/createCheckout/;
+const CREATE_CHECKOUT_HOST = /createcheckout-rds3nxm6za-ew\.a\.run\.app/;
 
 /**
  * Clear consent cookie and web storage for a fresh visitor session.
@@ -154,8 +154,8 @@ export async function blockMixlr(context) {
 /**
  * @param {BrowserContext} context
  */
-export async function blockFirebaseCheckout(context) {
-  await context.route(FIREBASE_CHECKOUT_HOST, (route) => route.abort("failed"));
+export async function blockCreateCheckout(context) {
+  await context.route(CREATE_CHECKOUT_HOST, (route) => route.abort("failed"));
 }
 
 /**

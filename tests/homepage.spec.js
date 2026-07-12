@@ -63,6 +63,88 @@ test.describe("Homepage", () => {
     );
   });
 
+  test("HOME-04b: prayer deck shows five salah on desktop", async ({ page }) => {
+    await gotoWithViewport(page, "/", "desktop");
+    await acceptAllCookies(page);
+    await dismissHomeSignupModal(page, { waitForDelayed: true });
+
+    const suiteReady = await page.waitForFunction(
+      () => {
+        const suite = document.querySelector("[data-home-prayer-suite]");
+        const cards = document.querySelectorAll(".home-prayer-deck-card");
+        return !!(suite && !suite.hidden && cards.length >= 5);
+      },
+      { timeout: 20_000 },
+    );
+    if (!suiteReady) return;
+
+    const todayVisibleCount = await page.evaluate(() => {
+      const viewport = document.querySelector("[data-prayer-carousel-viewport]");
+      if (!viewport) return 0;
+      const vpRect = viewport.getBoundingClientRect();
+      return Array.from(
+        document.querySelectorAll('.home-prayer-deck-card[data-day-offset="0"]'),
+      ).filter(function (card) {
+        const rect = card.getBoundingClientRect();
+        return rect.left < vpRect.right && rect.right > vpRect.left && rect.width > 0;
+      }).length;
+    });
+    expect(todayVisibleCount).toBe(5);
+
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Today/i);
+    await expect(page.locator("[data-prayer-day-prev]")).toHaveAttribute(
+      "aria-label",
+      "Previous day",
+    );
+    await expect(page.locator("[data-prayer-day-next]")).toHaveAttribute(
+      "aria-label",
+      "Next day",
+    );
+
+    await page.locator("[data-prayer-day-next]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Tomorrow/i);
+    await page.waitForFunction(() => {
+      const viewport = document.querySelector("[data-prayer-carousel-viewport]");
+      if (!viewport) return false;
+      const tomorrowCards = document.querySelectorAll(
+        '.home-prayer-deck-card[data-day-offset="1"]',
+      );
+      if (!tomorrowCards.length) return false;
+      const vpRect = viewport.getBoundingClientRect();
+      return Array.from(tomorrowCards).some(function (card) {
+        const rect = card.getBoundingClientRect();
+        return rect.left < vpRect.right && rect.right > vpRect.left && rect.width > 0;
+      });
+    });
+
+    await page.locator("[data-prayer-day-prev]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Today/i);
+    await page.waitForFunction(() => {
+      const lead = document.querySelector(".home-prayer-deck-card.is-centered");
+      return lead && lead.getAttribute("data-day-offset") === "0";
+    });
+
+    await page.locator("[data-prayer-day-prev]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Yesterday/i);
+    await page.waitForFunction(() => {
+      const lead = document.querySelector(".home-prayer-deck-card.is-centered");
+      return lead && lead.getAttribute("data-day-offset") === "-1";
+    });
+
+    await page.locator("[data-prayer-day-today]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Today/i);
+
+    await page.locator("[data-prayer-day-prev]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Yesterday/i);
+    await expect(page.locator("[data-prayer-day-prev]")).toBeDisabled();
+
+    await page.locator("[data-prayer-day-next]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Today/i);
+    await page.locator("[data-prayer-day-next]").click();
+    await expect(page.locator("[data-prayer-carousel-label]")).toContainText(/Tomorrow/i);
+    await expect(page.locator("[data-prayer-day-next]")).toBeDisabled();
+  });
+
   test("HOME-06: prayer deck empty state when API unavailable", async ({ page, context }) => {
     await blockCloudRun(context);
     await clearSiteSession(page);

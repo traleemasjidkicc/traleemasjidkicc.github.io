@@ -82,6 +82,41 @@ test.describe("Cookie consent and privacy", () => {
     });
   });
 
+  test("CC-08: clear optional stored data feedback", async ({ page }) => {
+    await gotoWithViewport(page, "/", "desktop");
+    await clearSiteSession(page);
+    await page.reload();
+    await acceptAllCookies(page);
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "notices",
+        JSON.stringify({ v: 1, savedAt: Date.now(), payload: "[]" }),
+      );
+    });
+    await openCookieSettings(page);
+
+    const clearBtn = page.locator("#cookie-prefs-clear");
+    await clearBtn.scrollIntoViewIfNeeded();
+    await clearBtn.click();
+
+    await expect(page.locator("#cookie-prefs-clear-status")).toBeVisible();
+    await expect(page.locator("#cookie-prefs-clear-status")).toContainText(/cleared/i);
+    await expect(page.locator("#cookie-prefs-clear")).toContainText(/cleared/i);
+    await expect(page.locator("#cookie-prefs-clear")).toHaveClass(/is-done/);
+
+    await page.waitForFunction(() => localStorage.getItem("notices") === null, {
+      timeout: 10_000,
+    });
+    await expect(page.locator("#cookie-prefs-toggle-functional")).not.toBeChecked();
+    await expect(page.locator("#cookie-prefs-toggle-analytics")).not.toBeChecked();
+    await expect(page.locator("#cookie-prefs-toggle-thirdParty")).not.toBeChecked();
+
+    await page.reload();
+    const mixlr = page.locator(".consent-embed-mixlr").first();
+    await mixlr.scrollIntoViewIfNeeded();
+    await expect(mixlr.locator("iframe")).toHaveCount(0);
+  });
+
   test("CC-07: preferences persist across pages (desktop)", async ({ page }) => {
     await gotoWithViewport(page, "/", "desktop");
     await clearSiteSession(page);

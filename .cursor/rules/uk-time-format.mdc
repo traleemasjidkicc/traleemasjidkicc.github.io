@@ -20,7 +20,7 @@ Show **12-hour clock times** in British/Irish style for all visitor-facing salah
 
 ## JavaScript
 
-Use `formatUkDisplayTime()` in `scripts-*.js` — do not hand-roll or only call `.toLowerCase()` on API strings.
+Use `formatUkDisplayTime()` in `scripts.js` — do not hand-roll or only call `.toLowerCase()` on API strings.
 
 ```javascript
 formatUkDisplayTime("04:30 PM");           // 4:30 pm

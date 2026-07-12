@@ -17,13 +17,13 @@ alwaysApply: false
 - Script tag for app JS (do not change filename manually):
 
 ```html
-<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>
+<script defer type="text/javascript" src="assets/js/scripts.js?v={timestamp}"></script>
 ```
 
-- Main stylesheet link (do not change filename manually):
+- Main stylesheet link (do not change `?v=` manually):
 
 ```html
-<link rel="stylesheet" href="assets/css/main-{timestamp}.css">
+<link rel="stylesheet" href="assets/css/main.css?v={timestamp}">
 ```
 
 ## SEO head (all public pages)
@@ -43,7 +43,7 @@ When adding a page, also add it to `sitemap.xml` and ensure `robots.txt` referen
 
 ## CSS
 
-- `assets/css/main-{timestamp}.css` — layout, typography, components, motion, campaign, prayer-times, responsive rules
+- `assets/css/main.css` — layout, typography, components, motion, campaign, prayer-times, responsive rules
 - Extend Bootstrap; avoid overriding core Bootstrap class names unnecessarily
 - Prefer existing colour/spacing variables and class names before adding new ones
 

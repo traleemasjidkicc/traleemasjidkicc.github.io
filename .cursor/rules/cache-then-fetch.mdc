@@ -21,7 +21,7 @@ Masjid content APIs use **localStorage** (via `kiccTimedStorageGet` / `kiccTimed
 
 **Non-expiring functional keys** (e.g. `kicc-breaking-dismiss-*`): use `kiccStorageGet` / `kiccStorageSet`.
 
-Use `kiccCacheThenFetch()` for storage-backed Cloud Run reads (implemented in `scripts-*.js`):
+Use `kiccCacheThenFetch()` for storage-backed Cloud Run reads (implemented in `scripts.js`):
 
 ```javascript
 kiccCacheThenFetch({

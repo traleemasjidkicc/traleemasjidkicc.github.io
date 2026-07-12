@@ -5,12 +5,13 @@ alwaysApply: true
 
 # External link icons
 
-Sitewide, external links get a ↗ icon via `initExternalLinkIcons()` in `assets/js/scripts-*.js` (runs on load and after dynamic content).
+Sitewide, external links get a ↗ icon via `initExternalLinkIcons()` in `assets/js/scripts.js` (runs on load and after dynamic content).
 
 ## Do not add icons to
 
 - **Notice board links** — `#noticeContainer`, `#masjid-notice-spotlight`, `#notice-board`
-- **Button-style links** — `.btn`, `.contact-action-btn`, `.site-action-btn`, `.btn-campaign`, `.kicc-nav-donate-btn`, `.site-footer-social-link` (icons belong on the button label, not a ↗)
+- **Button-style links** — `.btn`, any class ending in `-btn` (e.g. `site-footer-donate-btn`, `site-footer-directions-btn`), `.contact-action-btn`, `.site-action-btn`, `.btn-campaign`, `.kicc-nav-donate-btn`, `.site-footer-social-link`, `.lwa-app-badge`, and links inside `.action-btn-row` (icons belong on the button label, not a ↗)
+- **Icon-only / social links** — `.social-link`, links inside `.about-team-social` or `.site-footer-social`, and any external link whose only visible content is an icon (`<i>` / `<svg>`) — the channel icon is enough (LinkedIn, GitHub, etc.)
 - **WhatsApp links** — `wa.me` / `api.whatsapp.com` URLs, or any link that already shows a WhatsApp icon (`.fa-whatsapp`)
 - **Floating action dock** — `.site-action-dock` (WhatsApp, Donate, Back to top)
 - Links with `data-skip-external-icon="true"` (set in HTML or JS as `dataset.skipExternalIcon = "true"`)

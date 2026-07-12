@@ -41,6 +41,23 @@ const navBlock = contactHtml.slice(navStart, navEnd)
 const cookieBlock = contactHtml.slice(cookieStart, footerStart);
 const footerBlock = contactHtml.slice(footerStart, footerEnd);
 
+const extractSiteAssetRef = (pattern, label) => {
+  const match = contactHtml.match(pattern);
+  if (!match) {
+    throw new Error(`Could not find ${label} in contact.html`);
+  }
+  return match[0];
+};
+
+const mainCssRef = extractSiteAssetRef(
+  /<link rel="stylesheet" href="assets\/css\/main\.css\?v=\d+">/,
+  "main.css stylesheet",
+);
+const scriptsJsRef = extractSiteAssetRef(
+  /<script defer type="text\/javascript" src="assets\/js\/scripts\.js\?v=\d+"><\/script>/,
+  "scripts.js",
+);
+
 const headCommon = `<!DOCTYPE html>
 <html lang="en-GB">
 
@@ -80,7 +97,7 @@ const headCommon = `<!DOCTYPE html>
     href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
     crossorigin="anonymous">
-  <link rel="stylesheet" href="assets/css/main-1782651170940.css">
+  ${mainCssRef}
 
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
@@ -117,7 +134,7 @@ const headCommon = `<!DOCTYPE html>
       wait_for_update: 500
     });
   </script>
-  <script defer type="text/javascript" src="assets/js/scripts-1782609670001.js"></script>
+  ${scriptsJsRef}
   <script>
     (function () {
       var hasConsent = /(?:^|;\\s*)kicc-cookie-consent=/.test(document.cookie)

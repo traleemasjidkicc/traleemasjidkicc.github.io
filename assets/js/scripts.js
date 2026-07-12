@@ -6,7 +6,7 @@
    * ---------------------------------------------------------------------------
    *  1. Routing — getPathname(), is*Page(), getPageKey()
    *  2. Site links — SITE_LINKS, initCanonicalSiteLinks()
-   *  3. Backend URLs — CLOUD_RUN_APIS (content), FIREBASE_FUNCTIONS (SumUp)
+   *  3. Backend URLs — CLOUD_RUN_APIS (content + SumUp checkout)
    *  4. UK dates & times — formatUkDate(), formatUkDisplayTime() (en-GB, 12hr, lowercase am/pm)
    *  5. Salah & iqamah — timetable PDF, nav panel, prayer-times page
    *  5. Announcements, notices, hadith
@@ -103,27 +103,21 @@
     });
   };
 
-  /* Google Cloud Run (europe-west1) — masjid JSON/content APIs */
+  /* Google Cloud Run (europe-west1) — masjid APIs and SumUp checkout */
   const CLOUD_RUN_APIS = {
     salahTimes: "https://getsalahtimes-rds3nxm6za-ew.a.run.app",
     iqamahTimes: "https://getiqamahtimes-rds3nxm6za-ew.a.run.app",
     announcements: "https://getannouncements-rds3nxm6za-ew.a.run.app",
     notices: "https://getnotices-rds3nxm6za-ew.a.run.app",
     programmes:
-      "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true",
+      "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true&recordingsLimit=6",
     randomHadith: "https://randomhadith-rds3nxm6za-ew.a.run.app",
     campaigns: "https://getcampaigns-rds3nxm6za-ew.a.run.app",
-  };
-
-  /* Firebase Cloud Functions — payment checkout only (not Cloud Run) */
-  const FIREBASE_FUNCTIONS = {
-    createCheckout:
-      "https://europe-west1-tralee-masjid.cloudfunctions.net/createCheckout",
+    createCheckout: "https://createcheckout-rds3nxm6za-ew.a.run.app",
   };
 
   /* --------------------------------------------------------------------------
-   * Cloud Run APIs (europe-west1) — masjid content, cache-then-fetch in browser
-   * Firebase Cloud Functions — SumUp card checkout only (not Cloud Run)
+   * Cloud Run APIs (europe-west1) — masjid content and SumUp card checkout
    * -------------------------------------------------------------------------- */
 
   const scrollToLocationHash = () => {
@@ -174,16 +168,48 @@
     );
   };
 
+  const getLinkVisibleText = (link) => {
+    if (!link || !link.cloneNode) return "";
+    const clone = link.cloneNode(true);
+    clone
+      .querySelectorAll("i, svg, [aria-hidden='true']")
+      .forEach(function (el) {
+        el.remove();
+      });
+    return (clone.textContent || "").replace(/\s+/g, " ").trim();
+  };
+
+  const isIconOnlyLink = (link) => {
+    if (!link || !link.querySelector) return false;
+    if (!link.querySelector("i, svg")) return false;
+    return getLinkVisibleText(link) === "";
+  };
+
   const isExternalButtonLink = (link) => {
     if (!link || !link.classList) return false;
-    return (
-      link.classList.contains("btn") ||
-      link.classList.contains("contact-action-btn") ||
-      link.classList.contains("site-action-btn") ||
-      link.classList.contains("btn-campaign") ||
-      link.classList.contains("kicc-nav-donate-btn") ||
-      link.classList.contains("site-footer-social-link")
-    );
+    if (link.classList.contains("btn")) return true;
+    if (link.classList.contains("lwa-app-badge")) return true;
+
+    const namedButtonClasses = [
+      "contact-action-btn",
+      "site-action-btn",
+      "btn-campaign",
+      "kicc-nav-donate-btn",
+      "site-footer-social-link",
+    ];
+    if (namedButtonClasses.some((cls) => link.classList.contains(cls))) {
+      return true;
+    }
+
+    for (let i = 0; i < link.classList.length; i += 1) {
+      if (link.classList[i].endsWith("-btn")) return true;
+    }
+
+    if (link.closest && link.closest(".action-btn-row, .site-action-dock")) {
+      return true;
+    }
+
+    return false;
   };
 
   const shouldSkipExternalLinkIcon = (link) => {
@@ -191,6 +217,8 @@
     if (link.dataset.skipExternalIcon === "true") return true;
     if (isWhatsAppHref(link.getAttribute("href"))) return true;
     if (isExternalButtonLink(link)) return true;
+    if (link.classList && link.classList.contains("social-link")) return true;
+    if (isIconOnlyLink(link)) return true;
     if (
       link.querySelector &&
       link.querySelector(".fa-whatsapp, .fa-brands.fa-whatsapp")
@@ -200,7 +228,7 @@
     if (!link.closest) return false;
     if (
       link.closest(
-        "#noticeContainer, #masjid-notice-spotlight, #notice-board, .site-action-dock",
+        "#noticeContainer, #masjid-notice-spotlight, #notice-board, .site-action-dock, .about-team-social, .site-footer-social",
       )
     ) {
       return true;
@@ -294,7 +322,7 @@
     "kicc-announcements",
     "notices",
     "kicc-random-hadith",
-    "masjidProgrammes_programme_active_true_v1",
+    "masjidProgrammes_programme_active_true_v2",
     "kicc-campaign-progress",
   ];
   const FUNCTIONAL_SESSION_KEYS = [
@@ -900,8 +928,9 @@
   let prayerCarouselJumping = false;
 
   const PRAYER_DAY_RADIUS = 30;
-  const PRAYER_CAROUSEL_REPEAT = 3;
-  const PRAYER_CAROUSEL_PRIMARY = 1;
+  const PRAYER_DECK_DAY_RADIUS = 1;
+  const PRAYER_CAROUSEL_REPEAT = 1;
+  const PRAYER_CAROUSEL_PRIMARY = 0;
   const PRAYER_DECK_LEAD_ALIGN_QUERY = "(min-width: 992px)";
   const SUNRISE_FORBIDDEN_MINUTES = 15;
   const ZAWAAL_BEFORE_PRAYER_MINUTES = 10;
@@ -1665,7 +1694,7 @@
 
     const chunks = [];
     for (let repeat = 0; repeat < PRAYER_CAROUSEL_REPEAT; repeat += 1) {
-      for (let offset = -PRAYER_DAY_RADIUS; offset <= PRAYER_DAY_RADIUS; offset += 1) {
+      for (let offset = -PRAYER_DECK_DAY_RADIUS; offset <= PRAYER_DECK_DAY_RADIUS; offset += 1) {
         const record = getDayRecordForOffset(offset);
         if (!record) continue;
         PRAYER_SLOTS.forEach(function (slot, index) {
@@ -1695,6 +1724,11 @@
   };
 
   const getPrayerDeckTargetSlide = (dayKey, prayerId) => {
+    if (usesPrayerDeckLeadAlign() && !dayKey && !prayerId) {
+      const slide = getFajrSlideForDayOffset(0);
+      if (slide) return slide;
+    }
+
     const deckState = getDeckHighlightState();
     let targetDay = dayKey;
     let targetPrayer = prayerId;
@@ -1731,9 +1765,10 @@
     }
 
     centerPrayerCarouselOnSlide(slide, instant ? "auto" : "smooth");
-    normalizePrayerCarouselScroll();
+    clampPrayerCarouselScroll();
     updateCarouselCenteredSlide();
     updatePrayerCarouselToolbarLabel();
+    updatePrayerDeckNavButtons();
 
     if (instant) {
       viewport.classList.remove("is-prayer-carousel-init");
@@ -1809,6 +1844,216 @@
     return getVisiblePrayerCarouselSlide();
   };
 
+  const getDayOffsetFromSlide = (slide) => {
+    if (!slide) return null;
+    const offset = Number(slide.getAttribute("data-day-offset"));
+    return Number.isFinite(offset) ? offset : null;
+  };
+
+  const getFajrSlideForDayOffset = (offset) => {
+    const record = getDayRecordForOffset(offset);
+    if (!record) return null;
+    return findPrayerDeckCard(
+      makeDayKeyFromRecord(record),
+      "fajr",
+      PRAYER_CAROUSEL_PRIMARY,
+    );
+  };
+
+  const getPrayerDeckBoundarySlide = (which) => {
+    const offset =
+      which === "start" ? -PRAYER_DECK_DAY_RADIUS : PRAYER_DECK_DAY_RADIUS;
+    const prayerId = which === "start" ? "fajr" : "isha";
+    const record = getDayRecordForOffset(offset);
+    if (!record) return null;
+    return findPrayerDeckCard(
+      makeDayKeyFromRecord(record),
+      prayerId,
+      PRAYER_CAROUSEL_PRIMARY,
+    );
+  };
+
+  const getScrollLeftForSlide = (slide) => {
+    const viewport = getPrayerCarouselViewport();
+    const track = getPrayerCarouselTrack();
+    if (!viewport || !slide) return 0;
+
+    if (usesPrayerDeckLeadAlign()) {
+      const trackStyle = track ? getComputedStyle(track) : null;
+      const padLeft = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
+      return slide.offsetLeft - padLeft;
+    }
+
+    return (
+      slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2
+    );
+  };
+
+  const getPrayerCarouselScrollBounds = () => {
+    const viewport = getPrayerCarouselViewport();
+    const startSlide = getPrayerDeckBoundarySlide("start");
+    const endSlide = getPrayerDeckBoundarySlide("end");
+    if (!viewport || !startSlide || !endSlide) return null;
+
+    const viewportMax = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+
+    if (usesPrayerDeckLeadAlign()) {
+      const track = getPrayerCarouselTrack();
+      const trackStyle = track ? getComputedStyle(track) : null;
+      const padLeft = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
+      const min = startSlide.offsetLeft - padLeft;
+      let max = endSlide.offsetLeft + endSlide.offsetWidth - viewport.clientWidth;
+      max = Math.max(min, Math.min(max, viewportMax));
+      return { min: min, max: max };
+    }
+
+    const min = getScrollLeftForSlide(startSlide);
+    const max = getScrollLeftForSlide(endSlide);
+    return {
+      min: Math.max(0, Math.min(min, viewportMax)),
+      max: Math.max(0, Math.min(max, viewportMax)),
+    };
+  };
+
+  const scrollToPrayerDeckDayOffset = (targetOffset, behavior) => {
+    const viewport = getPrayerCarouselViewport();
+    const bounds = getPrayerCarouselScrollBounds();
+    if (!viewport || !bounds) return;
+
+    let targetScroll;
+    if (usesPrayerDeckLeadAlign()) {
+      if (targetOffset <= -PRAYER_DECK_DAY_RADIUS) {
+        targetScroll = bounds.min;
+      } else if (targetOffset >= PRAYER_DECK_DAY_RADIUS) {
+        targetScroll = bounds.max;
+      } else {
+        const slide = getFajrSlideForDayOffset(targetOffset);
+        if (!slide) return;
+        const track = getPrayerCarouselTrack();
+        const trackStyle = track ? getComputedStyle(track) : null;
+        const padLeft = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
+        targetScroll = slide.offsetLeft - padLeft;
+        targetScroll = Math.max(bounds.min, Math.min(targetScroll, bounds.max));
+      }
+    } else {
+      const slide =
+        targetOffset <= -PRAYER_DECK_DAY_RADIUS
+          ? getPrayerDeckBoundarySlide("start")
+          : targetOffset >= PRAYER_DECK_DAY_RADIUS
+            ? getPrayerDeckBoundarySlide("end")
+            : getFajrSlideForDayOffset(targetOffset);
+      if (!slide) return;
+      targetScroll = getScrollLeftForSlide(slide);
+      targetScroll = Math.max(bounds.min, Math.min(targetScroll, bounds.max));
+    }
+
+    if (behavior === "auto") {
+      viewport.scrollLeft = targetScroll;
+    } else {
+      viewport.scrollTo({
+        left: targetScroll,
+        behavior: behavior || "smooth",
+      });
+    }
+
+    requestAnimationFrame(function () {
+      updateCarouselCenteredSlide();
+      updatePrayerCarouselToolbarLabel();
+      updatePrayerDeckNavButtons();
+    });
+  };
+
+  const clampPrayerCarouselScroll = () => {
+    const viewport = getPrayerCarouselViewport();
+    const bounds = getPrayerCarouselScrollBounds();
+    if (!viewport || !bounds) return;
+
+    const left = Math.max(bounds.min, Math.min(viewport.scrollLeft, bounds.max));
+    if (left !== viewport.scrollLeft) {
+      viewport.scrollLeft = left;
+    }
+    updatePrayerDeckNavButtons();
+  };
+
+  const getDayOffsetToolbarLabel = (offset) => {
+    if (offset === 0) return "Today";
+    if (offset === 1) return "Tomorrow";
+    if (offset === -1) return "Yesterday";
+    return "";
+  };
+
+  const isPrayerDeckDayOffsetInRange = (offset) =>
+    offset >= -PRAYER_DECK_DAY_RADIUS && offset <= PRAYER_DECK_DAY_RADIUS;
+
+  const getPrayerDeckViewDayOffset = () => {
+    const viewport = getPrayerCarouselViewport();
+    const bounds = getPrayerCarouselScrollBounds();
+    if (!viewport || !bounds) {
+      return getDayOffsetFromSlide(getPrayerCarouselNavSlide());
+    }
+
+    const scrollEpsilon = 4;
+    if (viewport.scrollLeft <= bounds.min + scrollEpsilon) {
+      return -PRAYER_DECK_DAY_RADIUS;
+    }
+    if (viewport.scrollLeft >= bounds.max - scrollEpsilon) {
+      return PRAYER_DECK_DAY_RADIUS;
+    }
+    return 0;
+  };
+
+  const updatePrayerDeckNavButtons = () => {
+    const prevBtn = document.querySelector("[data-prayer-day-prev]");
+    const nextBtn = document.querySelector("[data-prayer-day-next]");
+    if (!prevBtn || !nextBtn) return;
+
+    const navSlide = getPrayerCarouselNavSlide();
+    const currentOffset = getDayOffsetFromSlide(navSlide);
+
+    if (usesPrayerDeckLeadAlign()) {
+      const viewOffset = getPrayerDeckViewDayOffset();
+      const atMin = viewOffset <= -PRAYER_DECK_DAY_RADIUS;
+      const atMax = viewOffset >= PRAYER_DECK_DAY_RADIUS;
+      prevBtn.disabled = atMin;
+      nextBtn.disabled = atMax;
+      prevBtn.setAttribute("aria-disabled", atMin ? "true" : "false");
+      nextBtn.setAttribute("aria-disabled", atMax ? "true" : "false");
+      return;
+    }
+
+    const viewport = getPrayerCarouselViewport();
+    const bounds = getPrayerCarouselScrollBounds();
+    const scrollEpsilon = 2;
+    let atMin = false;
+    let atMax = false;
+
+    if (bounds && viewport) {
+      atMin = viewport.scrollLeft <= bounds.min + scrollEpsilon;
+      atMax = viewport.scrollLeft >= bounds.max - scrollEpsilon;
+    } else if (currentOffset !== null) {
+      atMin = currentOffset <= -PRAYER_DECK_DAY_RADIUS;
+      atMax = currentOffset >= PRAYER_DECK_DAY_RADIUS;
+    }
+
+    prevBtn.disabled = atMin;
+    nextBtn.disabled = atMax;
+    prevBtn.setAttribute("aria-disabled", atMin ? "true" : "false");
+    nextBtn.setAttribute("aria-disabled", atMax ? "true" : "false");
+  };
+
+  const updatePrayerDeckNavAriaLabels = () => {
+    const prevBtn = document.querySelector("[data-prayer-day-prev]");
+    const nextBtn = document.querySelector("[data-prayer-day-next]");
+    if (!prevBtn || !nextBtn) return;
+    if (usesPrayerDeckLeadAlign()) {
+      prevBtn.setAttribute("aria-label", "Previous day");
+      nextBtn.setAttribute("aria-label", "Next day");
+    } else {
+      prevBtn.setAttribute("aria-label", "Previous prayer");
+      nextBtn.setAttribute("aria-label", "Next prayer");
+    }
+  };
+
   const updateCarouselCenteredSlide = () => {
     const track = getPrayerCarouselTrack();
     if (!track) return;
@@ -1844,8 +2089,11 @@
         slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2;
     }
 
-    const maxScroll = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
-    const left = Math.max(0, Math.min(targetScroll, maxScroll));
+    const bounds = getPrayerCarouselScrollBounds();
+    const viewportMax = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    const minScroll = bounds ? bounds.min : 0;
+    const maxScroll = bounds ? bounds.max : viewportMax;
+    const left = Math.max(minScroll, Math.min(targetScroll, maxScroll));
 
     if (behavior === "auto") {
       viewport.scrollLeft = left;
@@ -1876,44 +2124,42 @@
     if (!slide) return;
 
     centerPrayerCarouselOnSlide(slide, behavior || "smooth");
-    requestAnimationFrame(updateCarouselCenteredSlide);
-  };
-
-  const schedulePrayerCarouselNormalize = () => {
-    if (prayerCarouselNormalizeTimer) {
-      clearTimeout(prayerCarouselNormalizeTimer);
-    }
-    prayerCarouselNormalizeTimer = setTimeout(normalizePrayerCarouselScroll, 90);
-  };
-
-  const normalizePrayerCarouselScroll = () => {
-    if (prayerCarouselJumping) return;
-
-    const viewport = getPrayerCarouselViewport();
-    const loopWidth = getPrayerCarouselLoopWidth();
-    const visible = getVisiblePrayerCarouselSlide();
-    if (!viewport || !loopWidth || !visible) return;
-
-    const repeat = Number(visible.getAttribute("data-carousel-repeat"));
-    if (Number.isNaN(repeat)) return;
-
-    let jumpBy = 0;
-    if (repeat <= 0) {
-      jumpBy = loopWidth;
-    } else if (repeat >= PRAYER_CAROUSEL_REPEAT - 1) {
-      jumpBy = -loopWidth;
-    }
-    if (!jumpBy) return;
-
-    prayerCarouselJumping = true;
-    viewport.scrollLeft += jumpBy;
     requestAnimationFrame(function () {
-      prayerCarouselJumping = false;
       updateCarouselCenteredSlide();
+      updatePrayerDeckNavButtons();
     });
   };
 
+  const schedulePrayerCarouselClamp = () => {
+    if (prayerCarouselNormalizeTimer) {
+      clearTimeout(prayerCarouselNormalizeTimer);
+    }
+    prayerCarouselNormalizeTimer = setTimeout(function () {
+      clampPrayerCarouselScroll();
+      updateCarouselCenteredSlide();
+    }, 90);
+  };
+
+  const normalizePrayerCarouselScroll = () => {
+    clampPrayerCarouselScroll();
+  };
+
+  const scrollPrayerCarouselByDay = (direction) => {
+    const viewOffset = getPrayerDeckViewDayOffset();
+    if (viewOffset === null) return;
+
+    const targetOffset = viewOffset + direction;
+    if (!isPrayerDeckDayOffsetInRange(targetOffset)) return;
+
+    scrollToPrayerDeckDayOffset(targetOffset, "smooth");
+  };
+
   const scrollPrayerCarouselBy = (direction) => {
+    if (usesPrayerDeckLeadAlign()) {
+      scrollPrayerCarouselByDay(direction);
+      return;
+    }
+
     const visible = getPrayerCarouselNavSlide();
     if (!visible) return;
 
@@ -1932,9 +2178,16 @@
         : Math.min(slides.length - 1, index + 1);
     if (nextIndex === index) return;
 
-    centerPrayerCarouselOnSlide(slides[nextIndex], "smooth");
+    const nextSlide = slides[nextIndex];
+    const nextOffset = getDayOffsetFromSlide(nextSlide);
+    if (nextOffset !== null && !isPrayerDeckDayOffsetInRange(nextOffset)) return;
+
+    centerPrayerCarouselOnSlide(nextSlide, "smooth");
     requestAnimationFrame(updateCarouselCenteredSlide);
-    window.setTimeout(updatePrayerCarouselToolbarLabel, 180);
+    window.setTimeout(function () {
+      updatePrayerCarouselToolbarLabel();
+      updatePrayerDeckNavButtons();
+    }, 180);
   };
 
   const initHomePrayerDeckControls = () => {
@@ -1952,9 +2205,10 @@
         }
         prayerCarouselScrollTimer = setTimeout(function () {
           prayerCarouselUserScrolling = false;
-          schedulePrayerCarouselNormalize();
+          schedulePrayerCarouselClamp();
           updatePrayerCarouselToolbarLabel();
           updateCarouselCenteredSlide();
+          updatePrayerDeckNavButtons();
         }, 120);
       },
       { passive: true },
@@ -1966,7 +2220,7 @@
 
     if (todayBtn) {
       todayBtn.addEventListener("click", function () {
-        centerPrayerCarouselOnSlot(null, null, "smooth");
+        scrollToPrayerDeckDayOffset(0, "smooth");
       });
     }
     if (prevBtn) {
@@ -1983,12 +2237,20 @@
     window.addEventListener(
       "resize",
       function () {
+        updatePrayerDeckNavAriaLabels();
         if (!prayerCarouselUserScrolling) {
-          centerPrayerCarouselOnSlot(null, null, "auto");
+          scrollToPrayerDeckDayOffset(
+            usesPrayerDeckLeadAlign() ? getPrayerDeckViewDayOffset() : 0,
+            "auto",
+          );
+          updatePrayerDeckNavButtons();
         }
       },
       { passive: true },
     );
+
+    updatePrayerDeckNavAriaLabels();
+    updatePrayerDeckNavButtons();
   };
 
   const updatePrayerCarouselToolbarLabel = () => {
@@ -1998,13 +2260,25 @@
     const visible = getPrayerCarouselNavSlide();
     if (!visible) return;
 
-    const nameEl = visible.querySelector(".home-hero-prayer-name");
     const dateEl = visible.querySelector(".home-prayer-carousel-date");
     const offset = Number(visible.getAttribute("data-day-offset"));
-    let offsetLabel = "";
-    if (offset === 0) offsetLabel = "Today";
-    else if (offset === 1) offsetLabel = "Tomorrow";
-    else if (offset === -1) offsetLabel = "Yesterday";
+    const offsetLabel = getDayOffsetToolbarLabel(offset);
+
+    if (usesPrayerDeckLeadAlign()) {
+      const viewOffset = getPrayerDeckViewDayOffset();
+      const offsetLabel = getDayOffsetToolbarLabel(viewOffset);
+      const dateRecord = getDayRecordForOffset(viewOffset);
+      const dateText = dateRecord
+        ? formatGregorianFromRecord(dateRecord, "medium")
+        : "";
+      label.textContent =
+        (offsetLabel ? offsetLabel : "") +
+        (dateText ? (offsetLabel ? " · " : "") + dateText : "");
+      updatePrayerDeckNavButtons();
+      return;
+    }
+
+    const nameEl = visible.querySelector(".home-hero-prayer-name");
     label.textContent =
       (nameEl ? nameEl.textContent.trim() : "") +
       (dateEl && dateEl.textContent
@@ -2012,6 +2286,7 @@
           (offsetLabel ? offsetLabel + " · " : "") +
           dateEl.textContent.trim()
         : "");
+    updatePrayerDeckNavButtons();
   };
 
   const clearPrayerHighlights = () => {
@@ -2118,8 +2393,10 @@
     }
 
     if (prayerCarouselBuilt && !prayerCarouselUserScrolling) {
-      centerPrayerCarouselOnSlot(null, null, "auto");
-      updateCarouselCenteredSlide();
+      if (!usesPrayerDeckLeadAlign()) {
+        centerPrayerCarouselOnSlot(null, null, "auto");
+        updateCarouselCenteredSlide();
+      }
     }
 
     updatePrayerCarouselToolbarLabel();
@@ -2705,11 +2982,13 @@
       showCelebrationSlot(dynamicTimeOneCircle);
       showCelebrationSlot(dynamicTimeTwoCircle);
     } else {
-      titleElement.innerHTML = "السلام عليكم";
-      messageElement.innerHTML =
-        "Peace be upon you — welcome to Kerry Islamic Cultural Centre, Tralee.";
-      showCelebrationSlot(titleElement);
-      showCelebrationSlot(messageElement);
+      titleElement.innerHTML = "";
+      messageElement.innerHTML = "";
+    }
+
+    const welcomeBlock = document.querySelector(".home-hero-welcome");
+    if (welcomeBlock) {
+      welcomeBlock.hidden = !(isRamadan() || isEid());
     }
   };
 
@@ -2851,7 +3130,7 @@
     {
       category: "functional",
       type: "localStorage",
-      name: "masjidProgrammes_programme_active_true_v1",
+      name: "masjidProgrammes_programme_active_true_v2",
       duration: "7 days",
       purpose: "Caches weekly programme listings.",
     },
@@ -2864,10 +3143,10 @@
     },
     {
       category: "functional",
-      type: "localStorage",
+      type: "sessionStorage",
       name: "kicc-breaking-dismiss-*",
-      duration: "Until cleared",
-      purpose: "Remembers dismissed urgent announcements.",
+      duration: "Browser session",
+      purpose: "Remembers dismissed urgent announcements for this visit.",
     },
     {
       category: "functional",
@@ -2974,7 +3253,8 @@
   let latestAnnouncements = [];
   let latestProgrammeRecordings = [];
   let cookieRegistryRendered = false;
-  let cookiePrefsSavedTimer = null;
+  let cookiePrefsFeedbackTimer = null;
+  let cookiePrefsClearButtonTimer = null;
 
   const hasCookieConsent = () => hasConsentChoice();
 
@@ -3062,16 +3342,18 @@
   };
 
   const clearBreakingDismissKeys = () => {
-    try {
-      for (let i = localStorage.length - 1; i >= 0; i -= 1) {
-        const key = localStorage.key(i);
-        if (key && key.indexOf(BREAKING_DISMISS_PREFIX) === 0) {
-          localStorage.removeItem(key);
+    [sessionStorage, localStorage].forEach(function (storage) {
+      try {
+        for (let i = storage.length - 1; i >= 0; i -= 1) {
+          const key = storage.key(i);
+          if (key && key.indexOf(BREAKING_DISMISS_PREFIX) === 0) {
+            storage.removeItem(key);
+          }
         }
+      } catch {
+        // ignore storage errors
       }
-    } catch {
-      // ignore storage errors
-    }
+    });
   };
 
   const clearFunctionalSessionKeys = () => {
@@ -3322,15 +3604,57 @@
     el.textContent = describeConsentPrefs(getConsentPrefs());
   };
 
+  const COOKIE_PREFS_CLEARED_MESSAGE =
+    "Optional stored data cleared. Your choices are set to strictly necessary only.";
+
   const showCookiePrefsSavedFeedback = () => {
     const el = document.getElementById("cookie-prefs-status");
     if (!el || !hasConsentChoice()) return;
     el.textContent = describeConsentPrefs(getConsentPrefs()) + " \u00b7 Saved";
-    if (cookiePrefsSavedTimer) window.clearTimeout(cookiePrefsSavedTimer);
-    cookiePrefsSavedTimer = window.setTimeout(function () {
-      cookiePrefsSavedTimer = null;
+    if (cookiePrefsFeedbackTimer) window.clearTimeout(cookiePrefsFeedbackTimer);
+    cookiePrefsFeedbackTimer = window.setTimeout(function () {
+      cookiePrefsFeedbackTimer = null;
       updateCookiePrefsStatus();
     }, 2200);
+  };
+
+  const showCookiePrefsClearedFeedback = () => {
+    const topStatus = document.getElementById("cookie-prefs-status");
+    const clearStatus = document.getElementById("cookie-prefs-clear-status");
+    const clearBtn = document.getElementById("cookie-prefs-clear");
+
+    if (topStatus) topStatus.textContent = COOKIE_PREFS_CLEARED_MESSAGE;
+    if (clearStatus) {
+      clearStatus.textContent = COOKIE_PREFS_CLEARED_MESSAGE;
+      clearStatus.hidden = false;
+    }
+
+    if (clearBtn) {
+      if (!clearBtn.dataset.defaultHtml) {
+        clearBtn.dataset.defaultHtml = clearBtn.innerHTML;
+      }
+      clearBtn.classList.add("is-done");
+      clearBtn.innerHTML =
+        '<span>Cleared</span><i class="fas fa-check" aria-hidden="true"></i>';
+      if (cookiePrefsClearButtonTimer) {
+        window.clearTimeout(cookiePrefsClearButtonTimer);
+      }
+      cookiePrefsClearButtonTimer = window.setTimeout(function () {
+        cookiePrefsClearButtonTimer = null;
+        clearBtn.classList.remove("is-done");
+        clearBtn.innerHTML = clearBtn.dataset.defaultHtml;
+      }, 2000);
+    }
+
+    if (cookiePrefsFeedbackTimer) window.clearTimeout(cookiePrefsFeedbackTimer);
+    cookiePrefsFeedbackTimer = window.setTimeout(function () {
+      cookiePrefsFeedbackTimer = null;
+      updateCookiePrefsStatus();
+      if (clearStatus) {
+        clearStatus.textContent = "";
+        clearStatus.hidden = true;
+      }
+    }, 3500);
   };
 
   const handleConsentToggleAutoSave = () => {
@@ -3494,7 +3818,7 @@
     clearAnalyticsData();
     clearThirdPartyData();
     saveConsentPrefs(Object.assign({}, CONSENT_DEFAULTS));
-    showCookiePrefsSavedFeedback();
+    showCookiePrefsClearedFeedback();
   };
 
   const bindConsentToggleAutoSave = () => {
@@ -4334,7 +4658,7 @@
     const key = getAnnouncementDismissKey(announcement);
     if (!key || !announcement) return false;
     try {
-      const stored = kiccStorageGet(localStorage, key);
+      const stored = kiccStorageGet(sessionStorage, key);
       if (stored === null || stored === "") return false;
       if (stored === "1") return false;
       const dismissedTs = Number(stored);
@@ -4350,7 +4674,7 @@
     if (!key || !announcement) return;
     try {
       const ts = getBreakingAnnouncementTimestamp(announcement) || Date.now();
-      kiccStorageSet(localStorage, key, String(ts));
+      kiccStorageSet(sessionStorage, key, String(ts));
     } catch {
       // ignore storage errors
     }
@@ -7893,7 +8217,7 @@
   const loadProgrammes = () => {
     // Weekly Programmes + recordings on activities page
     const PROGRAMMES_API_URL = CLOUD_RUN_APIS.programmes;
-    const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v1";
+    const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v2";
     var cachedJson = kiccTimedStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
     if (cachedJson) {
       try {
@@ -8371,7 +8695,7 @@
   const GOFUNDME_DONATE_URL = SITE_LINKS["gofundme-donate"].href;
   const SUMUP_DEVELOPER_WHATSAPP = "353833114171";
   const CAMPAIGNS_API_URL = CLOUD_RUN_APIS.campaigns;
-  const SUMUP_CHECKOUT_API_URL = FIREBASE_FUNCTIONS.createCheckout;
+  const SUMUP_CHECKOUT_API_URL = CLOUD_RUN_APIS.createCheckout;
   const SUMUP_SDK_URL =
     "https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js";
   const SUMUP_MIN_AMOUNT = 1;

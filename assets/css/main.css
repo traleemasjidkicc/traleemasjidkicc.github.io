@@ -3407,6 +3407,27 @@ html.cookie-consent-pending .cookie-consent,
 	color: var(--kicc-text-muted);
 }
 
+.cookie-preferences-clear-status {
+	margin: 0.65rem 0 0;
+	font-size: 0.86rem;
+	line-height: 1.5;
+	font-weight: 600;
+	color: var(--kicc-teal);
+}
+
+.cookie-consent-clear.is-done {
+	border-color: rgba(10, 138, 142, 0.35);
+	background: rgba(10, 138, 142, 0.1);
+	color: var(--kicc-teal-deep);
+	gap: 0.45rem;
+}
+
+.cookie-consent-clear.is-done:hover,
+.cookie-consent-clear.is-done:focus {
+	background: rgba(10, 138, 142, 0.14);
+	color: var(--kicc-teal-deep);
+}
+
 .cookie-prefs-inline-open {
 	color: inherit;
 	text-decoration: underline;
@@ -10176,6 +10197,22 @@ a:focus-visible .kicc-external-icon {
 		0 6px 16px rgba(13, 91, 94, 0.1);
 }
 
+.home-prayer-deck-btn:disabled,
+.home-prayer-deck-btn[aria-disabled="true"] {
+	opacity: 0.45;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+.home-prayer-deck-btn:disabled:hover,
+.home-prayer-deck-btn[aria-disabled="true"]:hover {
+	background: #fff;
+	border-color: rgba(13, 91, 94, 0.16);
+	transform: none;
+	box-shadow: none;
+}
+
 .home-prayer-deck-btn-today {
 	flex-shrink: 0;
 	background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
@@ -10325,6 +10362,7 @@ a:focus-visible .kicc-external-icon {
 	position: relative;
 	overflow-x: auto;
 	overflow-y: visible;
+	overscroll-behavior-x: contain;
 	-webkit-overflow-scrolling: touch;
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
@@ -10997,8 +11035,9 @@ a:focus-visible .kicc-external-icon {
 
 @media (min-width: 992px) {
 	.home-prayer-carousel-viewport {
-		--deck-visible: 6;
-		--deck-overlap: 0.4rem;
+		--deck-visible: 5;
+		--deck-overlap: 0.35rem;
+		scroll-snap-type: none;
 	}
 
 	.home-prayer-carousel-track {
@@ -11007,6 +11046,7 @@ a:focus-visible .kicc-external-icon {
 
 	.home-prayer-deck-card {
 		scroll-snap-align: start;
+		max-width: none;
 	}
 
 	.home-prayer-deck-card.is-current-prayer {
@@ -15196,6 +15236,14 @@ a:focus-visible .kicc-external-icon {
 	text-shadow: none;
 }
 
+.page-home .home-hero-v2 .home-hero-date-line {
+	margin-bottom: 1rem;
+}
+
+.page-home .home-hero-v2 .home-hero-welcome:not([hidden]) {
+	margin-bottom: 1rem;
+}
+
 .home-hero-date-sep {
 	margin: 0 0.45rem;
 	opacity: 0.75;
@@ -19018,21 +19066,6 @@ body.has-page-section-nav [id] {
 	font-size: 0.88rem;
 	font-weight: 800;
 	color: var(--kicc-teal-deep);
-}
-
-.page-prayer-times .prayer-times-jumuah-sunnah-credit {
-	margin: 0;
-	padding: 0.85rem 1.15rem 0.65rem;
-	border-top: 1px solid rgba(13, 91, 94, 0.08);
-	font-size: 0.78rem;
-	color: #64748b;
-	text-align: center;
-	line-height: 1.55;
-}
-
-.page-prayer-times .prayer-times-jumuah-sunnah-credit a {
-	color: var(--kicc-teal-deep);
-	font-weight: 700;
 }
 
 .page-prayer-times .prayer-times-jumuah-app-promo {

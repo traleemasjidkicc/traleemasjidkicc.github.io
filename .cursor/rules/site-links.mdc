@@ -17,7 +17,7 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 
 - **What it is:** Microsoft Form for a Kerry-wide Muslim contact database (salah timetables, masjid news by email).
 - **What it is not:** Madrasa enrolment or weekly programme signup.
-- **Canonical key:** `data-site-link="kerry-muslim-database"` — URL lives in `SITE_LINKS` in `scripts-*.js`.
+- **Canonical key:** `data-site-link="kerry-muslim-database"` — URL lives in `SITE_LINKS` in `scripts.js`.
 - **Madrasa enrolment:** WhatsApp only (`madrasa.html#ready-to-enrol`, `data-site-link="madrasa-whatsapp"`).
 
 ## Programmes page anchors (`activities.html`)
@@ -45,12 +45,11 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 ## External URLs in JS
 
 - Repeat off-site URLs once in `SITE_LINKS` (forms, Mixlr, GoFundMe, maps, WhatsApp madrasa).
-- Masjid content APIs: `CLOUD_RUN_APIS` (Google Cloud Run, `europe-west1`).
-- SumUp checkout only: `FIREBASE_FUNCTIONS.createCheckout` (Firebase Cloud Functions — **not** Cloud Run).
+- Masjid content APIs and SumUp checkout: `CLOUD_RUN_APIS` (Google Cloud Run, `europe-west1`).
 
 ## Adding a new public link
 
-1. Add entry to `SITE_LINKS` in `scripts-*.js`.
+1. Add entry to `SITE_LINKS` in `scripts.js`.
 2. Use `data-site-link="<key>"` on HTML anchors (keep a full `href` fallback for no-JS).
 3. Match label in nav and body copy; update section `id` if the heading changes.
 4. Update `README.md` / `AGENTS.md` if it is a new third-party service.

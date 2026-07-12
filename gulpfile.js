@@ -10,38 +10,35 @@ const bs = browserSync.create();
 const jsDir = 'assets/js/';
 const cssDir = 'assets/css/';
 const htmlFiles = '**/*.html';
-const hookFiles = ['pre-commit', 'post-commit'];
+const hookFiles = ['pre-commit'];
+const retiredHookFiles = ['post-commit'];
+const scriptsJsPath = path.join(jsDir, 'scripts.js');
+const mainCssPath = path.join(cssDir, 'main.css');
+const assetVersionPath = 'assets/asset-version.txt';
 const scriptTagPattern =
-    /<script defer type="text\/javascript" src="assets\/js\/scripts-\d+\.js"><\/script>/g;
+    /<script defer type="text\/javascript" src="assets\/js\/scripts\.js\?v=\d+"><\/script>/g;
 const mainCssLinkPattern =
-    /<link rel="stylesheet" href="assets\/css\/main(?:-\d+)?\.css">/g;
+    /<link rel="stylesheet" href="assets\/css\/main\.css\?v=\d+">/g;
 
-const getScriptsJsFile = () => {
-    const jsFiles = fs.readdirSync(jsDir).filter(file => /scripts-\d+\.js$/.test(file));
-    return jsFiles[0] ?? null;
+const readAssetVersion = () => {
+    if (!fs.existsSync(assetVersionPath)) {
+        return String(Date.now());
+    }
+
+    const version = fs.readFileSync(assetVersionPath, 'utf8').trim();
+    return version || String(Date.now());
 };
 
-const getMainCssFile = () => {
-    const versionedCssFiles = fs.readdirSync(cssDir).filter(file => /^main-\d+\.css$/.test(file));
-    if (versionedCssFiles[0]) {
-        return versionedCssFiles[0];
-    }
-
-    if (fs.existsSync(path.join(cssDir, 'main.css'))) {
-        return 'main.css';
-    }
-
-    return null;
+const writeAssetVersion = (version) => {
+    fs.writeFileSync(assetVersionPath, `${version}\n`);
 };
 
 const hasJsChanged = () => {
-    const jsFile = getScriptsJsFile();
-    if (!jsFile) {
+    if (!fs.existsSync(scriptsJsPath)) {
         return false;
     }
 
-    const jsPath = path.join(jsDir, jsFile);
-    const status = execSync(`git status --porcelain -- "${jsPath}"`, {
+    const status = execSync(`git status --porcelain -- "${scriptsJsPath}"`, {
         encoding: 'utf8',
     }).trim();
 
@@ -49,40 +46,24 @@ const hasJsChanged = () => {
 };
 
 const hasCssChanged = () => {
-    const cssFile = getMainCssFile();
-    if (!cssFile) {
+    if (!fs.existsSync(mainCssPath)) {
         return false;
     }
 
-    const cssPath = path.join(cssDir, cssFile);
-    const status = execSync(`git status --porcelain -- "${cssPath}"`, {
+    const status = execSync(`git status --porcelain -- "${mainCssPath}"`, {
         encoding: 'utf8',
     }).trim();
 
     return status.length > 0;
 };
 
-const updateHtmlScriptRefs = (fileName, { forceWrite = false } = {}) => {
-    return gulp.src(htmlFiles, { allowEmpty: true })
-        .pipe(replace(
-            scriptTagPattern,
-            `<script defer type="text/javascript" src="assets/js/${fileName}"></script>`
-        ))
-        .pipe(through2.obj((file, _, cb) => {
-            if (forceWrite && file.isBuffer()) {
-                fs.writeFileSync(file.path, file.contents);
-            }
-            cb(null, file);
-        }))
-        .pipe(gulp.dest(file => file.base));
-};
+const updateHtmlAssetVersions = (version, { forceWrite = false } = {}) => {
+    const scriptTag = `<script defer type="text/javascript" src="assets/js/scripts.js?v=${version}"></script>`;
+    const cssLink = `<link rel="stylesheet" href="assets/css/main.css?v=${version}">`;
 
-const updateHtmlCssRefs = (fileName, { forceWrite = false } = {}) => {
     return gulp.src(htmlFiles, { allowEmpty: true })
-        .pipe(replace(
-            mainCssLinkPattern,
-            `<link rel="stylesheet" href="assets/css/${fileName}">`
-        ))
+        .pipe(replace(scriptTagPattern, scriptTag))
+        .pipe(replace(mainCssLinkPattern, cssLink))
         .pipe(through2.obj((file, _, cb) => {
             if (forceWrite && file.isBuffer()) {
                 fs.writeFileSync(file.path, file.contents);
@@ -119,103 +100,42 @@ gulp.task('setup-hooks', function (done) {
         console.log(`Installed: ${target}`);
     }
 
+    for (const hook of retiredHookFiles) {
+        const target = path.join(gitHooksDir, hook);
+        if (fs.existsSync(target)) {
+            fs.unlinkSync(target);
+            console.log(`Removed retired hook: ${target}`);
+        }
+    }
+
     console.log('Git hooks ready. Commits will run yarn precommit automatically.');
     done();
 });
 
-// Task to rename the JS file and update the HTML files
-gulp.task('rename-js', function (done) {
-    const jsFile = getScriptsJsFile();
+// Bump ?v= in HTML and asset-version.txt (stable filenames — no file rename)
+gulp.task('bump-asset-version', function (done) {
+    const version = String(Date.now());
+    writeAssetVersion(version);
+    console.log(`Bumped asset version to ${version}`);
 
-    if (!jsFile) {
-        console.log('No matching JS file found.');
-        done();
-        return;
-    }
-
-    const newFileName = `scripts-${Date.now()}.js`;
-
-    fs.renameSync(path.join(jsDir, jsFile), path.join(jsDir, newFileName));
-    console.log(`Renamed: ${jsFile} to ${newFileName}`);
-
-    updateHtmlScriptRefs(newFileName, { forceWrite: true })
+    updateHtmlAssetVersions(version, { forceWrite: true })
         .on('end', done);
 });
 
-// Task to rename the main CSS file and update the HTML files
-gulp.task('rename-css', function (done) {
-    const cssFile = getMainCssFile();
-
-    if (!cssFile) {
-        console.log('No matching CSS file found.');
-        done();
-        return;
-    }
-
-    const newFileName = `main-${Date.now()}.css`;
-
-    fs.renameSync(path.join(cssDir, cssFile), path.join(cssDir, newFileName));
-    console.log(`Renamed: ${cssFile} to ${newFileName}`);
-
-    updateHtmlCssRefs(newFileName, { forceWrite: true })
-        .on('end', done);
-});
-
-// Rename JS and update HTML only when the scripts file has changed
-gulp.task('rename-js-if-changed', function (done) {
-    if (!hasJsChanged()) {
-        console.log('No JS changes detected — skipping rename and HTML update.');
-        done();
-        return;
-    }
-
-    gulp.series('rename-js')(done);
-});
-
-// Rename CSS and update HTML only when the main CSS file has changed
-gulp.task('rename-css-if-changed', function (done) {
-    if (!hasCssChanged()) {
-        console.log('No CSS changes detected — skipping rename and HTML update.');
-        done();
-        return;
-    }
-
-    gulp.series('rename-css')(done);
-});
-
-// Task to update the HTML files (sync refs to current JS/CSS filenames)
+// Task to update the HTML files (sync ?v= to asset-version.txt)
 gulp.task('update-html', function (done) {
-    const jsFile = getScriptsJsFile();
-    const cssFile = getMainCssFile();
-
-    if (!jsFile && !cssFile) {
-        console.log('No matching JS or CSS files found for update.');
+    if (!fs.existsSync(scriptsJsPath) && !fs.existsSync(mainCssPath)) {
+        console.log('No scripts.js or main.css found for update.');
         done();
         return;
     }
 
-    let stream = gulp.src(htmlFiles, { allowEmpty: true });
-
-    if (jsFile) {
-        stream = stream.pipe(replace(
-            scriptTagPattern,
-            `<script defer type="text/javascript" src="assets/js/${jsFile}"></script>`
-        ));
-    }
-
-    if (cssFile) {
-        stream = stream.pipe(replace(
-            mainCssLinkPattern,
-            `<link rel="stylesheet" href="assets/css/${cssFile}">`
-        ));
-    }
-
-    stream
-        .pipe(gulp.dest(file => file.base))
+    const version = readAssetVersion();
+    updateHtmlAssetVersions(version)
         .on('end', done);
 });
 
-// Pre-commit: cache-bust JS/CSS and bump version when either asset changed
+// Pre-commit: bump ?v= and package version when JS/CSS changed
 gulp.task('precommit', function (done) {
     const jsChanged = hasJsChanged();
     const cssChanged = hasCssChanged();
@@ -226,15 +146,7 @@ gulp.task('precommit', function (done) {
         return;
     }
 
-    const renameTasks = [];
-    if (jsChanged) {
-        renameTasks.push('rename-js');
-    }
-    if (cssChanged) {
-        renameTasks.push('rename-css');
-    }
-
-    gulp.series(...renameTasks)(function (err) {
+    gulp.series('bump-asset-version')(function (err) {
         if (err) {
             done(err);
             return;
@@ -259,7 +171,7 @@ gulp.task('serve', function () {
         },
         middleware: [
             (req, res, next) => {
-                if (/\.(js|css)$/.test(req.url)) {
+                if (/\.(js|css|html)$/.test(req.url.split('?')[0])) {
                     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
                 }
                 next();

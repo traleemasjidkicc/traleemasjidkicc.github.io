@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Masjid). Built with vanilla HTML/CSS/JS, Bootstrap 4.3, Gulp + BrowserSync for local dev, automated JS/CSS versioning on commit, and Playwright e2e tests.
+Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Masjid). Built with vanilla HTML/CSS/JS, Bootstrap 4.3, Gulp + BrowserSync for local dev, query-string asset versioning (`?v=`) on commit, and Playwright e2e tests.
 
 **Live site:** https://traleemasjidkicc.ie
 
@@ -12,18 +12,18 @@ Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Masjid). B
 
 ### Asset Versioning Strategy
 
-**Critical workflow**: JavaScript and main CSS use timestamp-based versioning to prevent browser caching issues.
+**Critical workflow**: JavaScript and main CSS use stable paths with a `?v=` query parameter to prevent browser caching issues.
 
-- JS: `<script defer type="text/javascript" src="assets/js/scripts-{timestamp}.js"></script>`
-- Main CSS: `<link rel="stylesheet" href="assets/css/main-{timestamp}.css">`
-- Before commits, `yarn precommit` (`gulp precommit`) renames changed assets and updates HTML:
-  1. Generates new timestamp filename(s) for changed JS and/or main CSS
-  2. Renames the physical file(s) in `assets/js/` and/or `assets/css/`
-  3. Updates all HTML files with the new reference(s)
-  4. Bumps `package.json` patch version (once, if either asset changed)
-- `post-commit` hook amends the commit to include staged hook output
-- **When modifying JS or main CSS**: Always run `yarn start` to preview changes, then commit naturally — hooks handle versioning
-- **When modifying HTML**: Manual edits work fine; hooks only update script/stylesheet references during commits
+- JS: `<script defer type="text/javascript" src="assets/js/scripts.js?v={timestamp}"></script>`
+- Main CSS: `<link rel="stylesheet" href="assets/css/main.css?v={timestamp}">`
+- Version source: `assets/asset-version.txt` (written by pre-commit hook)
+- Before commits, `yarn precommit` (`gulp precommit`) bumps cache bust when assets changed:
+  1. Sets new `?v=` timestamp in all HTML files
+  2. Writes `assets/asset-version.txt`
+  3. Bumps `package.json` patch version (once, if either asset changed)
+- `pre-commit` hook stages hook output into the commit
+- **When modifying JS or main CSS**: Edit `scripts.js` / `main.css` in place; `yarn start` hot-reloads without HTML changes
+- **When modifying HTML**: Manual edits work fine; hooks only bump `?v=` during commits when JS/CSS changed
 
 ### Build & Development Workflow
 
@@ -31,8 +31,8 @@ Static GitHub Pages website for Kerry Islamic Cultural Centre (Tralee Masjid). B
 yarn ci              # Clean install with --immutable (Yarn 4), then starts dev server
 yarn verify          # Verify install integrity (--immutable --check-cache)
 yarn start           # Serve locally on http://localhost:3000 with live reload (BrowserSync)
-yarn setup-hooks     # Install pre-commit / post-commit hooks
-yarn precommit       # Renames changed JS/CSS + bumps version when scripts-*.js or main*.css changed
+yarn setup-hooks     # Install pre-commit hook
+yarn precommit       # Bumps ?v= when scripts.js or main.css changed
 yarn test:e2e        # Playwright tests (requires yarn start running locally)
 yarn test:e2e:headed # Headed browser run
 yarn test:e2e:ui     # Playwright UI mode
@@ -43,7 +43,7 @@ yarn test:e2e:ui     # Playwright UI mode
 ```
 assets/
   ├── css/
-  │   └── main-*.css      # Versioned: layout, theme, motion, campaign, prayer-times, page sections
+  │   └── main.css          # Layout, theme, motion, campaign, prayer-times, page sections
   ├── images/
   │   ├── brand/          # Logo, Bismillah, GoFundMe QR
   │   ├── backgrounds/    # Hero and section backgrounds
@@ -52,7 +52,7 @@ assets/
   │   ├── team/           # Staff/volunteer photos
   │   └── ui/             # UI elements (e.g. newsletter signup)
   └── js/
-      └── scripts-*.js    # Versioned main app logic (~11,400 lines)
+      └── scripts.js        # Main app logic (~11,400 lines)
 
 index.html, about.html, activities.html, madrasa.html,
 projects.html, contact.html, prayer-times.html
@@ -87,7 +87,7 @@ AGENTS.md               # Primary AI agent instructions
 
 ## Critical JavaScript Functionality
 
-The main script (`assets/js/scripts-*.js`) handles:
+The main script (`assets/js/scripts.js`) handles:
 
 1. **Prayer times**: Nav salah panel, homepage prayer deck, full `prayer-times.html` page, monthly PDF URL, iqamah + Jumuah
 2. **Ramadan/Eid detection**: `isRamadan()` / `isEid()` for dynamic celebration banner
@@ -95,7 +95,7 @@ The main script (`assets/js/scripts-*.js`) handles:
 4. **Programmes**: Homepage preview + activities page table and weekly programme cards
 5. **Mixlr events**: Live stream status and upcoming events
 6. **Hadith**: Daily random hadith with fallback content
-7. **Donations**: GoFundMe progress widgets, SumUp checkout (Firebase `createCheckout`)
+7. **Donations**: GoFundMe progress widgets, SumUp checkout (Cloud Run `createCheckout`)
 8. **Global UI**: Mobile nav, section nav dock, cookie/consent management, consent-gated map embeds, WhatsApp float, BaguetteBox gallery, print timetable
 
 **Init timing**:
@@ -133,7 +133,7 @@ When adding a new public page, update navigation, footer, and `sitemap.xml`.
 - BaguetteBox 1.10.0 for image galleries (`.grid-gallery`)
 - js-cookie 3.0.1 for cookie consent and modal preferences
 - GoFundMe embed script on homepage and campaign page
-- Custom CSS in versioned `main-*.css` extends Bootstrap defaults
+- Custom CSS in `main.css` extends Bootstrap defaults
 - Nav link to `projects.html` is labelled **New Masjid** (not "Projects")
 
 ### External Dependencies
@@ -146,8 +146,8 @@ When adding a new public page, update navigation, footer, and `sitemap.xml`.
 ### Adding Features
 
 1. **Static content changes** (HTML): Edit directly, commit as usual; keep SEO head tags unique per page
-2. **Styling changes** (CSS): Edit `main-*.css` in place, test with `yarn start`
-3. **JavaScript logic**: Edit `assets/js/scripts-*.js`, test with `yarn start`, commit naturally
+2. **Styling changes** (CSS): Edit `main.css` in place, test with `yarn start`
+3. **JavaScript logic**: Edit `assets/js/scripts.js`, test with `yarn start`, commit naturally
 4. **Campaign page**: Use existing `campaign-*` CSS classes; match patterns in `projects.html`
 5. **Prayer times page**: Use `prayer-times-*` and `data-prayer-*` attributes; extend `initPrayerTimesPage()`
 
@@ -163,12 +163,12 @@ When adding a new public page, update navigation, footer, and `sitemap.xml`.
 - BrowserSync auto-reloads on file changes
 - E2E: `yarn start` then `yarn test:e2e` (or CI runs BrowserSync automatically)
 - Check network requests (Cloud Run APIs, Mixlr) in DevTools
-- Hard refresh (Cmd+Shift+R) if JS changes don't appear before commit
+- Hard refresh (Cmd+Shift+R) only if you are not using `yarn start` and the browser cached an old `?v=`
 
 ## Common Pitfalls
 
-1. **JS not reloading**: Clear browser cache or hard refresh; commit hook renames file on commit
-2. **Script/CSS reference mismatch**: Hooks fix HTML refs — never manually edit versioned filenames in HTML
+1. **JS not reloading**: Use `yarn start` (BrowserSync sends `no-store`); commit bumps `?v=` for production cache bust
+2. **Script/CSS reference mismatch**: Hooks bump `?v=` — never manually edit version params in HTML
 3. **API failures**: Check localStorage fallback in DevTools Application tab
 4. **Ramadan/Eid dates**: Must be updated annually in `isRamadan()` / `isEid()`
 5. **E2E without server**: `pretest:e2e` fails if port 3000 is not serving the site
@@ -178,8 +178,8 @@ When adding a new public page, update navigation, footer, and `sitemap.xml`.
 - [gulpfile.js](gulpfile.js) — Asset versioning, watch/serve logic
 - [package.json](package.json) — Scripts, dependencies, version source
 - [playwright.config.js](playwright.config.js) — E2E configuration
-- [assets/js/scripts-*.js](assets/js/) — Main app logic
-- [assets/css/main-*.css](assets/css/) — All styles
+- [assets/js/scripts.js](assets/js/) — Main app logic
+- [assets/css/main.css](assets/css/) — All styles
 - [index.html](index.html) — Homepage structure and CDN references
 - [prayer-times.html](prayer-times.html) — Salah timetable page
 - [projects.html](projects.html) — New Masjid donation campaign page

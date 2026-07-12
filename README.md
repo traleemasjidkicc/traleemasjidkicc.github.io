@@ -127,7 +127,7 @@ Error pages use **root-relative** asset and link paths (`/assets/...`, `/contact
 yarn build:error-pages
 ```
 
-Generator: [`scripts/build-error-pages.js`](scripts/build-error-pages.js). Styles: `.page-error` / `.error-*` in `assets/css/main-*.css`.
+Generator: [`scripts/build-error-pages.js`](scripts/build-error-pages.js). Styles: `.page-error` / `.error-*` in `assets/css/main.css`.
 
 ---
 
@@ -136,8 +136,8 @@ Generator: [`scripts/build-error-pages.js`](scripts/build-error-pages.js). Style
 | Layer | Technology |
 |-------|------------|
 | **Markup** | Static HTML5, `lang="en-GB"`, Bootstrap 4.3 grid |
-| **Styles** | Single versioned CSS file (`main-{timestamp}.css`) — layout, theme, motion, page sections |
-| **Logic** | Single versioned JS file (`scripts-{timestamp}.js`, ~8 200 lines, IIFE, ES6+) |
+| **Styles** | Stable CSS file (`main.css`) — layout, theme, motion, page sections; cache-busted via `?v=` |
+| **Logic** | Stable JS file (`scripts.js`, ~11 400 lines, IIFE, ES6+) |
 | **Icons** | Font Awesome 6.2 (CDN) |
 | **Gallery** | BaguetteBox 1.10 (CDN) |
 | **Cookies** | js-cookie 3.0 (CDN) |
@@ -158,8 +158,8 @@ Generator: [`scripts/build-error-pages.js`](scripts/build-error-pages.js). Style
 flowchart TB
     subgraph Browser["Visitor browser"]
         HTML["7 × static HTML pages"]
-        CSS["main-{timestamp}.css"]
-        JS["scripts-{timestamp}.js"]
+        CSS["main.css?v=…"]
+        JS["scripts.js?v=…"]
         CDN["CDN: Bootstrap, jQuery, FA, BaguetteBox, js-cookie"]
         Embed["GoFundMe · SumUp · Mixlr · gtag"]
     end
@@ -171,7 +171,6 @@ flowchart TB
     subgraph Backend["External services"]
         CR["Cloud Run APIs (europe-west1)"]
         MX["api.mixlr.com"]
-        FB["Firebase createCheckout (SumUp)"]
     end
 
     HTML --> GH
@@ -179,7 +178,6 @@ flowchart TB
     JS --> GH
     JS --> CR
     JS --> MX
-    JS --> FB
     CDN --> Browser
     Embed --> Browser
 ```
@@ -192,7 +190,7 @@ When someone opens the homepage, the single app script runs in two phases:
 sequenceDiagram
     participant U as User
     participant P as GitHub Pages
-    participant J as scripts-*.js
+    participant J as scripts.js
     participant LS as localStorage
     participant API as Cloud Run
     participant MX as Mixlr
@@ -249,9 +247,10 @@ traleemasjidkicc.github.io/
 │
 ├── assets/
 │   ├── css/
-│   │   └── main-*.css         # Versioned stylesheet (edit in place)
+│   │   └── main.css           # Stylesheet (edit in place)
 │   ├── js/
-│   │   └── scripts-*.js       # Versioned app logic (~11 400 lines)
+│   │   └── scripts.js         # App logic (~11 400 lines)
+│   ├── asset-version.txt      # Current ?v= timestamp (hook-managed)
 │   └── images/
 │       ├── brand/             # Logo, Bismillah, GoFundMe QR
 │       ├── backgrounds/       # Hero backgrounds
@@ -283,7 +282,7 @@ traleemasjidkicc.github.io/
 ├── gulpfile.js                # Dev server + asset versioning tasks
 ├── playwright.config.js       # E2E test configuration
 ├── package.json               # Scripts & devDependencies
-├── pre-commit / post-commit   # Git hooks (copy via yarn setup-hooks)
+├── pre-commit                 # Git hook (copy via yarn setup-hooks)
 │
 ├── AGENTS.md                  # AI agent instructions
 ├── .cursor/rules/             # Cursor IDE scoped rules
@@ -323,7 +322,7 @@ Hooks automatically version JS/CSS files when you commit changes:
 yarn setup-hooks
 ```
 
-This copies `pre-commit` and `post-commit` into `.git/hooks/`.
+This copies `pre-commit` into `.git/hooks/` and removes the retired `post-commit` hook if present.
 
 ### 3. Start the dev server
 
@@ -370,44 +369,44 @@ yarn verify
 | Change type | File(s) | Notes |
 |-------------|---------|-------|
 | **Page content** | `*.html` at repo root | Preview with `yarn start` |
-| **Styles** | `assets/css/main-*.css` (current timestamped file) | Hot-reloads in browser |
-| **JavaScript** | `assets/js/scripts-*.js` (current timestamped file) | Commit triggers rename if changed |
+| **Styles** | `assets/css/main.css` | Hot-reloads in browser via `yarn start` |
+| **JavaScript** | `assets/js/scripts.js` | Commit bumps `?v=` if changed |
 | **Dependencies** | `package.json`, `yarn.lock` | `yarn upgrade <pkg>`, then test |
-| **Ramadan / Eid banner** | `scripts-*.js` → `isRamadan()` / `isEid()` | Update dates annually (currently 2026) |
+| **Ramadan / Eid banner** | `scripts.js` → `isRamadan()` / `isEid()` | Update dates annually (currently 2026) |
 | **New public page** | HTML + nav + footer + `sitemap.xml` + SEO `<head>` | Copy meta pattern from an existing page |
 | **Error page copy or chrome** | `scripts/build-error-pages.js` → run `yarn build:error-pages` | Do not hand-edit generated nav/footer in `404.html` / `403.html` / `500.html` |
-| **Error page styles** | `assets/css/main-*.css` (`.page-error`, `.error-*`) | Commit triggers CSS rename if changed |
+| **Error page styles** | `assets/css/main.css` (`.page-error`, `.error-*`) | Commit bumps `?v=` if CSS changed |
 
 ### Important rules
 
 - **Use Yarn only** — not npm.
-- **Do not manually rename** `scripts-*.js` or `main-*.css`, and **do not edit** their `<script>` / `<link>` paths in HTML — git hooks handle versioning on commit.
+- **Do not manually edit** `?v=` in HTML `<script>` / `<link>` tags — git hooks bump it on commit.
 - **Do not bump** `package.json` version manually — the pre-commit hook patches it when JS or CSS changes.
-- Hard refresh (**Cmd+Shift+R**) if JS/CSS changes do not appear before committing.
+- With `yarn start`, JS/CSS edits reload without a hard refresh; after commit, a normal reload picks up the new `?v=`.
 
 ---
 
 ## JS & CSS asset versioning
 
-JavaScript and CSS use **timestamped filenames** so returning visitors always get fresh assets after a deploy.
+JavaScript and CSS use **stable filenames** with a `?v=` query parameter so returning visitors always get fresh assets after a deploy.
 
 ```mermaid
 flowchart LR
-    A[Edit scripts-*.js or main-*.css] --> B[git commit]
+    A[Edit scripts.js or main.css] --> B[git commit]
     B --> C[pre-commit hook]
     C --> D{JS or CSS changed?}
-    D -->|Yes| E[Rename file + update all HTML refs + patch version]
+    D -->|Yes| E[Bump ?v= in all HTML + asset-version.txt + patch version]
     D -->|No| F[Skip]
-    E --> G[post-commit amends commit]
-    F --> H[Push to GitHub Pages]
-    G --> H
+    E --> H[pre-commit stages hook output]
+    F --> I[Push to GitHub Pages]
+    H --> I
 ```
 
-Example references in HTML (timestamps change on commit):
+Example references in HTML (`?v=` changes on commit):
 
 ```html
-<link rel="stylesheet" href="assets/css/main-1782019298767.css">
-<script defer src="assets/js/scripts-1782019298633.js"></script>
+<link rel="stylesheet" href="assets/css/main.css?v=1783882879810">
+<script defer type="text/javascript" src="assets/js/scripts.js?v=1783882879810"></script>
 ```
 
 ---
@@ -473,19 +472,12 @@ All masjid content is fetched client-side and cached in `localStorage`.
 | `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Monthly iqamah timetables + Jumuah | `iqamah-month-{year}-{month}` |
 | `getannouncements-rds3nxm6za-ew.a.run.app` | Site-wide announcements ribbon | `kicc-announcements` |
 | `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board | `notices` |
-| `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Weekly programmes | `masjidProgrammes_programme_active_true_v1` |
+| `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Weekly programmes (`recordingsLimit=6`) | `masjidProgrammes_programme_active_true_v2` |
 | `randomhadith-rds3nxm6za-ew.a.run.app` | Daily hadith | `kicc-random-hadith` |
 | `getcampaigns-rds3nxm6za-ew.a.run.app` | Donation campaign progress (GoFundMe totals) | `kicc-campaign-progress` |
+| `createcheckout-rds3nxm6za-ew.a.run.app` | SumUp card payment session (homepage + New Masjid) | — |
 
-All of the above are **Google Cloud Run** services in `europe-west1`. They are **not** Firebase Cloud Functions.
-
-If a Cloud Run API is temporarily down, the site shows the last cached response where available.
-
-### Firebase Cloud Functions (`europe-west1-tralee-masjid`)
-
-| Function | Purpose |
-|----------|---------|
-| `createCheckout` | SumUp card payment session (homepage + New Masjid page) |
+If a Cloud Run API is temporarily down, the site shows the last cached response where available (content APIs only; checkout is not cached).
 
 ### Other third-party services
 
@@ -493,7 +485,7 @@ If a Cloud Run API is temporarily down, the site shows the last cached response 
 |---------|----------|
 | [Mixlr](https://traleemasjid.mixlr.com/) (`api.mixlr.com`) | Live stream status and upcoming events |
 | **GoFundMe embed** | Donation widgets on homepage and New Masjid page |
-| **SumUp** via Firebase `createCheckout` | Card donations (homepage + projects) |
+| **SumUp** via Cloud Run `createCheckout` | Card donations (homepage + projects) |
 | **Microsoft Forms** | Kerry Muslim database sign-up (nav, footer, homepage modal) |
 | **Google Analytics** (`G-3H9CDDS71D`) | Site analytics (loaded after consent) |
 | **js-cookie** (CDN) | Cookie preferences and newsletter modal |
@@ -526,7 +518,7 @@ After deploying structural changes, submit the sitemap in [Google Search Console
 2. GitHub Pages serves static files within a few minutes.
 3. Custom domain **`traleemasjidkicc.ie`** is configured via [`CNAME`](CNAME).
 
-There is **no build pipeline** — what you commit is what visitors receive. Remember that JS/CSS commits trigger filename renames via hooks, so always commit hook-generated changes together with your edits.
+There is **no build pipeline** — what you commit is what visitors receive. JS/CSS commits bump `?v=` via hooks, so always commit hook-generated HTML changes together with your edits.
 
 ---
 
@@ -534,13 +526,13 @@ There is **no build pipeline** — what you commit is what visitors receive. Rem
 
 | Problem | Likely cause | Fix |
 |---------|--------------|-----|
-| JS or CSS changes not visible | Browser cache | Hard refresh (Cmd+Shift+R) or commit so hooks rename the file |
+| JS or CSS changes not visible | Browser cache or old `?v=` in open tab | Use `yarn start` for dev; after commit, normal reload; hard refresh only if needed |
 | `yarn test:e2e` fails immediately | Dev server not running | Run `yarn start` in another terminal first |
 | `npm install` fails | npm is blocked | Use `yarn ci` or `yarn install --immutable` |
 | Prayer times show stale data | Cached `localStorage` | DevTools → Application → Local Storage → clear relevant keys |
 | Map not showing on Contact | Cookies not accepted | Accept functional cookies in the cookie bar |
 | APIs return errors | Backend unavailable | Site falls back to cache; check Network tab for 4xx/5xx |
-| Hook did not rename JS/CSS | File not staged as changed | Ensure you edited the current `scripts-*.js` / `main-*.css` and run `yarn setup-hooks` |
+| Hook did not bump `?v=` | File not staged as changed | Ensure you edited `scripts.js` / `main.css` and run `yarn setup-hooks` |
 | Google Search Console “unused verification token” | HTML meta tag present but property verified via DNS/Analytics | Safe to ignore, or remove unused meta tag from `index.html` |
 
 ---

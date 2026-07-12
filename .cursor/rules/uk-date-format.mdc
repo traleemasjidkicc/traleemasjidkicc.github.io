@@ -19,7 +19,7 @@ The site serves Ireland/UK visitors. Show **Gregorian dates in British/Irish sty
 
 ## JavaScript
 
-Use helpers in `scripts-*.js` (do not hand-roll or use `en-US`):
+Use helpers in `scripts.js` (do not hand-roll or use `en-US`):
 
 - `formatUkDate(date, preset)` — ISO/UTC timestamps → `Europe/Dublin`
 - `formatUkDateLocal(date, preset)` — calendar dates already built from Dublin day parts

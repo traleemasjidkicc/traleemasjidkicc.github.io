@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
-import { acceptAllCookies, gotoWithViewport } from "./helpers/site.js";
+import { acceptAllCookies, blockCreateCheckout, gotoWithViewport } from "./helpers/site.js";
 import { openSumUpCheckout, sumUpPanel } from "./helpers/sumup.js";
 
 const GOFUNDME_DONATE_URL =
@@ -136,9 +136,7 @@ test.describe("New Masjid campaign page", () => {
     page,
     context,
   }) => {
-    await context.route(/cloudfunctions\.net\/createCheckout/, (route) =>
-      route.fulfill({ status: 503, body: '{"error":"Service unavailable"}' }),
-    );
+    await blockCreateCheckout(context);
     await page.addInitScript(() => {
       window.SumUpCard = {
         mount: () => ({ unmount: () => {} }),

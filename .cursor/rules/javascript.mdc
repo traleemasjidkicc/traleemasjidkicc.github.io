@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## File structure
 
-- Single app file: `assets/js/scripts-{timestamp}.js` (~11,400 lines)
+- Single app file: `assets/js/scripts.js` (~11,400 lines)
 - Wrapped in IIFE: `(function () { "use strict"; ... })()`
 - Table of contents comment at top of file lists major areas
 - Pathname helpers: `getPathname()`, `isHomePage()`, `isActivitiesPage()`, `isProjectsPage()`, `isPrayerTimesPage()`, `getPageKey()`
@@ -43,12 +43,7 @@ alwaysApply: false
 | `programmes` | `getmasjidprogrammes-*` | `loadProgrammes` |
 | `randomHadith` | `randomhadith-*` | `getRandomHadith` |
 | `campaigns` | `getcampaigns-*` | `loadFundraiserProgress` |
-
-### Firebase Cloud Functions — `FIREBASE_FUNCTIONS`
-
-| Key | Function | Used by |
-|-----|----------|---------|
-| `createCheckout` | `europe-west1-tralee-masjid.cloudfunctions.net/createCheckout` | `initSumUpDonate` |
+| `createCheckout` | `createcheckout-*` | `initSumUpDonate` |
 
 ### Other services
 
@@ -60,7 +55,7 @@ alwaysApply: false
 
 ## localStorage keys
 
-`salahTimesAssetUrl`, `iqamah-month-{year}-{month}`, `iqamah-tomorrow`, `kicc-announcements`, `notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v1`, `kicc-campaign-progress`
+`salahTimesAssetUrl`, `iqamah-month-{year}-{month}`, `iqamah-tomorrow`, `kicc-announcements`, `notices`, `kicc-random-hadith`, `masjidProgrammes_programme_active_true_v2`, `kicc-campaign-progress`
 
 See `.cursor/rules/cache-then-fetch.mdc` for cache-then-fetch patterns.
 
@@ -108,7 +103,7 @@ fetch(url)
 
 ## Do not
 
-- Manually rename `scripts-*.js` or edit script `src` in HTML (gulp precommit handles this)
+- Manually edit `?v=` in HTML or `assets/asset-version.txt` (gulp precommit handles this)
 - Use `eval`, inline event handlers, or `innerHTML` with untrusted user input
 - Add npm runtime dependencies — this is zero-dependency client JS
 

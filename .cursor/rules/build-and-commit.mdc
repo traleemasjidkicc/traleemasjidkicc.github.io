@@ -1,6 +1,6 @@
 ---
 description: Gulp tasks, git hooks, commit workflow, and e2e tests
-globs: "{gulpfile.js,package.json,pre-commit,post-commit,playwright.config.js,tests/**}"
+globs: "{gulpfile.js,package.json,pre-commit,playwright.config.js,tests/**}"
 alwaysApply: false
 ---
 
@@ -10,24 +10,20 @@ alwaysApply: false
 
 | Task | Purpose |
 |------|---------|
-| `setup-hooks` | Copy `pre-commit` / `post-commit` into `.git/hooks/` (executable) |
-| `rename-js` | Always rename `scripts-*.js` and update HTML script refs |
-| `rename-js-if-changed` | Rename + update HTML only if `assets/js/scripts-*.js` changed |
-| `rename-css` | Always rename `main*.css` and update HTML stylesheet refs |
-| `rename-css-if-changed` | Rename + update HTML only if `assets/css/main*.css` changed |
-| `precommit` | Used by git hook: rename changed JS/CSS + version bump |
-| `serve` (default) | BrowserSync on `./`, watches HTML/CSS/JS |
-| `update-html` | Sync HTML script/stylesheet refs to current filenames (no rename) |
+| `setup-hooks` | Copy `pre-commit` into `.git/hooks/` (executable); remove retired `post-commit` |
+| `bump-asset-version` | Bump `?v=` timestamp in all HTML; write `assets/asset-version.txt` |
+| `bump-asset-version-if-changed` | Bump only if `assets/js/scripts.js` or `assets/css/main.css` changed |
+| `precommit` | Used by git hook: bump `?v=` when JS/CSS changed + version patch |
+| `serve` (default) | BrowserSync on `./`, watches HTML/CSS/JS; `no-store` for HTML/JS/CSS |
+| `update-html` | Sync HTML `?v=` to value in `assets/asset-version.txt` (no bump) |
 
 ## Commit hooks
 
-`pre-commit` → runs `yarn precommit` (`gulp precommit`):
-1. If neither `assets/js/scripts-*.js` nor `assets/css/main*.css` has git changes → skip
-2. Otherwise run `rename-js` and/or `rename-css` (timestamp rename + update all HTML refs)
+`pre-commit` → runs `yarn precommit` (`gulp precommit`), then `git add .` if hook output changed:
+1. If neither `assets/js/scripts.js` nor `assets/css/main.css` has git changes → skip bump
+2. Otherwise run `bump-asset-version` (new `?v=` timestamp in all HTML + `assets/asset-version.txt`)
 3. `yarn version patch -i` (once, if either asset changed)
-4. Stages generated changes
-
-`post-commit` → stages any remaining changes and amends the commit (`git commit --amend --no-edit`).
+4. Stage hook output into the commit
 
 ## Yarn scripts
 
@@ -57,8 +53,8 @@ alwaysApply: false
 ## Rules for agents
 
 - **Never** manually edit `package.json` version
-- **Never** manually change `scripts-{timestamp}.js` filename or HTML script `src`
-- **Never** manually change `main-{timestamp}.css` filename or HTML stylesheet `href`
+- **Never** manually edit `?v=` in HTML `<script>` / `<link>` tags
+- **Never** manually bump `assets/asset-version.txt`
 - After JS/CSS changes, verify with `yarn start` before committing
 - Use `yarn ci` (`yarn install --immutable`) in CI; `yarn verify` checks install integrity
 
