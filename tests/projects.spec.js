@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from "@playwright/test";
 import { acceptAllCookies, gotoWithViewport } from "./helpers/site.js";
+import { openSumUpCheckout, sumUpPanel } from "./helpers/sumup.js";
 
 const GOFUNDME_DONATE_URL =
   "https://www.gofundme.com/f/ub7t7-kerry-islamic-cultural-centre-requires-donation/donate?source=btn_donate";
@@ -125,10 +126,10 @@ test.describe("New Masjid campaign page", () => {
   test("PROJ-10: SumUp widget mount", async ({ page }) => {
     await gotoWithViewport(page, "/projects.html#ways-to-donate", "desktop");
     await acceptAllCookies(page);
-    const startBtn = page.locator("[data-sumup-start-donate]").first();
-    await startBtn.scrollIntoViewIfNeeded();
-    await startBtn.click();
-    await expect(page.locator("[data-sumup-donate]")).toBeVisible();
+    await openSumUpCheckout(page);
+    await expect(
+      page.locator('iframe[name="cardDetails.number"]'),
+    ).toBeAttached();
   });
 
   test("PROJ-11: SumUp error handling when checkout blocked", async ({

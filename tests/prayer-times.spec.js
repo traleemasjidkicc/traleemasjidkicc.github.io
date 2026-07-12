@@ -17,8 +17,10 @@ test.describe("Prayer times page", () => {
   test("PT-01: hero live cards with UK times", async ({ page }) => {
     const hero = page.locator(".prayer-times-hero");
     await expect(hero).toBeVisible();
-    await page.waitForSelector("[data-prayer-hero-live]", { timeout: 15_000 });
-    const heroText = await page.locator("[data-prayer-hero-live]").innerText();
+    const heroLive = page.locator("[data-prayer-hero-live]");
+    await expect(heroLive).toBeVisible({ timeout: 15_000 });
+    await expect(heroLive).not.toHaveClass(/is-loading/, { timeout: 20_000 });
+    const heroText = await heroLive.innerText();
     expect(hasUkTimeFormat(heroText) || heroText.includes("—")).toBeTruthy();
   });
 

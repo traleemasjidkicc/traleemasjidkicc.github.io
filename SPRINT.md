@@ -38,7 +38,7 @@
 | S1-001 | Cookie consent gate fallback | P0 | Backlog | 1.2.0 | — |
 | S1-002 | Patch CDN libraries (Bootstrap 4.6, jQuery 3.7, FA 6.7) | P1 | Backlog | 1.2.0 | — |
 | S1-003 | CDN resilience — self-host or fallback strategy | P1 | Backlog | 1.2.0 | — |
-| S1-004 | Prayer times loading state & cache verification | P1 | Backlog | 1.2.0 | — |
+| S1-004 | Prayer times loading state & cache verification | P1 | Done | 1.2.0 | — |
 | S1-005 | Extend Playwright — API failure & device cases | P1 | Backlog | 1.2.0 | — |
 | S1-006 | UAT execution — third-party & API-down scenarios | P1 | Backlog | 1.2.0 | — |
 | S1-007 | Branded 404 page — deploy verification | P2 | Done | 1.1.x | — |
@@ -165,7 +165,7 @@
 | **Status** | Backlog |
 | **Target version** | 1.2.0 |
 | **UAT refs** | 138–140, 123 |
-| **Baseline** | 142 tests in `tests/` (13 spec files; see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`) |
+| **Baseline** | 153 tests in `tests/` (15 spec files; see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`) |
 
 **Problem:** Automated suite covers happy paths well; API-down and some mobile-only flows rely on manual UAT.
 

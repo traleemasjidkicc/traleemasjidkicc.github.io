@@ -2,6 +2,9 @@
 import { test, expect } from "@playwright/test";
 import {
   acceptAllCookies,
+  blockCloudRun,
+  clearPrayerCache,
+  clearSiteSession,
   dismissHomeSignupModal,
   gotoWithViewport,
   mainNav,
@@ -57,6 +60,22 @@ test.describe("Homepage", () => {
     await page.locator("[data-prayer-day-today]").click();
     await expect(page.locator("[data-prayer-carousel-stage]")).toContainText(
       /(am|pm|unavailable)/i,
+    );
+  });
+
+  test("HOME-06: prayer deck empty state when API unavailable", async ({ page, context }) => {
+    await blockCloudRun(context);
+    await clearSiteSession(page);
+    await clearPrayerCache(page);
+    await gotoWithViewport(page, "/", "desktop");
+    await acceptAllCookies(page);
+    await dismissHomeSignupModal(page, { waitForDelayed: true });
+
+    await expect(page.locator(".home-prayer-deck-empty")).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(page.locator(".home-prayer-deck-empty")).toContainText(
+      /Prayer times unavailable/i,
     );
   });
 
@@ -135,15 +154,6 @@ test.describe("Homepage", () => {
   });
 });
 
-test.describe("Donations high priority", () => {
-  test("DON-03: SumUp on homepage", async ({ page }) => {
-    await gotoWithViewport(page, "/", "mobilePortrait");
-    await acceptAllCookies(page);
-    await page.locator("[data-sumup-start-donate]").first().scrollIntoViewIfNeeded();
-    await page.locator("[data-sumup-start-donate]").first().click();
-    await expect(page.locator("[data-sumup-donate]").first()).toBeVisible();
-  });
-});
 
 test.describe("Accessibility basics", () => {
   test("ACC-01: page language en-GB", async ({ page }) => {

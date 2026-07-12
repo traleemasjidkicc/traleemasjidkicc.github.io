@@ -165,7 +165,7 @@ API content caches expire after **7 days** (via `kiccTimedStorageGet` / `kiccTim
 - `scripts/build-error-pages.js` — regenerates `404.html`, `403.html`, `500.html` from `contact.html` chrome
 - `playwright.config.js` — Edge e2e; CI starts BrowserSync on port 3000
 - `tests/helpers/site.js` — shared Playwright helpers (`gotoWithViewport`, `acceptAllCookies`, `openCookieSettings`, route blockers)
-- `tests/*.spec.js` — 13 spec files, 142 tests mapped to UAT v2.0 IDs (see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`)
+- `tests/*.spec.js` — 16 spec files, 154 tests mapped to UAT v2.0 IDs (see `docs/tests/active/uat-suite-v2.0.2-2026-07-11.md`)
 - `assets/js/scripts-*.js` — all client-side logic
 - `assets/css/main-*.css` — all styles including `campaign-*` and `prayer-times-*`
 - `index.html`, `prayer-times.html`, `projects.html` — highest-traffic / feature-rich pages

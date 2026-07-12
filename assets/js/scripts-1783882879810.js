@@ -1557,6 +1557,104 @@
     );
   };
 
+  const setPrayerHeroLoadingPlaceholders = () => {
+    if (!isPrayerTimesPage()) return;
+
+    const hijriEl = document.getElementById("prayer-hero-hijri");
+    const currentEl = document.getElementById("prayer-hero-current");
+    const nextNameEl = document.getElementById("prayer-hero-next-name");
+    const countdownEl = document.getElementById("prayer-hero-countdown");
+    const nextLabelEl = document.getElementById("prayer-hero-next-label");
+
+    if (hijriEl) hijriEl.textContent = "Loading…";
+    if (currentEl) currentEl.textContent = "Loading…";
+    if (nextNameEl) nextNameEl.textContent = "Loading…";
+    if (countdownEl) countdownEl.textContent = "";
+    if (nextLabelEl) nextLabelEl.textContent = "Next";
+  };
+
+  const showHomePrayerDeckLoading = (isLoading, failed) => {
+    if (!isHomePage()) return;
+
+    const suite = document.querySelector("[data-home-prayer-suite]");
+    const stage = document.querySelector("[data-prayer-carousel-stage]");
+    const track = getPrayerCarouselTrack();
+    const toolbar = document.querySelector("[data-prayer-deck-toolbar]");
+
+    if (!stage || !track) return;
+
+    if (isLoading && !prayerCarouselBuilt) {
+      stage.classList.add("is-loading");
+      track.innerHTML =
+        '<p class="home-prayer-deck-loading" role="status">' +
+        '<span class="prayer-loading-spinner" aria-hidden="true"></span>' +
+        "Loading prayer times…</p>";
+      if (suite) suite.hidden = false;
+      if (toolbar) toolbar.hidden = true;
+      return;
+    }
+
+    stage.classList.remove("is-loading");
+
+    if (failed && !prayerCarouselBuilt) {
+      track.innerHTML =
+        '<p class="home-prayer-deck-empty" role="status">Prayer times unavailable.</p>';
+      if (suite) suite.hidden = false;
+      if (toolbar) toolbar.hidden = true;
+    }
+  };
+
+  const setPrayerTimesLoadingState = (isLoading, options) => {
+    const opts = options || {};
+    const failed = opts.failed === true;
+
+    document.documentElement.classList.toggle("prayer-times-loading", isLoading);
+
+    const menu = document.querySelector(".kicc-nav-salah-menu");
+    if (menu) {
+      menu.classList.toggle("is-loading", isLoading);
+      menu.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
+
+    const navStatus = document.getElementById("nav-salah-status");
+    if (navStatus) {
+      if (isLoading) {
+        navStatus.innerHTML =
+          '<p class="kicc-nav-salah-loading-msg" role="status">' +
+          '<span class="prayer-loading-spinner" aria-hidden="true"></span>' +
+          "Loading prayer times…</p>";
+        navStatus.hidden = false;
+        navStatus.setAttribute("aria-busy", "true");
+      } else if (failed) {
+        navStatus.innerHTML =
+          '<p class="kicc-nav-salah-loading-msg kicc-nav-salah-loading-msg--error" role="status">' +
+          "Prayer times unavailable right now.</p>";
+        navStatus.hidden = false;
+        navStatus.removeAttribute("aria-busy");
+      } else {
+        navStatus.removeAttribute("aria-busy");
+        updateNavSalahStatus();
+      }
+    }
+
+    const heroLive = document.querySelector("[data-prayer-hero-live]");
+    if (heroLive) {
+      heroLive.classList.toggle("is-loading", isLoading);
+      heroLive.setAttribute("aria-busy", isLoading ? "true" : "false");
+      if (isLoading) {
+        setPrayerHeroLoadingPlaceholders();
+      }
+    }
+
+    const homePanel = document.querySelector(".home-hero-salah-panel");
+    if (homePanel) {
+      homePanel.classList.toggle("is-loading", isLoading);
+      homePanel.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
+
+    showHomePrayerDeckLoading(isLoading, failed);
+  };
+
   const renderHomePrayerDeck = () => {
     if (!isHomePage() || !cachedPrayerDayMap) return;
 
@@ -1938,6 +2036,15 @@
     return makeDayKeyFromDate(getDublinDate());
   };
 
+  const getNavSalahIdPrefixForDayKey = (dayKey) => {
+    if (!dayKey) return null;
+    const todayKey = makeDayKeyFromDate(getDublinDate());
+    const tomorrowKey = makeDayKeyFromDate(getDublinDateWithOffset(1));
+    if (dayKey === todayKey) return "nav-";
+    if (dayKey === tomorrowKey) return "nav-tomorrow-";
+    return null;
+  };
+
   const getCurrentSalahChipLabel = (slot) => {
     if (!slot) return "Current prayer";
     if (slot.special) return "Now";
@@ -1950,9 +2057,8 @@
     if (homeCard) {
       homeCard.classList.add(className);
     }
-    var todayKey = getTodayDayKey();
-    var idPrefix =
-      slot.dayKey === todayKey ? "nav-" : "nav-tomorrow-";
+    var idPrefix = getNavSalahIdPrefixForDayKey(slot.dayKey);
+    if (!idPrefix) return;
     var navBegins = document.getElementById(idPrefix + slot.navKey + "-begins");
     if (navBegins) {
       var navRow = navBegins.closest(".kicc-nav-salah-row, tr");
@@ -2628,6 +2734,14 @@
   };
 
   const setSalahTimes = () => {
+    const todayKey = makeDayKeyFromDate(getDublinDate());
+    const hasWarmToday =
+      (cachedPrayerDayMap && cachedPrayerDayMap[todayKey]) || cachedPrayerDayData;
+
+    if (!hasWarmToday) {
+      setPrayerTimesLoadingState(true);
+    }
+
     loadPrayerDataWindow()
       .then(function () {
         const todayData =
@@ -2644,8 +2758,10 @@
           schedulePrayerHighlights(todayData);
           setDynamicCelebrationToBanner(todayData);
           renderHomePrayerDeck();
+          setPrayerTimesLoadingState(false);
         } else {
           console.error("No prayer data for today");
+          setPrayerTimesLoadingState(false, { failed: true });
         }
 
         if (tomorrowData) {
@@ -2662,6 +2778,7 @@
       })
       .catch(function (err) {
         console.error("Failed to load prayer times", err);
+        setPrayerTimesLoadingState(false, { failed: true });
       });
   };
 
@@ -10838,10 +10955,21 @@
       if (!visible) {
         statusEl.hidden = true;
         statusEl.textContent = "";
+        statusEl.classList.remove("is-loading-status");
+        if (tableStage) {
+          tableStage.classList.remove("is-loading");
+          tableStage.removeAttribute("aria-busy");
+        }
         return;
       }
       statusEl.hidden = false;
       statusEl.textContent = message;
+      const isLoadingMsg = message.indexOf("Loading") === 0;
+      statusEl.classList.toggle("is-loading-status", isLoadingMsg);
+      if (tableStage) {
+        tableStage.classList.toggle("is-loading", isLoadingMsg);
+        tableStage.setAttribute("aria-busy", isLoadingMsg ? "true" : "false");
+      }
     };
 
     const getWindow = () => getPrayerTimesAllowedWindow();

@@ -75,6 +75,21 @@ export async function acceptAllCookies(page) {
 }
 
 /**
+ * Accept essential cookies only (third-party embeds remain blocked).
+ * @param {Page} page
+ */
+export async function acceptEssentialCookiesOnly(page) {
+  const banner = page.locator("#cookie-consent");
+  const necessary = page.locator("#cookie-necessary");
+  if (await banner.isVisible()) {
+    await necessary.click();
+    await page.waitForFunction(
+      () => !document.documentElement.classList.contains("cookie-consent-pending"),
+    );
+  }
+}
+
+/**
  * @param {Page} page
  * @param {string} path
  * @param {keyof typeof VIEWPORTS} viewportKey
@@ -141,6 +156,30 @@ export async function blockMixlr(context) {
  */
 export async function blockFirebaseCheckout(context) {
   await context.route(FIREBASE_CHECKOUT_HOST, (route) => route.abort("failed"));
+}
+
+/**
+ * Delay Cloud Run API responses to exercise loading UI.
+ * @param {BrowserContext} context
+ * @param {number} [delayMs]
+ */
+export async function delayCloudRun(context, delayMs = 2500) {
+  await context.route(CLOUD_RUN_HOST, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    await route.continue();
+  });
+}
+
+/**
+ * Remove iqamah month caches so prayer times must fetch fresh data.
+ * @param {Page} page
+ */
+export async function clearPrayerCache(page) {
+  await page.evaluate(() => {
+    Object.keys(localStorage)
+      .filter((key) => key.indexOf("iqamah-") === 0)
+      .forEach((key) => localStorage.removeItem(key));
+  });
 }
 
 /**

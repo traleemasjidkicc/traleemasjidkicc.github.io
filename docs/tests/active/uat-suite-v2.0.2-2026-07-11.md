@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Suite version** | v2.0.2 |
+| **Suite version** | v2.0.3 |
 | **Status** | Active |
 | **Effective date** | 11 July 2026 |
 | **Supersedes** | [v1.0 PDF](../archived/v1.0-pdf-export-2026-06-28.pdf) (72 cases), [v1.1 code audit](../archived/v1.1-code-audit-2026-06-28.md) (141 cases) |
@@ -49,9 +49,9 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | **Environment** | `http://127.0.0.1:3000` (BrowserSync via `yarn start`) |
 | **Browser** | Microsoft Edge (Playwright) |
 | **Viewports** | 390×844, 844×390, 1280×800 |
-| **Command** | `yarn test:e2e` — 142 tests, all passing |
-| **Automated cases** | 88 ✅ Pass / ⚠️ Partial in Status column below |
-| **Pending** | 11 manual / device-only cases — update Status when executed |
+| **Command** | `yarn test:e2e` — 154 tests |
+| **Automated cases** | 95 ✅ Pass / ⚠️ Partial in Status column below |
+| **Pending** | 9 manual / device-only cases — update Status when executed |
 
 ### Status legend
 
@@ -73,7 +73,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 
 **ID scheme:** v2.0 prefixed case IDs (e.g. `NAV-04`, `PT-17`) are canonical. Playwright `test()` titles must use these IDs — not legacy `UAT-NNN` numbers.
 
-**Automated regression:** `yarn start` then `yarn test:e2e` (142 Playwright tests in [`tests/`](../../../tests/)).
+**Automated regression:** `yarn start` then `yarn test:e2e` (154 Playwright tests in [`tests/`](../../../tests/)).
 
 ---
 
@@ -93,8 +93,8 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | NAV-10 | Programmes mega menu (mobile) | Mobile – Portrait | 1. Open hamburger. 2. Expand Programmes. 3. Tap "Programme guide". | Sub-links accessible; navigates to `activities.html#programme-guide`. | High | `mobile-nav.spec.js` | MD-7, N-04 | ✅ Pass |
 | NAV-11 | Mega-menu keyboard navigation | Laptop / Desktop | 1. Tab to Programmes. 2. Enter/Space to open. 3. Arrow through links. 4. Escape. | Dropdown opens; focus moves; Escape closes and returns focus. | Medium | Manual | N-06 | Pending |
 | NAV-12 | About mega menu links | Laptop / Desktop | 1. Open About mega menu. 2. Click "Contact us". | Lands on `contact.html` with contact hero visible. | High | `mobile-nav.spec.js` | MD-8 | ✅ Pass |
-| NAV-13 | Salah times nav dropdown (mobile) | Mobile – Portrait | 1. Open Salah times in nav. 2. Switch Today/Tomorrow tabs. | Adhan/iqamah rows; UK 12-hour times; PDF link visible; no permanent `—` if API healthy. | High | `mobile-nav.spec.js` | MD-9, N-07 | ✅ Pass |
-| NAV-14 | Salah times nav dropdown (desktop) | Laptop / Desktop | 1. Click Salah times in nav. | Right-aligned panel; Hijri date; sunrise; full timetable and PDF links. | Medium | `mobile-nav.spec.js` | N-08 | ✅ Pass |
+| NAV-13 | Salah times nav dropdown (mobile) | Mobile – Portrait | 1. Open Salah times in nav. 2. Switch Today/Tomorrow tabs. | Adhan/iqamah rows; UK 12-hour times; PDF link visible; no permanent `—` if API healthy. After midnight, status may show last night's Isha with Fajr next; row badges only on the matching day panel (see NAV-27). | High | `mobile-nav.spec.js` | MD-9, N-07 | ✅ Pass |
+| NAV-14 | Salah times nav dropdown (desktop) | Laptop / Desktop | 1. Click Salah times in nav. | Right-aligned panel; Hijri date; sunrise; full timetable and PDF links. After midnight, same row-badge rules as NAV-13. | Medium | `mobile-nav.spec.js` | N-08 | ✅ Pass |
 | NAV-15 | Salah times PDF in nav | Laptop / Desktop | 1. Open dropdown. 2. Click monthly PDF. | PDF opens/downloads from Cloud Run URL. | Medium | `mobile-nav.spec.js` | MD-10 | ✅ Pass |
 | NAV-16 | Donate now in navbar | All devices | 1. Tap/click Donate now. | GoFundMe donate opens in new tab (`rel="noopener"`). | High | `site-chrome.spec.js` | MD-11, N-09 | ✅ Pass |
 | NAV-17 | Active page indicated in nav | Laptop / Desktop | 1. Open `contact.html`. 2. Observe About nav parent. | Current section visually active (`.active` or equivalent). | Medium | `mobile-nav.spec.js` | N-10 | ✅ Pass |
@@ -107,6 +107,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | NAV-24 | External link icons on inline links | Laptop / Desktop | 1. Find body-copy external link (e.g. sunnah.com). | ↗ icon shown; buttons/WhatsApp/notices/dock excluded. | Low | Manual | MD-16 | Pending |
 | NAV-25 | Sticky offset with announcement ribbon | Mobile – Portrait | 1. With ribbon visible, use section nav on `about.html`. | Section heading not hidden under sticky chrome. | Medium | Manual | MD-17 | Pending |
 | NAV-26 | Section nav scroll-spy | Laptop / Desktop | 1. On `prayer-times.html`, scroll Timetable → Jumu'ah → Find us. | Active section highlights in sticky nav. | Medium | Manual | MD-18 | Pending |
+| NAV-27 | Post-midnight nav row highlights | Laptop / Desktop | 1. Between midnight and Fajr (mocked or real clock). 2. Open Salah dropdown. 3. Check Today and Tomorrow tabs. | Status chips may show Isha current and Fajr next; Today tab marks Fajr next only; Tomorrow tab has no current/next row badges. | Medium | `nav-salah-midnight.spec.js` | — | ✅ Pass |
 
 ---
 
@@ -152,7 +153,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | HOME-03 | Hero dates and prayer status | Mobile – Portrait | 1. Read hero area. | Hijri + Gregorian (UK format); seasonal messaging if applicable; prayer status line. | High | `homepage.spec.js` | MD-34 | ✅ Pass |
 | HOME-04 | Prayer deck — day navigation | Mobile – Portrait | 1. View prayer deck. 2. Prev/next day; Today. | Times update per day; UK format; graceful empty if API down. | High | `homepage.spec.js` | MD-35, H-03 | ✅ Pass |
 | HOME-05 | Next prayer highlighted | Laptop / Desktop | 1. Load between two prayer times. | Upcoming prayer row highlighted or labelled. | Medium | Manual | H-04 | Pending |
-| HOME-06 | Prayer deck empty state | Laptop / Desktop | 1. Block APIs; clear cache; reload. | "Prayer times unavailable." without broken layout. | Medium | Manual | MD-36 | Pending |
+| HOME-06 | Prayer deck empty state | Laptop / Desktop | 1. Block Cloud Run; clear cache. 2. Reload. | "Prayer times unavailable." without broken layout. | Medium | `homepage.spec.js` | MD-36 | ✅ Pass |
 | HOME-07 | Link to full timetable | Mobile – Portrait | 1. Tap Salah times in Explore hub ("View timetable"). | Navigates to `prayer-times.html`. | High | `homepage.spec.js` | MD-37 | ✅ Pass |
 | HOME-08 | Notice board spotlight | Mobile – Portrait | 1. With notices data, tap poster. | BaguetteBox opens; no ↗ on notice links. | Medium | Manual | MD-38 | Pending |
 | HOME-09 | Notice board hidden when empty | Laptop / Desktop | 1. Empty notices (API down, no cache). | Section hidden gracefully. | Medium | Manual | MD-39 | Pending |
@@ -195,6 +196,10 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | PT-17 | Expired iqamah cache fallback | Laptop / Desktop | 1. Seed expired month cache. 2. Open prayer-times. | Fresh API fetch; timetable renders. | High | `prayer-times.spec.js` | — | ✅ Pass |
 | PT-18 | Warm cache background refresh | Laptop / Desktop | 1. Seed valid month cache. 2. Open prayer-times. | Cached data shown; background fetch updates. | Medium | `prayer-times.spec.js` | — | ✅ Pass |
 | PT-19 | Week view with normalised cache | Mobile – Portrait | 1. Seed month cache with normalised shape. 2. Switch to week view. | Week grid renders UK times. | High | `prayer-times.spec.js` | — | ✅ Pass |
+| PT-20 | Nav loading feedback (slow API) | Laptop / Desktop | 1. Clear iqamah cache. 2. Throttle Cloud Run 3s. 3. Open Salah dropdown. | "Loading prayer times…" and shimmer on rows; UK times after load. | High | `prayer-loading.spec.js` | — | ✅ Pass |
+| PT-21 | Home deck loading (slow API) | Mobile – Portrait | 1. Clear cache; throttle API. 2. Load homepage. | "Loading prayer times…" in deck; cards or unavailable after load. | High | `prayer-loading.spec.js` | — | ✅ Pass |
+| PT-22 | Timetable loading status (slow API) | Mobile – Portrait | 1. Clear cache; throttle API. 2. Open `prayer-times.html`. | "Loading timetable…" status + table shimmer; UK times after load. | High | `prayer-loading.spec.js` | — | ✅ Pass |
+| PT-23 | Hero loading placeholders (slow API) | Laptop / Desktop | 1. Clear cache; throttle API. 2. Open prayer-times hero. | Hero shows "Loading…"; `is-loading` clears when data arrives. | Medium | `prayer-loading.spec.js` | — | ✅ Pass |
 
 ---
 
@@ -292,8 +297,14 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 |---|-------------------|----------------------|----------------------|-----------------|----------|------------|--------|--------|
 | DON-01 | Campaign API fallback | Laptop / Desktop | 1. Block `getcampaigns`. 2. Reload campaign bar. | Fallback title; not perpetual loading. | Medium | Manual | MD-109 | Pending |
 | DON-02 | PayPal link on projects | Mobile – Portrait | 1. Tap PayPal in Ways to donate. | PayPal short link opens. | Low | Manual | MD-110 | Pending |
-| DON-03 | SumUp on homepage | Mobile – Portrait | 1. Homepage donate — start SumUp. | Same behaviour as projects. | High | `homepage.spec.js` | MD-111 | ✅ Pass |
+| DON-03 | SumUp on homepage | Mobile – Portrait | 1. Homepage donate — start SumUp. | Sandbox checkout opens with hosted card fields. | High | `sumup.spec.js` | MD-111 | ✅ Pass |
 | DON-04 | Donation copy clarity | Laptop / Desktop | 1. Read donation sections. | Clear: GoFundMe vs card vs bank transfer. | Medium | Manual | MD-112 | Pending |
+| DON-05 | SumUp sandbox ribbon | Laptop / Desktop | 1. Start SumUp on localhost. | Sandbox ribbon and test-mode styling shown. | High | `sumup.spec.js` | — | ✅ Pass |
+| DON-06 | SumUp hosted fields | Laptop / Desktop | 1. Open SumUp checkout. | Cardholder, number, expiry, and CVV fields mount. | High | `sumup.spec.js` | — | ✅ Pass |
+| DON-07 | SumUp sandbox success | Laptop / Desktop | 1. Pay €10 with Visa test card `4200000000000091`. | Success message with amount; no error panel. | High | `sumup.spec.js` | — | ✅ Pass |
+| DON-08 | SumUp sandbox decline | Laptop / Desktop | 1. Pay custom €11 with test card. | Error panel with retry; no success state. | High | `sumup.spec.js` | — | ✅ Pass |
+| DON-09 | SumUp error retry | Laptop / Desktop | 1. After declined payment, tap Try again. | Error clears; checkout can reopen. | Medium | `sumup.spec.js` | — | ✅ Pass |
+| DON-10 | SumUp consent gate | Laptop / Desktop | 1. Accept essential cookies only. 2. Open donate. | Consent notice; start button disabled; no widget. | High | `sumup.spec.js` | — | ✅ Pass |
 
 ---
 
@@ -363,7 +374,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 |---|-------------------|----------------------|----------------------|-----------------|----------|------------|--------|--------|
 | ERR-01 | Branded 404 page | Laptop / Desktop | 1. Visit nonexistent path on production. | Branded `404.html` with nav and helpful links. | High | `errors.spec.js` | MD-136, E-01 | ✅ Pass |
 | ERR-02 | Invalid hash anchor | Mobile – Portrait | 1. Open `about.html#nonexistent`. | Page loads; no JS crash. | Low | `errors.spec.js` | MD-137 | ✅ Pass |
-| ERR-03 | Prayer API total failure | Mobile – Portrait | 1. Block Cloud Run; clear cache. | Nav panel degrades; no infinite spinners. | Medium | `errors.spec.js` | MD-138, E-02 | ✅ Pass |
+| ERR-03 | Prayer API total failure | Mobile – Portrait | 1. Block Cloud Run; clear cache; reload. | Nav shows "Prayer times unavailable right now."; no infinite spinners. | Medium | `errors.spec.js` | MD-138, E-02 | ✅ Pass |
 | ERR-04 | Mixlr API failure | Laptop / Desktop | 1. Block api.mixlr.com. | Off air / fallback; page usable. | Medium | `errors.spec.js` | MD-139 | ✅ Pass |
 | ERR-05 | Empty recordings list | Mobile – Portrait | 1. When no recordings. | Hidden or empty state; no broken player. | Low | Manual | MD-140 | Pending |
 | ERR-06 | Maps consent placeholder copy | Mobile – Portrait | 1. Decline embeds; open contact map. | Styled placeholder with Privacy & cookies link — not blank. | Medium | `errors.spec.js` | E-04 | ✅ Pass |
@@ -384,17 +395,17 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 
 | Metric | Count |
 |--------|-------|
-| **Total test cases** | **103** |
-| ✅ Pass (automated or verified) | 87 |
+| **Total test cases** | **112** |
+| ✅ Pass (automated or verified) | 94 |
 | ⚠️ Partial (automated subset) | 1 |
-| Pending (manual / device) | 14 |
+| Pending (manual / device) | 9 |
 | N/A | 1 |
 
 ### Priority breakdown
 
 | Metric | Count |
 |--------|-------|
-| High priority | 39 |
+| High priority | 43 |
 | Medium priority | 44 |
 | Low priority | 16 |
 
@@ -406,7 +417,7 @@ The Tralee Masjid website is a static multi-page site for Kerry Islamic Cultural
 | Cookie consent | CC | 14 |
 | Announcements | ANN | 5 |
 | Homepage | HOME | 22 |
-| Prayer times | PT | 19 |
+| Prayer times | PT | 23 |
 | Programmes | ACT | 13 |
 | New Masjid | PROJ | 14 |
 | About | ABOUT | 6 |
@@ -454,23 +465,26 @@ Playwright test titles use **v2.0 prefixed IDs** (e.g. `NAV-01`, `PT-17`). The *
 | `contact-form.spec.js` | CONT-01–05, CONT-07–08, CONT-12, ACC-09 | 9 |
 | `cookie-consent.spec.js` | CC-01–05, CC-07, CC-09–10, CC-13–14 | 10 |
 | `errors.spec.js` | ERR-01–04, ERR-06 | 5 |
-| `homepage.spec.js` | NAV-01, HOME-01, HOME-03–04, HOME-07, HOME-10–11, HOME-13, HOME-17, HOME-19–20, DON-03, ACC-01–02 | 14 |
+| `homepage.spec.js` | NAV-01, HOME-01, HOME-03–04, HOME-06–07, HOME-10–11, HOME-13, HOME-17, HOME-19–20, ACC-01–02 | 14 |
+| `prayer-loading.spec.js` | PT-20–23 | 4 |
 | `madrasa.spec.js` | MAD-01–06 | 6 |
 | `mobile-nav.spec.js` | NAV-03, NAV-05–10, NAV-12–15, NAV-17, NAV-08, ACC-08 | 13 |
+| `nav-salah-midnight.spec.js` | NAV-27 | 1 |
 | `prayer-times.spec.js` | PT-01–09, PT-12, PT-16–19, SEO-08–09 | 16 |
 | `projects.spec.js` | PROJ-01–12 | 13 |
 | `responsive.spec.js` | RESP-01–02, HOME-21 | 3 |
 | `seo.spec.js` | SEO-01–03 (×7 pages), SEO-05–06 | 23 |
 | `site-chrome.spec.js` | NAV-02, NAV-04, NAV-16, NAV-18, NAV-20–23, HOME-22 | 9 |
-| **Total** | | **142** |
+| `sumup.spec.js` | DON-03, DON-05–10 | 7 |
+| **Total** | | **154** |
 
-Shared helpers: `tests/helpers/site.js` (`gotoWithViewport`, `acceptAllCookies`, `openCookieSettings`, `blockCloudRun`, `blockMixlr`, `visitAllPublicPages`, etc.).
+Shared helpers: `tests/helpers/site.js` (`gotoWithViewport`, `acceptAllCookies`, `openCookieSettings`, `blockCloudRun`, `blockMixlr`, `visitAllPublicPages`, etc.), `tests/helpers/sumup.js` (sandbox checkout, hosted fields, payment outcomes).
 
 
 ### Manual follow-up (pending cases)
 
 - **Real devices:** Safari iOS, Chrome Android — Add to Home Screen (SEO-07), touch ergonomics, geolocation (CONT-09)
-- **Payment completion:** SumUp end-to-end charge — sandbox/test card required (PROJ-11 error path is automated)
+- **Payment completion:** SumUp sandbox success/decline/retry — automated in `sumup.spec.js` (DON-05–10); PROJ-11 covers checkout API failure
 - **API failure paths:** Block Cloud Run / Mixlr (HOME-06, ERR-03–05, DON-01) — DevTools network blocking
 - **Print dialog:** PT-07 — verify print sheet visually
 - **Accessibility:** VoiceOver/NVDA (ACC-04), contrast audit (ACC-06–07), reduced motion (PT-13, ACC-10)
@@ -480,7 +494,7 @@ Shared helpers: `tests/helpers/site.js` (`gotoWithViewport`, `acceptAllCookies`,
 
 ```bash
 yarn start          # terminal 1 — http://localhost:3000
-yarn test:e2e       # terminal 2 — all 142 tests
+yarn test:e2e       # terminal 2 — all 154 tests
 yarn test:e2e:headed  # watch in Edge
 ```
 
@@ -499,7 +513,7 @@ When manual cases are executed, update the **Status** column in this file and bu
 1. **Cookie gate hard dependency** — CDN/consent script failure leaves site inert; consider timeout fallback.
 2. **Bootstrap 4.3 / jQuery age** — plan upgrade path.
 3. **CDN single point of failure** — consider self-hosting critical assets.
-4. **Prayer times `—` placeholders** — verify loading feedback and cache on slow API.
+4. ~~**Prayer times loading feedback**~~ — **Resolved** — loading states for nav, home deck, hero, and timetable (PT-20–23).
 5. **Formspree limits** — monitor submission quota on contact form.
 6. **Arabic RTL on contact** — verify Safari iOS and older Android.
 7. ~~**Custom 404**~~ — **Resolved** in repository (`404.html`, `403.html`, `500.html`).
@@ -508,6 +522,8 @@ When manual cases are executed, update the **Status** column in this file and bu
 
 | Version | Date | Change |
 |---------|------|--------|
+| v2.0.4 | 12 Jul 2026 | Post-midnight nav Salah row highlights (NAV-27); 154 Playwright tests |
+| v2.0.3 | 11 Jul 2026 | Prayer times loading UI (PT-20–23); HOME-06 and ERR-03 automated; SumUp sandbox e2e (DON-05–10); 153 Playwright tests |
 | v2.0.2 | 11 Jul 2026 | Expanded Playwright suite (142 tests); PT-17–19 cache cases; automation mappings refreshed |
 | v2.0.1 | 28 Jun 2026 | Merged execution results into Status column; removed separate results file |
 | v2.0 | 28 Jun 2026 | Consolidated PDF (72) + code audit (141) → 100 cases; versioned under `docs/tests/` |

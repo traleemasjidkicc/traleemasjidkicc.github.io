@@ -4,6 +4,7 @@ import {
   acceptAllCookies,
   blockCloudRun,
   blockMixlr,
+  clearPrayerCache,
   clearSiteSession,
   gotoWithViewport,
   mainNav,
@@ -30,10 +31,15 @@ test.describe("Error states", () => {
   test("ERR-03: prayer API failure degrades nav panel", async ({ page, context }) => {
     await blockCloudRun(context);
     await clearSiteSession(page);
+    await clearPrayerCache(page);
     await page.goto("/");
     await acceptAllCookies(page);
     await mainNav(page).locator("#navSalahDropdown").click();
     await expect(page.locator(".kicc-nav-salah-dropdown")).toBeVisible();
+    await expect(page.locator("#nav-salah-status")).toContainText(
+      /Prayer times unavailable/i,
+      { timeout: 20_000 },
+    );
   });
 
   test("ERR-04: Mixlr API failure keeps page usable", async ({ page, context }) => {
