@@ -90,7 +90,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-    <link rel="stylesheet" href="assets/css/main.css?v=1784595197311">
+    <link rel="stylesheet" href="assets/css/main.css?v=1784598305994">
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -126,7 +126,7 @@
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
   <script defer src="https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.min.js"
     crossorigin="anonymous"></script>
-  <script defer type="text/javascript" src="assets/js/scripts.js?v=1784595197311"></script>
+  <script defer type="text/javascript" src="assets/js/scripts.js?v=1784598305994"></script>
   <script>
     (function () {
       var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
@@ -592,6 +592,18 @@
                 <h4 id="programmes-recording-series-title" class="programmes-recording-series-title"></h4>
                 <p id="programmes-recording-series-count" class="programmes-recording-series-count"></p>
               </header>
+              <div id="programmes-recording-series-resume"
+                class="programmes-recording-series-resume" hidden>
+                <p class="programmes-recording-series-resume-lead">Pick up where you left off, or start again.</p>
+                <div class="programmes-recording-series-resume-actions">
+                  <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-primary"
+                    data-series-resume="continue">Continue</button>
+                  <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+                    data-series-resume="restartTalk">Start this talk again</button>
+                  <button type="button" class="btn btn-kicc btn-kicc-sm btn-kicc-secondary"
+                    data-series-resume="restartSeries">Start from first talk</button>
+                </div>
+              </div>
               <div id="programmes-recording-series-player"
                 class="programmes-recording-amplitude programmes-recording-amplitude-kicc">
                 <div class="programmes-recording-amplitude-now">

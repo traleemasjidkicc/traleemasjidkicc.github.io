@@ -121,13 +121,19 @@
 
   const PROGRAMME_RECORDING_COLLECTIONS = [
     { collectionName: "bayaan", label: "Bayaan" },
+    { collectionName: "fiqh", label: "Fiqh" },
+    { collectionName: "surah-fatihah", label: "Surah Fatihah" },
     { collectionName: "surah-najm", label: "Surah Najm" },
     { collectionName: "surah-qamar", label: "Surah Qamar" },
+    { collectionName: "surah-ahzab", label: "Surah Ahzaab" },
+    { collectionName: "surah-rahman", label: "Surah Rahman" },
   ];
 
   const PROGRAMME_RECORDING_DEFAULT_ART = "assets/images/brand/logo.png";
   const PROGRAMME_RECORDING_SERIES_PLAYLIST = "programme-series";
   const PROGRAMME_RECORDING_COLLECTION_LIMIT = 50;
+  const PROGRAMME_SERIES_PROGRESS_KEY = "kicc-programme-series-progress";
+  const PROGRAMME_SERIES_PROGRESS_SAVE_MS = 10000;
 
   /* --------------------------------------------------------------------------
    * Cloud Run APIs (europe-west1) — masjid content and SumUp card checkout
@@ -336,6 +342,7 @@
     "notices",
     "kicc-random-hadith",
     "masjidProgrammes_programme_active_true_v2",
+    "kicc-programme-series-progress",
     "kicc-campaign-progress",
   ];
   const FUNCTIONAL_SESSION_KEYS = [
@@ -3283,6 +3290,13 @@
     {
       category: "functional",
       type: "localStorage",
+      name: "kicc-programme-series-progress",
+      duration: "Until cleared",
+      purpose: "Remembers where you left off in programme series.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
       name: "masjidProgrammes_recordings_bayaan_v1",
       duration: "7 days",
       purpose: "Caches Bayaan programme recordings.",
@@ -3300,6 +3314,34 @@
       name: "masjidProgrammes_recordings_surah-qamar_v1",
       duration: "7 days",
       purpose: "Caches Surah Qamar programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_fiqh_v2",
+      duration: "7 days",
+      purpose: "Caches Fiqh programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_surah-fatihah_v2",
+      duration: "7 days",
+      purpose: "Caches Surah Fatihah programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_surah-rahman_v2",
+      duration: "7 days",
+      purpose: "Caches Surah Rahman programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_surah-ahzab_v2",
+      duration: "7 days",
+      purpose: "Caches Surah Ahzaab programme recordings.",
     },
     {
       category: "functional",
@@ -3423,6 +3465,12 @@
     collectionMap: Object.create(null),
     initialized: false,
     activeCollection: "",
+    recordings: [],
+    progressLastSaveMs: 0,
+    progressAudioEl: null,
+    onProgressTimeUpdate: null,
+    pagehideBound: false,
+    awaitingResumeChoice: false,
   };
 
   let latestProgrammeRecordings = [];
@@ -7675,6 +7723,278 @@
     });
   };
 
+  const readProgrammeSeriesProgressStore = () => {
+    if (!canUseFunctionalStorage()) return null;
+    try {
+      var raw = localStorage.getItem(PROGRAMME_SERIES_PROGRESS_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || parsed.v !== 1 || !parsed.collections) return null;
+      return parsed;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const writeProgrammeSeriesProgressStore = (store) => {
+    if (!canUseFunctionalStorage() || !store) return;
+    try {
+      localStorage.setItem(PROGRAMME_SERIES_PROGRESS_KEY, JSON.stringify(store));
+    } catch (err) {
+      console.warn("Unable to save programme series progress", err);
+    }
+  };
+
+  const readProgrammeSeriesProgress = (collectionName) => {
+    var store = readProgrammeSeriesProgressStore();
+    if (!store || !store.collections) return null;
+    return store.collections[collectionName] || null;
+  };
+
+  const writeProgrammeSeriesProgress = (collectionName, progress) => {
+    var store = readProgrammeSeriesProgressStore() || { v: 1, collections: {} };
+    if (!store.collections) store.collections = {};
+    if (progress) {
+      store.collections[collectionName] = progress;
+    } else {
+      delete store.collections[collectionName];
+    }
+    writeProgrammeSeriesProgressStore(store);
+  };
+
+  const clearProgrammeSeriesProgress = (collectionName) => {
+    writeProgrammeSeriesProgress(collectionName, null);
+  };
+
+  const findProgrammeSeriesTrackIndex = (recordings, recordingId, fallbackIndex) => {
+    if (recordingId) {
+      for (var i = 0; i < recordings.length; i++) {
+        if (String(recordings[i].id) === String(recordingId)) return i;
+      }
+    }
+    if (
+      Number.isFinite(fallbackIndex) &&
+      fallbackIndex >= 0 &&
+      fallbackIndex < recordings.length
+    ) {
+      return fallbackIndex;
+    }
+    return 0;
+  };
+
+  const hasProgrammeSeriesProgress = (collectionName) => {
+    var progress = readProgrammeSeriesProgress(collectionName);
+    return !!(
+      progress &&
+      (progress.recordingId ||
+        Number.isFinite(Number(progress.trackIndex)))
+    );
+  };
+
+  const resolveProgrammeSeriesResumeTarget = (recordings, mode) => {
+    var collectionName = programmeRecordingCollectionState.activeCollection;
+    var progress = readProgrammeSeriesProgress(collectionName);
+    var savedIndex = progress
+      ? findProgrammeSeriesTrackIndex(
+          recordings,
+          progress.recordingId,
+          progress.trackIndex,
+        )
+      : 0;
+
+    if (mode === "restartSeries") {
+      return { trackIndex: 0, startTime: 0 };
+    }
+
+    if (mode === "restartTalk") {
+      return { trackIndex: savedIndex, startTime: 0 };
+    }
+
+    if (!progress) {
+      return { trackIndex: 0, startTime: 0 };
+    }
+
+    if (progress.completed) {
+      return {
+        trackIndex: Math.min(savedIndex + 1, recordings.length - 1),
+        startTime: 0,
+      };
+    }
+
+    return {
+      trackIndex: savedIndex,
+      startTime: Number(progress.currentTime) || 0,
+    };
+  };
+
+  const persistProgrammeSeriesProgressFromPlayer = (options) => {
+    options = options || {};
+    if (!canUseFunctionalStorage()) return;
+    if (programmeRecordingCollectionState.awaitingResumeChoice) return;
+    var resumeWrap = document.getElementById("programmes-recording-series-resume");
+    if (resumeWrap && !resumeWrap.hidden) return;
+    var collectionName = programmeRecordingCollectionState.activeCollection;
+    if (!collectionName || !programmeRecordingCollectionState.initialized) return;
+    if (typeof window.Amplitude === "undefined") return;
+
+    var recordings = programmeRecordingCollectionState.recordings;
+    if (!recordings || !recordings.length) return;
+
+    var trackIndex = getProgrammeRecordingSeriesActiveIndex();
+    if (trackIndex < 0 || trackIndex >= recordings.length) return;
+
+    var recording = recordings[trackIndex];
+    var audio = window.Amplitude.getAudio();
+    var currentTime =
+      audio && Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    var completed = options.completed === true;
+
+    writeProgrammeSeriesProgress(collectionName, {
+      recordingId: recording.id ? String(recording.id) : "",
+      trackIndex: trackIndex,
+      currentTime: completed ? 0 : currentTime,
+      completed: completed,
+      updatedAt: Date.now(),
+    });
+  };
+
+  const detachProgrammeSeriesProgressListeners = () => {
+    var audio = programmeRecordingCollectionState.progressAudioEl;
+    if (
+      audio &&
+      programmeRecordingCollectionState.onProgressTimeUpdate
+    ) {
+      audio.removeEventListener(
+        "timeupdate",
+        programmeRecordingCollectionState.onProgressTimeUpdate,
+      );
+    }
+    programmeRecordingCollectionState.progressAudioEl = null;
+    programmeRecordingCollectionState.onProgressTimeUpdate = null;
+    programmeRecordingCollectionState.progressLastSaveMs = 0;
+  };
+
+  const attachProgrammeSeriesProgressListeners = () => {
+    detachProgrammeSeriesProgressListeners();
+    if (typeof window.Amplitude === "undefined") return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    programmeRecordingCollectionState.progressAudioEl = audio;
+    programmeRecordingCollectionState.onProgressTimeUpdate = function () {
+      var now = Date.now();
+      if (
+        now - programmeRecordingCollectionState.progressLastSaveMs <
+        PROGRAMME_SERIES_PROGRESS_SAVE_MS
+      ) {
+        return;
+      }
+      programmeRecordingCollectionState.progressLastSaveMs = now;
+      persistProgrammeSeriesProgressFromPlayer();
+    };
+    audio.addEventListener(
+      "timeupdate",
+      programmeRecordingCollectionState.onProgressTimeUpdate,
+    );
+
+    if (!programmeRecordingCollectionState.pagehideBound) {
+      programmeRecordingCollectionState.pagehideBound = true;
+      window.addEventListener("pagehide", function () {
+        if (programmeRecordingCollectionState.awaitingResumeChoice) return;
+        if (typeof window.Amplitude === "undefined") return;
+        var playerState = window.Amplitude.getPlayerState();
+        if (playerState !== "playing" && playerState !== "paused") return;
+        persistProgrammeSeriesProgressFromPlayer();
+      });
+    }
+  };
+
+  const seekProgrammeSeriesPlayer = (startTime, afterSeek) => {
+    var seekTo = Number(startTime) || 0;
+    if (seekTo <= 0) {
+      if (typeof afterSeek === "function") afterSeek();
+      return;
+    }
+    if (typeof window.Amplitude === "undefined") return;
+
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    var applySeek = function () {
+      if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
+        if (typeof afterSeek === "function") afterSeek();
+        return;
+      }
+      audio.currentTime = Math.min(
+        Math.max(seekTo, 0),
+        Math.max(audio.duration - 1, 0),
+      );
+      syncProgrammeRecordingSeriesTrackUi();
+      if (typeof afterSeek === "function") afterSeek();
+    };
+
+    if (audio.readyState >= 1 && Number.isFinite(audio.duration)) {
+      applySeek();
+      return;
+    }
+
+    audio.addEventListener("loadedmetadata", applySeek, { once: true });
+  };
+
+  const hideProgrammeRecordingSeriesResumeChoice = () => {
+    var wrap = document.getElementById("programmes-recording-series-resume");
+    if (wrap) wrap.hidden = true;
+  };
+
+  const showProgrammeRecordingSeriesResumeChoice = () => {
+    var wrap = document.getElementById("programmes-recording-series-resume");
+    if (wrap) wrap.hidden = false;
+  };
+
+  const startProgrammeSeriesPlayback = (mode) => {
+    programmeRecordingCollectionState.awaitingResumeChoice = false;
+    hideProgrammeRecordingSeriesResumeChoice();
+    var recordings = programmeRecordingCollectionState.recordings;
+    if (!recordings || !recordings.length) return;
+    if (typeof window.Amplitude === "undefined") return;
+
+    var target = resolveProgrammeSeriesResumeTarget(recordings, mode);
+    window.Amplitude.playPlaylistSongAtIndex(
+      target.trackIndex,
+      PROGRAMME_RECORDING_SERIES_PLAYLIST,
+    );
+
+    var finishStart = function () {
+      persistProgrammeSeriesProgressFromPlayer();
+      syncProgrammeRecordingSeriesTrackUi();
+    };
+
+    if (target.startTime > 0) {
+      seekProgrammeSeriesPlayer(target.startTime, finishStart);
+    } else {
+      window.requestAnimationFrame(finishStart);
+    }
+  };
+
+  const bindProgrammeRecordingSeriesResumeChoice = () => {
+    var wrap = document.getElementById("programmes-recording-series-resume");
+    if (!wrap || wrap.dataset.bound === "true") return;
+    wrap.dataset.bound = "true";
+
+    wrap.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-series-resume]");
+      if (!button) return;
+      var mode = button.getAttribute("data-series-resume");
+      if (
+        mode === "continue" ||
+        mode === "restartTalk" ||
+        mode === "restartSeries"
+      ) {
+        startProgrammeSeriesPlayback(mode);
+      }
+    });
+  };
+
   const recordingToAmplitudeSong = (recording, collectionLabel) => {
     return {
       name: recording.name || "Recording",
@@ -7693,25 +8013,68 @@
     });
   };
 
+  const getProgrammeRecordingSeriesActiveIndex = () => {
+    if (typeof window.Amplitude === "undefined") return -1;
+
+    var activePlaylist = window.Amplitude.getActivePlaylist();
+    if (activePlaylist === PROGRAMME_RECORDING_SERIES_PLAYLIST) {
+      var playlistMeta = window.Amplitude.getActivePlaylistMetadata();
+      if (
+        playlistMeta &&
+        Number.isFinite(Number(playlistMeta.active_index))
+      ) {
+        return Number(playlistMeta.active_index);
+      }
+    }
+
+    var globalIndex = Number(window.Amplitude.getActiveIndex());
+    return Number.isFinite(globalIndex) ? globalIndex : -1;
+  };
+
   const syncProgrammeRecordingSeriesTrackUi = () => {
     var list = document.getElementById("programmes-recording-series-list");
     var playerShell = document.getElementById("programmes-recording-series-player");
-    if (!list || typeof window.Amplitude === "undefined") return;
+    if (typeof window.Amplitude === "undefined") return;
 
-    var activeIndex = window.Amplitude.getActiveIndex();
     var playerState = window.Amplitude.getPlayerState();
     var hasActiveTrack =
       playerState === "playing" || playerState === "paused";
+    var activeIndex = getProgrammeRecordingSeriesActiveIndex();
+    var isPlaying = playerState === "playing";
 
     if (playerShell) {
       playerShell.classList.toggle("has-active-track", hasActiveTrack);
+
+      var mainPlay = playerShell.querySelector(
+        ".programmes-recording-amplitude-main-play",
+      );
+      if (mainPlay) {
+        mainPlay.classList.toggle("amplitude-playing", isPlaying);
+        mainPlay.classList.toggle(
+          "amplitude-paused",
+          hasActiveTrack && !isPlaying,
+        );
+        mainPlay.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+      }
     }
+
+    syncProgrammeRecordingCollectionCarouselUi(
+      programmeRecordingCollectionState.activeCollection,
+      isPlaying,
+    );
+
+    if (!list) return;
 
     list.querySelectorAll(".programmes-recording-track").forEach(function (button) {
       var index = Number(button.getAttribute("data-amplitude-song-index"));
       var isActive = hasActiveTrack && index === activeIndex;
-      var trackPlaying = isActive && playerState === "playing";
+      var trackPlaying = isActive && isPlaying;
       button.classList.toggle("is-active", isActive);
+      button.classList.toggle("amplitude-playing", trackPlaying);
+      button.classList.toggle(
+        "amplitude-paused",
+        isActive && !isPlaying,
+      );
       button.setAttribute("aria-pressed", trackPlaying ? "true" : "false");
       var icon = button.querySelector(".programmes-recording-track-icon i");
       if (icon) {
@@ -7806,11 +8169,7 @@
     });
   };
 
-  const initProgrammeRecordingSeriesAmplitude = (
-    collection,
-    recordings,
-    autoplay,
-  ) => {
+  const initProgrammeRecordingSeriesAmplitude = (collection, recordings) => {
     if (typeof window.Amplitude === "undefined") return false;
 
     var songs = recordings.map(function (recording) {
@@ -7818,35 +8177,59 @@
     });
 
     if (programmeRecordingCollectionState.initialized) {
+      persistProgrammeSeriesProgressFromPlayer();
+      detachProgrammeSeriesProgressListeners();
       window.Amplitude.stop();
     }
 
     setProgrammeRecordingSeriesPlaylistScope();
 
     try {
+      var playlistSongs = songs.map(function (_song, index) {
+        return index;
+      });
+      var playlists = {};
+      playlists[PROGRAMME_RECORDING_SERIES_PLAYLIST] = {
+        title: collection.label,
+        songs: playlistSongs,
+      };
+
       window.Amplitude.init({
         songs: songs,
-        playlists: (function () {
-          var playlists = Object.create(null);
-          playlists[PROGRAMME_RECORDING_SERIES_PLAYLIST] = {
-            title: collection.label,
-            songs: songs.map(function (_song, index) {
-              return index;
-            }),
-          };
-          return playlists;
-        })(),
+        playlists: playlists,
         continue_next: true,
         preload: "none",
-        start_song: null,
         default_album_art: PROGRAMME_RECORDING_DEFAULT_ART,
         callbacks: {
-          song_change: syncProgrammeRecordingSeriesTrackUi,
+          song_change: function () {
+            if (!programmeRecordingCollectionState.awaitingResumeChoice) {
+              hideProgrammeRecordingSeriesResumeChoice();
+              persistProgrammeSeriesProgressFromPlayer();
+            }
+            syncProgrammeRecordingSeriesTrackUi();
+          },
           play: function () {
+            if (programmeRecordingCollectionState.awaitingResumeChoice) {
+              syncProgrammeRecordingSeriesTrackUi();
+              return;
+            }
+            hideProgrammeRecordingSeriesResumeChoice();
             stopLegacyProgrammeRecording();
             syncProgrammeRecordingSeriesTrackUi();
           },
-          pause: syncProgrammeRecordingSeriesTrackUi,
+          pause: function () {
+            if (!programmeRecordingCollectionState.awaitingResumeChoice) {
+              persistProgrammeSeriesProgressFromPlayer();
+            }
+            syncProgrammeRecordingSeriesTrackUi();
+          },
+          stop: syncProgrammeRecordingSeriesTrackUi,
+          ended: function () {
+            if (!programmeRecordingCollectionState.awaitingResumeChoice) {
+              persistProgrammeSeriesProgressFromPlayer({ completed: true });
+            }
+            syncProgrammeRecordingSeriesTrackUi();
+          },
         },
       });
     } catch (err) {
@@ -7856,26 +8239,12 @@
     }
 
     programmeRecordingCollectionState.initialized = true;
+    attachProgrammeSeriesProgressListeners();
     syncProgrammeRecordingSeriesTrackUi();
-
-    if (autoplay) {
-      window.requestAnimationFrame(function () {
-        window.Amplitude.playSongAtIndex(
-          0,
-          PROGRAMME_RECORDING_SERIES_PLAYLIST,
-        );
-        syncProgrammeRecordingSeriesTrackUi();
-      });
-    }
-
     return true;
   };
 
-  const showProgrammeRecordingSeries = (
-    collectionName,
-    collectionMap,
-    autoplay,
-  ) => {
+  const showProgrammeRecordingSeries = (collectionName, collectionMap) => {
     var panel = document.getElementById("programmes-recording-series-panel");
     var titleEl = document.getElementById("programmes-recording-series-title");
     if (!panel) return;
@@ -7890,17 +8259,14 @@
     }
 
     programmeRecordingCollectionState.activeCollection = collectionName;
+    programmeRecordingCollectionState.recordings = recordings;
     if (titleEl) {
       titleEl.textContent = collection.label;
     }
 
     renderProgrammeRecordingSeriesList(collection, recordings);
     panel.hidden = false;
-    initProgrammeRecordingSeriesAmplitude(
-      collection,
-      recordings,
-      autoplay === true,
-    );
+    initProgrammeRecordingSeriesAmplitude(collection, recordings);
   };
 
   const getProgrammeRecordingCollectionCover = (recordings) => {
@@ -7991,7 +8357,10 @@
     stage.hidden = carousel.childNodes.length === 0;
   };
 
-  const syncProgrammeRecordingCollectionCarouselUi = (collectionName) => {
+  const syncProgrammeRecordingCollectionCarouselUi = (
+    collectionName,
+    isPlaying,
+  ) => {
     var carousel = document.getElementById(
       "programmes-recording-collections-carousel",
     );
@@ -7999,9 +8368,17 @@
 
     carousel.querySelectorAll(".programmes-recording-collection-card").forEach(
       function (card) {
-        var isActive = card.dataset.collection === collectionName;
+        var isActive = !!collectionName && card.dataset.collection === collectionName;
+        var cardPlaying = isActive && isPlaying === true;
         card.classList.toggle("is-active", isActive);
-        card.setAttribute("aria-pressed", isActive ? "true" : "false");
+        card.classList.toggle("is-playing", cardPlaying);
+        card.setAttribute("aria-pressed", cardPlaying ? "true" : "false");
+        var playIcon = card.querySelector(
+          ".programmes-recording-collection-card-play i",
+        );
+        if (playIcon) {
+          playIcon.className = cardPlaying ? "fas fa-pause" : "fas fa-play";
+        }
       },
     );
   };
@@ -8029,8 +8406,38 @@
     collectionMap,
     autoplay,
   ) => {
-    syncProgrammeRecordingCollectionCarouselUi(collectionName);
-    showProgrammeRecordingSeries(collectionName, collectionMap, autoplay);
+    if (
+      programmeRecordingCollectionState.activeCollection === collectionName &&
+      programmeRecordingCollectionState.initialized &&
+      typeof window.Amplitude !== "undefined" &&
+      window.Amplitude.getPlayerState() === "playing"
+    ) {
+      syncProgrammeRecordingCollectionCarouselUi(collectionName, true);
+      var openPanel = document.getElementById("programmes-recording-series-panel");
+      if (openPanel) {
+        openPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      return;
+    }
+
+    syncProgrammeRecordingCollectionCarouselUi(collectionName, false);
+
+    var hasProgress =
+      canUseFunctionalStorage() && hasProgrammeSeriesProgress(collectionName);
+    var keepResumeChoice = programmeRecordingCollectionState.awaitingResumeChoice;
+    programmeRecordingCollectionState.awaitingResumeChoice =
+      hasProgress && (autoplay !== false || keepResumeChoice);
+
+    if (!programmeRecordingCollectionState.awaitingResumeChoice) {
+      hideProgrammeRecordingSeriesResumeChoice();
+    }
+    showProgrammeRecordingSeries(collectionName, collectionMap);
+
+    if (programmeRecordingCollectionState.awaitingResumeChoice) {
+      showProgrammeRecordingSeriesResumeChoice();
+    } else if (autoplay !== false) {
+      startProgrammeSeriesPlayback("restartSeries");
+    }
 
     var panel = document.getElementById("programmes-recording-series-panel");
     if (panel) {
@@ -8043,10 +8450,13 @@
       programmeRecordingCollectionState.initialized &&
       typeof window.Amplitude !== "undefined"
     ) {
+      persistProgrammeSeriesProgressFromPlayer();
+      detachProgrammeSeriesProgressListeners();
       window.Amplitude.stop();
     }
     programmeRecordingCollectionState.initialized = false;
     programmeRecordingCollectionState.rendered = false;
+    programmeRecordingCollectionState.recordings = [];
 
     var panel = document.getElementById("programmes-recording-series-panel");
     var list = document.getElementById("programmes-recording-series-list");
@@ -8056,9 +8466,10 @@
     if (panel) panel.hidden = true;
     if (list) list.innerHTML = "";
     if (stage) stage.hidden = true;
+    hideProgrammeRecordingSeriesResumeChoice();
     var playerShell = document.getElementById("programmes-recording-series-player");
     if (playerShell) playerShell.classList.remove("has-active-track");
-    syncProgrammeRecordingCollectionCarouselUi("");
+    syncProgrammeRecordingCollectionCarouselUi("", false);
   };
 
   const renderProgrammeRecordingCollections = (collectionMap) => {
@@ -8079,6 +8490,7 @@
 
     renderProgrammeRecordingCollectionsCarousel(collectionMap, available);
     bindProgrammeRecordingCollectionsCarousel(collectionMap);
+    bindProgrammeRecordingSeriesResumeChoice();
 
     if (
       programmeRecordingCollectionState.activeCollection &&
@@ -8147,6 +8559,8 @@
           programmeRecordingCollectionState.collectionMap,
         );
         nextMap[collectionName] = fresh;
+        programmeRecordingCollectionState.collectionMap = nextMap;
+        if (programmeRecordingCollectionState.initialized) return;
         renderProgrammeRecordingCollections(nextMap);
       },
     });

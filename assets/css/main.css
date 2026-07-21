@@ -4462,6 +4462,18 @@ button.programmes-next-event-details-btn:focus-visible {
 		0 12px 28px rgba(13, 91, 94, 0.14);
 }
 
+.programmes-recording-collection-card.is-playing
+	.programmes-recording-collection-card-play {
+	background: var(--kicc-teal);
+	color: #fff;
+}
+
+.programmes-recording-collection-card.is-playing
+	.programmes-recording-collection-card-play
+	.fas {
+	color: inherit;
+}
+
 .programmes-recording-collection-card-cover {
 	position: relative;
 	display: block;
@@ -4544,6 +4556,40 @@ button.programmes-next-event-details-btn:focus-visible {
 	margin: 0.2rem 0 0;
 	font-size: 0.82rem;
 	color: var(--kicc-text-muted);
+}
+
+.programmes-recording-series-resume {
+	margin-bottom: 0.85rem;
+	padding: 0.85rem 0.95rem;
+	border-radius: 0.75rem;
+	background: rgba(232, 248, 248, 0.65);
+	border: 1px solid rgba(10, 138, 142, 0.14);
+}
+
+.programmes-recording-series-resume-lead {
+	margin: 0 0 0.65rem;
+	font-size: 0.88rem;
+	color: var(--kicc-teal-deep);
+	line-height: 1.4;
+}
+
+.programmes-recording-series-resume-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.page-activities .programmes-recording-series-resume-actions .btn-kicc-secondary {
+	background: var(--prog-btn-on-light-bg);
+	border-color: var(--prog-btn-on-light-border);
+	color: var(--prog-btn-on-light-text);
+}
+
+.page-activities .programmes-recording-series-resume-actions .btn-kicc-secondary:hover,
+.page-activities .programmes-recording-series-resume-actions .btn-kicc-secondary:focus {
+	background: var(--kicc-teal);
+	border-color: var(--kicc-teal);
+	color: var(--kicc-text-on-dark);
 }
 
 .programmes-recording-amplitude {
@@ -4738,10 +4784,6 @@ button.programmes-next-event-details-btn:focus-visible {
 	display: none;
 }
 
-.programmes-recording-track.is-active .programmes-recording-track-icon .fas {
-	color: inherit;
-}
-
 .programmes-recording-playlist {
 	display: flex;
 	flex-direction: column;
@@ -4836,6 +4878,13 @@ button.programmes-next-event-details-btn:focus-visible {
 .programmes-recording-track.is-active .programmes-recording-track-icon {
 	background: var(--kicc-teal);
 	color: #fff;
+}
+
+.programmes-recording-track.is-active .programmes-recording-track-icon .fas,
+.programmes-recording-track.amplitude-playing
+	.programmes-recording-track-icon
+	.fas {
+	color: inherit;
 }
 
 .programmes-recording-player {
