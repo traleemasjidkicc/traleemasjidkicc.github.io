@@ -116,6 +116,19 @@
     createCheckout: "https://createcheckout-rds3nxm6za-ew.a.run.app",
   };
 
+  const PROGRAMME_RECORDINGS_API =
+    "https://europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes";
+
+  const PROGRAMME_RECORDING_COLLECTIONS = [
+    { collectionName: "bayaan", label: "Bayaan" },
+    { collectionName: "surah-najm", label: "Surah Najm" },
+    { collectionName: "surah-qamar", label: "Surah Qamar" },
+  ];
+
+  const PROGRAMME_RECORDING_DEFAULT_ART = "assets/images/brand/logo.png";
+  const PROGRAMME_RECORDING_SERIES_PLAYLIST = "programme-series";
+  const PROGRAMME_RECORDING_COLLECTION_LIMIT = 50;
+
   /* --------------------------------------------------------------------------
    * Cloud Run APIs (europe-west1) — masjid content and SumUp card checkout
    * -------------------------------------------------------------------------- */
@@ -1715,17 +1728,43 @@
     track.innerHTML = chunks.join("");
     prayerCarouselBuilt = true;
     initHomePrayerDeckControls();
-    positionPrayerCarouselAtCurrentSlot(true);
+    if (usesPrayerDeckLeadAlign()) {
+      positionPrayerCarouselAtCurrentSlot(true);
+    }
     suite.hidden = false;
     if (toolbar) toolbar.hidden = false;
     requestAnimationFrame(function () {
       updatePrayerHighlightsUI();
+      if (!usesPrayerDeckLeadAlign()) {
+        positionPrayerCarouselAtCurrentSlot(true);
+      }
     });
+  };
+
+  const getDesktopLeadPrayerDeckSlide = () => {
+    const deckState = getDeckHighlightState();
+    const todayKey = cachedPrayerDayData
+      ? makeDayKeyFromRecord(cachedPrayerDayData)
+      : makeDayKeyFromDate(getDublinDate());
+
+    if (
+      deckState.current &&
+      !deckState.current.special &&
+      deckState.current.dayKey !== todayKey
+    ) {
+      return findPrayerDeckCard(
+        deckState.current.dayKey,
+        deckState.current.id,
+        PRAYER_CAROUSEL_PRIMARY,
+      );
+    }
+
+    return getFajrSlideForDayOffset(0);
   };
 
   const getPrayerDeckTargetSlide = (dayKey, prayerId) => {
     if (usesPrayerDeckLeadAlign() && !dayKey && !prayerId) {
-      const slide = getFajrSlideForDayOffset(0);
+      const slide = getDesktopLeadPrayerDeckSlide();
       if (slide) return slide;
     }
 
@@ -1760,7 +1799,6 @@
 
     if (instant) {
       prayerCarouselInitializing = true;
-      viewport.classList.add("is-prayer-carousel-init");
       void track.offsetHeight;
     }
 
@@ -1771,8 +1809,13 @@
     updatePrayerDeckNavButtons();
 
     if (instant) {
-      viewport.classList.remove("is-prayer-carousel-init");
-      prayerCarouselInitializing = false;
+      if (usesPrayerDeckLeadAlign()) {
+        prayerCarouselInitializing = false;
+      } else {
+        window.setTimeout(function () {
+          prayerCarouselInitializing = false;
+        }, 120);
+      }
     }
 
     return true;
@@ -1799,12 +1842,14 @@
     const slides = track.querySelectorAll(".home-prayer-deck-card");
     if (!slides.length) return null;
 
-    const center = viewport.scrollLeft + viewport.clientWidth / 2;
+    const viewportRect = viewport.getBoundingClientRect();
+    const center = viewportRect.left + viewportRect.width / 2;
     let closest = null;
     let closestDistance = Infinity;
 
     slides.forEach(function (slide) {
-      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const slideRect = slide.getBoundingClientRect();
+      const slideCenter = slideRect.left + slideRect.width / 2;
       const distance = Math.abs(slideCenter - center);
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -1873,6 +1918,18 @@
     );
   };
 
+  const getScrollLeftToCenterSlide = (slide) => {
+    const viewport = getPrayerCarouselViewport();
+    if (!viewport || !slide) return 0;
+
+    const slideRect = slide.getBoundingClientRect();
+    const viewportRect = viewport.getBoundingClientRect();
+    const slideCenter = slideRect.left + slideRect.width / 2;
+    const viewportCenter = viewportRect.left + viewportRect.width / 2;
+
+    return viewport.scrollLeft + (slideCenter - viewportCenter);
+  };
+
   const getScrollLeftForSlide = (slide) => {
     const viewport = getPrayerCarouselViewport();
     const track = getPrayerCarouselTrack();
@@ -1884,9 +1941,7 @@
       return slide.offsetLeft - padLeft;
     }
 
-    return (
-      slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2
-    );
+    return getScrollLeftToCenterSlide(slide);
   };
 
   const getPrayerCarouselScrollBounds = () => {
@@ -1936,15 +1991,23 @@
         targetScroll = Math.max(bounds.min, Math.min(targetScroll, bounds.max));
       }
     } else {
-      const slide =
-        targetOffset <= -PRAYER_DECK_DAY_RADIUS
-          ? getPrayerDeckBoundarySlide("start")
-          : targetOffset >= PRAYER_DECK_DAY_RADIUS
-            ? getPrayerDeckBoundarySlide("end")
-            : getFajrSlideForDayOffset(targetOffset);
+      let slide;
+      if (targetOffset <= -PRAYER_DECK_DAY_RADIUS) {
+        slide = getPrayerDeckBoundarySlide("start");
+      } else if (targetOffset >= PRAYER_DECK_DAY_RADIUS) {
+        slide = getPrayerDeckBoundarySlide("end");
+      } else if (targetOffset === 0) {
+        slide = getPrayerDeckTargetSlide() || getFajrSlideForDayOffset(0);
+      } else {
+        slide = getFajrSlideForDayOffset(targetOffset);
+      }
       if (!slide) return;
-      targetScroll = getScrollLeftForSlide(slide);
-      targetScroll = Math.max(bounds.min, Math.min(targetScroll, bounds.max));
+      centerPrayerCarouselOnSlide(slide, behavior === "auto" ? "auto" : behavior || "smooth");
+      requestAnimationFrame(function () {
+        updatePrayerCarouselToolbarLabel();
+        updatePrayerDeckNavButtons();
+      });
+      return;
     }
 
     if (behavior === "auto") {
@@ -2074,35 +2137,95 @@
     if (visible) visible.classList.add("is-centered");
   };
 
-  const centerPrayerCarouselOnSlide = (slide, behavior) => {
+  const setPrayerCarouselSnapLocked = (locked) => {
     const viewport = getPrayerCarouselViewport();
-    const track = getPrayerCarouselTrack();
-    if (!viewport || !slide) return;
+    if (!viewport) return;
+    viewport.classList.toggle("is-prayer-carousel-init", locked);
+  };
 
-    let targetScroll;
-    if (usesPrayerDeckLeadAlign()) {
-      const trackStyle = track ? getComputedStyle(track) : null;
-      const padLeft = trackStyle ? parseFloat(trackStyle.paddingLeft) || 0 : 0;
-      targetScroll = slide.offsetLeft - padLeft;
-    } else {
-      targetScroll =
-        slide.offsetLeft - viewport.clientWidth / 2 + slide.offsetWidth / 2;
+  const finishMobilePrayerCarouselCentering = (
+    viewport,
+    slide,
+    minScroll,
+    maxScroll,
+    behavior,
+  ) => {
+    const applyCorrection = () => {
+      const correctedLeft = Math.max(
+        minScroll,
+        Math.min(getScrollLeftForSlide(slide), maxScroll),
+      );
+      if (Math.abs(viewport.scrollLeft - correctedLeft) > 1) {
+        viewport.scrollLeft = correctedLeft;
+      }
+      updateCarouselCenteredSlide();
+    };
+
+    const releaseSnap = () => {
+      applyCorrection();
+      requestAnimationFrame(function () {
+        setPrayerCarouselSnapLocked(false);
+      });
+    };
+
+    if (behavior === "auto") {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(releaseSnap);
+      });
+      return;
     }
 
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      releaseSnap();
+    };
+
+    viewport.addEventListener("scrollend", done, { once: true });
+    window.setTimeout(done, 500);
+  };
+
+  const centerPrayerCarouselOnSlide = (slide, behavior) => {
+    const viewport = getPrayerCarouselViewport();
+    if (!viewport || !slide) return;
+
+    const normalizedBehavior = behavior === "auto" ? "auto" : behavior || "smooth";
+    const targetScroll = getScrollLeftForSlide(slide);
     const bounds = getPrayerCarouselScrollBounds();
     const viewportMax = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
     const minScroll = bounds ? bounds.min : 0;
     const maxScroll = bounds ? bounds.max : viewportMax;
     const left = Math.max(minScroll, Math.min(targetScroll, maxScroll));
 
-    if (behavior === "auto") {
+    if (usesPrayerDeckLeadAlign()) {
+      if (normalizedBehavior === "auto") {
+        viewport.scrollLeft = left;
+      } else {
+        viewport.scrollTo({
+          left: left,
+          behavior: normalizedBehavior,
+        });
+      }
+      return;
+    }
+
+    setPrayerCarouselSnapLocked(true);
+    if (normalizedBehavior === "auto") {
       viewport.scrollLeft = left;
     } else {
       viewport.scrollTo({
         left: left,
-        behavior: behavior || "smooth",
+        behavior: normalizedBehavior,
       });
     }
+    finishMobilePrayerCarouselCentering(
+      viewport,
+      slide,
+      minScroll,
+      maxScroll,
+      normalizedBehavior,
+    );
   };
 
   const findPrayerDeckCard = (dayKey, prayerId, repeat) => {
@@ -2220,7 +2343,12 @@
 
     if (todayBtn) {
       todayBtn.addEventListener("click", function () {
-        scrollToPrayerDeckDayOffset(0, "smooth");
+        if (usesPrayerDeckLeadAlign()) {
+          scrollToPrayerDeckDayOffset(0, "smooth");
+        } else {
+          centerPrayerCarouselOnSlot(null, null, "smooth");
+          updatePrayerCarouselToolbarLabel();
+        }
       });
     }
     if (prevBtn) {
@@ -2239,10 +2367,16 @@
       function () {
         updatePrayerDeckNavAriaLabels();
         if (!prayerCarouselUserScrolling) {
-          scrollToPrayerDeckDayOffset(
-            usesPrayerDeckLeadAlign() ? getPrayerDeckViewDayOffset() : 0,
-            "auto",
-          );
+          if (usesPrayerDeckLeadAlign()) {
+            const viewOffset = getPrayerDeckViewDayOffset();
+            if (viewOffset === 0) {
+              positionPrayerCarouselAtCurrentSlot(true);
+            } else {
+              scrollToPrayerDeckDayOffset(viewOffset, "auto");
+            }
+          } else {
+            positionPrayerCarouselAtCurrentSlot(true);
+          }
           updatePrayerDeckNavButtons();
         }
       },
@@ -2393,9 +2527,21 @@
     }
 
     if (prayerCarouselBuilt && !prayerCarouselUserScrolling) {
+      const targetSlide = getPrayerDeckTargetSlide();
       if (!usesPrayerDeckLeadAlign()) {
-        centerPrayerCarouselOnSlot(null, null, "auto");
-        updateCarouselCenteredSlide();
+        const visibleSlide = getVisiblePrayerCarouselSlide();
+        if (targetSlide && targetSlide !== visibleSlide) {
+          centerPrayerCarouselOnSlide(targetSlide, "auto");
+        } else {
+          updateCarouselCenteredSlide();
+        }
+      } else {
+        const leadSlide = getLeadPrayerCarouselSlide();
+        if (targetSlide && targetSlide !== leadSlide) {
+          centerPrayerCarouselOnSlide(targetSlide, "auto");
+        } else {
+          updateCarouselCenteredSlide();
+        }
       }
     }
 
@@ -3137,6 +3283,27 @@
     {
       category: "functional",
       type: "localStorage",
+      name: "masjidProgrammes_recordings_bayaan_v1",
+      duration: "7 days",
+      purpose: "Caches Bayaan programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_surah-najm_v1",
+      duration: "7 days",
+      purpose: "Caches Surah Najm programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
+      name: "masjidProgrammes_recordings_surah-qamar_v1",
+      duration: "7 days",
+      purpose: "Caches Surah Qamar programme recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
       name: "kicc-campaign-progress",
       duration: "7 days",
       purpose: "Caches New Masjid fundraiser totals.",
@@ -3251,7 +3418,15 @@
   let signupModalFlowResolved = true;
   let announcementsSessionDismissedFingerprint = "";
   let latestAnnouncements = [];
+  let programmeRecordingCollectionState = {
+    rendered: false,
+    collectionMap: Object.create(null),
+    initialized: false,
+    activeCollection: "",
+  };
+
   let latestProgrammeRecordings = [];
+  let legacyRecordingButton = null;
   let cookieRegistryRendered = false;
   let cookiePrefsFeedbackTimer = null;
   let cookiePrefsClearButtonTimer = null;
@@ -3527,8 +3702,14 @@
     } else {
       clearThirdPartyData();
     }
-    if (document.getElementById("programmes-recordings-wrap")) {
-      renderRecordings(latestProgrammeRecordings);
+    if (document.getElementById("programmes-recording-collections-carousel")) {
+      loadProgrammeRecordingCollections();
+    }
+    if (
+      document.getElementById("programmes-recent-recordings-list") ||
+      document.getElementById("programmes-recordings-list")
+    ) {
+      renderLegacyProgrammeRecordings(latestProgrammeRecordings);
     }
   };
 
@@ -5169,6 +5350,14 @@
       );
   };
 
+  const getNoticeGridColumnCount = (count) => {
+    if (count <= 1) return 1;
+    if (count === 2) return 2;
+    if (count === 3) return 3;
+    if (count === 4) return 2;
+    return 3;
+  };
+
   const getNoticeSpotlightDismissKey = (notices) => {
     const latest = sortNotices(notices)[0];
     return latest ? String(latest.id || latest.key || latest.url) : "none";
@@ -5346,11 +5535,13 @@
     noticeContainer.innerHTML = "";
 
     if (sorted.length === 0) {
+      delete noticeContainer.dataset.noticeCols;
       if (noticeBoard) noticeBoard.hidden = true;
       return;
     }
 
     if (noticeBoard) noticeBoard.hidden = false;
+    noticeContainer.dataset.noticeCols = String(getNoticeGridColumnCount(sorted.length));
 
     sorted.forEach(function (notice, index) {
       const article = document.createElement("article");
@@ -7387,70 +7578,658 @@
     return 0;
   };
 
-  var activeRecordingButton = null;
-
-  const setActiveRecordingItem = (buttonEl) => {
-    if (activeRecordingButton) {
-      activeRecordingButton.classList.remove("is-playing");
-      activeRecordingButton.setAttribute("aria-pressed", "false");
-      var oldIcon = activeRecordingButton.querySelector(
-        ".programmes-recording-play-icon i",
-      );
-      if (oldIcon) {
-        oldIcon.className = "fas fa-play";
-      }
+  const formatRecordingDuration = (seconds) => {
+    var total = Number(seconds);
+    if (!Number.isFinite(total) || total <= 0) return "";
+    var mins = Math.floor(total / 60);
+    var hrs = Math.floor(mins / 60);
+    var remMins = mins % 60;
+    if (hrs > 0) {
+      return hrs + "h " + remMins + "m";
     }
-    activeRecordingButton = buttonEl || null;
-    if (activeRecordingButton) {
-      activeRecordingButton.classList.add("is-playing");
-      activeRecordingButton.setAttribute("aria-pressed", "true");
-      var newIcon = activeRecordingButton.querySelector(
-        ".programmes-recording-play-icon i",
-      );
-      if (newIcon) {
-        newIcon.className = "fas fa-pause";
+    return mins + " min";
+  };
+
+  const sortProgrammeRecordings = (recordings) => {
+    if (!Array.isArray(recordings)) return [];
+    return recordings
+      .filter(function (recording) {
+        return (
+          recording &&
+          typeof recording.listenUrl === "string" &&
+          recording.listenUrl.trim() !== "" &&
+          isDirectStreamUrl(recording.listenUrl)
+        );
+      })
+      .slice()
+      .sort(function (a, b) {
+        return getRecordingSortTime(b) - getRecordingSortTime(a);
+      });
+  };
+
+  const getProgrammeRecordingsCollectionUrl = (collectionName) =>
+    PROGRAMME_RECORDINGS_API +
+    "?type=recordings&collectionName=" +
+    encodeURIComponent(collectionName) +
+    "&recordingsLimit=" +
+    PROGRAMME_RECORDING_COLLECTION_LIMIT;
+
+  const getProgrammeRecordingsStorageKey = (collectionName) =>
+    "masjidProgrammes_recordings_" + collectionName + "_v2";
+
+  const RECENT_PROGRAMME_RECORDINGS_LIMIT = 6;
+
+  const getLegacyProgrammeRecordingsDom = () => {
+    var recentList = document.getElementById("programmes-recent-recordings-list");
+    if (recentList) {
+      return {
+        wrap: document.getElementById("programmes-recent-recordings-wrap"),
+        list: recentList,
+        limit: RECENT_PROGRAMME_RECORDINGS_LIMIT,
+      };
+    }
+    return {
+      wrap: document.getElementById("programmes-recordings-wrap"),
+      list: document.getElementById("programmes-recordings-list"),
+      limit: null,
+    };
+  };
+
+  const setProgrammeRecordingsStatus = (loading, empty) => {
+    var loadingEl = document.getElementById("programmes-recordings-loading");
+    var emptyEl = document.getElementById("programmes-recordings-empty");
+    if (loadingEl) loadingEl.hidden = !loading;
+    if (emptyEl) emptyEl.hidden = !empty;
+  };
+
+  const sortProgrammeRecordingCollection = (recordings) => {
+    if (!Array.isArray(recordings)) return [];
+    return recordings
+      .filter(function (recording) {
+        return (
+          recording &&
+          typeof recording.listenUrl === "string" &&
+          recording.listenUrl.trim() !== "" &&
+          isDirectStreamUrl(recording.listenUrl)
+        );
+      })
+      .slice()
+      .sort(function (a, b) {
+        return getRecordingSortTime(a) - getRecordingSortTime(b);
+      });
+  };
+
+  const getProgrammeRecordingCollectionMeta = (collectionName) => {
+    return (
+      PROGRAMME_RECORDING_COLLECTIONS.find(function (entry) {
+        return entry.collectionName === collectionName;
+      }) || { collectionName: collectionName, label: collectionName }
+    );
+  };
+
+  const getProgrammeRecordingSeriesCollections = (collectionMap) => {
+    return PROGRAMME_RECORDING_COLLECTIONS.filter(function (collection) {
+      return sortProgrammeRecordingCollection(
+        collectionMap[collection.collectionName] || [],
+      ).length;
+    });
+  };
+
+  const recordingToAmplitudeSong = (recording, collectionLabel) => {
+    return {
+      name: recording.name || "Recording",
+      artist: getRecordingDateLabel(recording),
+      album: collectionLabel,
+      url: recording.listenUrl,
+      cover_art_url: recording.imageUrl || PROGRAMME_RECORDING_DEFAULT_ART,
+    };
+  };
+
+  const setProgrammeRecordingSeriesPlaylistScope = () => {
+    var player = document.getElementById("programmes-recording-series-player");
+    if (!player) return;
+    player.querySelectorAll("[data-amplitude-playlist]").forEach(function (el) {
+      el.setAttribute("data-amplitude-playlist", PROGRAMME_RECORDING_SERIES_PLAYLIST);
+    });
+  };
+
+  const syncProgrammeRecordingSeriesTrackUi = () => {
+    var list = document.getElementById("programmes-recording-series-list");
+    var playerShell = document.getElementById("programmes-recording-series-player");
+    if (!list || typeof window.Amplitude === "undefined") return;
+
+    var activeIndex = window.Amplitude.getActiveIndex();
+    var playerState = window.Amplitude.getPlayerState();
+    var hasActiveTrack =
+      playerState === "playing" || playerState === "paused";
+
+    if (playerShell) {
+      playerShell.classList.toggle("has-active-track", hasActiveTrack);
+    }
+
+    list.querySelectorAll(".programmes-recording-track").forEach(function (button) {
+      var index = Number(button.getAttribute("data-amplitude-song-index"));
+      var isActive = hasActiveTrack && index === activeIndex;
+      var trackPlaying = isActive && playerState === "playing";
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", trackPlaying ? "true" : "false");
+      var icon = button.querySelector(".programmes-recording-track-icon i");
+      if (icon) {
+        icon.className = trackPlaying ? "fas fa-pause" : "fas fa-play";
       }
+    });
+  };
+
+  const pauseProgrammeRecordingSeriesPlayer = () => {
+    if (
+      programmeRecordingCollectionState.initialized &&
+      typeof window.Amplitude !== "undefined"
+    ) {
+      window.Amplitude.pause();
+      syncProgrammeRecordingSeriesTrackUi();
     }
   };
 
-  const stopRecording = () => {
+  const renderProgrammeRecordingSeriesList = (collection, recordings) => {
+    var list = document.getElementById("programmes-recording-series-list");
+    var countEl = document.getElementById("programmes-recording-series-count");
+    if (!list) return;
+
+    list.innerHTML = "";
+    if (countEl) {
+      countEl.textContent =
+        recordings.length +
+        (recordings.length === 1 ? " recording" : " recordings");
+    }
+
+    recordings.forEach(function (recording, index) {
+      var item = document.createElement("li");
+      item.className = "programmes-recording-playlist-item";
+
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className =
+        "amplitude-play-pause programmes-recording-track";
+      button.setAttribute("data-amplitude-song-index", String(index));
+      button.setAttribute(
+        "data-amplitude-playlist",
+        PROGRAMME_RECORDING_SERIES_PLAYLIST,
+      );
+      button.setAttribute("aria-pressed", "false");
+      button.style.setProperty("--track-i", index);
+
+      if (recording.imageUrl) {
+        var thumb = document.createElement("img");
+        thumb.className = "programmes-recording-track-thumb";
+        thumb.src = recording.imageUrl;
+        thumb.alt = "";
+        thumb.width = 48;
+        thumb.height = 48;
+        thumb.loading = "lazy";
+        thumb.decoding = "async";
+        thumb.referrerPolicy = "no-referrer";
+        button.appendChild(thumb);
+      } else {
+        var thumbFallback = document.createElement("span");
+        thumbFallback.className =
+          "programmes-recording-track-thumb programmes-recording-track-thumb-fallback";
+        thumbFallback.innerHTML =
+          '<i class="fas fa-headphones" aria-hidden="true"></i>';
+        button.appendChild(thumbFallback);
+      }
+
+      var body = document.createElement("span");
+      body.className = "programmes-recording-track-body";
+
+      var name = document.createElement("span");
+      name.className = "programmes-recording-track-name";
+      name.textContent = recording.name || "Recording";
+
+      var meta = document.createElement("span");
+      meta.className = "programmes-recording-track-meta";
+      var metaParts = [getRecordingDateLabel(recording)];
+      var durationLabel = formatRecordingDuration(recording.duration);
+      if (durationLabel) metaParts.push(durationLabel);
+      meta.textContent = metaParts.filter(Boolean).join(" · ");
+
+      body.appendChild(name);
+      body.appendChild(meta);
+      button.appendChild(body);
+
+      var playIcon = document.createElement("span");
+      playIcon.className = "programmes-recording-track-icon";
+      playIcon.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+      button.appendChild(playIcon);
+
+      item.appendChild(button);
+      list.appendChild(item);
+    });
+  };
+
+  const initProgrammeRecordingSeriesAmplitude = (
+    collection,
+    recordings,
+    autoplay,
+  ) => {
+    if (typeof window.Amplitude === "undefined") return false;
+
+    var songs = recordings.map(function (recording) {
+      return recordingToAmplitudeSong(recording, collection.label);
+    });
+
+    if (programmeRecordingCollectionState.initialized) {
+      window.Amplitude.stop();
+    }
+
+    setProgrammeRecordingSeriesPlaylistScope();
+
+    try {
+      window.Amplitude.init({
+        songs: songs,
+        playlists: (function () {
+          var playlists = Object.create(null);
+          playlists[PROGRAMME_RECORDING_SERIES_PLAYLIST] = {
+            title: collection.label,
+            songs: songs.map(function (_song, index) {
+              return index;
+            }),
+          };
+          return playlists;
+        })(),
+        continue_next: true,
+        preload: "none",
+        start_song: null,
+        default_album_art: PROGRAMME_RECORDING_DEFAULT_ART,
+        callbacks: {
+          song_change: syncProgrammeRecordingSeriesTrackUi,
+          play: function () {
+            stopLegacyProgrammeRecording();
+            syncProgrammeRecordingSeriesTrackUi();
+          },
+          pause: syncProgrammeRecordingSeriesTrackUi,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to initialise programme series player", err);
+      programmeRecordingCollectionState.initialized = false;
+      return false;
+    }
+
+    programmeRecordingCollectionState.initialized = true;
+    syncProgrammeRecordingSeriesTrackUi();
+
+    if (autoplay) {
+      window.requestAnimationFrame(function () {
+        window.Amplitude.playSongAtIndex(
+          0,
+          PROGRAMME_RECORDING_SERIES_PLAYLIST,
+        );
+        syncProgrammeRecordingSeriesTrackUi();
+      });
+    }
+
+    return true;
+  };
+
+  const showProgrammeRecordingSeries = (
+    collectionName,
+    collectionMap,
+    autoplay,
+  ) => {
+    var panel = document.getElementById("programmes-recording-series-panel");
+    var titleEl = document.getElementById("programmes-recording-series-title");
+    if (!panel) return;
+
+    var collection = getProgrammeRecordingCollectionMeta(collectionName);
+    var recordings = sortProgrammeRecordingCollection(
+      collectionMap[collectionName] || [],
+    );
+    if (!recordings.length) {
+      panel.hidden = true;
+      return;
+    }
+
+    programmeRecordingCollectionState.activeCollection = collectionName;
+    if (titleEl) {
+      titleEl.textContent = collection.label;
+    }
+
+    renderProgrammeRecordingSeriesList(collection, recordings);
+    panel.hidden = false;
+    initProgrammeRecordingSeriesAmplitude(
+      collection,
+      recordings,
+      autoplay === true,
+    );
+  };
+
+  const getProgrammeRecordingCollectionCover = (recordings) => {
+    var newestFirst = sortProgrammeRecordings(recordings);
+    for (var i = 0; i < newestFirst.length; i++) {
+      if (newestFirst[i].imageUrl) {
+        return newestFirst[i].imageUrl;
+      }
+    }
+    return PROGRAMME_RECORDING_DEFAULT_ART;
+  };
+
+  const renderProgrammeRecordingCollectionsCarousel = (
+    collectionMap,
+    available,
+  ) => {
+    var stage = document.getElementById(
+      "programmes-recording-collections-carousel-stage",
+    );
+    var carousel = document.getElementById(
+      "programmes-recording-collections-carousel",
+    );
+    if (!stage || !carousel) return;
+
+    carousel.innerHTML = "";
+
+    available.forEach(function (collection, index) {
+      var recordings = sortProgrammeRecordingCollection(
+        collectionMap[collection.collectionName] || [],
+      );
+      if (!recordings.length) return;
+
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "programmes-recording-collection-card";
+      card.dataset.collection = collection.collectionName;
+      card.style.setProperty("--collection-i", index);
+      card.setAttribute(
+        "aria-label",
+        "Play " +
+          collection.label +
+          " series, " +
+          recordings.length +
+          (recordings.length === 1 ? " recording" : " recordings") +
+          ", oldest first",
+      );
+
+      var coverWrap = document.createElement("span");
+      coverWrap.className = "programmes-recording-collection-card-cover";
+
+      var cover = document.createElement("img");
+      cover.className = "programmes-recording-collection-card-image";
+      cover.src = getProgrammeRecordingCollectionCover(recordings);
+      cover.alt = "";
+      cover.width = 320;
+      cover.height = 320;
+      cover.loading = "lazy";
+      cover.decoding = "async";
+      cover.referrerPolicy = "no-referrer";
+
+      var playBadge = document.createElement("span");
+      playBadge.className = "programmes-recording-collection-card-play";
+      playBadge.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+
+      coverWrap.appendChild(cover);
+      coverWrap.appendChild(playBadge);
+
+      var body = document.createElement("span");
+      body.className = "programmes-recording-collection-card-body";
+
+      var title = document.createElement("span");
+      title.className = "programmes-recording-collection-card-title";
+      title.textContent = collection.label;
+
+      var count = document.createElement("span");
+      count.className = "programmes-recording-collection-card-count";
+      count.textContent =
+        recordings.length +
+        (recordings.length === 1 ? " recording" : " recordings");
+
+      body.appendChild(title);
+      body.appendChild(count);
+      card.appendChild(coverWrap);
+      card.appendChild(body);
+      carousel.appendChild(card);
+    });
+
+    stage.hidden = carousel.childNodes.length === 0;
+  };
+
+  const syncProgrammeRecordingCollectionCarouselUi = (collectionName) => {
+    var carousel = document.getElementById(
+      "programmes-recording-collections-carousel",
+    );
+    if (!carousel) return;
+
+    carousel.querySelectorAll(".programmes-recording-collection-card").forEach(
+      function (card) {
+        var isActive = card.dataset.collection === collectionName;
+        card.classList.toggle("is-active", isActive);
+        card.setAttribute("aria-pressed", isActive ? "true" : "false");
+      },
+    );
+  };
+
+  const bindProgrammeRecordingCollectionsCarousel = (collectionMap) => {
+    var carousel = document.getElementById(
+      "programmes-recording-collections-carousel",
+    );
+    if (!carousel || carousel.dataset.bound === "true") return;
+    carousel.dataset.bound = "true";
+
+    carousel.addEventListener("click", function (event) {
+      var card = event.target.closest(".programmes-recording-collection-card");
+      if (!card || !card.dataset.collection) return;
+      selectProgrammeRecordingCollection(
+        card.dataset.collection,
+        collectionMap,
+        true,
+      );
+    });
+  };
+
+  const selectProgrammeRecordingCollection = (
+    collectionName,
+    collectionMap,
+    autoplay,
+  ) => {
+    syncProgrammeRecordingCollectionCarouselUi(collectionName);
+    showProgrammeRecordingSeries(collectionName, collectionMap, autoplay);
+
+    var panel = document.getElementById("programmes-recording-series-panel");
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
+  const destroyProgrammeRecordingPlayers = () => {
+    if (
+      programmeRecordingCollectionState.initialized &&
+      typeof window.Amplitude !== "undefined"
+    ) {
+      window.Amplitude.stop();
+    }
+    programmeRecordingCollectionState.initialized = false;
+    programmeRecordingCollectionState.rendered = false;
+
+    var panel = document.getElementById("programmes-recording-series-panel");
+    var list = document.getElementById("programmes-recording-series-list");
+    var stage = document.getElementById(
+      "programmes-recording-collections-carousel-stage",
+    );
+    if (panel) panel.hidden = true;
+    if (list) list.innerHTML = "";
+    if (stage) stage.hidden = true;
+    var playerShell = document.getElementById("programmes-recording-series-player");
+    if (playerShell) playerShell.classList.remove("has-active-track");
+    syncProgrammeRecordingCollectionCarouselUi("");
+  };
+
+  const renderProgrammeRecordingCollections = (collectionMap) => {
+    var wrap = document.getElementById("programme-series");
+    if (!wrap) return;
+
+    destroyProgrammeRecordingPlayers();
+
+    var available = getProgrammeRecordingSeriesCollections(collectionMap);
+    if (!available.length) {
+      wrap.hidden = true;
+      setProgrammeRecordingsStatus(false, true);
+      return;
+    }
+
+    wrap.hidden = false;
+    setProgrammeRecordingsStatus(false, false);
+
+    renderProgrammeRecordingCollectionsCarousel(collectionMap, available);
+    bindProgrammeRecordingCollectionsCarousel(collectionMap);
+
+    if (
+      programmeRecordingCollectionState.activeCollection &&
+      available.some(function (entry) {
+        return (
+          entry.collectionName ===
+          programmeRecordingCollectionState.activeCollection
+        );
+      })
+    ) {
+      selectProgrammeRecordingCollection(
+        programmeRecordingCollectionState.activeCollection,
+        collectionMap,
+        false,
+      );
+    }
+
+    programmeRecordingCollectionState.rendered = true;
+    programmeRecordingCollectionState.collectionMap = collectionMap;
+  };
+
+  const fetchProgrammeRecordingCollection = (collectionName) => {
+    var storageKey = getProgrammeRecordingsStorageKey(collectionName);
+    return kiccCacheThenFetch({
+      key: storageKey,
+      readCache: function () {
+        return kiccTimedStorageGet(localStorage, storageKey);
+      },
+      writeCache: function (payload) {
+        kiccTimedStorageSet(localStorage, storageKey, payload);
+      },
+      parseCached: function (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.recordings)) {
+          return sortProgrammeRecordingCollection(parsed.recordings);
+        }
+        return null;
+      },
+      serialize: function (recordings) {
+        return JSON.stringify({
+          v: 2,
+          collectionName: collectionName,
+          recordingsLimit: PROGRAMME_RECORDING_COLLECTION_LIMIT,
+          recordings: recordings,
+        });
+      },
+      fetchFresh: function () {
+        return fetch(getProgrammeRecordingsCollectionUrl(collectionName), {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        })
+          .then(function (resp) {
+            if (!resp.ok) throw new Error("HTTP " + resp.status);
+            return resp.json();
+          })
+          .then(function (data) {
+            return sortProgrammeRecordingCollection(
+              data && Array.isArray(data.recordings) ? data.recordings : [],
+            );
+          });
+      },
+      onRefresh: function (fresh, isBackground) {
+        if (!isBackground || !programmeRecordingCollectionState.rendered) return;
+        var nextMap = Object.assign(
+          {},
+          programmeRecordingCollectionState.collectionMap,
+        );
+        nextMap[collectionName] = fresh;
+        renderProgrammeRecordingCollections(nextMap);
+      },
+    });
+  };
+
+  const loadProgrammeRecordingCollections = () => {
+    if (!document.getElementById("programmes-recording-collections-carousel")) {
+      return;
+    }
+
+    var wrap = document.getElementById("programme-series");
+    if (wrap) wrap.hidden = false;
+    setProgrammeRecordingsStatus(true, false);
+
+    Promise.all(
+      PROGRAMME_RECORDING_COLLECTIONS.map(function (collection) {
+        return fetchProgrammeRecordingCollection(collection.collectionName).catch(
+          function (err) {
+            console.warn(
+              "Failed to load programme recordings for " +
+                collection.collectionName,
+              err,
+            );
+            return [];
+          },
+        );
+      }),
+    ).then(function (results) {
+      var collectionMap = Object.create(null);
+      PROGRAMME_RECORDING_COLLECTIONS.forEach(function (collection, index) {
+        collectionMap[collection.collectionName] = results[index] || [];
+      });
+      renderProgrammeRecordingCollections(collectionMap);
+    });
+  };
+
+  const setLegacyRecordingItem = (buttonEl) => {
+    if (legacyRecordingButton) {
+      legacyRecordingButton.classList.remove("is-playing");
+      legacyRecordingButton.setAttribute("aria-pressed", "false");
+      var oldIcon = legacyRecordingButton.querySelector(
+        ".programmes-recording-play-icon i",
+      );
+      if (oldIcon) oldIcon.className = "fas fa-play";
+    }
+    legacyRecordingButton = buttonEl || null;
+    if (legacyRecordingButton) {
+      legacyRecordingButton.classList.add("is-playing");
+      legacyRecordingButton.setAttribute("aria-pressed", "true");
+      var newIcon = legacyRecordingButton.querySelector(
+        ".programmes-recording-play-icon i",
+      );
+      if (newIcon) newIcon.className = "fas fa-pause";
+    }
+  };
+
+  const stopLegacyProgrammeRecording = () => {
     var playerWrap = document.getElementById("programmes-recording-player");
     var audio = document.getElementById("programmes-recording-audio");
-
     if (audio) {
       audio.pause();
       audio.removeAttribute("src");
       audio.load();
     }
-    if (playerWrap) {
-      playerWrap.hidden = true;
-    }
-    setActiveRecordingItem(null);
+    if (playerWrap) playerWrap.hidden = true;
+    setLegacyRecordingItem(null);
   };
 
-  const playRecording = (recording, buttonEl) => {
+  const playLegacyProgrammeRecording = (recording, buttonEl) => {
     var playerWrap = document.getElementById("programmes-recording-player");
     var audio = document.getElementById("programmes-recording-audio");
     var titleEl = document.getElementById("programmes-recording-now-title");
     var dateEl = document.getElementById("programmes-recording-now-date");
     var artEl = document.getElementById("programmes-recording-art");
-
     if (!playerWrap || !audio || !recording || !recording.listenUrl) return;
-
     if (!isDirectStreamUrl(recording.listenUrl)) {
       window.open(recording.listenUrl, "_blank", "noopener,noreferrer");
       return;
     }
-
-    setActiveRecordingItem(buttonEl);
-
-    if (titleEl) {
-      titleEl.textContent = recording.name || "Recording";
-    }
-    if (dateEl) {
-      dateEl.textContent = getRecordingDateLabel(recording);
-    }
-
+    pauseProgrammeRecordingSeriesPlayer();
+    setLegacyRecordingItem(buttonEl);
+    if (titleEl) titleEl.textContent = recording.name || "Recording";
+    if (dateEl) dateEl.textContent = getRecordingDateLabel(recording);
     if (artEl) {
       if (recording.imageUrl) {
         artEl.src = recording.imageUrl;
@@ -7462,155 +8241,99 @@
         artEl.hidden = true;
       }
     }
-
     playerWrap.hidden = false;
-
-    if (audio.src !== recording.listenUrl) {
-      audio.src = recording.listenUrl;
-    }
-
+    if (audio.src !== recording.listenUrl) audio.src = recording.listenUrl;
     audio.play().catch(function (err) {
       console.error("Failed to play recording", err);
     });
-
     playerWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
-  const renderRecordings = (recordings) => {
-    var wrap = document.getElementById("programmes-recordings-wrap");
-    var list = document.getElementById("programmes-recordings-list");
+  const renderLegacyProgrammeRecordings = (recordings) => {
+    var dom = getLegacyProgrammeRecordingsDom();
+    var wrap = dom.wrap;
+    var list = dom.list;
     var audio = document.getElementById("programmes-recording-audio");
     var playerWrap = document.getElementById("programmes-recording-player");
-
     if (!wrap || !list) return;
 
-    var playable = Array.isArray(recordings)
-      ? recordings.filter(function (r) {
-          return r && typeof r.listenUrl === "string" && r.listenUrl.trim() !== "";
-        })
-      : [];
-
-    if (playable.length === 0) {
+    var playable = sortProgrammeRecordings(recordings);
+    if (dom.limit) {
+      playable = playable.slice(0, dom.limit);
+    }
+    if (!playable.length) {
       wrap.hidden = true;
       list.innerHTML = "";
-      if (audio) {
-        audio.pause();
-        audio.removeAttribute("src");
-      }
-      if (playerWrap) {
-        playerWrap.hidden = true;
-      }
-      setActiveRecordingItem(null);
+      stopLegacyProgrammeRecording();
       return;
     }
 
     wrap.hidden = false;
     list.innerHTML = "";
-    setActiveRecordingItem(null);
-    if (audio) {
-      audio.pause();
-      audio.removeAttribute("src");
-    }
-    if (playerWrap) {
-      playerWrap.hidden = true;
-    }
+    setLegacyRecordingItem(null);
+    if (playerWrap) playerWrap.hidden = true;
 
-    playable
-      .slice()
-      .sort(function (a, b) {
-        return getRecordingSortTime(b) - getRecordingSortTime(a);
-      })
-      .forEach(function (recording) {
-        var item = document.createElement("li");
-        item.className = "programmes-recording-item";
-
-        var button = document.createElement("button");
-        button.type = "button";
-        button.className = "programmes-recording-button";
-        button.setAttribute("aria-pressed", "false");
-
-        if (recording.imageUrl) {
-          var thumb = document.createElement("img");
-          thumb.className = "programmes-recording-thumb";
-          thumb.src = recording.imageUrl;
-          thumb.alt = "";
-          thumb.width = 56;
-          thumb.height = 56;
-          thumb.loading = "lazy";
-          thumb.decoding = "async";
-          thumb.referrerPolicy = "no-referrer";
-          button.appendChild(thumb);
-        } else {
-          var iconWrap = document.createElement("span");
-          iconWrap.className = "programmes-recording-thumb programmes-recording-thumb-fallback";
-          iconWrap.innerHTML = '<i class="fas fa-headphones" aria-hidden="true"></i>';
-          button.appendChild(iconWrap);
-        }
-
-        var body = document.createElement("span");
-        body.className = "programmes-recording-body";
-
-        var name = document.createElement("span");
-        name.className = "programmes-recording-name";
-        name.textContent = recording.name || "Recording";
-
-        var date = document.createElement("span");
-        date.className = "programmes-recording-date";
-        date.textContent = getRecordingDateLabel(recording);
-
-        body.appendChild(name);
-        body.appendChild(date);
-        button.appendChild(body);
-
-        var playIcon = document.createElement("span");
-        playIcon.className = "programmes-recording-play-icon";
-        playIcon.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
-        button.appendChild(playIcon);
-
-        button.addEventListener("click", function () {
-          playRecording(recording, button);
-        });
-
-        item.appendChild(button);
-        list.appendChild(item);
+    playable.forEach(function (recording) {
+      var item = document.createElement("li");
+      item.className = "programmes-recording-item";
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "programmes-recording-button";
+      button.setAttribute("aria-pressed", "false");
+      if (recording.imageUrl) {
+        var thumb = document.createElement("img");
+        thumb.className = "programmes-recording-thumb";
+        thumb.src = recording.imageUrl;
+        thumb.alt = "";
+        thumb.width = 56;
+        thumb.height = 56;
+        thumb.loading = "lazy";
+        thumb.decoding = "async";
+        thumb.referrerPolicy = "no-referrer";
+        button.appendChild(thumb);
+      } else {
+        var iconWrap = document.createElement("span");
+        iconWrap.className =
+          "programmes-recording-thumb programmes-recording-thumb-fallback";
+        iconWrap.innerHTML = '<i class="fas fa-headphones" aria-hidden="true"></i>';
+        button.appendChild(iconWrap);
+      }
+      var body = document.createElement("span");
+      body.className = "programmes-recording-body";
+      var name = document.createElement("span");
+      name.className = "programmes-recording-name";
+      name.textContent = recording.name || "Recording";
+      var date = document.createElement("span");
+      date.className = "programmes-recording-date";
+      date.textContent = getRecordingDateLabel(recording);
+      body.appendChild(name);
+      body.appendChild(date);
+      button.appendChild(body);
+      var playIcon = document.createElement("span");
+      playIcon.className = "programmes-recording-play-icon";
+      playIcon.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+      button.appendChild(playIcon);
+      button.addEventListener("click", function () {
+        playLegacyProgrammeRecording(recording, button);
       });
+      item.appendChild(button);
+      list.appendChild(item);
+    });
 
     if (audio && !audio.dataset.bound) {
       audio.dataset.bound = "true";
-      audio.addEventListener("play", function () {
-        if (activeRecordingButton) {
-          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
-          if (icon) {
-            icon.className = "fas fa-pause";
-          }
-        }
-      });
       audio.addEventListener("pause", function () {
-        if (activeRecordingButton) {
-          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
-          if (icon) {
-            icon.className = "fas fa-play";
-          }
-        }
-        if (audio.ended) {
-          setActiveRecordingItem(null);
-        }
+        if (audio.ended) setLegacyRecordingItem(null);
       });
       audio.addEventListener("ended", function () {
-        if (activeRecordingButton) {
-          var icon = activeRecordingButton.querySelector(".programmes-recording-play-icon i");
-          if (icon) {
-            icon.className = "fas fa-play";
-          }
-        }
-        setActiveRecordingItem(null);
+        setLegacyRecordingItem(null);
       });
     }
 
     var closeBtn = document.getElementById("programmes-recording-close");
     if (closeBtn && !closeBtn.dataset.bound) {
       closeBtn.dataset.bound = "true";
-      closeBtn.addEventListener("click", stopRecording);
+      closeBtn.addEventListener("click", stopLegacyProgrammeRecording);
     }
   };
 
@@ -8202,7 +8925,12 @@
     latestProgrammeRecordings = recordings;
     renderProgrammeTable(programmes);
     renderProgrammeHighlights(programmes);
-    renderRecordings(recordings);
+    if (
+      document.getElementById("programmes-recent-recordings-list") ||
+      document.getElementById("programmes-recordings-list")
+    ) {
+      renderLegacyProgrammeRecordings(recordings);
+    }
     renderNextUpEvent(programmes);
     if (isPrayerTimesPage()) {
       prayerTimesHubState.programmes = programmes;
@@ -11777,6 +12505,7 @@
     if (isActivitiesPage()) {
       setLiveStreamStatus();
       loadProgrammes();
+      loadProgrammeRecordingCollections();
       return;
     }
     if (isProjectsPage()) {
@@ -11809,6 +12538,7 @@
     initContactPageMotion();
     if (isActivitiesPage()) {
       initProgrammesPageMotion();
+      loadProgrammeRecordingCollections();
     }
     initContactDirections();
     initContactFormEnhancements();

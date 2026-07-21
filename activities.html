@@ -90,8 +90,7 @@
     integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   
-    <link rel="stylesheet" href="assets/css/main.css?v=1783895440635">
-  
+    <link rel="stylesheet" href="assets/css/main.css?v=1784595197311">
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="//code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -125,7 +124,9 @@
     });
   </script>
   <!-- Google Analytics loads only after Analytics consent (see scripts) -->
-  <script defer type="text/javascript" src="assets/js/scripts.js?v=1783895440635"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.min.js"
+    crossorigin="anonymous"></script>
+  <script defer type="text/javascript" src="assets/js/scripts.js?v=1784595197311"></script>
   <script>
     (function () {
       var hasConsent = /(?:^|;\s*)kicc-cookie-consent=/.test(document.cookie)
@@ -183,6 +184,7 @@
                   </div>
                   <div class="col-md-4 kicc-nav-mega-col">
                     <p class="kicc-nav-mega-label">Listen &amp; updates</p>
+                    <a class="kicc-nav-mega-link" href="activities.html#programme-series">Programme series</a>
                     <a class="kicc-nav-mega-link" href="activities.html#live-audio-recordings">Live audio &amp; recordings</a>
                     <a class="kicc-nav-mega-link" href="https://mixlr.com/tralee-masjid/showreel/"
                       target="_blank" rel="noopener noreferrer">Previous talks</a>
@@ -314,6 +316,7 @@
       <ul class="programmes-section-nav-list">
         <li><a href="#this-week">This week</a></li>
         <li><a href="#programme-guide">Programme guide</a></li>
+        <li><a href="#programme-series">Programme series</a></li>
         <li><a href="#live-audio-recordings">Live audio</a></li>
         <li><a href="#how-to-join">How to join</a></li>
       </ul>
@@ -516,45 +519,133 @@
           </article>
         </div>
 
-        <div id="programmes-recordings-wrap" class="programmes-recordings-wrap prog-recordings" hidden>
-          <header class="programmes-recordings-header">
-            <div>
-              <h3 id="recordings-heading" class="programmes-recordings-heading">Recent recordings</h3>
-              <p class="programmes-recordings-sublead">Tap a talk to play it here</p>
-            </div>
-            <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank"
-              rel="noopener noreferrer" class="programmes-link-more programmes-link-more-subtle">
-              Mixlr archive <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-            </a>
-          </header>
-          <div id="programmes-recording-player" class="programmes-recording-player" hidden
-            aria-live="polite">
-            <div class="programmes-recording-player-bar">
-              <div class="programmes-recording-player-label">
-                <i class="fas fa-circle programmes-recording-pulse" aria-hidden="true"></i>
-                Now playing
+        <div class="programmes-recordings-suite prog-recordings">
+          <div id="programmes-recent-recordings-wrap"
+            class="programmes-recordings-wrap programmes-recordings-wrap--recent" hidden>
+            <header class="programmes-recordings-header">
+              <div>
+                <h3 id="recordings-recent-heading" class="programmes-recordings-heading">Recent recordings</h3>
+                <p class="programmes-recordings-sublead">The six latest talks from across our programmes. Tap any to play.</p>
               </div>
-              <button type="button" id="programmes-recording-close"
-                class="programmes-recording-close" aria-label="Stop and close player">
-                <span aria-hidden="true">Close</span>
-                <i class="fas fa-times" aria-hidden="true"></i>
-              </button>
-            </div>
-            <div class="programmes-recording-now-playing">
-              <img id="programmes-recording-art" class="programmes-recording-art" alt="Programme recording artwork"
-                width="72" height="72" hidden>
-              <div class="programmes-recording-now-meta">
-                <p id="programmes-recording-now-title" class="programmes-recording-now-title"></p>
-                <p id="programmes-recording-now-date" class="programmes-recording-now-date"></p>
+            </header>
+            <div id="programmes-recording-player" class="programmes-recording-player" hidden
+              aria-live="polite">
+              <div class="programmes-recording-player-bar">
+                <div class="programmes-recording-player-label">
+                  <i class="fas fa-circle programmes-recording-pulse" aria-hidden="true"></i>
+                  Now playing
+                </div>
+                <button type="button" id="programmes-recording-close"
+                  class="programmes-recording-close" aria-label="Stop and close player">
+                  <span aria-hidden="true">Close</span>
+                  <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
               </div>
+              <div class="programmes-recording-now-playing">
+                <img id="programmes-recording-art" class="programmes-recording-art" alt="Programme recording artwork"
+                  width="72" height="72" hidden>
+                <div class="programmes-recording-now-meta">
+                  <p id="programmes-recording-now-title" class="programmes-recording-now-title"></p>
+                  <p id="programmes-recording-now-date" class="programmes-recording-now-date"></p>
+                </div>
+              </div>
+              <audio id="programmes-recording-audio" class="programmes-recording-audio" controls
+                preload="none"></audio>
             </div>
-            <audio id="programmes-recording-audio" class="programmes-recording-audio" controls
-              preload="none"></audio>
+            <ul id="programmes-recent-recordings-list" class="programmes-recordings-list list-unstyled mb-0"
+              aria-labelledby="recordings-recent-heading">
+              <!-- Latest recordings from weekly programmes API -->
+            </ul>
           </div>
-          <ul id="programmes-recordings-list" class="programmes-recordings-list list-unstyled mb-0"
-            aria-labelledby="recordings-heading">
-            <!-- inserted by renderRecordings -->
-          </ul>
+
+          <div id="programme-series"
+            class="programmes-recordings-wrap programmes-recordings-wrap--collections" hidden>
+            <header class="programmes-recordings-header">
+              <div>
+                <h3 id="recordings-collections-heading" class="programmes-recordings-heading">Programme series</h3>
+                <p class="programmes-recordings-sublead">Pick a series to play every talk in order, oldest first.</p>
+              </div>
+              <a href="https://mixlr.com/tralee-masjid/showreel/" target="_blank"
+                rel="noopener noreferrer" class="programmes-link-more programmes-link-more-subtle">
+                Mixlr archive <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+              </a>
+            </header>
+            <p id="programmes-recordings-loading" class="programmes-recordings-status" role="status" hidden>
+              <span class="prayer-loading-spinner" aria-hidden="true"></span>
+              Loading recordings&hellip;
+            </p>
+            <p id="programmes-recordings-empty" class="programmes-recordings-status" role="status" hidden>
+              No programme series are available right now. Check back after the next programme.
+            </p>
+            <div id="programmes-recording-collections-carousel-stage"
+              class="programmes-recording-collections-stage" hidden>
+              <div id="programmes-recording-collections-scroll" class="programmes-recording-collections-scroll-wrap"
+                tabindex="0" role="region" aria-labelledby="recordings-collections-heading">
+                <div id="programmes-recording-collections-carousel"
+                  class="programmes-recording-collections-track">
+                  <!-- Programme series cards -->
+                </div>
+              </div>
+            </div>
+            <div id="programmes-recording-series-panel" class="programmes-recording-series-panel" hidden>
+              <header class="programmes-recording-series-head">
+                <h4 id="programmes-recording-series-title" class="programmes-recording-series-title"></h4>
+                <p id="programmes-recording-series-count" class="programmes-recording-series-count"></p>
+              </header>
+              <div id="programmes-recording-series-player"
+                class="programmes-recording-amplitude programmes-recording-amplitude-kicc">
+                <div class="programmes-recording-amplitude-now">
+                  <div class="programmes-recording-amplitude-art-wrap">
+                    <img class="programmes-recording-amplitude-art"
+                      data-amplitude-song-info="cover_art_url"
+                      data-amplitude-playlist="programme-series" alt="" width="72" height="72">
+                    <span class="programmes-recording-amplitude-art-fallback" aria-hidden="true">
+                      <i class="fas fa-headphones"></i>
+                    </span>
+                  </div>
+                  <div class="programmes-recording-amplitude-meta">
+                    <p class="programmes-recording-amplitude-title"
+                      data-amplitude-song-info="name"
+                      data-amplitude-playlist="programme-series"></p>
+                    <p class="programmes-recording-amplitude-date"
+                      data-amplitude-song-info="artist"
+                      data-amplitude-playlist="programme-series"></p>
+                  </div>
+                </div>
+                <div class="programmes-recording-amplitude-progress">
+                  <input type="range" class="programmes-recording-amplitude-slider amplitude-song-slider"
+                    data-amplitude-playlist="programme-series" min="0" max="100" value="0"
+                    aria-label="Seek within talk">
+                  <div class="programmes-recording-amplitude-times">
+                    <span class="programmes-recording-amplitude-time amplitude-current-time"
+                      data-amplitude-playlist="programme-series">0:00</span>
+                    <span class="programmes-recording-amplitude-time amplitude-duration-time"
+                      data-amplitude-playlist="programme-series">0:00</span>
+                  </div>
+                </div>
+                <div class="programmes-recording-amplitude-controls">
+                  <button type="button" class="programmes-recording-amplitude-btn amplitude-prev"
+                    data-amplitude-playlist="programme-series" aria-label="Previous talk in series">
+                    <i class="fas fa-step-backward" aria-hidden="true"></i>
+                  </button>
+                  <button type="button"
+                    class="programmes-recording-amplitude-btn programmes-recording-amplitude-main-play amplitude-play-pause"
+                    data-amplitude-playlist="programme-series" aria-label="Play or pause series">
+                    <i class="fas fa-play programmes-recording-amplitude-play-icon" aria-hidden="true"></i>
+                    <i class="fas fa-pause programmes-recording-amplitude-pause-icon" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" class="programmes-recording-amplitude-btn amplitude-next"
+                    data-amplitude-playlist="programme-series" aria-label="Next talk in series">
+                    <i class="fas fa-step-forward" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+              <ol id="programmes-recording-series-list" class="programmes-recording-playlist list-unstyled mb-0"
+                aria-labelledby="programmes-recording-series-title">
+                <!-- Selected series track list -->
+              </ol>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -859,6 +950,7 @@
           <ul class="site-footer-links list-unstyled mb-0">
             <li><a href="activities.html#adult-programmes">Adult programmes</a></li>
             <li><a href="madrasa.html#class-times">Children's madrasa</a></li>
+            <li><a href="activities.html#programme-series">Programme series</a></li>
             <li><a href="activities.html#live-audio-recordings">Live audio &amp; recordings</a></li>
             <li><a href="prayer-times.html#prayer-times-jumuah">Jumu&rsquo;ah Salah</a></li>
             <li><a href="prayer-times.html">Salah timetable</a></li>

@@ -2717,6 +2717,19 @@ body.kicc-nav-open {
 	align-items: stretch;
 }
 
+.notices-showcase-grid[data-notice-cols="1"] {
+	grid-template-columns: minmax(0, 22rem);
+	justify-content: center;
+}
+
+.notices-showcase-grid[data-notice-cols="2"] {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.notices-showcase-grid[data-notice-cols="3"] {
+	grid-template-columns: repeat(3, 1fr);
+}
+
 .notices-card {
 	position: relative;
 	display: flex;
@@ -3956,6 +3969,7 @@ body.cookie-preferences-active {
 }
 
 .page-activities #live-audio-recordings,
+.page-activities #programme-series,
 .page-activities #this-week,
 .page-activities #programme-guide,
 .page-activities #how-to-join,
@@ -4322,6 +4336,28 @@ button.programmes-next-event-details-btn:focus-visible {
 	border-top: 1px dashed rgba(10, 138, 142, 0.2);
 }
 
+.programmes-recordings-header-links {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 0.35rem;
+}
+
+.programmes-recordings-series-promo {
+	margin: 1rem 0 0;
+	text-align: center;
+}
+
+.programmes-recordings-suite .programmes-recordings-wrap--recent:first-child {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: none;
+}
+
+.programmes-recordings-suite .programmes-recordings-wrap--collections {
+	margin-top: 1.15rem;
+}
+
 .programmes-recordings-header {
 	display: flex;
 	align-items: flex-start;
@@ -4343,6 +4379,463 @@ button.programmes-next-event-details-btn:focus-visible {
 	margin: 0.2rem 0 0;
 	font-size: 0.88rem;
 	color: var(--kicc-text-muted);
+}
+
+.programmes-recordings-status {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+	margin: 0;
+	padding: 1.5rem 1rem;
+	color: var(--kicc-teal-deep);
+	font-weight: 600;
+	font-size: 0.92rem;
+	text-align: center;
+}
+
+.programmes-recording-collections-stage {
+	margin-bottom: 0.35rem;
+}
+
+.programmes-recording-collections-scroll-wrap {
+	position: relative;
+	overflow-x: auto;
+	margin: 0 -0.35rem;
+	padding: 0.35rem 0 0.85rem;
+	-webkit-overflow-scrolling: touch;
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: 0.75rem;
+	scrollbar-width: thin;
+	scrollbar-color: var(--kicc-teal-muted) transparent;
+}
+
+.programmes-recording-collections-scroll-wrap::-webkit-scrollbar {
+	height: 6px;
+}
+
+.programmes-recording-collections-scroll-wrap::-webkit-scrollbar-thumb {
+	background: rgba(10, 138, 142, 0.35);
+	border-radius: 999px;
+}
+
+.programmes-recording-collections-track {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	gap: 0.85rem;
+	width: max-content;
+	min-width: 100%;
+	padding: 0.15rem 0.75rem 0.25rem;
+}
+
+.programmes-recording-collection-card {
+	flex: 0 0 min(10.5rem, 72vw);
+	display: flex;
+	flex-direction: column;
+	gap: 0.65rem;
+	padding: 0;
+	border: 2px solid rgba(10, 138, 142, 0.12);
+	border-radius: 0.95rem;
+	background: rgba(255, 255, 255, 0.96);
+	box-shadow: 0 8px 24px rgba(13, 91, 94, 0.08);
+	cursor: pointer;
+	text-align: left;
+	scroll-snap-align: start;
+	transition:
+		border-color 0.15s ease,
+		box-shadow 0.15s ease,
+		transform 0.15s ease;
+}
+
+.programmes-recording-collection-card:hover,
+.programmes-recording-collection-card:focus {
+	border-color: rgba(10, 138, 142, 0.34);
+	box-shadow: 0 12px 28px rgba(13, 91, 94, 0.12);
+	outline: none;
+	transform: translateY(-2px);
+}
+
+.programmes-recording-collection-card.is-active {
+	border-color: var(--kicc-teal);
+	box-shadow: 0 0 0 1px rgba(10, 138, 142, 0.18),
+		0 12px 28px rgba(13, 91, 94, 0.14);
+}
+
+.programmes-recording-collection-card-cover {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	border-radius: 0.82rem 0.82rem 0 0;
+	aspect-ratio: 1 / 1;
+	background: rgba(10, 138, 142, 0.08);
+}
+
+.programmes-recording-collection-card-image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.programmes-recording-collection-card-play {
+	position: absolute;
+	right: 0.55rem;
+	bottom: 0.55rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.94);
+	color: var(--kicc-teal-deep);
+	box-shadow: 0 4px 14px rgba(13, 91, 94, 0.18);
+	font-size: 0.78rem;
+}
+
+.programmes-recording-collection-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	padding: 0 0.75rem 0.85rem;
+	min-width: 0;
+}
+
+.programmes-recording-collection-card-title {
+	font-family: var(--kicc-font-display);
+	font-size: 1rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	line-height: 1.25;
+}
+
+.programmes-recording-collection-card-count {
+	font-size: 0.78rem;
+	color: var(--kicc-text-muted);
+}
+
+.programmes-recording-series-panel {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	margin-top: 0.85rem;
+	padding: 1rem;
+	border-radius: var(--kicc-radius-lg);
+	background: rgba(255, 255, 255, 0.92);
+	border: 1px solid rgba(10, 138, 142, 0.12);
+	box-shadow: 0 8px 28px rgba(13, 91, 94, 0.08);
+}
+
+.programmes-recording-series-head {
+	margin-bottom: 0.85rem;
+}
+
+.programmes-recording-series-title {
+	margin: 0;
+	font-family: var(--kicc-font-display);
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	text-transform: none;
+}
+
+.programmes-recording-series-count {
+	margin: 0.2rem 0 0;
+	font-size: 0.82rem;
+	color: var(--kicc-text-muted);
+}
+
+.programmes-recording-amplitude {
+	position: relative;
+	margin-bottom: 0.85rem;
+	padding: 0.85rem;
+	border-radius: 14px;
+	background: linear-gradient(
+		180deg,
+		rgba(232, 248, 248, 0.95) 0%,
+		rgba(255, 255, 255, 0.98) 100%
+	);
+	box-shadow: inset 0 0 0 1px rgba(10, 138, 142, 0.1);
+}
+
+.programmes-recording-amplitude-now {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.programmes-recording-amplitude-art-wrap {
+	position: relative;
+	width: 3.25rem;
+	height: 3.25rem;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.programmes-recording-amplitude-art {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 0.55rem;
+	object-fit: cover;
+}
+
+.programmes-recording-amplitude-art-wrap:has(
+		.programmes-recording-amplitude-art[src]:not([src=""])
+	)
+	.programmes-recording-amplitude-art-fallback {
+	display: none;
+}
+
+.programmes-recording-amplitude-art-fallback {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 0.55rem;
+	background: rgba(10, 138, 142, 0.1);
+	color: var(--kicc-teal);
+	font-size: 1rem;
+}
+
+.programmes-recording-amplitude-kicc:not(.has-active-track)
+	.programmes-recording-amplitude-now {
+	display: none;
+}
+
+.programmes-recording-amplitude-meta {
+	min-width: 0;
+}
+
+.programmes-recording-amplitude-title {
+	margin: 0;
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	line-height: 1.35;
+	font-size: 0.92rem;
+}
+
+.programmes-recording-amplitude-date {
+	margin: 0.15rem 0 0;
+	font-size: 0.78rem;
+	color: var(--kicc-text-muted);
+	line-height: 1.35;
+}
+
+.programmes-recording-amplitude-progress {
+	margin-bottom: 0.65rem;
+}
+
+.programmes-recording-amplitude-slider {
+	width: 100%;
+	height: 0.35rem;
+	margin: 0 0 0.35rem;
+	appearance: none;
+	border-radius: 999px;
+	background: rgba(10, 138, 142, 0.16);
+	cursor: pointer;
+}
+
+.programmes-recording-amplitude-slider::-webkit-slider-thumb {
+	appearance: none;
+	width: 0.85rem;
+	height: 0.85rem;
+	border: none;
+	border-radius: 50%;
+	background: var(--kicc-gold);
+	box-shadow: 0 1px 4px rgba(13, 91, 94, 0.28);
+}
+
+.programmes-recording-amplitude-slider::-moz-range-thumb {
+	width: 0.85rem;
+	height: 0.85rem;
+	border: none;
+	border-radius: 50%;
+	background: var(--kicc-gold);
+	box-shadow: 0 1px 4px rgba(13, 91, 94, 0.28);
+}
+
+.programmes-recording-amplitude-times {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	font-size: 0.78rem;
+	color: var(--kicc-text-muted);
+}
+
+.programmes-recording-amplitude-controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.65rem;
+}
+
+.programmes-recording-amplitude-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.35rem;
+	height: 2.35rem;
+	padding: 0;
+	border: none;
+	border-radius: 999px;
+	background: rgba(10, 138, 142, 0.12);
+	color: var(--kicc-teal-deep);
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease,
+		transform 0.15s ease;
+}
+
+.programmes-recording-amplitude-btn:hover,
+.programmes-recording-amplitude-btn:focus {
+	background: var(--kicc-teal);
+	color: #fff;
+	outline: none;
+	transform: translateY(-1px);
+}
+
+.programmes-recording-amplitude-main-play {
+	width: 2.75rem;
+	height: 2.75rem;
+	background: var(--kicc-teal);
+	color: #fff;
+}
+
+.programmes-recording-amplitude-main-play .fas {
+	color: inherit;
+}
+
+.programmes-recording-amplitude-main-play:hover,
+.programmes-recording-amplitude-main-play:focus {
+	background: var(--kicc-teal-dark);
+}
+
+.programmes-recording-amplitude-play-icon,
+.programmes-recording-amplitude-pause-icon {
+	pointer-events: none;
+	font-size: 1rem;
+	line-height: 1;
+}
+
+.programmes-recording-amplitude-main-play:not(.amplitude-playing)
+	.programmes-recording-amplitude-pause-icon,
+.programmes-recording-amplitude-main-play.amplitude-paused
+	.programmes-recording-amplitude-pause-icon {
+	display: none;
+}
+
+.programmes-recording-amplitude-main-play.amplitude-playing
+	.programmes-recording-amplitude-play-icon {
+	display: none;
+}
+
+.programmes-recording-track.is-active .programmes-recording-track-icon .fas {
+	color: inherit;
+}
+
+.programmes-recording-playlist {
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	max-height: 18rem;
+	overflow: auto;
+	padding-right: 0.15rem;
+}
+
+.programmes-recording-track {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: 0.7rem;
+	width: 100%;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid rgba(10, 138, 142, 0.12);
+	border-radius: 0.75rem;
+	background: #fff;
+	text-align: left;
+	cursor: pointer;
+	transition:
+		border-color 0.15s ease,
+		box-shadow 0.15s ease,
+		background 0.15s ease,
+		transform 0.15s ease;
+}
+
+.programmes-recording-track:hover,
+.programmes-recording-track:focus {
+	border-color: rgba(10, 138, 142, 0.28);
+	box-shadow: 0 6px 18px rgba(13, 91, 94, 0.1);
+	outline: none;
+	transform: translateY(-1px);
+}
+
+.programmes-recording-track.is-active {
+	border-color: rgba(212, 168, 67, 0.55);
+	background: rgba(255, 249, 235, 0.95);
+	box-shadow: 0 8px 22px rgba(212, 168, 67, 0.16);
+}
+
+.programmes-recording-track-thumb,
+.programmes-recording-track-thumb-fallback {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 0.55rem;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.programmes-recording-track-thumb-fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(10, 138, 142, 0.1);
+	color: var(--kicc-teal);
+	font-size: 0.95rem;
+}
+
+.programmes-recording-track-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	min-width: 0;
+}
+
+.programmes-recording-track-name {
+	font-weight: 700;
+	color: var(--kicc-teal-deep);
+	line-height: 1.35;
+}
+
+.programmes-recording-track-meta {
+	font-size: 0.78rem;
+	color: var(--kicc-text-muted);
+	line-height: 1.35;
+}
+
+.programmes-recording-track-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 999px;
+	background: rgba(10, 138, 142, 0.1);
+	color: var(--kicc-teal);
+	flex-shrink: 0;
+}
+
+.programmes-recording-track.is-active .programmes-recording-track-icon {
+	background: var(--kicc-teal);
+	color: #fff;
 }
 
 .programmes-recording-player {
@@ -6748,6 +7241,12 @@ body.programme-details-modal-open {
 	margin-top: 0.5rem;
 	padding-top: 1.25rem;
 	border-top: 1px solid rgba(10, 138, 142, 0.1);
+}
+
+.programmes-recordings-suite.prog-recordings {
+	padding-top: 0;
+	border-top: none;
+	margin-top: 0.5rem;
 }
 
 .prog-dock {
@@ -10796,6 +11295,7 @@ a:focus-visible .kicc-external-icon {
 	transform: translateY(-10px) scale(1.03);
 	opacity: 1;
 	filter: none;
+	scroll-snap-stop: always;
 }
 
 .home-prayer-deck-card.is-current-prayer .home-prayer-deck-card-glow {
@@ -16428,12 +16928,6 @@ body.has-page-section-nav [id] {
 	background: transparent;
 }
 
-@media (max-width: 991px) {
-	.notices-showcase-grid {
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
-
 @media (max-width: 767px) {
 	.notices-spotlight-inner {
 		grid-template-columns: 1fr auto;
@@ -16467,8 +16961,11 @@ body.has-page-section-nav [id] {
 	}
 
 	.notices-showcase-grid {
-		grid-template-columns: 1fr;
 		gap: 1rem;
+	}
+
+	.notices-showcase-grid[data-notice-cols="3"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
 	.notices-card--featured {
@@ -17299,6 +17796,10 @@ body.has-page-section-nav [id] {
 
 	.programmes-upcoming-link {
 		justify-self: start;
+	}
+
+	.programmes-recording-collection-card {
+		flex-basis: min(11.5rem, 44vw);
 	}
 
 	.programmes-recordings-header {
