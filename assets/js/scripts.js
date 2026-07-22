@@ -59,7 +59,7 @@
       external: true,
     },
     "mixlr-showreel": {
-      href: "https://mixlr.com/tralee-masjid/showreel/",
+      href: "https://traleemasjid.mixlr.com/recordings",
       external: true,
     },
     "mixlr-events": {
@@ -86,6 +86,14 @@
     },
     "google-maps-directions": {
       href: "https://maps.app.goo.gl/Lya1necC8WXXpUE5A",
+      external: true,
+    },
+    "mymasjid-products": {
+      href: "https://mymasjid.uk/products",
+      external: true,
+    },
+    "mymasjid-tralee": {
+      href: "https://mymasjid.uk/live/traleemasjidkicc",
       external: true,
     },
   };
@@ -131,6 +139,12 @@
 
   const PROGRAMME_RECORDING_DEFAULT_ART = "assets/images/brand/logo.png";
   const PROGRAMME_RECORDING_SERIES_PLAYLIST = "programme-series";
+  const PROGRAMME_RECENT_PLAYLIST = "recent-recordings";
+  const RECENT_RECORDING_SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
+  const RECENT_RECORDING_SKIP_SECONDS = 15;
+  const RECENT_RECORDING_PROGRESS_KEY = "kicc-recent-recording-progress";
+  const RECENT_RECORDING_RESUME_MIN_SECONDS = 30;
+  const RECENT_RECORDING_PROGRESS_SAVE_MS = 10000;
   const PROGRAMME_RECORDING_COLLECTION_LIMIT = 50;
   const PROGRAMME_SERIES_PROGRESS_KEY = "kicc-programme-series-progress";
   const PROGRAMME_SERIES_PROGRESS_SAVE_MS = 10000;
@@ -343,6 +357,7 @@
     "kicc-random-hadith",
     "masjidProgrammes_programme_active_true_v2",
     "kicc-programme-series-progress",
+    "kicc-recent-recording-progress",
     "kicc-campaign-progress",
   ];
   const FUNCTIONAL_SESSION_KEYS = [
@@ -3297,6 +3312,13 @@
     {
       category: "functional",
       type: "localStorage",
+      name: "kicc-recent-recording-progress",
+      duration: "Until cleared",
+      purpose: "Remembers where you left off in recent recordings.",
+    },
+    {
+      category: "functional",
+      type: "localStorage",
       name: "masjidProgrammes_recordings_bayaan_v1",
       duration: "7 days",
       purpose: "Caches Bayaan programme recordings.",
@@ -3471,10 +3493,41 @@
     onProgressTimeUpdate: null,
     pagehideBound: false,
     awaitingResumeChoice: false,
+    speedIndex: 1,
+    volume: 1,
+    muted: false,
+    savedVolume: 1,
+    controlsBound: false,
+    keyboardBound: false,
+    carouselScrollBound: false,
+    lastScrolledTrackIndex: -1,
+    seekAudioEl: null,
+    onSeekTimeUpdate: null,
+    onSeekMetadata: null,
   };
 
   let latestProgrammeRecordings = [];
-  let legacyRecordingButton = null;
+  let programmeRecentRecordingState = {
+    recordings: [],
+    fingerprint: "",
+    initialized: false,
+    playerVisible: false,
+    shuffle: false,
+    speedIndex: 1,
+    volume: 1,
+    muted: false,
+    savedVolume: 1,
+    controlsBound: false,
+    keyboardBound: false,
+    awaitingResumeChoice: false,
+    pendingPlayIndex: -1,
+    progressAudioEl: null,
+    onProgressTimeUpdate: null,
+    progressLastSaveMs: 0,
+    seekAudioEl: null,
+    onSeekTimeUpdate: null,
+    onSeekMetadata: null,
+  };
   let cookieRegistryRendered = false;
   let cookiePrefsFeedbackTimer = null;
   let cookiePrefsClearButtonTimer = null;
@@ -7594,6 +7647,7 @@
 
     renderOngoingProgrammes(unscheduled);
     renderUpcomingEvents(upcomingEvents);
+    renderProgrammeOverview(todayProgrammes, byDay, todayKey);
   };
 
   const renderProgrammeTable = (programmes) => {
@@ -7965,6 +8019,8 @@
     );
 
     var finishStart = function () {
+      applyProgrammeSeriesPlaybackSettings();
+      bindProgrammeSeriesSeek();
       persistProgrammeSeriesProgressFromPlayer();
       syncProgrammeRecordingSeriesTrackUi();
     };
@@ -8006,11 +8062,417 @@
   };
 
   const setProgrammeRecordingSeriesPlaylistScope = () => {
-    var player = document.getElementById("programmes-recording-series-player");
-    if (!player) return;
-    player.querySelectorAll("[data-amplitude-playlist]").forEach(function (el) {
+    var panel = document.getElementById("programmes-recording-series-panel");
+    if (!panel) return;
+    panel.querySelectorAll("[data-amplitude-playlist]").forEach(function (el) {
       el.setAttribute("data-amplitude-playlist", PROGRAMME_RECORDING_SERIES_PLAYLIST);
     });
+  };
+
+  const isFormFieldKeyboardTarget = (event) => {
+    if (!event || !event.target) return false;
+    var tag = event.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return false;
+    if (event.target.isContentEditable) return false;
+    return true;
+  };
+
+  const isProgrammeSeriesPanelVisible = () => {
+    var panel = document.getElementById("programmes-recording-series-panel");
+    return !!(panel && !panel.hidden);
+  };
+
+  const isProgrammeSeriesPlayerActive = () => {
+    if (!isProgrammeSeriesPanelVisible()) return false;
+    if (typeof window.Amplitude === "undefined") return false;
+    if (!programmeRecordingCollectionState.initialized) return false;
+    return window.Amplitude.getActivePlaylist() === PROGRAMME_RECORDING_SERIES_PLAYLIST;
+  };
+
+  const applyProgrammeSeriesPlaybackSettings = () => {
+    if (typeof window.Amplitude === "undefined") return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+    audio.playbackRate =
+      RECENT_RECORDING_SPEEDS[programmeRecordingCollectionState.speedIndex] || 1;
+    audio.volume = programmeRecordingCollectionState.muted
+      ? 0
+      : programmeRecordingCollectionState.volume;
+  };
+
+  const syncProgrammeSeriesSpeedUi = () => {
+    var speedBtn = document.getElementById("programmes-recording-series-speed");
+    if (!speedBtn) return;
+    var rate =
+      RECENT_RECORDING_SPEEDS[programmeRecordingCollectionState.speedIndex] || 1;
+    var label = speedBtn.querySelector(".recent-recording-speed-label");
+    if (label) {
+      label.textContent =
+        rate === 1 ? "1×" : String(rate).replace(/\.0$/, "") + "×";
+    }
+  };
+
+  const syncProgrammeSeriesVolumeUi = () => {
+    var volumeBtn = document.getElementById("programmes-recording-series-volume");
+    var volumeRange = document.getElementById(
+      "programmes-recording-series-volume-range",
+    );
+    var player = document.getElementById("programmes-recording-series-player");
+    if (volumeBtn) {
+      volumeBtn.setAttribute(
+        "aria-pressed",
+        programmeRecordingCollectionState.muted ? "true" : "false",
+      );
+      volumeBtn.classList.toggle("is-muted", programmeRecordingCollectionState.muted);
+    }
+    if (volumeRange) {
+      volumeRange.value = String(
+        Math.round(
+          (programmeRecordingCollectionState.muted
+            ? programmeRecordingCollectionState.savedVolume
+            : programmeRecordingCollectionState.volume) * 100,
+        ),
+      );
+    }
+    if (player) {
+      player.classList.toggle(
+        "is-muted",
+        programmeRecordingCollectionState.muted ||
+          programmeRecordingCollectionState.volume === 0,
+      );
+    }
+  };
+
+  const updateProgrammeSeriesPlayerMeta = (index) => {
+    var recordings = programmeRecordingCollectionState.recordings;
+    var recording = recordings[index];
+    if (!recording) return;
+
+    var titleEl = document.getElementById("programmes-recording-series-talk-title");
+    var dateEl = document.getElementById("programmes-recording-series-talk-date");
+    var detailEl = document.getElementById("programmes-recording-series-detail");
+    var artEl = document.getElementById("programmes-recording-series-art");
+    var playerShell = document.getElementById("programmes-recording-series-player");
+    var fallback = playerShell
+      ? playerShell.querySelector(".recent-recording-art-fallback")
+      : null;
+
+    if (titleEl) titleEl.textContent = recording.name || "Recording";
+    if (dateEl) dateEl.textContent = getRecordingDateLabel(recording);
+    if (detailEl) {
+      var detailLabel = getRecentRecordingDetailLabel(recording);
+      detailEl.textContent = detailLabel;
+      detailEl.hidden = !detailLabel;
+    }
+    if (artEl && fallback) {
+      if (recording.imageUrl) {
+        artEl.src = recording.imageUrl;
+        artEl.alt = recording.name || "Recording artwork";
+        artEl.hidden = false;
+        fallback.hidden = true;
+      } else {
+        artEl.removeAttribute("src");
+        artEl.hidden = true;
+        fallback.hidden = false;
+      }
+    }
+  };
+
+  const syncProgrammeSeriesSeekUi = () => {
+    if (typeof window.Amplitude === "undefined") return;
+    if (window.Amplitude.getActivePlaylist() !== PROGRAMME_RECORDING_SERIES_PLAYLIST) {
+      return;
+    }
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    var seek = document.getElementById("programmes-recording-series-seek");
+    var currentEl = document.getElementById("programmes-recording-series-current");
+    var durationEl = document.getElementById("programmes-recording-series-duration");
+    var duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    var current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+
+    if (durationEl) durationEl.textContent = formatRecordingClock(duration);
+    if (currentEl) currentEl.textContent = formatRecordingClock(current);
+    if (seek && duration > 0) {
+      seek.value = String(Math.min(100, (current / duration) * 100));
+    }
+  };
+
+  const bindProgrammeSeriesSeek = () => {
+    if (typeof window.Amplitude === "undefined") return;
+
+    var audio = window.Amplitude.getAudio();
+    var seek = document.getElementById("programmes-recording-series-seek");
+    if (!audio || !seek) return;
+
+    if (programmeRecordingCollectionState.seekAudioEl === audio) return;
+
+    if (
+      programmeRecordingCollectionState.seekAudioEl &&
+      programmeRecordingCollectionState.onSeekTimeUpdate
+    ) {
+      programmeRecordingCollectionState.seekAudioEl.removeEventListener(
+        "timeupdate",
+        programmeRecordingCollectionState.onSeekTimeUpdate,
+      );
+    }
+    if (
+      programmeRecordingCollectionState.seekAudioEl &&
+      programmeRecordingCollectionState.onSeekMetadata
+    ) {
+      programmeRecordingCollectionState.seekAudioEl.removeEventListener(
+        "loadedmetadata",
+        programmeRecordingCollectionState.onSeekMetadata,
+      );
+    }
+
+    programmeRecordingCollectionState.onSeekTimeUpdate = syncProgrammeSeriesSeekUi;
+    programmeRecordingCollectionState.onSeekMetadata = syncProgrammeSeriesSeekUi;
+    programmeRecordingCollectionState.seekAudioEl = audio;
+
+    audio.addEventListener(
+      "timeupdate",
+      programmeRecordingCollectionState.onSeekTimeUpdate,
+    );
+    audio.addEventListener(
+      "loadedmetadata",
+      programmeRecordingCollectionState.onSeekMetadata,
+    );
+
+    if (!seek.dataset.bound) {
+      seek.dataset.bound = "true";
+      seek.addEventListener("input", function () {
+        if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+        audio.currentTime = (Number(seek.value) / 100) * audio.duration;
+        syncProgrammeSeriesSeekUi();
+        persistProgrammeSeriesProgressFromPlayer();
+      });
+    }
+  };
+
+  const skipProgrammeSeriesBy = (seconds) => {
+    if (typeof window.Amplitude === "undefined") return;
+    if (window.Amplitude.getActivePlaylist() !== PROGRAMME_RECORDING_SERIES_PLAYLIST) {
+      return;
+    }
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+    var delta = Number(seconds) || 0;
+    if (!Number.isFinite(audio.currentTime)) return;
+    var duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    var maxTime = duration > 0 ? duration : audio.currentTime + Math.abs(delta);
+    audio.currentTime = Math.max(0, Math.min(maxTime, audio.currentTime + delta));
+    syncProgrammeSeriesSeekUi();
+    persistProgrammeSeriesProgressFromPlayer();
+  };
+
+  const getProgrammeSeriesAdjacentIndex = (direction) => {
+    var recordings = programmeRecordingCollectionState.recordings;
+    if (!recordings.length) return -1;
+
+    var current = getProgrammeRecordingSeriesActiveIndex();
+    if (current < 0) current = 0;
+
+    if (direction < 0) {
+      return current > 0 ? current - 1 : current;
+    }
+    return current < recordings.length - 1 ? current + 1 : current;
+  };
+
+  const playProgrammeSeriesTalkAtIndex = (index, startTime) => {
+    var recordings = programmeRecordingCollectionState.recordings;
+    if (!recordings || !recordings[index]) return;
+    if (typeof window.Amplitude === "undefined") return;
+
+    programmeRecordingCollectionState.awaitingResumeChoice = false;
+    hideProgrammeRecordingSeriesResumeChoice();
+    window.Amplitude.playPlaylistSongAtIndex(
+      index,
+      PROGRAMME_RECORDING_SERIES_PLAYLIST,
+    );
+    applyProgrammeSeriesPlaybackSettings();
+    bindProgrammeSeriesSeek();
+
+    var beginPlayback = function () {
+      if (window.Amplitude.getPlayerState() !== "playing") {
+        window.Amplitude.play();
+      }
+      updateProgrammeSeriesPlayerMeta(index);
+      syncProgrammeSeriesSeekUi();
+      syncProgrammeRecordingSeriesTrackUi();
+    };
+
+    if (Number(startTime) > 0) {
+      seekProgrammeSeriesPlayer(startTime, beginPlayback);
+    } else {
+      beginPlayback();
+    }
+  };
+
+  const closeProgrammeRecordingSeriesPanel = () => {
+    pauseProgrammeRecordingSeriesPlayer();
+    if (
+      programmeRecordingCollectionState.initialized &&
+      typeof window.Amplitude !== "undefined"
+    ) {
+      persistProgrammeSeriesProgressFromPlayer();
+    }
+    programmeRecordingCollectionState.lastScrolledTrackIndex = -1;
+    var panel = document.getElementById("programmes-recording-series-panel");
+    if (panel) panel.hidden = true;
+    var stage = document.getElementById(
+      "programmes-recording-collections-carousel-stage",
+    );
+    if (stage) {
+      stage.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
+  const bindProgrammeSeriesKeyboardShortcuts = () => {
+    if (programmeRecordingCollectionState.keyboardBound) return;
+    programmeRecordingCollectionState.keyboardBound = true;
+
+    document.addEventListener("keydown", function (event) {
+      if (!isProgrammeSeriesPlayerActive() || !isFormFieldKeyboardTarget(event)) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        var playBtn = document.getElementById("programmes-recording-series-play");
+        if (playBtn) playBtn.click();
+        return;
+      }
+
+      if (event.code === "ArrowLeft") {
+        event.preventDefault();
+        skipProgrammeSeriesBy(-RECENT_RECORDING_SKIP_SECONDS);
+        return;
+      }
+
+      if (event.code === "ArrowRight") {
+        event.preventDefault();
+        skipProgrammeSeriesBy(RECENT_RECORDING_SKIP_SECONDS);
+      }
+    });
+  };
+
+  const bindProgrammeSeriesControls = () => {
+    if (programmeRecordingCollectionState.controlsBound) return;
+
+    var playerShell = document.getElementById("programmes-recording-series-player");
+    if (!playerShell) return;
+
+    programmeRecordingCollectionState.controlsBound = true;
+
+    var backBtn = document.getElementById("programmes-recording-series-back");
+    var backHeadBtn = document.getElementById("programmes-recording-series-back-head");
+    var playBtn = document.getElementById("programmes-recording-series-play");
+    var skipBackBtn = document.getElementById("programmes-recording-series-skip-back");
+    var skipForwardBtn = document.getElementById("programmes-recording-series-skip-forward");
+    var prevBtn = document.getElementById("programmes-recording-series-prev");
+    var nextBtn = document.getElementById("programmes-recording-series-next");
+    var speedBtn = document.getElementById("programmes-recording-series-speed");
+    var volumeBtn = document.getElementById("programmes-recording-series-volume");
+    var volumeRange = document.getElementById(
+      "programmes-recording-series-volume-range",
+    );
+
+    if (backBtn) {
+      backBtn.addEventListener("click", closeProgrammeRecordingSeriesPanel);
+    }
+    if (backHeadBtn) {
+      backHeadBtn.addEventListener("click", closeProgrammeRecordingSeriesPanel);
+    }
+
+    if (playBtn) {
+      playBtn.addEventListener("click", function () {
+        if (typeof window.Amplitude === "undefined") return;
+        if (programmeRecordingCollectionState.awaitingResumeChoice) return;
+        var state = window.Amplitude.getPlayerState();
+        if (state === "playing") {
+          window.Amplitude.pause();
+          persistProgrammeSeriesProgressFromPlayer();
+        } else if (state === "paused") {
+          applyProgrammeSeriesPlaybackSettings();
+          window.Amplitude.play();
+        } else {
+          startProgrammeSeriesPlayback("restartSeries");
+        }
+        syncProgrammeRecordingSeriesTrackUi();
+      });
+    }
+
+    if (skipBackBtn) {
+      skipBackBtn.addEventListener("click", function () {
+        skipProgrammeSeriesBy(-RECENT_RECORDING_SKIP_SECONDS);
+      });
+    }
+
+    if (skipForwardBtn) {
+      skipForwardBtn.addEventListener("click", function () {
+        skipProgrammeSeriesBy(RECENT_RECORDING_SKIP_SECONDS);
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        var index = getProgrammeSeriesAdjacentIndex(-1);
+        var current = getProgrammeRecordingSeriesActiveIndex();
+        if (index >= 0 && index !== current) {
+          playProgrammeSeriesTalkAtIndex(index, 0);
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        var index = getProgrammeSeriesAdjacentIndex(1);
+        var current = getProgrammeRecordingSeriesActiveIndex();
+        if (index >= 0 && index !== current) {
+          playProgrammeSeriesTalkAtIndex(index, 0);
+        }
+      });
+    }
+
+    if (speedBtn) {
+      speedBtn.addEventListener("click", function () {
+        programmeRecordingCollectionState.speedIndex =
+          (programmeRecordingCollectionState.speedIndex + 1) %
+          RECENT_RECORDING_SPEEDS.length;
+        applyProgrammeSeriesPlaybackSettings();
+        syncProgrammeSeriesSpeedUi();
+      });
+    }
+
+    if (volumeBtn) {
+      volumeBtn.addEventListener("click", function () {
+        programmeRecordingCollectionState.muted =
+          !programmeRecordingCollectionState.muted;
+        if (!programmeRecordingCollectionState.muted) {
+          programmeRecordingCollectionState.volume =
+            programmeRecordingCollectionState.savedVolume || 1;
+        }
+        applyProgrammeSeriesPlaybackSettings();
+        syncProgrammeSeriesVolumeUi();
+      });
+    }
+
+    if (volumeRange) {
+      volumeRange.addEventListener("input", function () {
+        var level = Math.max(0, Math.min(100, Number(volumeRange.value))) / 100;
+        programmeRecordingCollectionState.volume = level;
+        programmeRecordingCollectionState.savedVolume = level;
+        programmeRecordingCollectionState.muted = level === 0;
+        applyProgrammeSeriesPlaybackSettings();
+        syncProgrammeSeriesVolumeUi();
+      });
+    }
+
+    syncProgrammeSeriesSpeedUi();
+    syncProgrammeSeriesVolumeUi();
+    bindProgrammeSeriesKeyboardShortcuts();
   };
 
   const getProgrammeRecordingSeriesActiveIndex = () => {
@@ -8037,25 +8499,29 @@
     if (typeof window.Amplitude === "undefined") return;
 
     var playerState = window.Amplitude.getPlayerState();
+    var activePlaylist = window.Amplitude.getActivePlaylist();
+    var isSeriesPlaylist = activePlaylist === PROGRAMME_RECORDING_SERIES_PLAYLIST;
     var hasActiveTrack =
-      playerState === "playing" || playerState === "paused";
+      isSeriesPlaylist &&
+      (playerState === "playing" || playerState === "paused");
     var activeIndex = getProgrammeRecordingSeriesActiveIndex();
-    var isPlaying = playerState === "playing";
+    var isPlaying = hasActiveTrack && playerState === "playing";
 
     if (playerShell) {
+      playerShell.classList.toggle("is-playing", isPlaying);
       playerShell.classList.toggle("has-active-track", hasActiveTrack);
 
-      var mainPlay = playerShell.querySelector(
-        ".programmes-recording-amplitude-main-play",
-      );
-      if (mainPlay) {
-        mainPlay.classList.toggle("amplitude-playing", isPlaying);
-        mainPlay.classList.toggle(
-          "amplitude-paused",
-          hasActiveTrack && !isPlaying,
-        );
-        mainPlay.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+      var playBtn = document.getElementById("programmes-recording-series-play");
+      if (playBtn) {
+        playBtn.classList.toggle("is-playing", isPlaying);
+        playBtn.classList.toggle("is-paused", hasActiveTrack && !isPlaying);
+        playBtn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
       }
+    }
+
+    if (hasActiveTrack && activeIndex >= 0) {
+      updateProgrammeSeriesPlayerMeta(activeIndex);
+      syncProgrammeSeriesSeekUi();
     }
 
     syncProgrammeRecordingCollectionCarouselUi(
@@ -8076,11 +8542,24 @@
         isActive && !isPlaying,
       );
       button.setAttribute("aria-pressed", trackPlaying ? "true" : "false");
+      button.setAttribute("aria-current", isActive ? "true" : "false");
       var icon = button.querySelector(".programmes-recording-track-icon i");
       if (icon) {
         icon.className = trackPlaying ? "fas fa-pause" : "fas fa-play";
       }
     });
+
+    if (
+      hasActiveTrack &&
+      activeIndex >= 0 &&
+      activeIndex !== programmeRecordingCollectionState.lastScrolledTrackIndex
+    ) {
+      programmeRecordingCollectionState.lastScrolledTrackIndex = activeIndex;
+      var activeTrack = list.querySelector(".programmes-recording-track.is-active");
+      if (activeTrack) {
+        activeTrack.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
   };
 
   const pauseProgrammeRecordingSeriesPlayer = () => {
@@ -8105,6 +8584,20 @@
         (recordings.length === 1 ? " recording" : " recordings");
     }
 
+    var collectionName = programmeRecordingCollectionState.activeCollection;
+    var savedProgress = collectionName
+      ? readProgrammeSeriesProgress(collectionName)
+      : null;
+    var savedTrackIndex = savedProgress
+      ? findProgrammeSeriesTrackIndex(
+          recordings,
+          savedProgress.recordingId,
+          savedProgress.trackIndex,
+        )
+      : -1;
+    var savedTime = savedProgress ? Number(savedProgress.currentTime) || 0 : 0;
+    var savedCompleted = savedProgress ? savedProgress.completed === true : false;
+
     recordings.forEach(function (recording, index) {
       var item = document.createElement("li");
       item.className = "programmes-recording-playlist-item";
@@ -8120,6 +8613,12 @@
       );
       button.setAttribute("aria-pressed", "false");
       button.style.setProperty("--track-i", index);
+
+      var trackNumber = document.createElement("span");
+      trackNumber.className = "programmes-recording-track-number";
+      trackNumber.textContent = String(index + 1);
+      trackNumber.setAttribute("aria-hidden", "true");
+      button.appendChild(trackNumber);
 
       if (recording.imageUrl) {
         var thumb = document.createElement("img");
@@ -8157,6 +8656,29 @@
 
       body.appendChild(name);
       body.appendChild(meta);
+
+      if (
+        index === savedTrackIndex &&
+        savedTime > 0 &&
+        !savedCompleted &&
+        Number.isFinite(Number(recording.duration)) &&
+        Number(recording.duration) > 0
+      ) {
+        var progressWrap = document.createElement("span");
+        progressWrap.className = "programmes-recording-track-progress";
+        progressWrap.setAttribute("aria-hidden", "true");
+        var progressBar = document.createElement("span");
+        progressBar.className = "programmes-recording-track-progress-bar";
+        var progressPct = Math.min(
+          100,
+          (savedTime / Number(recording.duration)) * 100,
+        );
+        progressBar.style.width = progressPct + "%";
+        progressWrap.appendChild(progressBar);
+        body.appendChild(progressWrap);
+        button.classList.add("has-partial-progress");
+      }
+
       button.appendChild(body);
 
       var playIcon = document.createElement("span");
@@ -8172,14 +8694,14 @@
   const initProgrammeRecordingSeriesAmplitude = (collection, recordings) => {
     if (typeof window.Amplitude === "undefined") return false;
 
+    bindProgrammeSeriesControls();
+
     var songs = recordings.map(function (recording) {
       return recordingToAmplitudeSong(recording, collection.label);
     });
 
-    if (programmeRecordingCollectionState.initialized) {
-      persistProgrammeSeriesProgressFromPlayer();
-      detachProgrammeSeriesProgressListeners();
-      window.Amplitude.stop();
+    if (programmeRecordingCollectionState.initialized || programmeRecentRecordingState.initialized) {
+      detachAmplitudeForHandoff();
     }
 
     setProgrammeRecordingSeriesPlaylistScope();
@@ -8206,6 +8728,7 @@
               hideProgrammeRecordingSeriesResumeChoice();
               persistProgrammeSeriesProgressFromPlayer();
             }
+            programmeRecordingCollectionState.lastScrolledTrackIndex = -1;
             syncProgrammeRecordingSeriesTrackUi();
           },
           play: function () {
@@ -8214,7 +8737,9 @@
               return;
             }
             hideProgrammeRecordingSeriesResumeChoice();
-            stopLegacyProgrammeRecording();
+            applyProgrammeSeriesPlaybackSettings();
+            bindProgrammeSeriesSeek();
+            syncRecentProgrammeRecordingsUi();
             syncProgrammeRecordingSeriesTrackUi();
           },
           pause: function () {
@@ -8260,6 +8785,7 @@
 
     programmeRecordingCollectionState.activeCollection = collectionName;
     programmeRecordingCollectionState.recordings = recordings;
+    programmeRecordingCollectionState.lastScrolledTrackIndex = -1;
     if (titleEl) {
       titleEl.textContent = collection.label;
     }
@@ -8311,11 +8837,21 @@
           " series, " +
           recordings.length +
           (recordings.length === 1 ? " recording" : " recordings") +
-          ", oldest first",
+          ", oldest first" +
+          (hasProgrammeSeriesProgress(collection.collectionName)
+            ? ", saved progress available"
+            : ""),
       );
 
       var coverWrap = document.createElement("span");
       coverWrap.className = "programmes-recording-collection-card-cover";
+
+      if (hasProgrammeSeriesProgress(collection.collectionName)) {
+        var continueBadge = document.createElement("span");
+        continueBadge.className = "programmes-recording-collection-card-continue";
+        continueBadge.textContent = "Continue";
+        coverWrap.appendChild(continueBadge);
+      }
 
       var cover = document.createElement("img");
       cover.className = "programmes-recording-collection-card-image";
@@ -8355,6 +8891,75 @@
     });
 
     stage.hidden = carousel.childNodes.length === 0;
+    syncProgrammeRecordingCollectionsScrollButtons();
+  };
+
+  const syncProgrammeRecordingCollectionsScrollButtons = () => {
+    var scrollWrap = document.getElementById(
+      "programmes-recording-collections-scroll",
+    );
+    var prevBtn = document.getElementById(
+      "programmes-recording-collections-scroll-prev",
+    );
+    var nextBtn = document.getElementById(
+      "programmes-recording-collections-scroll-next",
+    );
+    if (!scrollWrap || !prevBtn || !nextBtn) return;
+
+    var maxScroll = scrollWrap.scrollWidth - scrollWrap.clientWidth;
+    var hasOverflow = maxScroll > 4;
+    prevBtn.hidden = !hasOverflow;
+    nextBtn.hidden = !hasOverflow;
+    prevBtn.disabled = scrollWrap.scrollLeft <= 4;
+    nextBtn.disabled = scrollWrap.scrollLeft >= maxScroll - 4;
+  };
+
+  const scrollProgrammeRecordingCollectionsBy = (direction) => {
+    var scrollWrap = document.getElementById(
+      "programmes-recording-collections-scroll",
+    );
+    var carousel = document.getElementById(
+      "programmes-recording-collections-carousel",
+    );
+    if (!scrollWrap || !carousel) return;
+
+    var firstCard = carousel.querySelector(".programmes-recording-collection-card");
+    var cardWidth = firstCard
+      ? firstCard.getBoundingClientRect().width
+      : scrollWrap.clientWidth * 0.75;
+    scrollWrap.scrollBy({
+      left: direction * (cardWidth + 13),
+      behavior: "smooth",
+    });
+  };
+
+  const bindProgrammeRecordingCollectionsCarouselScroll = () => {
+    if (programmeRecordingCollectionState.carouselScrollBound) return;
+
+    var scrollWrap = document.getElementById(
+      "programmes-recording-collections-scroll",
+    );
+    var prevBtn = document.getElementById(
+      "programmes-recording-collections-scroll-prev",
+    );
+    var nextBtn = document.getElementById(
+      "programmes-recording-collections-scroll-next",
+    );
+    if (!scrollWrap || !prevBtn || !nextBtn) return;
+
+    programmeRecordingCollectionState.carouselScrollBound = true;
+
+    prevBtn.addEventListener("click", function () {
+      scrollProgrammeRecordingCollectionsBy(-1);
+    });
+    nextBtn.addEventListener("click", function () {
+      scrollProgrammeRecordingCollectionsBy(1);
+    });
+    scrollWrap.addEventListener("scroll", syncProgrammeRecordingCollectionsScrollButtons, {
+      passive: true,
+    });
+    window.addEventListener("resize", syncProgrammeRecordingCollectionsScrollButtons);
+    syncProgrammeRecordingCollectionsScrollButtons();
   };
 
   const syncProgrammeRecordingCollectionCarouselUi = (
@@ -8373,6 +8978,7 @@
         card.classList.toggle("is-active", isActive);
         card.classList.toggle("is-playing", cardPlaying);
         card.setAttribute("aria-pressed", cardPlaying ? "true" : "false");
+        card.setAttribute("aria-current", isActive ? "true" : "false");
         var playIcon = card.querySelector(
           ".programmes-recording-collection-card-play i",
         );
@@ -8468,7 +9074,9 @@
     if (stage) stage.hidden = true;
     hideProgrammeRecordingSeriesResumeChoice();
     var playerShell = document.getElementById("programmes-recording-series-player");
-    if (playerShell) playerShell.classList.remove("has-active-track");
+    if (playerShell) {
+      playerShell.classList.remove("has-active-track", "is-playing");
+    }
     syncProgrammeRecordingCollectionCarouselUi("", false);
   };
 
@@ -8490,6 +9098,7 @@
 
     renderProgrammeRecordingCollectionsCarousel(collectionMap, available);
     bindProgrammeRecordingCollectionsCarousel(collectionMap);
+    bindProgrammeRecordingCollectionsCarouselScroll();
     bindProgrammeRecordingSeriesResumeChoice();
 
     if (
@@ -8597,78 +9206,906 @@
     });
   };
 
-  const setLegacyRecordingItem = (buttonEl) => {
-    if (legacyRecordingButton) {
-      legacyRecordingButton.classList.remove("is-playing");
-      legacyRecordingButton.setAttribute("aria-pressed", "false");
-      var oldIcon = legacyRecordingButton.querySelector(
-        ".programmes-recording-play-icon i",
-      );
-      if (oldIcon) oldIcon.className = "fas fa-play";
+  const stopSharedAmplitudeEngine = () => {
+    if (programmeRecordingCollectionState.initialized) {
+      persistProgrammeSeriesProgressFromPlayer();
+      detachProgrammeSeriesProgressListeners();
+      programmeRecordingCollectionState.initialized = false;
     }
-    legacyRecordingButton = buttonEl || null;
-    if (legacyRecordingButton) {
-      legacyRecordingButton.classList.add("is-playing");
-      legacyRecordingButton.setAttribute("aria-pressed", "true");
-      var newIcon = legacyRecordingButton.querySelector(
-        ".programmes-recording-play-icon i",
-      );
-      if (newIcon) newIcon.className = "fas fa-pause";
+    programmeRecentRecordingState.initialized = false;
+    if (typeof window.Amplitude === "undefined") return;
+    try {
+      window.Amplitude.stop();
+    } catch (err) {
+      console.warn("Amplitude stop failed", err);
     }
   };
 
-  const stopLegacyProgrammeRecording = () => {
-    var playerWrap = document.getElementById("programmes-recording-player");
-    var audio = document.getElementById("programmes-recording-audio");
-    if (audio) {
-      audio.pause();
-      audio.removeAttribute("src");
-      audio.load();
-    }
-    if (playerWrap) playerWrap.hidden = true;
-    setLegacyRecordingItem(null);
+  const detachAmplitudeForHandoff = () => {
+    stopSharedAmplitudeEngine();
+    hideRecentProgrammeRecordingPlayer();
   };
 
-  const playLegacyProgrammeRecording = (recording, buttonEl) => {
-    var playerWrap = document.getElementById("programmes-recording-player");
-    var audio = document.getElementById("programmes-recording-audio");
-    var titleEl = document.getElementById("programmes-recording-now-title");
-    var dateEl = document.getElementById("programmes-recording-now-date");
-    var artEl = document.getElementById("programmes-recording-art");
-    if (!playerWrap || !audio || !recording || !recording.listenUrl) return;
-    if (!isDirectStreamUrl(recording.listenUrl)) {
-      window.open(recording.listenUrl, "_blank", "noopener,noreferrer");
+  const getRecentRecordingsFingerprint = (recordings) => {
+    if (!Array.isArray(recordings)) return "";
+    return recordings
+      .map(function (recording) {
+        return recording && recording.id != null ? String(recording.id) : "";
+      })
+      .join("|");
+  };
+
+  const formatRecordingClock = (seconds) => {
+    if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+    var mins = Math.floor(seconds / 60);
+    var secs = Math.floor(seconds % 60);
+    return mins + ":" + String(secs).padStart(2, "0");
+  };
+
+  const getRecentProgrammeRecordingActiveIndex = () => {
+    if (typeof window.Amplitude === "undefined") return -1;
+
+    var activePlaylist = window.Amplitude.getActivePlaylist();
+    if (activePlaylist === PROGRAMME_RECENT_PLAYLIST) {
+      var playlistMeta = window.Amplitude.getActivePlaylistMetadata();
+      if (
+        playlistMeta &&
+        Number.isFinite(Number(playlistMeta.active_index))
+      ) {
+        return Number(playlistMeta.active_index);
+      }
+    }
+
+    return -1;
+  };
+
+  const readRecentRecordingProgressStore = () => {
+    if (!canUseFunctionalStorage()) return null;
+    try {
+      var raw = localStorage.getItem(RECENT_RECORDING_PROGRESS_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      if (!parsed.talks || typeof parsed.talks !== "object") parsed.talks = {};
+      return parsed;
+    } catch (err) {
+      console.warn("Unable to read recent recording progress", err);
+      return null;
+    }
+  };
+
+  const writeRecentRecordingProgressStore = (store) => {
+    if (!canUseFunctionalStorage() || !store) return;
+    try {
+      localStorage.setItem(RECENT_RECORDING_PROGRESS_KEY, JSON.stringify(store));
+    } catch (err) {
+      console.warn("Unable to save recent recording progress", err);
+    }
+  };
+
+  const readRecentRecordingProgress = (recordingId) => {
+    if (recordingId == null || recordingId === "") return null;
+    var store = readRecentRecordingProgressStore();
+    if (!store || !store.talks) return null;
+    return store.talks[String(recordingId)] || null;
+  };
+
+  const writeRecentRecordingProgress = (recordingId, progress) => {
+    if (recordingId == null || recordingId === "") return;
+    var store = readRecentRecordingProgressStore() || { v: 1, talks: {} };
+    if (!store.talks) store.talks = {};
+    if (progress) {
+      store.talks[String(recordingId)] = progress;
+    } else {
+      delete store.talks[String(recordingId)];
+    }
+    writeRecentRecordingProgressStore(store);
+  };
+
+  const getRecentRecordingDetailLabel = (recording) => {
+    if (!recording) return "";
+    var parts = [];
+    if (recording.description && String(recording.description).trim()) {
+      parts.push(String(recording.description).trim());
+    }
+    var durationLabel = formatRecordingDuration(recording.duration);
+    if (durationLabel) parts.push(durationLabel);
+    return parts.join(" · ");
+  };
+
+  const shouldOfferRecentRecordingResume = (recording, progress) => {
+    if (!recording || !progress || progress.completed) return false;
+    var savedTime = Number(progress.currentTime);
+    if (!Number.isFinite(savedTime) || savedTime < RECENT_RECORDING_RESUME_MIN_SECONDS) {
+      return false;
+    }
+    var duration = Number(recording.duration);
+    if (
+      Number.isFinite(duration) &&
+      duration > RECENT_RECORDING_RESUME_MIN_SECONDS &&
+      savedTime >= duration - RECENT_RECORDING_RESUME_MIN_SECONDS
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  const hideRecentRecordingResumeChoice = () => {
+    programmeRecentRecordingState.awaitingResumeChoice = false;
+    programmeRecentRecordingState.pendingPlayIndex = -1;
+    var wrap = document.getElementById("programmes-recent-recording-resume");
+    if (wrap) wrap.hidden = true;
+  };
+
+  const showRecentRecordingResumeChoice = (startTime) => {
+    var wrap = document.getElementById("programmes-recent-recording-resume");
+    var lead = document.getElementById("programmes-recent-recording-resume-lead");
+    if (!wrap) return;
+    if (lead) {
+      lead.textContent =
+        "Continue from " + formatRecordingClock(Number(startTime) || 0) + "?";
+    }
+    wrap.hidden = false;
+    programmeRecentRecordingState.awaitingResumeChoice = true;
+  };
+
+  const persistRecentRecordingProgressFromPlayer = (options) => {
+    options = options || {};
+    if (!canUseFunctionalStorage()) return;
+    if (programmeRecentRecordingState.awaitingResumeChoice) return;
+    if (typeof window.Amplitude === "undefined") return;
+    if (window.Amplitude.getActivePlaylist() !== PROGRAMME_RECENT_PLAYLIST) return;
+
+    var index = getRecentProgrammeRecordingActiveIndex();
+    var recordings = programmeRecentRecordingState.recordings;
+    if (index < 0 || !recordings || !recordings[index]) return;
+
+    var recording = recordings[index];
+    if (recording.id == null || recording.id === "") return;
+
+    var audio = window.Amplitude.getAudio();
+    var currentTime =
+      audio && Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    var completed = options.completed === true;
+
+    writeRecentRecordingProgress(String(recording.id), {
+      currentTime: completed ? 0 : currentTime,
+      completed: completed,
+      updatedAt: Date.now(),
+    });
+  };
+
+  const detachRecentRecordingProgressListeners = () => {
+    var audio = programmeRecentRecordingState.progressAudioEl;
+    if (audio && programmeRecentRecordingState.onProgressTimeUpdate) {
+      audio.removeEventListener(
+        "timeupdate",
+        programmeRecentRecordingState.onProgressTimeUpdate,
+      );
+    }
+    programmeRecentRecordingState.progressAudioEl = null;
+    programmeRecentRecordingState.onProgressTimeUpdate = null;
+    programmeRecentRecordingState.progressLastSaveMs = 0;
+  };
+
+  const attachRecentRecordingProgressListeners = () => {
+    detachRecentRecordingProgressListeners();
+    if (typeof window.Amplitude === "undefined") return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    programmeRecentRecordingState.progressAudioEl = audio;
+    programmeRecentRecordingState.onProgressTimeUpdate = function () {
+      var now = Date.now();
+      if (
+        now - programmeRecentRecordingState.progressLastSaveMs <
+        RECENT_RECORDING_PROGRESS_SAVE_MS
+      ) {
+        return;
+      }
+      programmeRecentRecordingState.progressLastSaveMs = now;
+      persistRecentRecordingProgressFromPlayer();
+    };
+    audio.addEventListener(
+      "timeupdate",
+      programmeRecentRecordingState.onProgressTimeUpdate,
+    );
+  };
+
+  const seekRecentRecordingPlayer = (startTime, afterSeek) => {
+    var seekTo = Number(startTime) || 0;
+    if (seekTo <= 0) {
+      if (typeof afterSeek === "function") afterSeek();
       return;
     }
-    pauseProgrammeRecordingSeriesPlayer();
-    setLegacyRecordingItem(buttonEl);
+    if (typeof window.Amplitude === "undefined") return;
+
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    var applySeek = function () {
+      if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
+        if (typeof afterSeek === "function") afterSeek();
+        return;
+      }
+      audio.currentTime = Math.min(
+        Math.max(seekTo, 0),
+        Math.max(audio.duration - 1, 0),
+      );
+      syncRecentRecordingSeekUi();
+      if (typeof afterSeek === "function") afterSeek();
+    };
+
+    if (audio.readyState >= 1 && Number.isFinite(audio.duration)) {
+      applySeek();
+      return;
+    }
+
+    var onReady = function () {
+      audio.removeEventListener("loadedmetadata", onReady);
+      applySeek();
+    };
+    audio.addEventListener("loadedmetadata", onReady);
+  };
+
+  const skipRecentRecordingBy = (seconds) => {
+    if (typeof window.Amplitude === "undefined") return;
+    if (window.Amplitude.getActivePlaylist() !== PROGRAMME_RECENT_PLAYLIST) return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+    var delta = Number(seconds) || 0;
+    if (!Number.isFinite(audio.currentTime)) return;
+    var duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    var maxTime = duration > 0 ? duration : audio.currentTime + Math.abs(delta);
+    audio.currentTime = Math.max(0, Math.min(maxTime, audio.currentTime + delta));
+    syncRecentRecordingSeekUi();
+    persistRecentRecordingProgressFromPlayer();
+  };
+
+  const isRecentRecordingKeyboardTarget = (event) => {
+    return isFormFieldKeyboardTarget(event);
+  };
+
+  const isRecentRecordingPlayerActive = () => {
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (!playerShell || playerShell.hidden || !programmeRecentRecordingState.playerVisible) {
+      return false;
+    }
+    if (typeof window.Amplitude === "undefined") return false;
+    return window.Amplitude.getActivePlaylist() === PROGRAMME_RECENT_PLAYLIST;
+  };
+
+  const bindRecentRecordingKeyboardShortcuts = () => {
+    if (programmeRecentRecordingState.keyboardBound) return;
+    programmeRecentRecordingState.keyboardBound = true;
+
+    document.addEventListener("keydown", function (event) {
+      if (!isRecentRecordingPlayerActive() || !isRecentRecordingKeyboardTarget(event)) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        var playBtn = document.getElementById("programmes-recent-recording-play");
+        if (playBtn) playBtn.click();
+        return;
+      }
+
+      if (event.code === "ArrowLeft") {
+        event.preventDefault();
+        skipRecentRecordingBy(-RECENT_RECORDING_SKIP_SECONDS);
+        return;
+      }
+
+      if (event.code === "ArrowRight") {
+        event.preventDefault();
+        skipRecentRecordingBy(RECENT_RECORDING_SKIP_SECONDS);
+      }
+    });
+  };
+
+  const bindRecentRecordingResumeChoice = () => {
+    var wrap = document.getElementById("programmes-recent-recording-resume");
+    if (!wrap || wrap.dataset.bound === "true") return;
+    wrap.dataset.bound = "true";
+
+    wrap.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-recent-resume]");
+      if (!button) return;
+      var mode = button.getAttribute("data-recent-resume");
+      var index = programmeRecentRecordingState.pendingPlayIndex;
+      var recordings = programmeRecentRecordingState.recordings;
+      if (index < 0 || !recordings || !recordings[index]) return;
+
+      var startTime = 0;
+      if (mode === "continue") {
+        var recording = recordings[index];
+        var progress = readRecentRecordingProgress(recording.id);
+        startTime =
+          progress && Number.isFinite(Number(progress.currentTime))
+            ? Number(progress.currentTime)
+            : 0;
+      }
+
+      hideRecentRecordingResumeChoice();
+      startRecentProgrammeRecordingPlayback(index, recordings, startTime);
+    });
+  };
+
+  const startRecentProgrammeRecordingPlayback = (index, recordings, startTime) => {
+    if (!recordings || !recordings[index]) return;
+    if (typeof window.Amplitude === "undefined") return;
+
+    window.Amplitude.playPlaylistSongAtIndex(index, PROGRAMME_RECENT_PLAYLIST);
+    applyRecentRecordingPlaybackSettings();
+    bindRecentRecordingSeek();
+    attachRecentRecordingProgressListeners();
+
+    var beginPlayback = function () {
+      if (window.Amplitude.getPlayerState() !== "playing") {
+        window.Amplitude.play();
+      }
+      updateRecentProgrammeRecordingMeta(index);
+      syncRecentRecordingSeekUi();
+      syncRecentProgrammeRecordingsUi();
+    };
+
+    if (Number(startTime) > 0) {
+      seekRecentRecordingPlayer(startTime, beginPlayback);
+    } else {
+      beginPlayback();
+    }
+  };
+
+  const applyRecentRecordingPlaybackSettings = () => {
+    if (typeof window.Amplitude === "undefined") return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+    audio.playbackRate =
+      RECENT_RECORDING_SPEEDS[programmeRecentRecordingState.speedIndex] || 1;
+    audio.volume = programmeRecentRecordingState.muted
+      ? 0
+      : programmeRecentRecordingState.volume;
+  };
+
+  const syncRecentRecordingSpeedUi = () => {
+    var speedBtn = document.getElementById("programmes-recent-recording-speed");
+    if (!speedBtn) return;
+    var rate =
+      RECENT_RECORDING_SPEEDS[programmeRecentRecordingState.speedIndex] || 1;
+    var label = speedBtn.querySelector(".recent-recording-speed-label");
+    if (label) {
+      label.textContent =
+        rate === 1 ? "1×" : String(rate).replace(/\.0$/, "") + "×";
+    }
+  };
+
+  const syncRecentRecordingVolumeUi = () => {
+    var volumeBtn = document.getElementById("programmes-recent-recording-volume");
+    var volumeRange = document.getElementById(
+      "programmes-recent-recording-volume-range",
+    );
+    var player = document.getElementById("programmes-recent-recording-player");
+    if (volumeBtn) {
+      volumeBtn.setAttribute(
+        "aria-pressed",
+        programmeRecentRecordingState.muted ? "true" : "false",
+      );
+      volumeBtn.classList.toggle(
+        "is-muted",
+        programmeRecentRecordingState.muted,
+      );
+    }
+    if (volumeRange) {
+      volumeRange.value = String(
+        Math.round(
+          (programmeRecentRecordingState.muted
+            ? programmeRecentRecordingState.savedVolume
+            : programmeRecentRecordingState.volume) * 100,
+        ),
+      );
+    }
+    if (player) {
+      player.classList.toggle(
+        "is-muted",
+        programmeRecentRecordingState.muted ||
+          programmeRecentRecordingState.volume === 0,
+      );
+    }
+  };
+
+  const syncRecentRecordingShuffleUi = () => {
+    var shuffleBtn = document.getElementById("programmes-recent-recording-shuffle");
+    if (!shuffleBtn) return;
+    shuffleBtn.setAttribute(
+      "aria-pressed",
+      programmeRecentRecordingState.shuffle ? "true" : "false",
+    );
+    shuffleBtn.classList.toggle(
+      "is-active",
+      programmeRecentRecordingState.shuffle,
+    );
+  };
+
+  const updateRecentProgrammeRecordingMeta = (index) => {
+    var recordings = programmeRecentRecordingState.recordings;
+    var recording = recordings[index];
+    if (!recording) return;
+
+    var titleEl = document.getElementById("programmes-recent-recording-title");
+    var dateEl = document.getElementById("programmes-recent-recording-date");
+    var detailEl = document.getElementById("programmes-recent-recording-detail");
+    var artEl = document.getElementById("programmes-recent-recording-art");
+    var fallback = document.querySelector(
+      "#programmes-recent-recording-player .recent-recording-art-fallback",
+    );
+
     if (titleEl) titleEl.textContent = recording.name || "Recording";
     if (dateEl) dateEl.textContent = getRecordingDateLabel(recording);
-    if (artEl) {
+    if (detailEl) {
+      var detailLabel = getRecentRecordingDetailLabel(recording);
+      detailEl.textContent = detailLabel;
+      detailEl.hidden = !detailLabel;
+    }
+    if (artEl && fallback) {
       if (recording.imageUrl) {
         artEl.src = recording.imageUrl;
         artEl.alt = recording.name || "Recording artwork";
         artEl.hidden = false;
+        fallback.hidden = true;
       } else {
         artEl.removeAttribute("src");
-        artEl.alt = "";
         artEl.hidden = true;
+        fallback.hidden = false;
       }
     }
-    playerWrap.hidden = false;
-    if (audio.src !== recording.listenUrl) audio.src = recording.listenUrl;
-    audio.play().catch(function (err) {
-      console.error("Failed to play recording", err);
+  };
+
+  const syncRecentRecordingSeekUi = () => {
+    if (typeof window.Amplitude === "undefined") return;
+    var audio = window.Amplitude.getAudio();
+    if (!audio) return;
+
+    var seek = document.getElementById("programmes-recent-recording-seek");
+    var currentEl = document.getElementById("programmes-recent-recording-current");
+    var durationEl = document.getElementById("programmes-recent-recording-duration");
+    var duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    var current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+
+    if (durationEl) durationEl.textContent = formatRecordingClock(duration);
+    if (currentEl) currentEl.textContent = formatRecordingClock(current);
+    if (seek && duration > 0) {
+      seek.value = String(Math.min(100, (current / duration) * 100));
+    }
+  };
+
+  const bindRecentRecordingSeek = () => {
+    if (typeof window.Amplitude === "undefined") return;
+
+    var audio = window.Amplitude.getAudio();
+    var seek = document.getElementById("programmes-recent-recording-seek");
+    if (!audio || !seek) return;
+
+    if (programmeRecentRecordingState.seekAudioEl === audio) return;
+
+    if (
+      programmeRecentRecordingState.seekAudioEl &&
+      programmeRecentRecordingState.onSeekTimeUpdate
+    ) {
+      programmeRecentRecordingState.seekAudioEl.removeEventListener(
+        "timeupdate",
+        programmeRecentRecordingState.onSeekTimeUpdate,
+      );
+    }
+    if (
+      programmeRecentRecordingState.seekAudioEl &&
+      programmeRecentRecordingState.onSeekMetadata
+    ) {
+      programmeRecentRecordingState.seekAudioEl.removeEventListener(
+        "loadedmetadata",
+        programmeRecentRecordingState.onSeekMetadata,
+      );
+    }
+
+    programmeRecentRecordingState.onSeekTimeUpdate = syncRecentRecordingSeekUi;
+    programmeRecentRecordingState.onSeekMetadata = syncRecentRecordingSeekUi;
+    programmeRecentRecordingState.seekAudioEl = audio;
+
+    audio.addEventListener(
+      "timeupdate",
+      programmeRecentRecordingState.onSeekTimeUpdate,
+    );
+    audio.addEventListener(
+      "loadedmetadata",
+      programmeRecentRecordingState.onSeekMetadata,
+    );
+
+    if (!seek.dataset.bound) {
+      seek.dataset.bound = "true";
+      seek.addEventListener("input", function () {
+        if (!Number.isFinite(audio.duration) || audio.duration <= 0) return;
+        audio.currentTime = (Number(seek.value) / 100) * audio.duration;
+        syncRecentRecordingSeekUi();
+      });
+    }
+  };
+
+  const hideRecentProgrammeRecordingPlayer = () => {
+    programmeRecentRecordingState.playerVisible = false;
+    hideRecentRecordingResumeChoice();
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (playerShell) {
+      playerShell.hidden = true;
+      playerShell.classList.remove("is-playing");
+    }
+  };
+
+  const showRecentProgrammeRecordingPlayer = () => {
+    programmeRecentRecordingState.playerVisible = true;
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (playerShell) playerShell.hidden = false;
+  };
+
+  const stopRecentProgrammeRecordingPlayer = () => {
+    if (
+      typeof window.Amplitude !== "undefined" &&
+      programmeRecentRecordingState.initialized &&
+      window.Amplitude.getActivePlaylist() === PROGRAMME_RECENT_PLAYLIST
+    ) {
+      persistRecentRecordingProgressFromPlayer();
+      window.Amplitude.stop();
+    }
+    detachRecentRecordingProgressListeners();
+    hideRecentProgrammeRecordingPlayer();
+    syncRecentProgrammeRecordingsUi();
+  };
+
+  const getRecentRecordingAdjacentIndex = (direction) => {
+    var recordings = programmeRecentRecordingState.recordings;
+    if (!recordings.length) return -1;
+
+    var current = getRecentProgrammeRecordingActiveIndex();
+    if (current < 0) current = 0;
+
+    if (programmeRecentRecordingState.shuffle && recordings.length > 1) {
+      var nextIndex = current;
+      while (nextIndex === current) {
+        nextIndex = Math.floor(Math.random() * recordings.length);
+      }
+      return nextIndex;
+    }
+
+    if (direction < 0) {
+      return current > 0 ? current - 1 : recordings.length - 1;
+    }
+    return current < recordings.length - 1 ? current + 1 : 0;
+  };
+
+  const playRecentProgrammeRecordingAtIndex = (index, recordings) => {
+    if (!recordings || !recordings[index]) return;
+    var recording = recordings[index];
+    if (!isDirectStreamUrl(recording.listenUrl)) {
+      window.open(recording.listenUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    showRecentProgrammeRecordingPlayer();
+
+    var fingerprint = getRecentRecordingsFingerprint(recordings);
+    if (
+      !programmeRecentRecordingState.initialized ||
+      programmeRecentRecordingState.fingerprint !== fingerprint
+    ) {
+      programmeRecentRecordingState.recordings = recordings;
+      programmeRecentRecordingState.fingerprint = fingerprint;
+      if (!initRecentProgrammeRecordingsAmplitude(recordings)) return;
+    }
+
+    if (typeof window.Amplitude === "undefined") return;
+
+    hideRecentRecordingResumeChoice();
+    var progress = readRecentRecordingProgress(recording.id);
+    if (shouldOfferRecentRecordingResume(recording, progress)) {
+      programmeRecentRecordingState.pendingPlayIndex = index;
+      updateRecentProgrammeRecordingMeta(index);
+      showRecentRecordingResumeChoice(progress.currentTime);
+      syncRecentProgrammeRecordingsUi();
+    } else {
+      startRecentProgrammeRecordingPlayback(index, recordings, 0);
+    }
+
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (playerShell) {
+      playerShell.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
+  const bindRecentProgrammeRecordingControls = () => {
+    if (programmeRecentRecordingState.controlsBound) return;
+
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (!playerShell) return;
+
+    programmeRecentRecordingState.controlsBound = true;
+
+    var closeBtn = document.getElementById("programmes-recent-recording-close");
+    var playBtn = document.getElementById("programmes-recent-recording-play");
+    var skipBackBtn = document.getElementById("programmes-recent-recording-skip-back");
+    var skipForwardBtn = document.getElementById("programmes-recent-recording-skip-forward");
+    var prevBtn = document.getElementById("programmes-recent-recording-prev");
+    var nextBtn = document.getElementById("programmes-recent-recording-next");
+    var shuffleBtn = document.getElementById("programmes-recent-recording-shuffle");
+    var speedBtn = document.getElementById("programmes-recent-recording-speed");
+    var volumeBtn = document.getElementById("programmes-recent-recording-volume");
+    var volumeRange = document.getElementById(
+      "programmes-recent-recording-volume-range",
+    );
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", stopRecentProgrammeRecordingPlayer);
+    }
+
+    if (playBtn) {
+      playBtn.addEventListener("click", function () {
+        if (typeof window.Amplitude === "undefined") return;
+        var state = window.Amplitude.getPlayerState();
+        if (state === "playing") {
+          window.Amplitude.pause();
+          persistRecentRecordingProgressFromPlayer();
+        } else if (state === "paused") {
+          applyRecentRecordingPlaybackSettings();
+          window.Amplitude.play();
+        } else {
+          var index = getRecentProgrammeRecordingActiveIndex();
+          playRecentProgrammeRecordingAtIndex(
+            index >= 0 ? index : 0,
+            programmeRecentRecordingState.recordings,
+          );
+        }
+        syncRecentProgrammeRecordingsUi();
+      });
+    }
+
+    if (skipBackBtn) {
+      skipBackBtn.addEventListener("click", function () {
+        skipRecentRecordingBy(-RECENT_RECORDING_SKIP_SECONDS);
+      });
+    }
+
+    if (skipForwardBtn) {
+      skipForwardBtn.addEventListener("click", function () {
+        skipRecentRecordingBy(RECENT_RECORDING_SKIP_SECONDS);
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        var index = getRecentRecordingAdjacentIndex(-1);
+        if (index >= 0) {
+          playRecentProgrammeRecordingAtIndex(
+            index,
+            programmeRecentRecordingState.recordings,
+          );
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        var index = getRecentRecordingAdjacentIndex(1);
+        if (index >= 0) {
+          playRecentProgrammeRecordingAtIndex(
+            index,
+            programmeRecentRecordingState.recordings,
+          );
+        }
+      });
+    }
+
+    if (shuffleBtn) {
+      shuffleBtn.addEventListener("click", function () {
+        programmeRecentRecordingState.shuffle =
+          !programmeRecentRecordingState.shuffle;
+        syncRecentRecordingShuffleUi();
+      });
+    }
+
+    if (speedBtn) {
+      speedBtn.addEventListener("click", function () {
+        programmeRecentRecordingState.speedIndex =
+          (programmeRecentRecordingState.speedIndex + 1) %
+          RECENT_RECORDING_SPEEDS.length;
+        applyRecentRecordingPlaybackSettings();
+        syncRecentRecordingSpeedUi();
+      });
+    }
+
+    if (volumeBtn) {
+      volumeBtn.addEventListener("click", function () {
+        programmeRecentRecordingState.muted =
+          !programmeRecentRecordingState.muted;
+        if (!programmeRecentRecordingState.muted) {
+          programmeRecentRecordingState.volume =
+            programmeRecentRecordingState.savedVolume || 1;
+        }
+        applyRecentRecordingPlaybackSettings();
+        syncRecentRecordingVolumeUi();
+      });
+    }
+
+    if (volumeRange) {
+      volumeRange.addEventListener("input", function () {
+        var level = Math.max(0, Math.min(100, Number(volumeRange.value))) / 100;
+        programmeRecentRecordingState.volume = level;
+        programmeRecentRecordingState.savedVolume = level;
+        programmeRecentRecordingState.muted = level === 0;
+        applyRecentRecordingPlaybackSettings();
+        syncRecentRecordingVolumeUi();
+      });
+    }
+
+    syncRecentRecordingSpeedUi();
+    syncRecentRecordingVolumeUi();
+    syncRecentRecordingShuffleUi();
+    bindRecentRecordingResumeChoice();
+    bindRecentRecordingKeyboardShortcuts();
+  };
+
+  const syncRecentProgrammeRecordingsUi = () => {
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    var dom = getLegacyProgrammeRecordingsDom();
+    var list = dom.list;
+    if (typeof window.Amplitude === "undefined") return;
+
+    var playerState = window.Amplitude.getPlayerState();
+    var activePlaylist = window.Amplitude.getActivePlaylist();
+    var isRecentPlaylist = activePlaylist === PROGRAMME_RECENT_PLAYLIST;
+    var hasActiveTrack =
+      isRecentPlaylist &&
+      (playerState === "playing" || playerState === "paused");
+    var activeIndex = getRecentProgrammeRecordingActiveIndex();
+    var isPlaying = hasActiveTrack && playerState === "playing";
+
+    if (playerShell) {
+      if (!programmeRecentRecordingState.playerVisible) {
+        playerShell.hidden = true;
+      }
+      playerShell.classList.toggle("is-playing", isPlaying);
+      playerShell.classList.toggle("has-active-track", hasActiveTrack);
+
+      var playBtn = document.getElementById("programmes-recent-recording-play");
+      if (playBtn) {
+        playBtn.classList.toggle("is-playing", isPlaying);
+        playBtn.classList.toggle("is-paused", hasActiveTrack && !isPlaying);
+        playBtn.setAttribute("aria-pressed", isPlaying ? "true" : "false");
+      }
+    }
+
+    if (hasActiveTrack) {
+      updateRecentProgrammeRecordingMeta(activeIndex);
+      syncRecentRecordingSeekUi();
+    }
+
+    if (!list) return;
+
+    list.querySelectorAll(".programmes-recording-button").forEach(function (
+      button,
+      index,
+    ) {
+      var isActive = hasActiveTrack && index === activeIndex;
+      var trackPlaying = isActive && isPlaying;
+      button.classList.toggle("is-playing", trackPlaying);
+      button.setAttribute("aria-pressed", trackPlaying ? "true" : "false");
+      var icon = button.querySelector(".programmes-recording-play-icon i");
+      if (icon) {
+        icon.className = trackPlaying ? "fas fa-pause" : "fas fa-play";
+      }
     });
-    playerWrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+
+  const initRecentProgrammeRecordingsAmplitude = (recordings) => {
+    if (typeof window.Amplitude === "undefined") return false;
+
+    var playerShell = document.getElementById("programmes-recent-recording-player");
+    if (!playerShell || !recordings.length) return false;
+
+    bindRecentProgrammeRecordingControls();
+
+    var songs = recordings.map(function (recording) {
+      return recordingToAmplitudeSong(recording, "Recent recordings");
+    });
+
+    if (
+      programmeRecordingCollectionState.initialized ||
+      programmeRecentRecordingState.initialized
+    ) {
+      if (programmeRecordingCollectionState.initialized) {
+        persistProgrammeSeriesProgressFromPlayer();
+        detachProgrammeSeriesProgressListeners();
+        programmeRecordingCollectionState.initialized = false;
+      }
+      programmeRecentRecordingState.initialized = false;
+      if (typeof window.Amplitude !== "undefined") {
+        try {
+          window.Amplitude.stop();
+        } catch (err) {
+          console.warn("Amplitude stop failed", err);
+        }
+      }
+    }
+
+    programmeRecentRecordingState.seekAudioEl = null;
+    detachRecentRecordingProgressListeners();
+
+    try {
+      var playlistSongs = songs.map(function (_song, index) {
+        return index;
+      });
+      var playlists = {};
+      playlists[PROGRAMME_RECENT_PLAYLIST] = {
+        title: "Recent recordings",
+        songs: playlistSongs,
+      };
+
+      window.Amplitude.init({
+        songs: songs,
+        playlists: playlists,
+        continue_next: true,
+        preload: "none",
+        default_album_art: PROGRAMME_RECORDING_DEFAULT_ART,
+        callbacks: {
+          song_change: function () {
+            hideRecentRecordingResumeChoice();
+            var index = getRecentProgrammeRecordingActiveIndex();
+            if (index >= 0) updateRecentProgrammeRecordingMeta(index);
+            syncRecentProgrammeRecordingsUi();
+          },
+          play: function () {
+            applyRecentRecordingPlaybackSettings();
+            bindRecentRecordingSeek();
+            attachRecentRecordingProgressListeners();
+            syncRecentProgrammeRecordingsUi();
+          },
+          pause: function () {
+            persistRecentRecordingProgressFromPlayer();
+            syncRecentProgrammeRecordingsUi();
+          },
+          stop: function () {
+            persistRecentRecordingProgressFromPlayer();
+            detachRecentRecordingProgressListeners();
+            syncRecentProgrammeRecordingsUi();
+          },
+          ended: function () {
+            persistRecentRecordingProgressFromPlayer({ completed: true });
+            var nextIndex = getRecentRecordingAdjacentIndex(1);
+            if (nextIndex >= 0) {
+              playRecentProgrammeRecordingAtIndex(
+                nextIndex,
+                programmeRecentRecordingState.recordings,
+              );
+              return;
+            }
+            syncRecentProgrammeRecordingsUi();
+          },
+        },
+      });
+    } catch (err) {
+      console.error("Failed to initialise recent recordings player", err);
+      programmeRecentRecordingState.initialized = false;
+      return false;
+    }
+
+    programmeRecentRecordingState.initialized = true;
+    programmeRecentRecordingState.recordings = recordings;
+    programmeRecentRecordingState.fingerprint =
+      getRecentRecordingsFingerprint(recordings);
+    return true;
   };
 
   const renderLegacyProgrammeRecordings = (recordings) => {
     var dom = getLegacyProgrammeRecordingsDom();
     var wrap = dom.wrap;
     var list = dom.list;
-    var audio = document.getElementById("programmes-recording-audio");
-    var playerWrap = document.getElementById("programmes-recording-player");
     if (!wrap || !list) return;
 
     var playable = sortProgrammeRecordings(recordings);
@@ -8678,16 +10115,32 @@
     if (!playable.length) {
       wrap.hidden = true;
       list.innerHTML = "";
-      stopLegacyProgrammeRecording();
+      stopRecentProgrammeRecordingPlayer();
+      programmeRecentRecordingState.initialized = false;
+      programmeRecentRecordingState.recordings = [];
+      programmeRecentRecordingState.fingerprint = "";
       return;
     }
 
     wrap.hidden = false;
     list.innerHTML = "";
-    setLegacyRecordingItem(null);
-    if (playerWrap) playerWrap.hidden = true;
+    programmeRecentRecordingState.recordings = playable;
+    var newFingerprint = getRecentRecordingsFingerprint(playable);
+    var fingerprintChanged =
+      programmeRecentRecordingState.fingerprint !== newFingerprint;
+    programmeRecentRecordingState.fingerprint = newFingerprint;
 
-    playable.forEach(function (recording) {
+    if (
+      programmeRecentRecordingState.playerVisible &&
+      programmeRecentRecordingState.initialized &&
+      fingerprintChanged
+    ) {
+      initRecentProgrammeRecordingsAmplitude(playable);
+    } else if (!programmeRecentRecordingState.playerVisible) {
+      programmeRecentRecordingState.initialized = false;
+    }
+
+    playable.forEach(function (recording, index) {
       var item = document.createElement("li");
       item.className = "programmes-recording-item";
       var button = document.createElement("button");
@@ -8728,27 +10181,11 @@
       playIcon.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
       button.appendChild(playIcon);
       button.addEventListener("click", function () {
-        playLegacyProgrammeRecording(recording, button);
+        playRecentProgrammeRecordingAtIndex(index, playable);
       });
       item.appendChild(button);
       list.appendChild(item);
     });
-
-    if (audio && !audio.dataset.bound) {
-      audio.dataset.bound = "true";
-      audio.addEventListener("pause", function () {
-        if (audio.ended) setLegacyRecordingItem(null);
-      });
-      audio.addEventListener("ended", function () {
-        setLegacyRecordingItem(null);
-      });
-    }
-
-    var closeBtn = document.getElementById("programmes-recording-close");
-    if (closeBtn && !closeBtn.dataset.bound) {
-      closeBtn.dataset.bound = "true";
-      closeBtn.addEventListener("click", stopLegacyProgrammeRecording);
-    }
   };
 
   const getProgrammeTeaser = (p, maxLen) => {
@@ -12920,6 +14357,7 @@
       setLiveStreamStatus();
       loadProgrammes();
       loadProgrammeRecordingCollections();
+      // initMyMasjidLivePlayer(); — future MyMasjid Digital on-site stream
       return;
     }
     if (isProjectsPage()) {
@@ -12952,6 +14390,7 @@
     initContactPageMotion();
     if (isActivitiesPage()) {
       initProgrammesPageMotion();
+      initProgrammesPageFilters();
       loadProgrammeRecordingCollections();
     }
     initContactDirections();

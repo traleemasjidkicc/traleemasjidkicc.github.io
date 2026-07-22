@@ -25,6 +25,7 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 | Section `id` | Heading | Sticky nav label |
 |--------------|---------|------------------|
 | `#this-week` | This Week | This week |
+| `#listen-at-home` | Listen at home | Home receiver |
 | `#programme-guide` | Programme Guide | Programme guide |
 | `#live-audio-recordings` | Live audio & recordings | Live audio |
 | `#how-to-join` | How to Join | How to join |
@@ -35,7 +36,7 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 
 1. **Browse programmes** — this week, programme guide, all programmes  
 2. **Classes** — adult programmes, women’s weekly class, children’s madrasa  
-3. **Listen & updates** — live audio & recordings, previous talks, Kerry Muslim database, Dhikr app  
+3. **Listen & updates** — home WiFi receiver, live audio & recordings, programme series, previous talks, Kerry Muslim database, Dhikr app  
 
 **About**
 
@@ -44,7 +45,7 @@ Use **plain-language labels** that match what the visitor actually gets. Section
 
 ## External URLs in JS
 
-- Repeat off-site URLs once in `SITE_LINKS` (forms, Mixlr, GoFundMe, maps, WhatsApp madrasa).
+- Repeat off-site URLs once in `SITE_LINKS` (forms, Mixlr, GoFundMe, maps, WhatsApp madrasa, MyMasjid Digital).
 - Masjid content APIs and SumUp checkout: `CLOUD_RUN_APIS` (Google Cloud Run, `europe-west1`).
 
 ## Adding a new public link

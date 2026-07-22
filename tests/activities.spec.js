@@ -86,4 +86,33 @@ test.describe("Programmes page", () => {
     const rel = await external.getAttribute("rel");
     expect(rel || "").toMatch(/noopener|noreferrer/);
   });
+
+  test("ACT-14: home receiver promo links to Imam contact", async ({ page }) => {
+    await page.goto("/activities.html#listen-at-home");
+    await expect(page.locator("#listen-at-home-heading")).toBeVisible();
+    await expect(page.locator("#listen-at-home-heading")).toContainText(/Masjid WiFi Receiver/i);
+    const purchaseLink = page.getByRole("link", { name: /Ask the Imam to purchase/i });
+    await expect(purchaseLink).toHaveAttribute("href", /contact\.html#reach-the-right-person/);
+  });
+
+  test("ACT-15: overview dashboard populates after programmes load", async ({ page }) => {
+    await page.goto("/activities.html");
+    await page.waitForFunction(
+      () => {
+        const today = document.getElementById("prog-overview-today-body");
+        const week = document.getElementById("prog-overview-week-body");
+        const live = document.getElementById("prog-overview-live-body");
+        if (!today || !week || !live) return false;
+        const hasContent = (el) =>
+          el.querySelector(".prog-overview-list") ||
+          el.querySelector(".prog-overview-live-title") ||
+          (el.textContent && !/Loading|Checking/i.test(el.textContent.trim()));
+        return hasContent(today) && hasContent(week) && hasContent(live);
+      },
+      { timeout: 20_000 },
+    );
+    await expect(page.locator("#prog-overview-today-body")).toBeVisible();
+    await expect(page.locator("#prog-overview-week-body")).toBeVisible();
+    await expect(page.locator("#prog-overview-live-body")).toBeVisible();
+  });
 });
