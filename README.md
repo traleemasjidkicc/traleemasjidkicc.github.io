@@ -71,8 +71,8 @@ Local development uses **[Gulp](https://gulpjs.com/)** and **[BrowserSync](https
 | **Full prayer timetable** | [`prayer-times.html`](prayer-times.html) | Day / week / month views, print-friendly PDF sheet |
 | **Monthly timetable PDF** | Nav, prayer times page | Cloud Run `getsalahtimes` |
 | **Announcements ribbon** | All pages | Cloud Run `getannouncements` |
-| **Notice board** | Homepage | Cloud Run `getnotices` |
-| **Weekly programmes** | Homepage preview, [`activities.html`](activities.html) | Cloud Run `getmasjidprogrammes` |
+| **Notice board** | Homepage | Cloud Functions `getMasjidProgrammes?type=notices` |
+| **Weekly programmes** | Homepage preview, [`activities.html`](activities.html) | Cloud Functions `getMasjidProgrammes?type=programmes&active=true` |
 | **Daily hadith** | All pages (footer area) | Cloud Run `randomhadith` |
 | **Live stream & events** | Homepage, Programmes | [Mixlr](https://traleemasjid.mixlr.com/) API |
 | **Donations** | Homepage, [`projects.html`](projects.html) | GoFundMe embed + SumUp card checkout |
@@ -198,7 +198,7 @@ sequenceDiagram
     U->>P: Load index.html
     P->>J: DOMContentLoaded
     J->>J: Nav, cookies, WhatsApp, announcements ribbon
-    J->>API: getnotices
+    J->>API: getMasjidProgrammes?type=notices
     API-->>J: notices JSON
     J->>U: Render notice board
 
@@ -462,7 +462,7 @@ yarn test:e2e
 
 ## External APIs & services
 
-### Google Cloud Run (`europe-west1`)
+### Google Cloud APIs (`europe-west1`)
 
 All masjid content is fetched client-side and cached in `localStorage`.
 
@@ -471,8 +471,9 @@ All masjid content is fetched client-side and cached in `localStorage`.
 | `getsalahtimes-rds3nxm6za-ew.a.run.app` | Monthly timetable PDF/image URL | `salahTimesAssetUrl` |
 | `getiqamahtimes-rds3nxm6za-ew.a.run.app` | Monthly iqamah timetables + Jumuah | `iqamah-month-{year}-{month}` |
 | `getannouncements-rds3nxm6za-ew.a.run.app` | Site-wide announcements ribbon | `kicc-announcements` |
-| `getnotices-rds3nxm6za-ew.a.run.app` | Homepage notice board | `notices` |
-| `getmasjidprogrammes-rds3nxm6za-ew.a.run.app` | Weekly programmes (`recordingsLimit=6`) | `masjidProgrammes_programme_active_true_v2` |
+| `europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes?type=notices` | Homepage notice board | `notices` |
+| `europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes?type=programmes&active=true` | Weekly programmes + upcoming Mixlr events | `masjidProgrammes_programme_active_true_v2` |
+| `europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes?type=recordings&recordingsLimit={6\|20}` | Recent recordings + collections (six on the homepage; twenty for programme views) | `masjidProgrammes_programme_active_true_v2` |
 | `randomhadith-rds3nxm6za-ew.a.run.app` | Daily hadith | `kicc-random-hadith` |
 | `getcampaigns-rds3nxm6za-ew.a.run.app` | Donation campaign progress (GoFundMe totals) | `kicc-campaign-progress` |
 | `createcheckout-rds3nxm6za-ew.a.run.app` | SumUp card payment session (homepage + New Masjid) | — |

@@ -22,7 +22,7 @@ export const PUBLIC_PAGES = [
   "/contact.html",
 ];
 
-const CLOUD_RUN_HOST = /\.run\.app/;
+const GOOGLE_CONTENT_API_HOST = /(?:\.run\.app|\.cloudfunctions\.net)/;
 const MIXLR_HOST = /api\.mixlr\.com/;
 const CREATE_CHECKOUT_HOST = /createcheckout-rds3nxm6za-ew\.a\.run\.app/;
 
@@ -141,7 +141,7 @@ export function hasUkDateFormat(text) {
  * @param {BrowserContext} context
  */
 export async function blockCloudRun(context) {
-  await context.route(CLOUD_RUN_HOST, (route) => route.abort("failed"));
+  await context.route(GOOGLE_CONTENT_API_HOST, (route) => route.abort("failed"));
 }
 
 /**

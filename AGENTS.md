@@ -27,12 +27,11 @@ Browser (GitHub Pages)
   ├── SEO: robots.txt, sitemap.xml, site.webmanifest
   └── CDN: Bootstrap 4.3, jQuery 3.3, Font Awesome 6.2, BaguetteBox, js-cookie
 
-Google Cloud Run (europe-west1) — masjid content APIs in CLOUD_RUN_APIS
+Google Cloud Run / Cloud Functions (europe-west1) — masjid content APIs in CLOUD_RUN_APIS
   ├── getsalahtimes-*       → monthly salah times PDF/image URL
   ├── getiqamahtimes-*      → today's iqamah times + Jumuah schedule
   ├── getannouncements-*    → site-wide announcements ribbon
-  ├── getnotices-*          → homepage notice board
-  ├── getmasjidprogrammes-* → activities programmes (schedule + catalogue)
+  ├── getMasjidProgrammes   → notices, programmes, recordings, collections
   ├── randomhadith-*        → daily hadith
   ├── getcampaigns-*        → donation campaign progress (GoFundMe totals)
   └── createcheckout-*      → SumUp card checkout session

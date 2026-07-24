@@ -189,6 +189,92 @@ test.describe("Homepage", () => {
     await expect(firstPillar).toHaveAttribute("aria-expanded", "true");
   });
 
+  test("HOME-11b: unified notices contract renders imageUrl records", async ({
+    page,
+  }) => {
+    let noticesRequestSeen = false;
+    await page.route("**/getMasjidProgrammes?type=notices", async (route) => {
+      noticesRequestSeen = true;
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          notices: [
+            {
+              id: "notice-contract-test",
+              name: "Community Notice",
+              createdAt: 1765283253954,
+              imageUrl: "https://example.com/community-notice.png",
+              isMasjidNotice: true,
+              isActive: true,
+            },
+          ],
+          programmes: [],
+          recordings: [],
+          collections: [],
+        }),
+      });
+    });
+    await page.evaluate(() => localStorage.removeItem("notices"));
+    await page.reload();
+
+    await expect(page.locator("#notice-board")).toBeVisible();
+    await expect(page.locator(".notices-card-image")).toHaveAttribute(
+      "src",
+      "https://example.com/community-notice.png",
+    );
+    await expect(page.locator(".notices-card-caption")).toHaveText(
+      "Community Notice",
+    );
+    expect(noticesRequestSeen).toBeTruthy();
+  });
+
+  test("HOME-11c: homepage requests and renders six previous recordings", async ({
+    page,
+  }) => {
+    let recordingsRequestSeen = false;
+    await page.route(
+      "**/getMasjidProgrammes?type=programmes&active=true",
+      (route) =>
+        route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            notices: [],
+            programmes: [],
+            recordings: [],
+            collections: [],
+          }),
+        }),
+    );
+    await page.route(
+      "**/getMasjidProgrammes?type=recordings&recordingsLimit=6",
+      (route) => {
+        recordingsRequestSeen = true;
+        return route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            notices: [],
+            programmes: [],
+            recordings: Array.from({ length: 8 }, (_, index) => ({
+              id: "home-recording-" + index,
+              name: "Previous recording " + (index + 1),
+              createdAt: 1765283253954 - index * 1000,
+              listenUrl: "https://example.com/recording-" + index + ".mp3",
+            })),
+            collections: [],
+          }),
+        });
+      },
+    );
+    await page.evaluate(() =>
+      localStorage.removeItem("masjidProgrammes_programme_active_true_v2"),
+    );
+    await page.reload();
+
+    await expect(page.locator("#programmes-recordings-wrap")).toBeVisible();
+    await expect(page.locator("#programmes-recordings-list > li")).toHaveCount(6);
+    expect(recordingsRequestSeen).toBeTruthy();
+  });
+
   test("HOME-13: explore hub links", async ({ page }) => {
     await page.locator("#home-explore-heading").scrollIntoViewIfNeeded();
     await expect(page.getByRole("link", { name: /View timetable/i })).toHaveAttribute(

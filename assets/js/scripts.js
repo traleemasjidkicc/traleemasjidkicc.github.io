@@ -111,21 +111,23 @@
     });
   };
 
-  /* Google Cloud Run (europe-west1) — masjid APIs and SumUp checkout */
+  const MASJID_PROGRAMMES_API =
+    "https://europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes";
+
+  /* Google Cloud Run / Cloud Functions (europe-west1) — masjid APIs and SumUp checkout */
   const CLOUD_RUN_APIS = {
     salahTimes: "https://getsalahtimes-rds3nxm6za-ew.a.run.app",
     iqamahTimes: "https://getiqamahtimes-rds3nxm6za-ew.a.run.app",
     announcements: "https://getannouncements-rds3nxm6za-ew.a.run.app",
-    notices: "https://getnotices-rds3nxm6za-ew.a.run.app",
-    programmes:
-      "https://getmasjidprogrammes-rds3nxm6za-ew.a.run.app?type=programme&active=true&recordingsLimit=6",
+    notices: MASJID_PROGRAMMES_API + "?type=notices",
+    programmes: MASJID_PROGRAMMES_API + "?type=programmes&active=true",
+    programmeRecordings: MASJID_PROGRAMMES_API + "?type=recordings",
     randomHadith: "https://randomhadith-rds3nxm6za-ew.a.run.app",
     campaigns: "https://getcampaigns-rds3nxm6za-ew.a.run.app",
     createCheckout: "https://createcheckout-rds3nxm6za-ew.a.run.app",
   };
 
-  const PROGRAMME_RECORDINGS_API =
-    "https://europe-west1-tralee-masjid.cloudfunctions.net/getMasjidProgrammes";
+  const PROGRAMME_RECORDINGS_API = MASJID_PROGRAMMES_API;
 
   const PROGRAMME_RECORDING_COLLECTIONS = [
     { collectionName: "bayaan", label: "Bayaan" },
@@ -5428,6 +5430,18 @@
     }
   };
 
+  const normalizeNotices = (notices) => {
+    if (!Array.isArray(notices)) return [];
+    return notices.map(function (notice) {
+      if (!notice || typeof notice !== "object") return notice;
+      return Object.assign({}, notice, {
+        url: notice.url || notice.imageUrl,
+        createdTime:
+          notice.createdTime !== undefined ? notice.createdTime : notice.createdAt,
+      });
+    });
+  };
+
   const formatNoticeLabel = (name) => {
     if (!name || typeof name !== "string") return "Masjid notice";
     return (
@@ -5711,7 +5725,7 @@
         return res.json();
       })
       .then((response) => {
-        const notices = Array.isArray(response.notices) ? response.notices : [];
+        const notices = normalizeNotices(response && response.notices);
         saveNoticesToCache(notices);
         renderNotices(notices);
       })
@@ -7730,10 +7744,17 @@
         limit: RECENT_PROGRAMME_RECORDINGS_LIMIT,
       };
     }
+    var recordingsList = document.getElementById("programmes-recordings-list");
+    var configuredLimit = Number(
+      recordingsList && recordingsList.getAttribute("data-recordings-limit"),
+    );
     return {
       wrap: document.getElementById("programmes-recordings-wrap"),
-      list: document.getElementById("programmes-recordings-list"),
-      limit: null,
+      list: recordingsList,
+      limit:
+        Number.isFinite(configuredLimit) && configuredLimit > 0
+          ? configuredLimit
+          : null,
     };
   };
 
@@ -10794,8 +10815,12 @@
   };
 
   const loadProgrammes = () => {
-    // Weekly Programmes + recordings on activities page
+    // Weekly programmes and recent recordings use separate unified API views.
     const PROGRAMMES_API_URL = CLOUD_RUN_APIS.programmes;
+    const PROGRAMME_RECORDINGS_API_URL =
+      CLOUD_RUN_APIS.programmeRecordings +
+      "&recordingsLimit=" +
+      (isHomePage() ? RECENT_PROGRAMME_RECORDINGS_LIMIT : 20);
     const PROGRAMMES_STORAGE_KEY = "masjidProgrammes_programme_active_true_v2";
     var cachedJson = kiccTimedStorageGet(localStorage, PROGRAMMES_STORAGE_KEY);
     if (cachedJson) {
@@ -10810,19 +10835,46 @@
       applyProgrammesResponse(null);
     }
 
-    fetch(PROGRAMMES_API_URL, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-    })
-      .then(function (resp) {
-        if (!resp.ok) {
-          throw new Error("HTTP " + resp.status);
-        }
+    var fetchApiJson = function (url) {
+      return fetch(url, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      }).then(function (resp) {
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
         return resp.json();
-      })
-      .then(function (data) {
-        if (data) {
-          kiccTimedStorageSet(localStorage, PROGRAMMES_STORAGE_KEY, JSON.stringify(data));
+      });
+    };
+
+    Promise.all([
+      fetchApiJson(PROGRAMMES_API_URL),
+      fetchApiJson(PROGRAMME_RECORDINGS_API_URL).catch(function (err) {
+        console.warn("Failed to fetch recent programme recordings", err);
+        return null;
+      }),
+    ])
+      .then(function (responses) {
+        var programmesData = responses[0];
+        var recordingsData = responses[1];
+        if (programmesData) {
+          var data = Object.assign({}, programmesData, {
+            recordings:
+              recordingsData && Array.isArray(recordingsData.recordings)
+                ? recordingsData.recordings
+                : cached && Array.isArray(cached.recordings)
+                  ? cached.recordings
+                  : [],
+            collections:
+              recordingsData && Array.isArray(recordingsData.collections)
+                ? recordingsData.collections
+                : cached && Array.isArray(cached.collections)
+                  ? cached.collections
+                  : [],
+          });
+          kiccTimedStorageSet(
+            localStorage,
+            PROGRAMMES_STORAGE_KEY,
+            JSON.stringify(data),
+          );
           applyProgrammesResponse(data);
         } else {
           applyProgrammesResponse(null);

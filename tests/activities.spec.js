@@ -20,6 +20,61 @@ test.describe("Programmes page", () => {
     });
   });
 
+  test("ACT-01b: unified programmes and recordings contracts populate the page", async ({
+    page,
+  }) => {
+    let programmesRequestSeen = false;
+    let recordingsRequestSeen = false;
+    await page.route(
+      "**/getMasjidProgrammes?type=programmes&active=true",
+      async (route) => {
+        programmesRequestSeen = true;
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            notices: [],
+            programmes: [
+              {
+                id: "programme-contract-test",
+                name: "Contract Programme",
+                weekdays: ["Fri"],
+                prayerName: "Maghrib",
+                timeDescription: "Every Friday after Maghrib",
+                isMasjidProgramme: true,
+                isActive: true,
+              },
+            ],
+            recordings: [],
+            collections: [],
+          }),
+        });
+      },
+    );
+    await page.route(
+      "**/getMasjidProgrammes?type=recordings&recordingsLimit=20",
+      async (route) => {
+        recordingsRequestSeen = true;
+        await route.fulfill({
+          contentType: "application/json",
+          body: JSON.stringify({
+            notices: [],
+            programmes: [],
+            recordings: [],
+            collections: [{ collectionName: "bayaan", label: "Bayaan" }],
+          }),
+        });
+      },
+    );
+    await page.evaluate(() =>
+      localStorage.removeItem("masjidProgrammes_programme_active_true_v2"),
+    );
+    await page.reload();
+
+    await expect(page.locator("body")).toContainText("Contract Programme");
+    expect(programmesRequestSeen).toBeTruthy();
+    expect(recordingsRequestSeen).toBeTruthy();
+  });
+
   test("ACT-03: programme details modal opens", async ({ page }) => {
     await page.goto("/activities.html#this-week");
     const interactive = page.locator(".programmes-schedule-item--interactive").first();
